@@ -1,0 +1,76 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 23, 2016, 4:31:54 PM
+    Author     : frieda
+*/
+body {
+    margin: 0 auto;
+    background-color: #fff4a3;
+    color: #194e80;
+}
+table{
+    /* border: 1px solid pink; */
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+th { 
+}
+td {
+    background-color: #fff4a3;
+    padding-right: .5em;
+    /* border-collapse: collapse; */
+}
+.ansbox{
+    min-width: 4em;
+}
+.blackbox{
+    width: 5em;
+    text-align: center;
+}
+.blank{
+    /* color: #fff4a3; */
+    visibility: hidden;
+    margin: 1px;
+}
+.blankhdr{
+    color: #ffa925;
+}
+.firstbox{
+    min-width: 12em;
+}
+.hdr{
+    padding-left: .5em;
+    padding-right: .5em;
+}
+.hdrRow {
+        border: 2px solid #ffc410;
+}
+.offs{
+    padding-left: 1%;
+}
+.problem{
+    margin-top: 2em;
+}
+.rad{
+    text-align: center;
+}
+.red{
+    color: red;
+}
+.xc{
+    min-width: 2em;
+}
+#checkOne{
+    visibility: hidden;
+    margin: 1px;
+    color: red;
+    /* color:  #fff4a3; */
+}
+#Check{
+    width: 8em;
+    color: lightgray;
+}
