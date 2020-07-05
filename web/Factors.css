@@ -1,0 +1,166 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 21, 2017, 7:35:10 PM
+    Author     : frieda
+*/
+body{
+    background-color: #d2edf9;
+    /* width: 1080px;
+    height:720px; */
+    -webkit-background-size: contain;
+    -moz-background-size: contain;
+    -o-background-size: contain;
+    background-size: contain;
+}
+input{
+    width: 4em;
+    /* height: 1.3em; */
+    border: 0px;
+    margin-right: 0px;    
+    text-align: right;
+    color: #11397a;
+    background-color: #d2edf9;
+}
+input:focus { outline: 3px solid #11397a; }
+table{
+    padding: 0px;
+    border: 0px;
+}
+td{
+    /* min-height: 1.3em; */
+    border: 2px solid;
+    border-color: #d2edf9;
+    padding-right: 0px;
+    /* width: 4em; */
+    /* height: 1.4em; */
+    height: 20px;
+    /* width: 4em; */
+}
+th{
+    width: 28em;
+}
+.blank{
+    width: 2em;
+    height: 1.4em;
+    height: 20px;
+}
+.dragBox{
+    margin: 0px;
+    position: absolute;
+    border-collapse: collapse;
+}
+.ghost{
+    margin: 0px;
+}
+.nomargin{
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+.ntrmed{
+    border-collapse: collapse;
+}
+.onewide{
+	margin: 0;
+	border: 0;
+	padding: 0;
+	width: 0.6em;
+}
+.op{
+    width: 4em;
+    height: 1.4em;
+    height: 20px;
+}
+.section{
+    width: 12em;
+    position: absolute;
+    color: #d2edf9;
+}
+.shortbox{
+    width: 5em;
+    text-align: center;
+    color: red;
+    font: inherit;
+}
+.stillBox{
+    margin: 0px;
+    position: absolute;
+}
+#draggables{
+    /* background-color: pink; */
+    position: absolute;
+}
+#blankheader{
+    color: #d2edf9;
+}
+#blankheader2{
+    color: #d2edf9;
+    padding-bottom: 1em;
+}
+#circles{
+    /* position: absolute; */
+    position: fixed;
+    /* position: relative; */
+    text-align: left;
+    color: white;
+}
+#fans{
+    position: absolute;
+    top: 90%;
+/*horizontal-align: middle; */
+/* displlay: inline-table; */
+    padding: 0;
+    border-collapse: collapse;
+}
+#finstr0{
+    position: absolute;
+    color: #3961a2;
+}
+#finstr1{
+    position: absolute;
+    color: #3961a2;
+}
+#firstGhost{
+    border-left-color: #11397a;
+    border-bottom-color: #11397a;
+}
+#firstOp{
+    border-left-color: #11397a;
+    border-bottom-color: #11397a;
+}
+#ghosts{
+    position: absolute;
+    color: #d2edf9;
+}
+#home{
+    position: absolute;
+}
+#instr0{
+    color: #d2edf9;
+}
+#instr1{
+    color: #11397a;
+}
+#index{
+    position: absolute;
+}
+#instr2{
+    color: #d2edf9;
+    /* padding-bottom: 1em; */
+}
+#paperFrame{
+    position: fixed;
+    /* position: relative; */
+    text-align: center;
+    /* padding: 10%; */
+    color: white;
+}
+#statusTable{
+    position: absolute;
+    top: 30%;
+    left: 10%;
+}
