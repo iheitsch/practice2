@@ -63,10 +63,6 @@ var instr2txt;
 //
 // need bar after dragged factors on paper fixit
 //
-// add square root questions. make original factors draggable again. fixit
-//
-// move the ghosts back off the paper once problem is done fixit
-//
 // focus on onewides least significant digit after numbers are moved fixit
 //
 // paper needs intermediate boxes and 3 intermediate boxes for 2 digit multiplication fixit
@@ -77,8 +73,6 @@ var instr2txt;
 //
 // is there a problem with moved = pos0, pos1 where you might be able to move something
 // that shouldn't be moved fixit
-//
-// maximizing window doesn't move circle labels right fixit
 //
 // error messages are way screwed up once resizing has messed up center and radius
 // move the big factor and it won't let you put it on the correct space and try to move it,
@@ -198,9 +192,9 @@ function askTorF( op1, op2 ) {
     var imgWid = gImageWidth;
     var imgHgt = gImageHeight;
     var bWid = 0.125*imgWid;
-    var bHgt = 0.03*Number(window.innerHeight); 
-    var bTop = 2*bHgt;
-    var bLeft = 0.125*imgWid;
+    var bHgt = .05*imgHgt; //0.03*Number(window.innerHeight); 
+    var bTop = 6*bHgt;
+    var bLeft = 0.1875*imgWid;
 
     doc.activeElement.blur();
     var instruction1 = " is a factor of ";
@@ -228,11 +222,12 @@ function askTorF( op1, op2 ) {
 	    + "padding: 0px;"
 	    + "position: absolute;"
 	    + "top: " + bTop + "px;"
-	    + "left: " + bLeft + "px;"
+	    + "left: " + 0 + "px;"
 	    + "border: none;"
 	    + "color: #11397a;";
     TorFdiv.setAttribute("style", styles);
 
+    bTop = 1;
     var tLbl = doc.createElement("label");
     tLbl.innerHTML = "True";
     styles = "color: #11397a;"
@@ -287,6 +282,9 @@ function askTorF( op1, op2 ) {
     TorFdiv.appendChild( fBtn );
     frame.appendChild( TorFdiv );
 }
+function test() {
+    alert("button works");
+}
 function askQuestions() {
     var whichQues;
     var validQues = false;
@@ -303,14 +301,34 @@ function askQuestions() {
     }
     if( udx == lques ) {
         //allDone = true;
-        doc.getElementById("finstr0").innerHTML = "All Done";
-        doc.getElementById("finstr1").innerHTML = "";
+        // Refresh your browser doesn't work for firefox, still has old values
+        doc.getElementById("finstr0").innerHTML = "All Done.";
+        doc.getElementById("finstr1").innerHTML = "Refresh your browser window to go again.";
         doc.getElementById("instr0").style.color = "#3961a2";
         doc.getElementById("instr1").style.color = "#3961a2";
         doc.getElementById("instr2").style.color = "#3961a2";
 	whiteout();
         putBoxesBack();
         doc.activeElement.blur();
+        // turn this into a restart button
+        //<a href="Factors.jsp">Go to Factors page</a>
+        // can't see it when I inspect, no errors show in colsole
+        /* var restrtbtn = doc.createElement("button");
+        //var frame = doc.getElementById("circles");
+        //var img = frame.childNodes[0];
+        //img.insertBefore(restrtbtn, img.childNodes[0]);
+        var styles = "border: 1px solid black;"
+            + "backgroundColor: orange;"
+	    + "width: 58px;"
+	    + "height: 20px;"
+	    + "position: absolute;"
+	    + "top: 20px;"
+	    + "left: 70px;";
+	restrtbtn.setAttribute("style", styles);
+        restrtbtn.innerHTML = "Go Again";
+        restrtbtn.onclick = "javascript:window.location.href='./Multiplier.jsp'";
+        //restrtbtn.onclick = test;
+        doc.body.appendChild(restrtbtn); */
 	return;
     }
     var mat = Math;
@@ -1017,7 +1035,7 @@ function setPaper() {
     
     var hgt = num(win.innerHeight);
     var wid = num(win.innerWidth);
-    var imgHgt = mat.floor(0.45*hgt);
+    var imgHgt = mat.floor(0.37*hgt); //0.45*hgt);
     graphP.style.height = imgHgt + "px";
     frame.style.height = imgHgt + "px";
     var topPos = hgt - imgHgt - 10;
@@ -1026,7 +1044,8 @@ function setPaper() {
         imgWid += 1;
     }
     graphP.style.width = imgWid + "px";
-    var leftPos = 0.25*wid; //0.27*wid;
+    var leftPos = 0.31*wid; //0.27*wid; // needs to clear both factor table
+                                        // and circles image on all browsers
 	//leftPos = mat.round(0.34*wid);
     frame.style.left = leftPos + "px";  
     frame.style.top = topPos + "px";
@@ -1040,10 +1059,11 @@ function setPaper() {
     var finalIns1 = doc.getElementById("finstr1");
     finalIns0.style.color = "#11397a";
     finalIns1.style.color = "#11397a";
-    topPos = 24;
+    var linespace = 0.05*imgHgt;
+    topPos = 1 + linespace;
     finalIns0.style.top = topPos + "px";
     finalIns0.style.width = imgWid + "px";
-    topPos = topPos + 20;
+    topPos = topPos + 2*linespace;
     finalIns1.style.top = topPos + "px";
     finalIns1.style.width = imgWid + "px";
     frame.insertBefore(graphP, frame.childNodes[0]);
@@ -1249,6 +1269,7 @@ function checkBackM( ev ) {
                         allBoxes[i].focus();
                     }
                 }
+                putBoxesBack();
             }   
 	}
     }
