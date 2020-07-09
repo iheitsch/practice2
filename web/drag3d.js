@@ -335,10 +335,10 @@ function checklineup() {
                     var topPos = whiteYpos + cW*0.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     dHelperIdx.setAttribute("name", "white");
-                    dHelperIdx.setAttribute("position", topPos);
+                    //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
                     //alert("about to copy cols leftPos: " + leftPos + " topPos: " + topPos);
-                    copyCols( dVal, col === 0, col === 3, col === 6, leftPos, topPos, "white" );
+                    delDups( dVal, col === 0, col === 3, col === 6, leftPos, topPos, "white" );
                     nWhite = nWhite - 1;
                     whiteBx.value = nWhite;
                     catWhite = cW + 1;
@@ -351,9 +351,9 @@ function checklineup() {
                     var topPos = magentaYpos + cM*0.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
                     dHelperIdx.setAttribute("name", "magenta");
-                    dHelperIdx.setAttribute("position", topPos);
+                    //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
-                    copyCols( dVal, col === 0, col === 3, true, leftPos, topPos, "magenta" );
+                    delDups( dVal, col === 0, col === 3, true, leftPos, topPos, "magenta" );
                     nMagenta = nMagenta - 1;
                     magentaBx.value = nMagenta;
                     catMagenta = cM + 1;
@@ -366,9 +366,9 @@ function checklineup() {
                     var topPos = yellowYpos + cY*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     dHelperIdx.setAttribute("name", "yellow");
-                    dHelperIdx.setAttribute("position", topPos);
+                    //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
-                    copyCols( dVal, true, col === 3, col === 6, leftPos, topPos, "yellow" );
+                    delDups( dVal, true, col === 3, col === 6, leftPos, topPos, "yellow" );
                     nYellow = nYellow - 1;
                     yellowBx.value = nYellow;
                     catYellow = cY + 1;
@@ -381,9 +381,9 @@ function checklineup() {
                     var topPos = cyanYpos + cC*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
                     dHelperIdx.setAttribute("name", "cyan");
-                    dHelperIdx.setAttribute("position", topPos);
+                    //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
-                    copyCols( dVal, col === 0, true, col === 6, leftPos, topPos, "cyan" );
+                    delDups( dVal, col === 0, true, col === 6, leftPos, topPos, "cyan" );
                     nCyan = nCyan - 1;
                     cyanBx.value = nCyan;
                     catCyan = cC + 1;
@@ -395,7 +395,8 @@ function checklineup() {
                     var topPos = blueYpos + cB*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, blueXpos, topPos );  
                     dHelperIdx.setAttribute("name", "blue");
-                    dHelperIdx.setAttribute("position", topPos);
+                    dHelperIdx.setAttribute("moved", "pos1");
+                    //dHelperIdx.setAttribute("position", topPos);
                     nBlue = nBlue - 1;
                     blueBx.value = nBlue;
                     catBlue = cB + 1;
@@ -418,7 +419,8 @@ function checklineup() {
                     var topPos = redYpos + cR*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, redXpos, topPos );  
                     dHelperIdx.setAttribute("name", "red");
-                    dHelperIdx.setAttribute("position", topPos);
+                    dHelperIdx.setAttribute("moved", "pos1");
+                    //dHelperIdx.setAttribute("position", topPos);
                     nRed = nRed - 1;
                     redBx.value = nRed;
                     catRed = cR + 1;
@@ -441,7 +443,8 @@ function checklineup() {
                     var topPos = greenYpos + cG*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, greenXpos, topPos ); 
                     dHelperIdx.setAttribute("name", "green");
-                    dHelperIdx.setAttribute("position", topPos);
+                    dHelperIdx.setAttribute("moved", "pos1");
+                    //dHelperIdx.setAttribute("position", topPos);
                     nGreen = nGreen - 1;
                     greenBx.value = nGreen;
                     catGreen = cG + 1;
@@ -662,12 +665,24 @@ function checklineup() {
                 dPosX <  rightSide &&
                 topSide < dPosY &&
                 dPosY < bottomSide ) {  
+                var fans = doc.getElementById("fans");
                 var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
                 var center = mat.floor(leftSide) - 2 + paperWid/2 + fansWid/2 - boxWidth; 
                 //alert("leftside = " + leftSide + " paperWid: " + paperWid + " fansWid: " + fansWid + " boxWidth: " + boxWidth);
                 //alert("on paper center = " + center);
                 dHelperIdx.style.left = center + "px";
                 dHelperIdx.setAttribute("moved", "pos2");
+                // position vertically so they start at the bottom
+                // order biggest to smallest
+                // put back in circles or in table if dragged off the paper
+                // remember their position (can use setAttribute position as the original is no longer neded
+                // give them an attribute so you can track them
+                // when there is enough of them or there is a 2 of 3 digit multiplication,
+                // put in intermediate boxes
+                // store gprod somewhere else so when you're done with the onewides
+                // you can compare
+                // what if you multiply wrong but happen to get the correct answer in the onewides?
+                // check for both and display accordingly
                 var leasDig = doc.getElementById("leasDig");
                 leasDig.focus();
             }
@@ -689,34 +704,37 @@ function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
         //var whatWasY = dHelperIdx.getAttribute("backHomeY");
         //alert("whatWasY: " + whatWasY ); 
     }
+    dHelperIdx.setAttribute("position", topPos);
     dHelperIdx.style.color = "#3961a2";
     dHelperIdx.style.border = "none";
-    dHelperIdx.setAttribute("moved", "pos1");
+    //dHelperIdx.setAttribute("moved", "pos1");
 }
 // these don't all have a backHomeX, backHomeY and wind up undefined and in the 
 // top left corner. better to just remove them? fixit
-function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxName ) {
+function delDups( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxName ) {
     var doc = document;
     var num = Number;
     var allBoxes = doc.getElementsByClassName("dragBox");
     var allBxLen = allBoxes.length;
-    //x = 0;
-    //for( var j = 0; j < 14; j++ ) {
-        //doc.getElementById("statusBox" + j).innerHTML = "";
-    //}
+    x = 0;
+    for( var j = 0; j < nSbxs; j++ ) {
+        doc.getElementById("statusBox" + j).innerHTML = "";
+    }
     for( var i = 0; i < allBxLen; ++i ) {
         var whatBx = allBoxes[i];  
         if( whatBx ) {
-            var bxid = whatBx.id;
+            
             var bxVal = num(whatBx.value);
             //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val: " + val + " id: " + bxid;
             //x = (x + 1)%14;
             if( bxVal === val ) {
+                var bxid = whatBx.id;
                 var notMovedYet = whatBx.getAttribute("moved") === "pos0";
-                //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " allBxLen: " + allBxLen + " notMovedYet: " + notMovedYet;
-                //x = (x + 1)%14;
+                doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " allBxLen: " + allBxLen + " notMovedYet: " + notMovedYet + " id: " + bxid;
+                x = (x + 1)%nSbxs;
                 //alert("notMovedYet: " + notMovedYet + " id: " + (whatBx.id));
                 if( notMovedYet ) {
+                    
                     var bxidlen = bxid.length;
                     var pos = bxid.indexOf("_");
                     var bxCol = num(bxid.substr(pos+1, bxidlen));
@@ -725,14 +743,26 @@ function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxNam
                     if( bxCol === 0 && !col0Moved ||
                         bxCol === 3 && !col3Moved ||
                         bxCol === 6 && !col6Moved    ) {
-                        whatBx.style.left = leftPos + "px";
-                        whatBx.style.top = topPos + "px";
-                        whatBx.style.color = "#3961a2";
-                        whatBx.style.border = "none";
-                        whatBx.setAttribute("moved", "pos1");
+                        doc.getElementById("statusBox" + x).innerHTML = "deleting box id: " + bxid;
+                        x = x + 1; // to be taken out
+                        // delete it, dont move it and set inc to 1 for all sections
+                        var whichParent = whatBx.parentNode;
+                        whichParent.removeChild( whatBx );
+                    /*
+                        //whatBx.style.left = leftPos + "px";
+                        //whatBx.style.top = topPos + "px";
+                        //whatBx.style.color = "#3961a2";
+                        //whatBx.style.border = "none";
+                        //whatBx.setAttribute("moved", "pos1");
                         whatBx.setAttribute("name", boxName);
-                        whatBx.setAttribute("position", topPos);
+                        //whatBx.setAttribute("position", topPos);
+                        setBox( whatBx, 0, 0, leftPos, topPos );
+                        var pos = getPos(whatBx); // to be taken out
+                        var ycoord = pos.y;
+                        doc.getElementById("statusBox" + x).innerHTML = "copy whatBx pos: " + ycoord + " value: " + val + " id: " + bxid;
+                        x = x + 1; // to be taken out
                         // goin g to have to set backHomeX, backHomeY can forget position? fixit
+                     */     
                         col0Moved = col0Moved || bxCol === 0;
                         col3Moved = col3Moved || bxCol === 3;
                         col6Moved = col6Moved || bxCol === 6;
