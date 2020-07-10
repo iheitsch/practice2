@@ -336,9 +336,10 @@ function checklineup() {
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     dHelperIdx.setAttribute("name", "white");
                     //dHelperIdx.setAttribute("position", topPos);
-                    dHelperIdx.setAttribute("moved", "pos1");
+                    dHelperIdx.setAttribute("moved", "pos1"); // race condition doesn't always take efect on time
+                    // to check in delDups
                     //alert("about to copy cols leftPos: " + leftPos + " topPos: " + topPos);
-                    delDups( dVal, col === 0, col === 3, col === 6, leftPos, topPos, "white" );
+                    delDups( dVal, col === 0, col === 3, col === 6, leftPos, topPos, col );
                     nWhite = nWhite - 1;
                     whiteBx.value = nWhite;
                     catWhite = cW + 1;
@@ -353,7 +354,7 @@ function checklineup() {
                     dHelperIdx.setAttribute("name", "magenta");
                     //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
-                    delDups( dVal, col === 0, col === 3, true, leftPos, topPos, "magenta" );
+                    delDups( dVal, col === 0, col === 3, true, leftPos, topPos, col );
                     nMagenta = nMagenta - 1;
                     magentaBx.value = nMagenta;
                     catMagenta = cM + 1;
@@ -368,7 +369,7 @@ function checklineup() {
                     dHelperIdx.setAttribute("name", "yellow");
                     //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
-                    delDups( dVal, true, col === 3, col === 6, leftPos, topPos, "yellow" );
+                    delDups( dVal, true, col === 3, col === 6, leftPos, topPos, col );
                     nYellow = nYellow - 1;
                     yellowBx.value = nYellow;
                     catYellow = cY + 1;
@@ -383,7 +384,7 @@ function checklineup() {
                     dHelperIdx.setAttribute("name", "cyan");
                     //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
-                    delDups( dVal, col === 0, true, col === 6, leftPos, topPos, "cyan" );
+                    delDups( dVal, col === 0, true, col === 6, leftPos, topPos, col );
                     nCyan = nCyan - 1;
                     cyanBx.value = nCyan;
                     catCyan = cC + 1;
@@ -711,61 +712,65 @@ function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
 }
 // these don't all have a backHomeX, backHomeY and wind up undefined and in the 
 // top left corner. better to just remove them? fixit
-function delDups( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxName ) {
+function delDups( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, col ) {
     var doc = document;
     var num = Number;
     var allBoxes = doc.getElementsByClassName("dragBox");
     var allBxLen = allBoxes.length;
-    x = 0;
-    for( var j = 0; j < nSbxs; j++ ) {
-        doc.getElementById("statusBox" + j).innerHTML = "";
-    }
+    var deleteThis = new Array(2);
+    var one = 0;
+    //x = 0;
+    //for( var j = 0; j < nSbxs; j++ ) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    //for( var i = 0; i < allBxLen; ++i ) {
+        //var whatBx = allBoxes[i];  
+        //var bxVal = num(whatBx.value);
+        //var bxid = whatBx.id;
+        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val: " + bxVal + " id: " + bxid;
+        //x = (x + 1)%nSbxs;
+    //}
+    //doc.getElementById("statusBox" + x).innerHTML = "allBxLen: " + allBxLen;
+    //x = (x + 1)%nSbxs;
+    //alert("ok?");
+    //x = 0;
+    //for( var j = 0; j < nSbxs; j++ ) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
     for( var i = 0; i < allBxLen; ++i ) {
+        //doc.getElementById("statusBox" + x).innerHTML = " i: " + i;
+        //alert("next i?");
         var whatBx = allBoxes[i];  
         if( whatBx ) {
             
             var bxVal = num(whatBx.value);
-            //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val: " + val + " id: " + bxid;
-            //x = (x + 1)%14;
+
             if( bxVal === val ) {
+                //x = (x + 1)%nSbxs;
                 var bxid = whatBx.id;
                 var notMovedYet = whatBx.getAttribute("moved") === "pos0";
-                doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " allBxLen: " + allBxLen + " notMovedYet: " + notMovedYet + " id: " + bxid;
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val:" + bxVal + " notMovedYet: " + notMovedYet + " id: " + bxid;
+                //x = (x + 1)%nSbxs;
                 //alert("notMovedYet: " + notMovedYet + " id: " + (whatBx.id));
-                if( notMovedYet ) {
-                    
-                    var bxidlen = bxid.length;
-                    var pos = bxid.indexOf("_");
-                    var bxCol = num(bxid.substr(pos+1, bxidlen));
+                var bxidlen = bxid.length;
+                var pos = bxid.indexOf("_");
+                var bxCol = num(bxid.substr(pos+1, bxidlen));
+                if( notMovedYet && bxCol !== col ) {
                     //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " bxid" + bxid + " col036Moved: " + col0Moved + col3Moved + col6Moved;
                     //x = (x + 1)%14;
                     if( bxCol === 0 && !col0Moved ||
                         bxCol === 3 && !col3Moved ||
                         bxCol === 6 && !col6Moved    ) {
-                        doc.getElementById("statusBox" + x).innerHTML = "deleting box id: " + bxid;
-                        x = x + 1; // to be taken out
-                        // delete it, dont move it and set inc to 1 for all sections
-                        var whichParent = whatBx.parentNode;
-                        whichParent.removeChild( whatBx );
-                    /*
-                        //whatBx.style.left = leftPos + "px";
-                        //whatBx.style.top = topPos + "px";
-                        //whatBx.style.color = "#3961a2";
-                        //whatBx.style.border = "none";
-                        //whatBx.setAttribute("moved", "pos1");
-                        whatBx.setAttribute("name", boxName);
-                        //whatBx.setAttribute("position", topPos);
-                        setBox( whatBx, 0, 0, leftPos, topPos );
-                        var pos = getPos(whatBx); // to be taken out
-                        var ycoord = pos.y;
-                        doc.getElementById("statusBox" + x).innerHTML = "copy whatBx pos: " + ycoord + " value: " + val + " id: " + bxid;
-                        x = x + 1; // to be taken out
-                        // goin g to have to set backHomeX, backHomeY can forget position? fixit
-                     */     
+                        // list for deletion, dont move it and set inc to 1 for all sections
+
+                        deleteThis[one] = whatBx; //bxid;
+                        one = one + 1;
                         col0Moved = col0Moved || bxCol === 0;
                         col3Moved = col3Moved || bxCol === 3;
                         col6Moved = col6Moved || bxCol === 6;
+                        //doc.getElementById("statusBox" + x).innerHTML = "deleting " + bxid + " col0Moved: " + col0Moved + " col3Moved: " + col3Moved + " col6Moved: " + col6Moved;
+                        //x = (x + 1)%nSbxs;
+                        //alert("ok");
                         if( col0Moved && col3Moved && col6Moved ) {
                             break;
                         }
@@ -773,6 +778,11 @@ function delDups( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxName
                 }
             }
         }
+    }
+    for( var i = 0; i < one; i++ ) {
+        //whatBx = doc.getElementById(deleteThis[i]);
+        var whichParent = deleteThis[i].parentNode;
+        whichParent.removeChild( deleteThis[i] );
     }
     var instr0 = doc.getElementById("instr0");
     var instr1 = doc.getElementById("instr1");
@@ -793,7 +803,7 @@ document.onmouseup   = mouseUp;
 function draggerSetup(){ 
     var doc = document;
 
-    //for( var j = 0; j < 18; j++ ) {
+    //for( var j = 0; j < nSbxs; j++ ) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     
@@ -845,6 +855,12 @@ function draggerSetup(){
             }
 	}
         var dHelper  = doc.getElementsByClassName("dragBox");
+        var len = dHelper.length;
+        for( i = 0; i < len; i++ ) {
+            var bxid = dHelper[i].id;
+            //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " id: " + bxid;
+            //x = (x + 1)%nSbxs;
+        }
         var instr0 = doc.getElementById("instr0");
         var instr1 = doc.getElementById("instr1");
         instr0.style.color = "#e2eeeb";

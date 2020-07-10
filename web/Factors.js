@@ -38,7 +38,7 @@ var gmdx = 0;
 var fmdx = 0;
 var cdx = 0;
 var glen = 0;
-var ginc = 1;
+//var ginc = 1;
 var lastPos = 0;
 var doingMults = true;
 var gYdiff = 0;
@@ -51,7 +51,7 @@ var instr1txt;
 var instr2txt;
 //  "oc delete all --all" from command line removes entire application
 //  so you can upload a new one
-//  delete build directory and distribution directory, rebuild practice.was
+//  delete build directory and distribution directory, rebuild practice.war
 //  clear the browser cache if you want the openshift version to work
 //  
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
@@ -79,12 +79,14 @@ var instr2txt;
 // it tells you they're all accounted for
 // 
 // extra dragBoxes wind up in top left cornet after paper displayed fixit
+//
+// dragging boxes to paper zeroes out onewides without actually clearing them fixit
 
 var NQUES = 17; // assumes all three operands are perfect squares
 var alreadyasked = new Array(NQUES);
 
 var x = 0;
-var nSbxs = 14; 
+var nSbxs = 20; 
 
 function askSqrt( val, root ) {
     var doc = document;
@@ -602,8 +604,8 @@ var inc = 1;
                 pstns[idx] = num(factors[idx].getAttribute("position"));
                 indexes[idx] = idx;
                 var id = factors[idx].id;
-                doc.getElementById("statusBox" + x).innerHTML = " sort idx: " + idx + " value: " + value + " original position: " + pstns[idx] + " id:" + id;
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = " sort idx: " + idx + " value: " + value + " original position: " + pstns[idx] + " id:" + id;
+                //x = (x + 1)%nSbxs;
             }
             // sort in order of distance from top of screen
             for( idx = 0; idx < len-1; ++idx ) {    
@@ -624,7 +626,7 @@ var inc = 1;
             cdx = ndx;
             fmdx = 0;
             gfactors = factors;
-            ginc = inc;
+            //ginc = inc;
             glen = len;
             gmdx = 0;
             gprod = 1;
@@ -656,7 +658,7 @@ function multiply() {
     }
 
     var factors = gfactors;
-    var inc = ginc;      
+    var inc = 1; //ginc;      
     var len = glen;
     var mdx = gmdx;
     var lprod = gprod; // whatever it was from last intermediate
@@ -668,10 +670,10 @@ function multiply() {
     var whatFactor;
     var whatColor = factors[0].name;
     //alert("whatColor:" + whatColor);
-    for( x = 0; x < nSbxs; ++x ) {
-        doc.getElementById("statusBox" + x).innerHTML = "";
-    }
-    x = 0;
+    //for( x = 0; x < nSbxs; ++x ) {
+        //doc.getElementById("statusBox" + x).innerHTML = "";
+    //}
+    //x = 0;
     var allNames = doc.getElementsByName( whatColor ); // all dragBoxes
     var howManyNames = allNames.length;
     var factVal;
@@ -730,8 +732,8 @@ function multiply() {
         var xcoord = pos.x;
         var ycoord = pos.y;
         var id = whatFactor.id;
-        doc.getElementById("statusBox" + x).innerHTML = "mult whatFactor: " + ycoord + " id: " + id;
-        x = x + 1; // to be taken out
+        //doc.getElementById("statusBox" + x).innerHTML = "mult whatFactor: " + ycoord + " id: " + id;
+        //x = x + 1; // to be taken out
         factVal = whatFactor.value;
         lprod = lprod*num(factVal);
         mdx = mdx + inc;   // inc is 1, 2 or 3 depending on how many copies of factor  
@@ -772,10 +774,10 @@ function multiply() {
         var ydiff = 0.03*num(window.innerHeight);
 	gYdiff = ydiff; // never going to use this again??
 
-        doc.getElementById("statusBox" + x).innerHTML = "ydiff: " + ydiff;
-        x = x + 1;
+        //doc.getElementById("statusBox" + x).innerHTML = "ydiff: " + ydiff;
+        //x = x + 1;
         ycoord = ycoord + ydiff;
-        doc.getElementById("statusBox" + x).innerHTML = "bar: " + ycoord;
+        //doc.getElementById("statusBox" + x).innerHTML = "bar: " + ycoord;
         x = x + 1;
         var bar = doc.createElement("div");
         doc.body.appendChild( bar );
@@ -838,8 +840,8 @@ function multiply() {
                                   // positions of factors, not actual position
                                   // actual positions keep changing
         dTbl.setAttribute("position", relPos);
-        doc.getElementById("statusBox" + x).innerHTML = "dTbl: " + ycoord;
-        x = x + 1;
+        //doc.getElementById("statusBox" + x).innerHTML = "dTbl: " + ycoord;
+        //x = x + 1;
 
         // move the rest of the factors 
         for( var i = mdx; i < len; ++i ) {
@@ -849,8 +851,8 @@ function multiply() {
             if( i%inc === 0 ) {
                 ycoord = ycoord + ydiff;
             }
-            doc.getElementById("statusBox" + x).innerHTML = "rest: " + ycoord;
-            x = x + 1;
+            //doc.getElementById("statusBox" + x).innerHTML = "rest: " + ycoord;
+            //x = x + 1;
             whatBx.style.top = ycoord + "px";          
         }
         dTbl.style.position = "absolute";
@@ -895,8 +897,8 @@ function multiply() {
         
         ycoord = ycoord + ydiff;
                 
-        doc.getElementById("statusBox" + x).innerHTML = "bar: " + ycoord;
-        x = x + 1;
+        //doc.getElementById("statusBox" + x).innerHTML = "bar: " + ycoord;
+        //x = x + 1;
         var bar = doc.createElement("div");
         doc.body.appendChild( bar );
         var more2left = xcoord - 2;
@@ -918,8 +920,8 @@ function multiply() {
         bar.id = whatColor + "Bar";
         
         ycoord = ycoord + 1;
-        doc.getElementById("statusBox" + x).innerHTML = "last: " + ycoord;
-        x = x + 1;
+        //doc.getElementById("statusBox" + x).innerHTML = "last: " + ycoord;
+        //x = x + 1;
         dTbl.style.top = ycoord + "px";
         dTbl.style.left = xcoord + "px";
         dTbl.style.position = "absolute";
@@ -1205,7 +1207,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     var ycoord = pos.y;
                      
                     var factors = gfactors;
-                    var inc = ginc;
+                    var inc = 1; //ginc;
                     var indexes = gindexes;
 		    var len = indexes.length;
                     // what was mdx when the first intermediate box was placed
