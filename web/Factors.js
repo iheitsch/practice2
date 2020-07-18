@@ -34,11 +34,12 @@ var prevLeft = 0;
 var gfactors;
 var gindexes = new Array();
 var gprod = 1;
+var gans = -1;
+var sprod = 1; // use an aray instead? what order are arrays stored? really would be nice to push and pop fixit
 var gmdx = 0;
 var fmdx = 0;
 var cdx = 0;
 var glen = 0;
-//var ginc = 1;
 var lastPos = 0;
 var doingMults = true;
 var gYdiff = 0;
@@ -49,6 +50,10 @@ var indicator = 0;
 var instr0txt;
 var instr1txt;
 var instr2txt;
+var gPutHere = 0;
+var gNfactors = 0;
+var firstUp = false;
+
 //  "oc delete all --all" from command line removes entire application
 //  so you can upload a new one
 //  delete build directory and distribution directory, rebuild practice.war
@@ -81,12 +86,50 @@ var instr2txt;
 // extra dragBoxes wind up in top left cornet after paper displayed fixit
 //
 // dragging boxes to paper zeroes out onewides without actually clearing them fixit
+// 
+// box dragged for a TorF question disappeared for all time fixit
+// 
+// final multiplication answers should not be draggable, hide it with a draggable
+// input and put another input over the rest of the sections as well. put ones in
+// in the sections that don't have any other factors. it's confusing when you
+// can't see the numbers in the sections any more. leave a ghost fixit
+// 
+// wrong answer in final color section doesn't clear box fixit
+// 
+// sorting still not fixed fixit
+// 
+// after entering a bad answer on intermediate mult0 on paper, keeps giving
+// bizarre error messages, expected answers and suposed given answers that never existed
+//
+// add a note somewhere: computer doesn't judge. It will tell you if you have an
+// incorrect answer, but don't take it personally, it's a machine, it doesn't 
+// look up to you or down on you, it's a tool (wrench) to help you learn. (Judge and
+// machine illustration) Sometimes the 
+// computer will be wrong or doesn't make it clear what needs to be done or how 
+// to do it; that's the programmer's fault. Write her and hopefully she will fix 
+// it so no one has to deal with that aggravation. The computer doesn't care if you count 
+// on your fingers, guess, use your calculator or a piece of scrap paper. You 
+// may get to the point it's faster not to. It doesn't care if you take your sweet
+// time and think the problem through, although it is highly recommended you take
+// your sweet time and think the problem through. It doesn't care if you skip problems.
+// It doesn't care if you try a problem that looks too hard. Maybe it's not?
+// Why not find out? It doesn't care if you take shortcuts. You are encouraged
+// to look for them. You are also encouraged to understand why the work.
+// It doesn't care if you're fast or 
+// slow, it's a tool that hopefully will help you get faster  and more accurate.
+// If you like, set a goal for accuracy or speed and print screen every 
+// day when you are done with an exercise so you can track how you're doing. 
+// Share your results with someone who loves you and wants you to get the most 
+// out of life (fridge covered with screen prints, graph with upward trend
+// happy parent, grandparent proud but dignified student)
+//
+// message to the manager button with screenshot (miffed client)
 
 var NQUES = 17; // assumes all three operands are perfect squares
 var alreadyasked = new Array(NQUES);
 
 var x = 0;
-var nSbxs = 20; 
+var nSbxs = 24; 
 
 function askSqrt( val, root ) {
     var doc = document;
@@ -108,9 +151,34 @@ function blank() {
     
 }
 function putBoxesBack() {
-    var dBoxes = document.getElementsByClassName("dragBox");
-    var l = dBoxes.length;
-    //alert("dBoxes length: " + l );
+    var doc = document;
+    for( x = 0; x < nSbxs; ++x ) {
+        doc.getElementById("statusBox" + x).innerHTML = "";
+    }
+    x = 0;
+    
+    var paperBars = doc.getElementsByName("paperBar");
+    var l = paperBars.length;
+    for( var i = 0; i < l; ++i ) {
+        var parent = paperBars[0].parentNode;
+        parent.removeChild( paperBars[0] );
+    }
+
+    var pboxes = doc.getElementsByClassName("pbox");
+    var l = pboxes.length;
+        for( var i = 0; i < l; ++i ) {
+        var parent = pboxes[0].parentNode;
+        parent.removeChild( pboxes[0] );
+    }
+    
+    gPutHere = getPos(doc.getElementById("fans")).y;
+    gNfactors = 0;
+    gPlaidIdx = 0;
+    gNtermedIdx = 0;
+    firstUp = true;
+     
+    var dBoxes = doc.getElementsByClassName("dragBox");
+    l = dBoxes.length;
     for( var i = 0; i < l; ++i ) {
         var whatBx = dBoxes[i];  
         if( whatBx ) {
@@ -544,56 +612,48 @@ var num = Number;
 var ndx = cdx;
 
 var len = 0;
-var inc = 1;
     var factors;
     //alert("get multiplying " + ndx);
     //x = (x + 1)%nSbxs;
-    while( len < 2*inc && ndx < 7 ) {
+    while( len < 2 && ndx < 7 ) {
         // what color section are you multiplying out?
         // load factors array with all the dragboxes in that color section
+        // faster to do with an Array? fixit
         chooseColor: switch( ndx ) {
             case 0:
                 factors = doc.getElementsByName("white");
                 //alert("starting white column ndx: " + ndx);
-                inc = 3;
                 break chooseColor;
             case 1:
                 factors = doc.getElementsByName("magenta");
                 //alert("starting magenta column ndx: " + ndx);
-                inc = 2;
                 break chooseColor;
             case 2:
                 factors = doc.getElementsByName("yellow");
                 //alert("starting yellow column ndx: " + ndx);
-                inc = 2;
                 break chooseColor;
             case 3:
                 factors = doc.getElementsByName("cyan");
                 //alert("starting cyan column ndx: " + ndx);
-                inc = 2;
                 break chooseColor;
             case 4:
                 factors = doc.getElementsByName("blue");
                 //alert("starting blue column ndx: " + ndx);
-                inc = 1;
                 break chooseColor;
             case 5:
                 factors = doc.getElementsByName("red");
                 //alert("starting red column ndx: " + ndx);
-                inc = 1;
                 break chooseColor;
             case 6:
                 factors = doc.getElementsByName("green");
-                //alert("starting green column ndx: " + ndx);
-                inc = 1;
+                //alert("starting green column ndx: " + ndx);;
                 break chooseColor;
         }
-        inc = 1; // you deleted copies
         //alert("factors[0]: " + factors[0] + " color ndx: " + ndx);
         var pstns = new Array();
         len = factors.length;
         //alert("factors[" + ndx + "] length: " + len );
-        if( len > inc ) { // if there is more than 1 factor in the section
+        if( len > 1 ) { // if there is more than 1 factor in the section
             var instr0 = doc.getElementById("instr0");
             instr0.style.color = "#e2eeeb";
             instr0.innerHTML = "Multiply the factors in each section";
@@ -626,7 +686,6 @@ var inc = 1;
             cdx = ndx;
             fmdx = 0;
             gfactors = factors;
-            //ginc = inc;
             glen = len;
             gmdx = 0;
             gprod = 1;
@@ -840,6 +899,7 @@ function multiply() {
                                   // positions of factors, not actual position
                                   // actual positions keep changing
         dTbl.setAttribute("position", relPos);
+        dTbl.style.position = "absolute";
         //doc.getElementById("statusBox" + x).innerHTML = "dTbl: " + ycoord;
         //x = x + 1;
 
@@ -855,7 +915,7 @@ function multiply() {
             //x = x + 1;
             whatBx.style.top = ycoord + "px";          
         }
-        dTbl.style.position = "absolute";
+        
         //dBox.setAttribute("moved","false"); 
         //dBox.setAttribute("class","dragBox");
     } else if( inc < len && len <= mdx ) { // last multiplication
@@ -1049,6 +1109,7 @@ function setPaper() {
     var num = Number;
     var win = window;
     var mat = Math;
+    var getStyle = getComputedStyle;
     var instr0 = doc.getElementById("instr0");
     var instr1 = doc.getElementById("instr1");
     var instr2 = doc.getElementById("instr2");
@@ -1082,12 +1143,15 @@ function setPaper() {
 	//leftPos = mat.round(0.34*wid);
     frame.style.left = leftPos + "px";  
     frame.style.top = topPos + "px";
+    
     var pfansleft = 0.35*imgWid;
-    var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
+    var fansWid = num(getStyle(fans).width.match(/[0-9]+/));
     var fansleft = imgWid/2 - fansWid/2; // centered
     //alert("imgWid: " + imgWid + " fansWid: " + fansWid + " fansleft: " + fansleft + " pfansleft: " + pfansleft);
     var fleftStr = fansleft + "px";
     fans.style.left = fleftStr;
+    topPos = getPos(fans).y;
+    gPutHere = topPos;
     var finalIns0 = doc.getElementById("finstr0");
     var finalIns1 = doc.getElementById("finstr1");
     finalIns0.style.color = "#11397a";
@@ -1145,171 +1209,334 @@ function setPaper() {
 function checkBackM( ev ) { // check multiplication entered in arrays
     ev = ev || window.event;
     var ansBx = ev.target;
-    // this function only gets called for a return so you don't need to check again
-    //if (ev.which === 13 || ev.keyCode === 13) { // return
-        var doc = document;
-        var num = Number;
-	var parent = ansBx.parentNode;
-	var grandparent = parent.parentNode;
-        var greatgparent = grandparent.parentNode;
-        //var ggparent = greatgparent.parentNode;
-	var parents = grandparent.childNodes;
-        var parentNode = parents[0];
-        var boxLen = 0;
-        var boxes = new Array();
-        var len = parents.length;
-		// is all this really necessary? fixit
-        for( var i = 0; i < len; ++i ) {
-            if( ( parentNode = parents[i]).tagName === "TD" ) {
-                var allBoxes = parentNode.childNodes;
-		var ansBx = allBoxes[0];
-                boxes[boxLen] = num(ansBx.value);
-                //doc.getElementById("statusBox" + x).innerHTML = "doingMults: " + doingMults + " len: " + len + " boxes[" + boxLen + "]: " + boxes[boxLen];
+    var doc = document;
+    var num = Number;
+    var mat = Math; // how often is this used? fixit
+    var parent = ansBx.parentNode;
+    var grandparent = parent.parentNode;
+    var greatgparent = grandparent.parentNode;
+    var parents = grandparent.childNodes;
+
+    var answer = evalTbl(greatgparent);
+    var nointrmeds = noIntermeds;
+    alert("answer:" + answer + " gprod: " + gprod + " nointrmeds: " + nointrmeds + " gans: " + gans);
+    if( (answer === gprod && nointrmeds) || (answer === gans && !nointrmeds) ) {
+        var ancestor = greatgparent.parentNode;
+        var srcid = ancestor.id;
+        //var srcnm = ancestor.name;
+        //var srctg = ancestor.tagName;
+        //alert( "answer: " + answer + " nointrmeds: " + nointrmeds + " grpod: " + gprod + " gans: " + gans + " srcid: " + srcid + " srcnm: " + srcnm + " srctg: " + srctg);
+        //x = (x + 1)%nSbxs;
+        if( srcid === "fans" ) {
+            if( !nointrmeds  ) {
+                alert("checking fans box after intrmeds");
                 //x = (x + 1)%nSbxs;
-                if( typeof( boxes[boxLen] ) === "number" ) { 
-                    
-                    ++boxLen;
-                }
-            }
-	}
-        
-        // calculate the answer by adding each digit times appropiate ten2pow
-        var answer = 0;
-	var ten2pow = 1;
-	for( var i = boxLen-1; i >= 0; --i ) {
-	    answer = answer + ten2pow*boxes[i];
-	    ten2pow = ten2pow*10;
-	}
-        
-	if( answer === gprod ) {
-            //var grandparenttag = grandparent.tagName;
-            //var greatgrandparenttag = greatgparent.tagName;
-            var bxName = greatgparent.getAttribute("name");
-            //alert("grandparenttag: " + grandparenttag + " greatgrandparenttag: " + greatgrandparenttag + "bxName: " + bxName);
-            //doc.getElementById("statusBox" + x).innerHTML = "bxName: " + bxName;
-            //x = (x + 1)%nSbxs;
-            if( bxName === "final" ) {
-                // remove previous intermediate boxes
-                var intermediates = doc.getElementsByName("ntrmed");
-                var iLen = intermediates.length;
-                if( iLen > 0 ) { 
-                    //doc.getElementById("statusBox" + x).innerHTML = "finding position of intermediates[0]";
-                    //x = (x + 1)%nSbxs;
-                    var pos = getPos(intermediates[0]);
-                    for( var i = 0; i < iLen; ++i ) {
-                        var whichInt = intermediates[0]; // always delete index 0
-                                                         // because it's the last
-                                                         // one remaining
-                        var whichParent = whichInt.parentNode;
-                        whichParent.removeChild( whichInt );  
-                    }
-                    var ydiff = 0.03*num(window.innerHeight);
-                    var ycoord = pos.y;
-                     
-                    var factors = gfactors;
-                    var inc = 1; //ginc;
-                    var indexes = gindexes;
-		    var len = indexes.length;
-                    // what was mdx when the first intermediate box was placed
-                    var mdx = fmdx;
-                    var lastFact = num(lastPos);
-                    
-                    for( var i = 0; i < len; ++i ) {
-                        var m = indexes[i];
-                        var factor = factors[m];
-                        // remove all but the last "X"
-                        var factPos = factor.getAttribute( "position" );
-                        //doc.getElementById("statusBox" + x).innerHTML = "last: " + last + " factPos: " + factPos;
-                        //x = (x + 1)%nSbxs;
-                        if( num(factPos) <= lastFact ) {
-                            var factVal = factor.value;
-                            var factLen = factVal.length;
-                            while( isNaN(factVal) ) {
-                                factVal = factVal.substr(1, factLen);
-                                factLen = factLen - 1;
-                                //doc.getElementById("statusBox" + x).innerHTML = "factVal: " + factVal;
-                                //x = (x + 1)%nSbxs;
-                            }
-                            factor.value = factVal;
-                        }
-                        // move the the factors after the first intermrediate
-                        // product back
-                        if( i >= mdx ) {
-                            if( i > mdx && i%inc === 0 ) {
-                                ycoord = ycoord + ydiff;
-                            }    
-                            factor.style.top = ycoord + "px"; 
-                        }
-                    }
-                    ycoord = ycoord + ydiff;
-                    var whatColor = greatgparent.getAttribute("id");
-                    var barName = whatColor + "Bar";
-                    
-                    var whatBar = doc.getElementById(barName);
-                    whatBar.style.top = ycoord + "px";
-                    ycoord = ycoord + 2;
-                    greatgparent.style.top = ycoord + "px";
-                    greatgparent.setAttribute("backHomeY", ycoord);
-                }
-                var bars = doc.getElementsByName("intermediateBar");
-                var bLen = bars.length;
-                for( var i = 0; i < bLen; ++i ) {
-                    var whichBar = bars[0];
-                    var whichParent = whichBar.parentNode;
-                    whichParent.removeChild( whichBar ); 
-                }
-                // unhide all factors
-                var allfactors = doc.getElementsByName(whatColor);
-                var fLen = allfactors.length;
-                for( var i = 0; i < fLen; ++i ) {
-                    allfactors[i].style.color = "#11397a";
-                }
-            }
-            if( cdx < 7 ) {
-                if( gmdx >= glen ) { // finished one col. go on to next
-                    getMultiplying();
+                if( gprod !== gans ) {
+                    alert("multiplication correct, but not the answer. Choose boxes to drag again");
+                    var allBoxes = doc.getElementsByClassName("onewide");
+                    redBoxes(allBoxes);
+                    putBoxesBack();
+                    noIntermeds = true;
                 } else {
-                    multiply();
-                }
-            } else if( doingMults ) {
-		setPaper();
-            } else { 
-		alert("Correct. Press 'Enter' to continue.");
-		var inBxs = doc.getElementsByClassName("onewide");
-		var last = inBxs.length - 1;
-		inBxs[last].focus();
-                askQuestions();
-	    }
-	} else {
-            alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
-            var leasDig = -1;
-            if( doingMults ) {
-		leasDig = len - 1;
-                for( var i = 0; i < len; ++i ) {
-                    if( ( parentNode = parents[i]).tagName === "TD" ) {
-                        var allBoxes = parentNode.childNodes;
-                        allBoxes[0].style.color = "red";
-                        if( i === leasDig ) {
-                            allBoxes[0].focus();
-                        }
-                    }
-                }   
-            } else {
-                var allBoxes = doc.getElementsByClassName("onewide");
-		len = allBoxes.length;
-                leasDig = len - 1;
-                for( var i = 0; i < len; ++i ) {
-                    //doc.getElementById("statusBox" + x).innerHTML = "doingMults: " + doingMults + " len: " + len + " leasDig: " + leasDig + " parents[" + i + "].tagName: " + parents[i].tagName;
+                    alert("gprod = gans so we're good");
                     //x = (x + 1)%nSbxs;
-                    allBoxes[i].style.color = "red";
-                    if( i === leasDig ) {
-                        allBoxes[i].focus();
+                    noIntermeds = true;
+                    var leasDig = doc.getElementById("leasDig");
+                    leasDig.focus();
+                    askQuestions();    
+                }
+            } else {
+                alert("Correct. Press 'Enter' to continue."); 
+                    var leasDig = doc.getElementById("leasDig");
+                    leasDig.focus();
+                    askQuestions();
+            }
+        }
+        var bxName = greatgparent.getAttribute("name");
+        if( bxName === "final" ) {
+            // remove previous intermediate boxes
+            var intermediates = doc.getElementsByName("ntrmed");
+            var iLen = intermediates.length;
+            if( iLen > 0 ) { 
+                var pos = getPos(intermediates[0]);
+                for( var i = 0; i < iLen; ++i ) {
+                    var whichInt = intermediates[0]; // always delete index 0
+                                                     // because it's the last
+                                                     // one remaining
+                    var whichParent = whichInt.parentNode;
+                    whichParent.removeChild( whichInt );  
+                }
+                var ydiff = gYdiff; //0.03*num(window.innerHeight);
+                var ycoord = pos.y;
+                     
+                var factors = gfactors;
+                //var inc = 1; //ginc;
+                var indexes = gindexes;
+		var len = indexes.length;
+                // what was mdx when the first intermediate box was placed
+                var mdx = fmdx;
+                var lastFact = num(lastPos);
+                    
+                for( var i = 0; i < len; ++i ) {
+                    var m = indexes[i];
+                    var factor = factors[m];
+                    // remove all but the last "X"
+                    var factPos = factor.getAttribute( "position" );
+                    if( num(factPos) <= lastFact ) {
+                        var factVal = factor.value;
+                        var factLen = factVal.length;
+                        while( isNaN(factVal) ) {
+                            factVal = factVal.substr(1, factLen);
+                            factLen = factLen - 1;
+                        }
+                        factor.value = factVal;
+                    }
+                    // move the the factors after the first intermrediate
+                    // product back
+                    if( i >= mdx ) {
+                        if( i > mdx ) { //&& i%inc === 0 ) {
+                            ycoord = ycoord + ydiff;
+                        }    
+                        factor.style.top = ycoord + "px"; 
                     }
                 }
-                putBoxesBack();
-            }   
+                ycoord = ycoord + ydiff;
+                var whatColor = greatgparent.getAttribute("id");
+                var barName = whatColor + "Bar";
+                    
+                var whatBar = doc.getElementById(barName);
+                whatBar.style.top = ycoord + "px";
+                ycoord = ycoord + 2;
+                greatgparent.style.top = ycoord + "px";
+                greatgparent.setAttribute("backHomeY", ycoord);
+            }
+            var bars = doc.getElementsByName("intermediateBar");
+            var bLen = bars.length;
+            for( var i = 0; i < bLen; ++i ) {
+                var whichBar = bars[0];
+                var whichParent = whichBar.parentNode;
+                whichParent.removeChild( whichBar ); 
+            }
+            // unhide all factors
+            var allfactors = doc.getElementsByName(whatColor);
+            var fLen = allfactors.length;
+            for( var i = 0; i < fLen; ++i ) {
+                allfactors[i].style.color = "#11397a";
+            }
+        }
+        if( cdx < 7 ) {
+            if( gmdx >= glen ) { // finished one col. go on to next
+                getMultiplying();
+            } else {
+                multiply();
+            }
+        } else if( doingMults ) {
+            setPaper();
+        } else if( !noIntermeds ) { // put something here to handle intermediate boxes on paper fixit
+            // find the next lower indexed intermediate box. (id = plaid + index) 
+            var thisId = 54;
+            var nextId = 53;
+            var idStr = greatgparent.getAttribute("id");
+
+            if( idStr !== "fans" ) {
+                thisId = num(greatgparent.getAttribute("id").match(/[0-9]+/));
+                nextId = thisId - 1; // at what point do you set noIntermeds = true?
+            }
+            doc.getElementById("statusBox" + x).innerHTML = "idstr of box just entered: " + idStr + " nextId: " + nextId;
+            x = (x + 1)%nSbxs;
+            var whatOp = "dontKNowYet";
+            var plaids = gPlaids;
+            var plaidIdx = gPlaidIdx;
+            // set focus
+            if( nextId < 0 ) {
+                //gprod = sprod; // don't do it. multplication may be correct, but wrong factors dragged
+                
+                doc.getElementById("statusBox" + x).innerHTML = "focussing on onewides lsb";
+                x = (x + 1)%nSbxs;
+                var yourClue = plaids[0].getAttribute("id");
+                doc.getElementById("statusBox" + x).innerHTML = "yourclue: " + yourClue;
+                x = (x + 1)%nSbxs;
+                if( yourClue.substr(0,4) === "nter") {
+                    whatOp = "add";
+                    plaidIdx = plaidIdx + 2;
+                } else {
+                    whatOp = "mult";
+                    
+                }
+                nextBox = doc.getElementById("fans");
+                var leasDig = doc.getElementById("leasDig");
+                leasDig.focus();
+            } else {
+                doc.getElementById("statusBox" + x).innerHTML = "focusing on ntermed" + nextId;
+                x = (x + 1)%nSbxs;
+                var nextBox = doc.getElementById("ntermed" + nextId);
+                //var nextTag = nextBox.tagName;
+
+                // is it multiply or add (name)
+                whatOp = nextBox.getAttribute("name");
+                var grandparent = nextBox.childNodes[0];
+                var parents = grandparent.childNodes;
+                var len = parents.length;
+                leasDig = len - 1;
+                //var leasDigTag = parents[leasDig].tagName;
+                //var child0tag = parents[leasDig].childNodes[0].tagName;
+                //doc.getElementById("statusBox" + x).innerHTML = "nextBox tag: " + nextTag + " len: " + len + " parents leasDig: " + leasDigTag + " child0tag: " + child0tag;
+                //x = (x + 1)%nSbxs;
+                parents[leasDig].childNodes[0].focus();
+            }
+            // set gans
+            var test = whatOp === "add";
+            
+            doc.getElementById("statusBox" + x).innerHTML = "whatOp: " + whatOp + " test: " + test + " firstUp: " + firstUp;
+            x = (x + 1)%nSbxs;
+            if( whatOp === "add" ) { // can be more than 2 addends fixit
+                // find exp from previous mult box
+                // add what? (id = plaid + exp higher indexes)
+                plaidIdx = plaidIdx - 1;
+                var exp = 0;
+                var prevOp = greatgparent.getAttribute("name");
+                //var prevOp = greatgparent.getAttribute("tagName");
+                //var prevOp = greatgparent.getAttribute("name");
+                doc.getElementById("statusBox" + x).innerHTML = "prevOp: " + prevOp + " plaidIdx: " + plaidIdx;
+                x = (x + 1)%nSbxs;
+                if( prevOp.substr(0,4) === "mult") {
+                    var tmp = prevOp.substr(4,5);
+                    if( tmp ) {
+                        exp = num(tmp);
+                    }
+                } else {
+                    var whatjunk = prevOp;
+                    doc.getElementById("statusBox" + x).innerHTML = "what junk is this: " + whatjunk + " not mult";
+                    x = (x + 1)%nSbxs;
+                }
+                var idx = thisId;
+                var ans = 0;
+                for( var i = 0; i <= exp; ++i ) {
+                    var val = evalTbl(doc.getElementById("ntermed" + idx));
+                    ans = ans + val;
+                    doc.getElementById("statusBox" + x).innerHTML = "idx: " + idx + " val: " + val + " ans: " + ans;
+                    x = (x + 1)%nSbxs;
+                    idx = idx + 1;
+                }
+                gans = ans;
+                gPlaidIdx = plaidIdx;
+            } else if( whatOp.substr(0,4) === "mult" ) {
+                    // multiply what? position? isn't that what you did in the color sections of Venn diagram?
+                        // global ref? possibly best 
+                        // class? class needs to be checked for or removed
+                
+                
+                var box = greatgparent; //plaids[plaidIdx]; // current box
+                var tag = box.tagName;
+                var val0 = 0;
+
+                var exp = 0;
+                var tmp = whatOp.substr(4,5);
+                if( tmp ) {
+                    exp = num(tmp);
+                }
+                if( firstUp ) { // if plain mult with no exp or exp = 0
+                    plaidIdx = plaidIdx - 3;
+                    if( singDigMul ) {
+                        plaidIdx = plaidIdx - 1;
+                        doc.getElementById("statusBox" + x).innerHTML = "single digit mult plaidIdx: " + plaidIdx;
+                        x = (x + 1)%nSbxs;
+                    }
+                    firstUp = false;
+                } else if( !exp || exp === 0 ) { // if plain mult with no exp or exp = 0
+                    plaidIdx = plaidIdx - 1;
+                }
+                var plaidIdxplus = plaidIdx + exp + 2;
+                doc.getElementById("statusBox" + x).innerHTML = "plaidIdx: " + plaidIdx + " plaidIdxplus: " + plaidIdxplus;
+                x = (x + 1)%nSbxs;
+                var plaidIdxM1 = plaidIdxplus - 1;
+                box = plaids[plaidIdxM1];
+                tag = box.tagName;
+                var valm1 = 0;
+                if( tag === "TABLE") {
+                    valm1 = evalTbl(box);
+                    //doc.getElementById("statusBox" + x).innerHTML = "TABLE multiplier: " + multiplier;
+                    //        x = (x + 1)%nSbxs;
+                } else if ( tag === "INPUT") {
+                    valm1 = num(box.value.match(/[0-9]+/));
+                }
+
+                box = plaids[plaidIdxplus];
+                tag = box.tagName;
+                var val0 = 0;
+                if( tag === "TABLE") {
+                    val0 = evalTbl(box);
+                } else if ( tag === "INPUT") {
+                    val0 = num(box.value.match(/[0-9]+/));
+                }
+
+                doc.getElementById("statusBox" + x).innerHTML = "Finding digit " + exp + " of valm1: " + valm1;
+                x = (x + 1)%nSbxs;
+                if( !isNaN(exp) ) {
+                    var tmp = valm1;
+                    var tmp2 = valm1;
+                    var powof10 = 1;
+                    while( exp >= 0 ) {
+                        tmp2 = tmp%10; // won't give a single digit 3456%100 = 56 fixit
+                        valm1 = tmp2*powof10;
+                        powof10 = 10*powof10;
+                        tmp = (tmp - tmp2)/10;
+                        exp = exp - 1;
+                        //doc.getElementById("statusBox" + x).innerHTML = "valm1: " + valm1 + " tmp: " + tmp + " exp: " + exp;
+                        //x = (x + 1)%nSbxs;
+                    }
+                }
+                gans = val0*valm1;
+                gPlaidIdx = plaidIdx - 1;
+                doc.getElementById("statusBox" + x).innerHTML = "val0: " + val0 + " valm1: " + valm1 + " plaidIdx: " + gPlaidIdx;
+                x = (x + 1)%nSbxs;
+            } else {
+                alert("intermediate problem");
+            }            
+        /* } else { 
+            alert("Correct. Press 'Enter' to continue."); // not the place for this. tells user she is
+            // correct even after dragging the wrong boxes fixit
+            var leasDig = doc.getElementById("leasDig");
+            leasDig.focus();
+            askQuestions(); */
 	}
-    //}
+    } else {
+        //alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
+        var leasDig = -1;
+        if( doingMults ) {
+            alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
+            leasDig = len - 1;
+            for( var i = 0; i < len; ++i ) {
+                var parentNode = parents[i];
+                if( parentNode.tagName === "TD" ) {
+                    var allBoxes = parentNode.childNodes;
+                    allBoxes[0].style.color = "red";
+                    if( i === leasDig ) {
+                        allBoxes[0].focus();
+                    }
+                }
+            }
+        } else if( !noIntermeds ) { // don't put boxes back for intermediates, just clear the intermediate and set to digit 0
+            //var thisId = greatgparent.getAttribute("id").match(/[0-9]+/);
+            alert("entered: " + answer + " should be: " + gans + ". Press 'Enter' to continue.");
+            var allBoxes = greatgparent.childNodes[0].childNodes;
+            redBoxes(allBoxes);
+        } else {
+            var allBoxes = doc.getElementsByClassName("onewide");
+            redBoxes(allBoxes);
+            putBoxesBack();
+        }   
+    }
+}
+function redBoxes( allBoxes ) {
+    var len = allBoxes.length;
+    var leasDig = len - 1;
+    for( var i = 0; i < len; ++i ) {
+        allBoxes[i].style.color = "red";
+        if( i === leasDig ) {
+            allBoxes[i].focus();
+        }
+    }
 }
 function check( ev ) { // checks original factorization
     ev = ev || window.event;
@@ -1822,8 +2049,6 @@ window.onload = function(){
 	
 };
 window.onresize = function() {
-    //setTimeout(
-    //        function(){ alert("time's up"); }, 1000 );
     setTimeout( function() { movelabels(); }, 1000 );
     
 };

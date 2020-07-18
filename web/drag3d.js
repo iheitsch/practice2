@@ -28,7 +28,7 @@ var yellowTarg = false;
 var cyanTarg = false;
 var magentaTarg = false;
 var whiteTarg = false;
-var operands = new Array();
+var gOperands = new Array();
 var dragging = false;
 var dragBox = null; // this is the dragHelper clicked on
 var boxHeight = 0;
@@ -53,6 +53,11 @@ var iMouseDown  = false;
 var lMouseState = false; 
 var curTarget   = null;
 
+var noIntermeds = true;
+var gNtermedIdx = 0;
+var gPlaidIdx = 0;
+var gPlaids = new Array(); // give it size? fixit
+var singDigMul = true;
 
 function getMouseOffset(target, ev){ 
     ev = ev || window.event; 
@@ -665,7 +670,8 @@ function checklineup() {
             if( leftSide < dPosX && 
                 dPosX <  rightSide &&
                 topSide < dPosY &&
-                dPosY < bottomSide ) {  
+                dPosY < bottomSide ) {
+                
                 var fans = doc.getElementById("fans");
                 var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
                 var center = mat.floor(leftSide) - 2 + paperWid/2 + fansWid/2 - boxWidth; 
@@ -673,9 +679,11 @@ function checklineup() {
                 //alert("on paper center = " + center);
                 dHelperIdx.style.left = center + "px";
                 dHelperIdx.setAttribute("moved", "pos2");
-                // position vertically so they start at the bottom
-                // order biggest to smallest
+                // position vertically so they start at the bottom fixit
+                // order biggest to smallest -- no don't
                 // put back in circles or in table if dragged off the paper
+                // -tricky. going to renumber them and recalculate products and 
+                // factids every time?
                 // remember their position (can use setAttribute position as the original is no longer neded
                 // give them an attribute so you can track them
                 // when there is enough of them or there is a 2 of 3 digit multiplication,
@@ -684,14 +692,286 @@ function checklineup() {
                 // you can compare
                 // what if you multiply wrong but happen to get the correct answer in the onewides?
                 // check for both and display accordingly
-                var leasDig = doc.getElementById("leasDig");
-                leasDig.focus();
+            
+                //var factors = doc.getElementsByClassName("fact");
+                var nFactors = gNfactors;
+                var prod = 1;
+                var nDgts = -1;
+                var operands = gOperands;
+                operands[nFactors] = dHelperIdx;
+                gOperands = operands;
+                nFactors = nFactors + 1;
+                gNfactors = nFactors;
+
+                var minus2 = -2;
+                var minus1 = -1;
+                var ntermedIdx = gNtermedIdx;
+                var plaidIdx = gPlaidIdx; // every factor dragged, every intermediate product
+                var plaids = gPlaids;     // don't assign factor dragged an array space until
+                                          // intermediates are placed. last factor dragged
+                                          // should be plaids[plaidIdx-1]. How do I know it's
+                                          // last and when does it get assigned?
+                                          // assign it last after placing everything and putting intermediates
+                if( nFactors > 1 ) {                
+                    for( var i = nFactors-2; i < nFactors; ++i ) { // change to start at prev box and go until prod > 9 fixit
+                        // is it a table row or simple input?
+                        var box = operands[i]
+                        var tag = box.tagName;
+                        var multiplier = 0;
+                        if( tag === "TABLE") {
+                            multiplier = evalTbl(box);
+                            //doc.getElementById("statusBox" + x).innerHTML = "TABLE multiplier: " + multiplier;
+                            //        x = (x + 1)%nSbxs;
+                        } else if ( tag === "INPUT") {
+                            multiplier = num(box.value.match(/[0-9]+/));
+                        }
+                        if( i === nFactors - 2 ) {
+                            minus2 = multiplier;
+                        } else if ( i === nFactors - 1 ) {
+                            minus1 = multiplier;
+                        }
+                        prod = prod*multiplier;
+                        //doc.getElementById("statusBox" + x).innerHTML = "prod: " + prod;
+                        //x = (x + 1)%nSbxs;
+                        if( i === nFactors - 2 ) {
+                            nDgts = 1 + mat.floor(mat.log10(multiplier));
+                            //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " nDgts: " + nDgts;
+                            //x = (x + 1)%nSbxs;
+                        }
+                    }
+                    gans = (minus2%10)*minus1; //lprod; // should this be minus2*minus1%10? fixit
+                    doc.getElementById("statusBox" + x).innerHTML = "in drag3d checklineup gans set: " + gans;
+                    x = (x + 1)%nSbxs;
+                }                   
+                // if nFactors > 2 and product > 9 make intermediate box or 2
+                // store gprod somewhere else
+                // if nFactors = 2 or product <= 9, move the previous one up, put a bar
+                var imgHgt = bottomSide - topSide;
+                var linespace = 0.05*imgHgt + 1;
+                var putHere = gPutHere; //- linespace;
+                var fansleft = mat.floor(leftSide) - 7 + paperWid/2 - fansWid/2; 
+                if( nFactors > 2 && nDgts > 1 ) { // && prod > 9 
+                    // think all you need is the intermediate
+                    // answer here. Other boxes added in the
+                    // next block fixit
+                    //sprod = gprod; // once you mess with grpod, you can enter a wrong answer in onewides
+                    // boxes are cleared off paper, enter the correct product but the wrong answer and
+                    // it still counts it correct. don't change gprod, compare to another number fixit
+                    singDigMul = false;
+                    noIntermeds = false;
+                    if( ntermedIdx === 0 ) {
+                        fans.setAttribute("name","mult");
+                    }
+                    var newId = "add";
+                    
+                    var dTbl = createTable(newId, ntermedIdx, false, putHere, fansleft );
+                    doc.getElementById("statusBox" + x).innerHTML = "add bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
+                    x = (x + 1)%nSbxs;
+                    putHere = mat.round(putHere - linespace);
+                    ntermedIdx = ntermedIdx + 1;
+                    plaids[plaidIdx] = dTbl;
+                    plaidIdx = plaidIdx + 1;
+                    
+                } else if( nFactors > 2 ) {
+                    singDigMul = true;
+                    //sprod = gprod;
+                    //gans = prod;
+                    //doc.getElementById("statusBox" + x).innerHTML = "in drag3d checklineup gans: " + gans;
+                    //x = (x + 1)%nSbxs;
+                    noIntermeds = false;
+                    newId = "mult";
+                    
+                    var dTbl = createTable( newId, ntermedIdx, true, putHere, fansleft );
+                    doc.getElementById("statusBox" + x).innerHTML = "mult bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
+                    x = (x + 1)%nSbxs;
+                    putHere = mat.round(putHere - linespace);
+                    plaids[plaidIdx] = dTbl;
+                    plaidIdx = plaidIdx + 1;
+                }
+                if ( nFactors > 1  ) { // && prod > 9
+                    // put a bar
+                    var more2left = center - 12;
+                    putHere = mat.round(putHere + linespace - 1);
+                    putBar(more2left, putHere);
+                    if( nDgts > 1 ) {
+                        //sprod = gprod;
+                        noIntermeds = false;
+                        singDigMul = false;
+                        if( ntermedIdx === 0 ) {
+                            fans.setAttribute("name","add");
+                            var srcid = fans.getAttribute("id");
+                            //alert("after setting name: add, srcid: " + srcid);
+                        }
+                        // create 2+ table rows of answer boxes
+                        for( var dgt = nDgts-1; dgt >=0; --dgt ) {
+                            var newId = "mult" + dgt;
+                            putHere = mat.round(putHere - linespace);
+                            var dTbl = createTable(newId, ntermedIdx, dgt === 0, putHere, fansleft );
+                            doc.getElementById("statusBox" + x).innerHTML = "mult" + dgt + " bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
+                            x = (x + 1)%nSbxs;
+                            plaids[plaidIdx] = dTbl;
+                            ntermedIdx = ntermedIdx + 1;
+                            plaidIdx = plaidIdx + 1;
+                        }
+                        // put bar
+                        var more2left = center - 12;
+                        putHere = mat.round(putHere - 1);
+                        putBar(more2left, putHere);
+                        //doc.getElementById("statusBox" + x).innerHTML = "at least 2 intermediate boxes putting bar at x: " + center + " y: " + putHere;
+                        //x = (x + 1)%nSbxs;
+                       
+                    }
+
+                    putHere = mat.round(putHere - linespace);
+                    var prevOp = operands[nFactors-2];
+                    prevOp.style.top = putHere + "px";
+                    doc.getElementById("statusBox" + x).innerHTML = "moving previous box to: " + putHere + " plaidIdx: " + plaidIdx;
+                    x = (x + 1)%nSbxs;
+                    plaids[plaidIdx] = prevOp;
+                    plaidIdx = plaidIdx + 1;
+                    //var actY = getPos(prevOp).y;
+
+                }
+                
+                putHere = mat.round(putHere - linespace);
+                doc.getElementById("statusBox" + x).innerHTML = "curr bx at " + putHere + " plaidIdx: " + plaidIdx;
+                x = (x + 1)%nSbxs;
+                dHelperIdx.style.top = putHere + "px";
+                //alert("asadf");
+                gPutHere = putHere;
+                plaids[plaidIdx] = dHelperIdx;
+                //plaidIdx = plaidIdx + 1; // didn't think I needed this but perhaps I do
+                //plaidIdx = plaidIdx + 1; // if ever called again, needs to write over plaids[plaidIdx]
+                gPlaids = plaids;
+                gPlaidIdx = plaidIdx;
+                gNtermedIdx = ntermedIdx;
+                if( noIntermeds ) {
+                    //doc.getElementById("statusBox" + x).innerHTML = "setting focus on lsb of onewides";
+                    //x = (x + 1)%nSbxs;
+                    var leasDig = doc.getElementById("leasDig");
+                    leasDig.focus();
+                }
             }
+/**/
+            for( var i = 0; i <= plaidIdx; ++i ) {
+                var box = plaids[i];
+                var tag = box.tagName;
+                var valm1 = 0;
+                if( tag === "TABLE") {
+                    valm1 = evalTbl(box);
+                    //doc.getElementById("statusBox" + x).innerHTML = "TABLE multiplier: " + multiplier;
+                    //        x = (x + 1)%nSbxs;
+                } else if ( tag === "INPUT") {
+                    valm1 = num(box.value.match(/[0-9]+/));
+                }
+                doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val: " + valm1;
+                x = (x + 1)%nSbxs;
+            }
+/**/
         }
     }
     dragBox  = null;
 }
+function putBar(more2left, putHere) {
+    var doc = document;
+    
+                    var bar = doc.createElement("div");
+                    doc.body.appendChild( bar );
 
+                    //doc.getElementById("statusBox" + x).innerHTML = "at least 2 operands putting bar at: " + putHere;
+                    //x = (x + 1)%nSbxs;
+                    var styles = "border: 1px solid black;"
+                        + "width: 58px;"
+                        + "height: 0px;"
+                        + "position: absolute;"
+                        + "top: " + putHere + "px;"
+                        + "left: " + more2left + "px;"
+                        + "border: 1px solid black";
+
+                    bar.setAttribute("style", styles);
+                    bar.setAttribute("name","paperBar");
+                    }
+function createTable(whatName, ntermedIdx, focusHere, putHere, fansleft ) {
+    var doc = document;
+    
+    var dTbl = doc.createElement("table");
+    var dBox = doc.createElement("tr");
+    var newId = "ntermed" + ntermedIdx;
+                    dTbl.setAttribute("id", newId);
+                    dTbl.setAttribute("class","pbox");
+                    dTbl.setAttribute("name",whatName);
+
+                    dBox.style.padding = 0;
+                    dBox.style.margin = 0;
+                    doc.body.appendChild(dTbl);
+                    dTbl.appendChild(dBox);
+                    var nBxs = 7;
+                    var leasDig = 6;
+                    for( var i = 0; i < nBxs; ++i ) {
+                        var td = doc.createElement("td");
+                        td.style.margin = 0;
+                        td.style.border = 0;
+                        td.style.padding = 0;
+                        var nput = doc.createElement("input");
+                        nput.style.margin = 0;
+                        nput.style.padding = 0;
+                        nput.style.width = "0.58em";
+                        nput.onkeyup=passFocus;
+                        td.appendChild(nput);
+                        dBox.appendChild(td);
+                        if( focusHere && i === leasDig ) {
+                            //doc.getElementById("statusBox" + x).innerHTML = "setting focus on lsb of mult input";
+                            //x = (x + 1)%nSbxs;
+                            doc.activeElement.blur();
+                            nput.focus();
+                            nput.onkeydown=eraseAll;
+                        }
+                    } 
+                    //putHere = mat.round(putHere - linespace);
+                    //plaidIdx = plaidIdx - 1; // replaces last current box
+
+   
+                    dTbl.style.top = putHere + "px";
+                    dTbl.style.left = fansleft + "px";    
+                    dTbl.style.position = "absolute";
+    return dTbl;
+}
+// put in factors.js, won't need it here if table rows aren't draggable fixit
+function evalTbl(whatTable) {
+    //var doc = document;
+    var num = Number;
+    //var parents = whatTable.childNodes;
+    var parents = whatTable.childNodes[0].childNodes;
+    var boxLen = 0;
+    var boxes = new Array(); // should i give it a worst case size? fixit
+    var len = parents.length;
+    //doc.getElementById("statusBox" + x).innerHTML = "evalTbl len: " + len;
+    //x = (x + 1)%nSbxs;
+    var parentNode = parents[0];
+    // is all this really necessary? fixit
+    for( var i = 0; i < len; ++i ) {
+        if( ( parentNode = parents[i]).tagName === "TD" ) {
+            var allBoxes = parentNode.childNodes;
+            var ansBx = allBoxes[0];
+            boxes[boxLen] = num(ansBx.value);
+            //doc.getElementById("statusBox" + x).innerHTML = "boxes[" + boxLen + "]: " + boxes[boxLen];
+            //x = (x + 1)%nSbxs;
+            if( typeof( boxes[boxLen] ) === "number" ) { 
+                ++boxLen;
+            }
+        }
+    }
+    // calculate the answer by adding each digit times appropiate ten2pow
+    var multiplier = 0;
+    var ten2pow = 1;
+    for( var i = boxLen-1; i >= 0; --i ) {
+        //doc.getElementById("statusBox" + x).innerHTML = "multiplier: " + multiplier + " boxes[" + i + "]: " + boxes[i];
+        //x = (x + 1)%nSbxs;
+        multiplier = multiplier + ten2pow*boxes[i];
+        ten2pow = ten2pow*10;
+    }
+    return multiplier;
+}
 function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
     if( dPosX !== leftPos ) { // line them up if not exact        
         dHelperIdx.style.left = leftPos + "px";
