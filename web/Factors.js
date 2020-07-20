@@ -164,7 +164,7 @@ function putBoxesBack() {
         parent.removeChild( paperBars[0] );
     }
 
-    var pboxes = doc.getElementsByClassName("pbox");
+    var pboxes = doc.getElementsByClassName("ntrmed");
     var l = pboxes.length;
         for( var i = 0; i < l; ++i ) {
         var parent = pboxes[0].parentNode;
@@ -837,7 +837,7 @@ function multiply() {
         //x = x + 1;
         ycoord = ycoord + ydiff;
         //doc.getElementById("statusBox" + x).innerHTML = "bar: " + ycoord;
-        x = x + 1;
+        //x = x + 1;
         var bar = doc.createElement("div");
         doc.body.appendChild( bar );
         var more2left = xcoord - 2;
@@ -1008,22 +1008,29 @@ function eraseAll( ev ) {
     ansBx.style.color = "#11397a";
     var answer = ansBx.value;
     var len = answer.length;
-    //doc.getElementById("statusBox" + x).innerHTML = "IN eraseAll! doingMults: " + doingMults;
-    //x = (x + 1)%nSbxs;
-    if( doingMults ) {
+    doc.getElementById("statusBox" + x).innerHTML = "IN eraseAll! noIntermeds: " + noIntermeds;
+    x = (x + 1)%nSbxs;
+    //if( doingMults || !noIntermeds ) {
         var parent = ansBx.parentNode;
         var grandparent = parent.parentNode;
         var parents = grandparent.childNodes;
         var parentNode = parents[0];
         var len = parents.length;
+        var partag = parent.tagName;
+        var gpartag = grandparent.tagName;
+        var pnodetag = parentNode.tagName;
+        var pnodeclass = parentNode.class;
+        doc.getElementById("statusBox" + x).innerHTML = "eraseAll parent:" + partag + " gparent: " + gpartag + " par Node: " + pnodetag + " len: " + len + " pnodeclass: " + pnodeclass;
+        x = (x + 1)%nSbxs;
         for( var i = 0; i < len; ++i ) {
-            if( ( parentNode = parents[i]).NodeType !== 1 ) {
+            //if( ( parentNode = parents[i]).NodeType !== 1 ) {
+            if( ( parentNode = parents[i]).tagName === "TD" ) {
                 var allBoxes = parentNode.childNodes;
                 allBoxes[0].value = "";
                 allBoxes[0].style.color = "#11397a";
             }
         }
-    } else {
+    /* } else {
             var allBoxes = document.getElementsByClassName("onewide");
             var l = allBoxes.length;
             for( var i = 0; i < l; ++i ) {
@@ -1033,7 +1040,7 @@ function eraseAll( ev ) {
                 allBoxes[i].style.color = "#11397a";
                 
             }
-    }
+    } */
     ansBx.value = answer.substring(len, len);
 }
 function erase( ev ) {
@@ -1219,7 +1226,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
 
     var answer = evalTbl(greatgparent);
     var nointrmeds = noIntermeds;
-    alert("answer:" + answer + " gprod: " + gprod + " nointrmeds: " + nointrmeds + " gans: " + gans);
+    //alert("answer:" + answer + " gprod: " + gprod + " nointrmeds: " + nointrmeds + " gans: " + gans);
     if( (answer === gprod && nointrmeds) || (answer === gans && !nointrmeds) ) {
         var ancestor = greatgparent.parentNode;
         var srcid = ancestor.id;
@@ -1229,18 +1236,31 @@ function checkBackM( ev ) { // check multiplication entered in arrays
         //x = (x + 1)%nSbxs;
         if( srcid === "fans" ) {
             if( !nointrmeds  ) {
-                alert("checking fans box after intrmeds");
+                //alert("checking fans box after intrmeds");
                 //x = (x + 1)%nSbxs;
                 if( gprod !== gans ) {
                     alert("multiplication correct, but not the answer. Choose boxes to drag again");
-                    var allBoxes = doc.getElementsByClassName("onewide");
+                    //var allBoxes = doc.getElementsByClassName("onewide");
+                               var kids = greatgparent.childNodes[0].childNodes;
+            var l = kids.length;
+            var allBoxes = new Array();
+            var r = 0;
+            for( var q = 0; q < l; ++q ) {
+                var t = kids[q].tagName;
+                if( t === "TD") {
+                    allBoxes[r] = kids[q];
+                    ++r;
+                }
+                doc.getElementById("statusBox" + x).innerHTML = "kid[" + q + "]: " + t;
+                x = (x + 1)%nSbxs;
+            }
                     redBoxes(allBoxes);
                     putBoxesBack();
                     noIntermeds = true;
                 } else {
                     alert("gprod = gans so we're good");
                     //x = (x + 1)%nSbxs;
-                    noIntermeds = true;
+                    noIntermeds = true; 
                     var leasDig = doc.getElementById("leasDig");
                     leasDig.focus();
                     askQuestions();    
@@ -1342,8 +1362,8 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                 thisId = num(greatgparent.getAttribute("id").match(/[0-9]+/));
                 nextId = thisId - 1; // at what point do you set noIntermeds = true?
             }
-            doc.getElementById("statusBox" + x).innerHTML = "idstr of box just entered: " + idStr + " nextId: " + nextId;
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "idstr of box just entered: " + idStr + " nextId: " + nextId;
+            //x = (x + 1)%nSbxs;
             var whatOp = "dontKNowYet";
             var plaids = gPlaids;
             var plaidIdx = gPlaidIdx;
@@ -1354,8 +1374,8 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                 doc.getElementById("statusBox" + x).innerHTML = "focussing on onewides lsb";
                 x = (x + 1)%nSbxs;
                 var yourClue = plaids[0].getAttribute("id");
-                doc.getElementById("statusBox" + x).innerHTML = "yourclue: " + yourClue;
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "yourclue: " + yourClue;
+                //x = (x + 1)%nSbxs;
                 if( yourClue.substr(0,4) === "nter") {
                     whatOp = "add";
                     plaidIdx = plaidIdx + 2;
@@ -1364,6 +1384,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     
                 }
                 nextBox = doc.getElementById("fans");
+                //noIntermeds = true;  // not yet, need to compare multiplication with actual answer
                 var leasDig = doc.getElementById("leasDig");
                 leasDig.focus();
             } else {
@@ -1504,10 +1525,15 @@ function checkBackM( ev ) { // check multiplication entered in arrays
         //alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
         var leasDig = -1;
         if( doingMults ) {
-            alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
+            var len = parents.length;
             leasDig = len - 1;
+            doc.getElementById("statusBox" + x).innerHTML = "len: " + len + " leasDig: " + leasDig;
+            x = (x + 1)%nSbxs;
             for( var i = 0; i < len; ++i ) {
                 var parentNode = parents[i];
+                var tag = parentNode.tagName;
+                doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " tag: " + tag;
+                x = (x + 1)%nSbxs;
                 if( parentNode.tagName === "TD" ) {
                     var allBoxes = parentNode.childNodes;
                     allBoxes[0].style.color = "red";
@@ -1516,25 +1542,63 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     }
                 }
             }
+            alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
         } else if( !noIntermeds ) { // don't put boxes back for intermediates, just clear the intermediate and set to digit 0
             //var thisId = greatgparent.getAttribute("id").match(/[0-9]+/);
-            alert("entered: " + answer + " should be: " + gans + ". Press 'Enter' to continue.");
+            
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
+            alert("entered: " + answer + " should be: " + gans + ". Press 'Enter' to continue.");
         } else {
-            var allBoxes = doc.getElementsByClassName("onewide");
+            //var allBoxes = doc.getElementsByClassName("onewide"); // onewide s are inputs, childNodes are TDs
+            var ggpartag = greatgparent.tagName;
+            var gpartag = grandparent.tagName;
+            var cnodes0 = greatgparent.childNodes[0].tagName;
+            var kids = greatgparent.childNodes[0].childNodes;
+            var l = kids.length;
+            var allBoxes = new Array();
+            var r = 0;
+            for( var q = 0; q < l; ++q ) {
+                var t = kids[q].tagName;
+                if( t === "TD") {
+                    allBoxes[r] = kids[q];
+                    ++r;
+                }
+                doc.getElementById("statusBox" + x).innerHTML = "kid[" + q + "]: " + t;
+                x = (x + 1)%nSbxs;
+            }
+            //doc.getElementById("statusBox" + x).innerHTML = "about to redBx ggpar: " + ggpartag + " gparent: " + gpartag + " cNode0: " + cnodes0 + " kids: " + kids;
+            //x = (x + 1)%nSbxs;
+            //var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
-            putBoxesBack();
+            //alert("ok?");
+            //putBoxesBack();
         }   
     }
 }
 function redBoxes( allBoxes ) {
+    var doc = document;
     var len = allBoxes.length;
     var leasDig = len - 1;
     for( var i = 0; i < len; ++i ) {
-        allBoxes[i].style.color = "red";
-        if( i === leasDig ) {
-            allBoxes[i].focus();
+        /* var tag = allBoxes[i].tagName;
+                        doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " tag: " + tag;
+                x = (x + 1)%nSbxs;
+                if( parentNode.tagName === "TD" ) {
+                    var allBoxes = parentNode.childNodes;
+                    allBoxes[0].style.color = "red";
+                    if( i === leasDig ) {
+                        allBoxes[0].focus();
+                    }
+                } */
+        if( allBoxes[i].tagName === "TD" ) {
+            allBoxes[i].childNodes[0].style.color = "red";
+            var val = allBoxes[i].childNodes[0].value;
+            doc.getElementById("statusBox" + x).innerHTML = "allBoxes[" + i + "]: " + val + " leasDig: " + leasDig;
+            x = (x + 1)%nSbxs;
+            if( i === leasDig || allBoxes[i].childNodes[0].id === "leasDig") {
+                allBoxes[i].childNodes[0].focus();
+            }
         }
     }
 }

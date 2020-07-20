@@ -674,7 +674,7 @@ function checklineup() {
                 
                 var fans = doc.getElementById("fans");
                 var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
-                var center = mat.floor(leftSide) - 2 + paperWid/2 + fansWid/2 - boxWidth; 
+                var center = mat.floor(leftSide) + paperWid/2 + fansWid/2 - boxWidth; 
                 //alert("leftside = " + leftSide + " paperWid: " + paperWid + " fansWid: " + fansWid + " boxWidth: " + boxWidth);
                 //alert("on paper center = " + center);
                 dHelperIdx.style.left = center + "px";
@@ -749,7 +749,8 @@ function checklineup() {
                 var imgHgt = bottomSide - topSide;
                 var linespace = 0.05*imgHgt + 1;
                 var putHere = gPutHere; //- linespace;
-                var fansleft = mat.floor(leftSide) - 7 + paperWid/2 - fansWid/2; 
+                //var fansleft = mat.floor(leftSide) - 7 + paperWid/2 - fansWid/2; 
+                var fansleft = mat.floor(leftSide) + paperWid/2 - fansWid/2;
                 if( nFactors > 2 && nDgts > 1 ) { // && prod > 9 
                     // think all you need is the intermediate
                     // answer here. Other boxes added in the
@@ -764,7 +765,8 @@ function checklineup() {
                     }
                     var newId = "add";
                     
-                    var dTbl = createTable(newId, ntermedIdx, false, putHere, fansleft );
+                    //var dTbl = createTable(newId, ntermedIdx, false, putHere, center );
+                    var dTbl = createTable(newId, ntermedIdx, true, putHere, center );
                     doc.getElementById("statusBox" + x).innerHTML = "add bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
                     x = (x + 1)%nSbxs;
                     putHere = mat.round(putHere - linespace);
@@ -781,11 +783,12 @@ function checklineup() {
                     noIntermeds = false;
                     newId = "mult";
                     
-                    var dTbl = createTable( newId, ntermedIdx, true, putHere, fansleft );
+                    var dTbl = createTable( newId, ntermedIdx, true, putHere, center );
                     doc.getElementById("statusBox" + x).innerHTML = "mult bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
                     x = (x + 1)%nSbxs;
                     putHere = mat.round(putHere - linespace);
                     plaids[plaidIdx] = dTbl;
+                    ntermedIdx = ntermedIdx + 1;
                     plaidIdx = plaidIdx + 1;
                 }
                 if ( nFactors > 1  ) { // && prod > 9
@@ -806,7 +809,8 @@ function checklineup() {
                         for( var dgt = nDgts-1; dgt >=0; --dgt ) {
                             var newId = "mult" + dgt;
                             putHere = mat.round(putHere - linespace);
-                            var dTbl = createTable(newId, ntermedIdx, dgt === 0, putHere, fansleft );
+                            //var dTbl = createTable(newId, ntermedIdx, dgt === 0, putHere, center );
+                            var dTbl = createTable(newId, ntermedIdx, true, putHere, center );
                             doc.getElementById("statusBox" + x).innerHTML = "mult" + dgt + " bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
                             x = (x + 1)%nSbxs;
                             plaids[plaidIdx] = dTbl;
@@ -897,43 +901,43 @@ function createTable(whatName, ntermedIdx, focusHere, putHere, fansleft ) {
     var dTbl = doc.createElement("table");
     var dBox = doc.createElement("tr");
     var newId = "ntermed" + ntermedIdx;
-                    dTbl.setAttribute("id", newId);
-                    dTbl.setAttribute("class","pbox");
-                    dTbl.setAttribute("name",whatName);
+    dTbl.setAttribute("id", newId);
+    dTbl.setAttribute("class","ntrmed");
+    dTbl.setAttribute("name",whatName);
 
-                    dBox.style.padding = 0;
-                    dBox.style.margin = 0;
-                    doc.body.appendChild(dTbl);
-                    dTbl.appendChild(dBox);
-                    var nBxs = 7;
-                    var leasDig = 6;
-                    for( var i = 0; i < nBxs; ++i ) {
-                        var td = doc.createElement("td");
-                        td.style.margin = 0;
-                        td.style.border = 0;
-                        td.style.padding = 0;
-                        var nput = doc.createElement("input");
-                        nput.style.margin = 0;
-                        nput.style.padding = 0;
-                        nput.style.width = "0.58em";
-                        nput.onkeyup=passFocus;
-                        td.appendChild(nput);
-                        dBox.appendChild(td);
-                        if( focusHere && i === leasDig ) {
+    dBox.style.padding = 0;
+    dBox.style.margin = 0;
+    doc.body.appendChild(dTbl);
+    dTbl.appendChild(dBox);
+    var nBxs = 7;
+    var leasDig = 6;
+    for( var i = 0; i < nBxs; ++i ) {
+        var td = doc.createElement("td");
+        td.style.margin = 0;
+        td.style.border = 0;
+        td.style.padding = 0;
+        var nput = doc.createElement("input");
+        nput.style.margin = 0;
+        nput.style.padding = 0;
+        nput.style.width = "0.58em";
+        nput.onkeyup=passFocus;
+        td.appendChild(nput);
+        dBox.appendChild(td);
+        if( focusHere && i === leasDig ) {
                             //doc.getElementById("statusBox" + x).innerHTML = "setting focus on lsb of mult input";
                             //x = (x + 1)%nSbxs;
-                            doc.activeElement.blur();
-                            nput.focus();
-                            nput.onkeydown=eraseAll;
-                        }
-                    } 
+            doc.activeElement.blur();
+            nput.focus();
+            nput.onkeydown=eraseAll;
+        }
+    } 
                     //putHere = mat.round(putHere - linespace);
                     //plaidIdx = plaidIdx - 1; // replaces last current box
 
    
-                    dTbl.style.top = putHere + "px";
-                    dTbl.style.left = fansleft + "px";    
-                    dTbl.style.position = "absolute";
+    dTbl.style.top = putHere + "px";
+    dTbl.style.left = fansleft + "px";    
+    dTbl.style.position = "absolute";
     return dTbl;
 }
 // put in factors.js, won't need it here if table rows aren't draggable fixit
