@@ -53,6 +53,12 @@ th{
     position: absolute;
     border-collapse: collapse;
 }
+.dead{
+    margin: 0px;
+    position: absolute;
+    border-collapse: collapse;
+    background-color: orange;
+}
 .ghost{
     margin: 0px;
 }

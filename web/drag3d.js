@@ -20,7 +20,9 @@
 	*/ 
        
 var x = 0;
-var dragHelper  = new Array();
+//var dragHelper  = new Array(); // does this need to be an array or should you
+// find them by class name every time since they need to change from draggable
+// to not draggable? fixit
 var redTarg = false;
 var greenTarg = false;
 var blueTarg = false;
@@ -53,6 +55,7 @@ var lMouseState = false;
 var curTarget   = null;
 
 var noIntermeds = true;
+var boxesDragged = false;
 var gNtermedIdx = 0;
 var gPlaidIdx = 0;
 var gPlaids = new Array(); // give it size? fixit
@@ -130,10 +133,12 @@ function mouseDown(ev){
     //} 
 
     var mousePos = mouseCoords(ev);
-    var dHelper = dragHelper;
+    var dHelper = doc.getElementsByClassName("dragBox");
     var dhlength = dHelper.length;
     var bxHgt = boxHeight;
     var bxWid = boxWidth;
+    //doc.getElementById("statusBox" + x).innerHTML = "dhlength: " + dhlength + " mousePosX: " + mousePos.x + " mousePosY: " + mousePos.y;
+    //x = (x + 1)%nSbxs;
 
     for( var i = 0; i < dhlength; ++i ) {
         var dHelp = dHelper[i];
@@ -142,16 +147,16 @@ function mouseDown(ev){
         var bottom = top + bxHgt;
         var left = hPos.x; // Num(dHelper[i].style.marginLeft.match(/[0-9]+/));
         var right = left + bxWid;
-        var alreadyMoved = dHelp.getAttribute("moved");
-        //document.getElementById("statusBox" + x).innerHTML = "i: " +i + " top: " + top + " bottom: " + bottom + " left: " + left + " right: " + right;
-        //x = (x + 1)%10;
+        //var alreadyMoved = dHelp.getAttribute("moved");
+        //doc.getElementById("statusBox" + x).innerHTML = "i: " +i + " top: " + top + " bottom: " + bottom + " left: " + left + " right: " + right;
+        //x = (x + 1)%nSbxs;
         //if( alreadyMoved === "pos0" &&
         if( top < mousePos.y && mousePos.y < bottom &&
             left < mousePos.x && mousePos.x < right ) {
             var val = dHelp.value;
             var id = dHelp.id;
-            //document.getElementById("statusBox" + x).innerHTML = "mousedown at target " + i + " value: " + val + " id: " + id;
-            //x = (x + 1)%10;
+            //doc.getElementById("statusBox" + x).innerHTML = "mousedown at target " + i + " value: " + val + " id: " + id;
+            //x = (x + 1)%nSbxs;
             // find all possible targets   
             var cats = doc.getElementsByClassName("cat");
             var len = cats.length;
@@ -328,16 +333,21 @@ function checklineup() {
                         distFromRed < rad && 
                         distFromBlue < rad && 
                         distFromGreen < rad ) {
+                    
                     var leftPos = whiteXpos;
                     var cW = catWhite;
                     var topPos = whiteYpos + cW*0.03*y;
                     catWhite = cW + 1;
+                    
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     dHelperIdx.setAttribute("name", "white");
                     //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1"); // race condition doesn't always take efect on time
                     // to check in delDups
                     //alert("about to copy cols leftPos: " + leftPos + " topPos: " + topPos);
+                    dHelperIdx.class = "deadBox";
+                    dHelperIdx.disabled = true;
+                    dHelperIdx.blur();
                     delDups( dVal, col === 0, col === 3, col === 6, leftPos, topPos, col );
                     nWhite = nWhite - 1;
                 } else if( magentaPoss && 
@@ -348,10 +358,14 @@ function checklineup() {
                     var cM = catMagenta;
                     var topPos = magentaYpos + cM*0.03*y;
                     catMagenta = cM + 1;
+                    
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
                     dHelperIdx.setAttribute("name", "magenta");
                     //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
+                    dHelperIdx.class = "deadBox";
+                    dHelperIdx.disabled = true;
+                    dHelperIdx.blur();
                     delDups( dVal, col === 0, col === 3, true, leftPos, topPos, col );
                     nMagenta = nMagenta - 1;
                 } else if( yellowPoss && 
@@ -362,10 +376,14 @@ function checklineup() {
                     var cY = catYellow;
                     var topPos = yellowYpos + cY*.03*y;
                     catYellow = cY + 1;
+                    
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     dHelperIdx.setAttribute("name", "yellow");
                     //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
+                    dHelperIdx.class = "deadBox";
+                    dHelperIdx.disabled = true;
+                    dHelperIdx.blur();
                     delDups( dVal, true, col === 3, col === 6, leftPos, topPos, col );
                     nYellow = nYellow - 1;
                 } else if( cyanPoss && 
@@ -376,10 +394,14 @@ function checklineup() {
                     var cC = catCyan;
                     var topPos = cyanYpos + cC*.03*y;
                     catCyan = cC + 1;
+                    
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
                     dHelperIdx.setAttribute("name", "cyan");
                     //dHelperIdx.setAttribute("position", topPos);
                     dHelperIdx.setAttribute("moved", "pos1");
+                    dHelperIdx.class = "deadBox";
+                    dHelperIdx.disabled = true;
+                    dHelperIdx.blur();
                     delDups( dVal, col === 0, true, col === 6, leftPos, topPos, col );
                     nCyan = nCyan - 1
                 } else if( bluePoss && 
@@ -390,9 +412,13 @@ function checklineup() {
                     var cB = catBlue;
                     var topPos = blueYpos + cB*.03*y;
                     catBlue = cB + 1;
+                    
                     setBox( dHelperIdx, dPosX, dPosY, blueXpos, topPos );  
                     dHelperIdx.setAttribute("name", "blue");
                     dHelperIdx.setAttribute("moved", "pos1");
+                    dHelperIdx.class = "deadBox";
+                    dHelperIdx.disabled = true;
+                    dHelperIdx.blur();
                     //dHelperIdx.setAttribute("position", topPos);
 
                     var instr0 = doc.getElementById("instr0");
@@ -415,9 +441,13 @@ function checklineup() {
                     var cR = catRed;
                     var topPos = redYpos + cR*.03*y;
                     catRed = cR + 1;
+                    
                     setBox( dHelperIdx, dPosX, dPosY, redXpos, topPos );  
                     dHelperIdx.setAttribute("name", "red");
                     dHelperIdx.setAttribute("moved", "pos1");
+                    dHelperIdx.class = "deadBox";
+                    dHelperIdx.disabled = true;
+                    dHelperIdx.blur();
                     //dHelperIdx.setAttribute("position", topPos);
                     
                     var instr0 = doc.getElementById("instr0");
@@ -440,9 +470,13 @@ function checklineup() {
                     var cG = catGreen;
                     var topPos = greenYpos + cG*.03*y;
                     catGreen = cG + 1;
+                    
                     setBox( dHelperIdx, dPosX, dPosY, greenXpos, topPos ); 
                     dHelperIdx.setAttribute("name", "green");
                     dHelperIdx.setAttribute("moved", "pos1");
+                    dHelperIdx.class = "deadBox";
+                    dHelperIdx.disabled = true;
+                    dHelperIdx.blur();
                     //dHelperIdx.setAttribute("position", topPos);
                     var instr0 = doc.getElementById("instr0");
                     var instr1 = doc.getElementById("instr1");
@@ -738,6 +772,8 @@ function checklineup() {
                         }
                     }
                     gans = (minus2%10)*minus1; //lprod; // should this be minus2*minus1%10? fixit
+                    boxesDragged = true; // change the variable name. This indicated multiplication boxes were dragged,
+                    // not necessarily intermediate boxes were needed fixit
                     //doc.getElementById("statusBox" + x).innerHTML = "in drag3d checklineup gans set: " + gans;
                     //x = (x + 1)%nSbxs;
                 }                   
@@ -745,7 +781,7 @@ function checklineup() {
                 // store gprod somewhere else
                 // if nFactors = 2 or product <= 9, move the previous one up, put a bar
                 var imgHgt = bottomSide - topSide;
-                var linespace = 0.05*imgHgt + 1;
+                var linespace = 0.06*imgHgt + 1;
                 var putHere = gPutHere; //- linespace;
                 //var fansleft = mat.floor(leftSide) - 7 + paperWid/2 - fansWid/2; 
                 var fansleft = mat.floor(leftSide) + paperWid/2 - fansWid/2;
@@ -800,7 +836,7 @@ function checklineup() {
                         singDigMul = false;
                         if( ntermedIdx === 0 ) {
                             fans.setAttribute("name","add");
-                            var srcid = fans.getAttribute("id");
+                            //var srcid = fans.getAttribute("id");
                             //alert("after setting name: add, srcid: " + srcid);
                         }
                         // create 2+ table rows of answer boxes
@@ -874,25 +910,26 @@ function checklineup() {
     }
     dragBox  = null;
 }
+
 function putBar(more2left, putHere) {
     var doc = document;
     
-                    var bar = doc.createElement("div");
-                    doc.body.appendChild( bar );
+    var bar = doc.createElement("div");
+    doc.body.appendChild( bar );
 
-                    //doc.getElementById("statusBox" + x).innerHTML = "at least 2 operands putting bar at: " + putHere;
-                    //x = (x + 1)%nSbxs;
-                    var styles = "border: 1px solid black;"
-                        + "width: 58px;"
-                        + "height: 0px;"
+    //doc.getElementById("statusBox" + x).innerHTML = "at least 2 operands putting bar at: " + putHere;
+    //x = (x + 1)%nSbxs;
+    var styles = "border: 1px solid black;"
+        + "width: 58px;"
+        + "height: 0px;"
                         + "position: absolute;"
                         + "top: " + putHere + "px;"
                         + "left: " + more2left + "px;"
                         + "border: 1px solid black";
 
-                    bar.setAttribute("style", styles);
-                    bar.setAttribute("name","paperBar");
-                    }
+    bar.setAttribute("style", styles);
+    bar.setAttribute("name","paperBar");
+}
 function createTable(whatName, ntermedIdx, focusHere, putHere, fansleft ) {
     var doc = document;
     
@@ -1131,7 +1168,7 @@ function draggerSetup(){
                 testInput.style.color = "#3961a2";
                 testInput.style.left = xcoord + "px";
                 testInput.style.top = ycoord + "px";
-                //testInput.disabled = true;
+                testInput.readonly = true;
             	doc.body.appendChild(testInput);
                 
             }
@@ -1159,6 +1196,6 @@ function draggerSetup(){
         }
         boxHeight = num(getstyle(dHelper[0]).height.match(/[0-9]+/));
         boxWidth = num(getstyle(dHelper[0]).width.match(/[0-9]+/));
-        dragHelper = dHelper;
+//        dragHelper = dHelper;
     }
 }
