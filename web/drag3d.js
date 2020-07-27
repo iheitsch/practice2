@@ -348,7 +348,7 @@ function checklineup() {
                     dHelperIdx.class = "deadBox";
                     dHelperIdx.disabled = true;
                     dHelperIdx.blur();
-                    delDups( dVal, col === 0, col === 3, col === 6, leftPos, topPos, col );
+                    delDups( dVal, col === 0, col === 3, col === 6, col );
                     nWhite = nWhite - 1;
                 } else if( magentaPoss && 
                     distFromRed < rad && 
@@ -366,7 +366,7 @@ function checklineup() {
                     dHelperIdx.class = "deadBox";
                     dHelperIdx.disabled = true;
                     dHelperIdx.blur();
-                    delDups( dVal, col === 0, col === 3, true, leftPos, topPos, col );
+                    delDups( dVal, col === 0, col === 3, true, col );
                     nMagenta = nMagenta - 1;
                 } else if( yellowPoss && 
                     distFromRed < rad && 
@@ -384,7 +384,7 @@ function checklineup() {
                     dHelperIdx.class = "deadBox";
                     dHelperIdx.disabled = true;
                     dHelperIdx.blur();
-                    delDups( dVal, true, col === 3, col === 6, leftPos, topPos, col );
+                    delDups( dVal, true, col === 3, col === 6, col );
                     nYellow = nYellow - 1;
                 } else if( cyanPoss && 
                     distFromBlue < rad && 
@@ -402,8 +402,8 @@ function checklineup() {
                     dHelperIdx.class = "deadBox";
                     dHelperIdx.disabled = true;
                     dHelperIdx.blur();
-                    delDups( dVal, col === 0, true, col === 6, leftPos, topPos, col );
-                    nCyan = nCyan - 1
+                    delDups( dVal, col === 0, true, col === 6, col );
+                    nCyan = nCyan - 1;
                 } else if( bluePoss && 
                     distFromBlue < rad && 
                     distFromGreen > rad &&
@@ -747,7 +747,7 @@ function checklineup() {
                 if( nFactors > 1 ) {                
                     for( var i = nFactors-2; i < nFactors; ++i ) { // change to start at prev box and go until prod > 9 fixit
                         // is it a table row or simple input?
-                        var box = operands[i]
+                        var box = operands[i];
                         var tag = box.tagName;
                         var multiplier = 0;
                         if( tag === "TABLE") {
@@ -789,9 +789,6 @@ function checklineup() {
                     // think all you need is the intermediate
                     // answer here. Other boxes added in the
                     // next block fixit
-                    //sprod = gprod; // once you mess with grpod, you can enter a wrong answer in onewides
-                    // boxes are cleared off paper, enter the correct product but the wrong answer and
-                    // it still counts it correct. don't change gprod, compare to another number fixit
                     singDigMul = false;
                     noIntermeds = false;
                     if( ntermedIdx === 0 ) {
@@ -810,10 +807,6 @@ function checklineup() {
                     
                 } else if( nFactors > 2 ) {
                     singDigMul = true;
-                    //sprod = gprod;
-                    //gans = prod;
-                    //doc.getElementById("statusBox" + x).innerHTML = "in drag3d checklineup gans: " + gans;
-                    //x = (x + 1)%nSbxs;
                     noIntermeds = false;
                     newId = "mult";
                     
@@ -831,7 +824,6 @@ function checklineup() {
                     putHere = mat.round(putHere + linespace - 1);
                     putBar(more2left, putHere);
                     if( nDgts > 1 ) {
-                        //sprod = gprod;
                         noIntermeds = false;
                         singDigMul = false;
                         if( ntermedIdx === 0 ) {
@@ -954,6 +946,7 @@ function createTable(whatName, ntermedIdx, focusHere, putHere, fansleft ) {
         var nput = doc.createElement("input");
         nput.style.margin = 0;
         nput.style.padding = 0;
+        nput.style.color = "#11397a";
         nput.style.width = "0.58em";
         nput.onkeyup=passFocus;
         td.appendChild(nput);
@@ -975,42 +968,6 @@ function createTable(whatName, ntermedIdx, focusHere, putHere, fansleft ) {
     dTbl.style.position = "absolute";
     return dTbl;
 }
-// put in factors.js, won't need it here if table rows aren't draggable fixit
-function evalTbl(whatTable) {
-    //var doc = document;
-    var num = Number;
-    //var parents = whatTable.childNodes;
-    var parents = whatTable.childNodes[0].childNodes;
-    var boxLen = 0;
-    var boxes = new Array(); // should i give it a worst case size? fixit
-    var len = parents.length;
-    //doc.getElementById("statusBox" + x).innerHTML = "evalTbl len: " + len;
-    //x = (x + 1)%nSbxs;
-    var parentNode = parents[0];
-    // is all this really necessary? fixit
-    for( var i = 0; i < len; ++i ) {
-        if( ( parentNode = parents[i]).tagName === "TD" ) {
-            var allBoxes = parentNode.childNodes;
-            var ansBx = allBoxes[0];
-            boxes[boxLen] = num(ansBx.value);
-            //doc.getElementById("statusBox" + x).innerHTML = "boxes[" + boxLen + "]: " + boxes[boxLen];
-            //x = (x + 1)%nSbxs;
-            if( typeof( boxes[boxLen] ) === "number" ) { 
-                ++boxLen;
-            }
-        }
-    }
-    // calculate the answer by adding each digit times appropiate ten2pow
-    var multiplier = 0;
-    var ten2pow = 1;
-    for( var i = boxLen-1; i >= 0; --i ) {
-        //doc.getElementById("statusBox" + x).innerHTML = "multiplier: " + multiplier + " boxes[" + i + "]: " + boxes[i];
-        //x = (x + 1)%nSbxs;
-        multiplier = multiplier + ten2pow*boxes[i];
-        ten2pow = ten2pow*10;
-    }
-    return multiplier;
-}
 function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
     if( dPosX !== leftPos ) { // line them up if not exact        
         dHelperIdx.style.left = leftPos + "px";
@@ -1029,67 +986,39 @@ function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
     dHelperIdx.style.border = "none";
     //dHelperIdx.setAttribute("moved", "pos1");
 }
-// these don't all have a backHomeX, backHomeY and wind up undefined and in the 
-// top left corner. better to just remove them? fixit
-function delDups( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, col ) {
+function delDups( val, col0Moved, col3Moved, col6Moved, col ) {
     var doc = document;
     var num = Number;
     var allBoxes = doc.getElementsByClassName("dragBox");
     var allBxLen = allBoxes.length;
     var deleteThis = new Array(2);
     var one = 0;
-    //x = 0;
-    //for( var j = 0; j < nSbxs; j++ ) {
-        //doc.getElementById("statusBox" + j).innerHTML = "";
-    //}
-    //for( var i = 0; i < allBxLen; ++i ) {
-        //var whatBx = allBoxes[i];  
-        //var bxVal = num(whatBx.value);
-        //var bxid = whatBx.id;
-        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val: " + bxVal + " id: " + bxid;
-        //x = (x + 1)%nSbxs;
-    //}
-    //doc.getElementById("statusBox" + x).innerHTML = "allBxLen: " + allBxLen;
-    //x = (x + 1)%nSbxs;
-    //alert("ok?");
-    //x = 0;
-    //for( var j = 0; j < nSbxs; j++ ) {
-        //doc.getElementById("statusBox" + j).innerHTML = "";
-    //}
+
     for( var i = 0; i < allBxLen; ++i ) {
-        //doc.getElementById("statusBox" + x).innerHTML = " i: " + i;
-        //alert("next i?");
         var whatBx = allBoxes[i];  
         if( whatBx ) {
             
             var bxVal = num(whatBx.value);
 
             if( bxVal === val ) {
-                //x = (x + 1)%nSbxs;
                 var bxid = whatBx.id;
                 var notMovedYet = whatBx.getAttribute("moved") === "pos0";
-                //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val:" + bxVal + " notMovedYet: " + notMovedYet + " id: " + bxid;
-                //x = (x + 1)%nSbxs;
-                //alert("notMovedYet: " + notMovedYet + " id: " + (whatBx.id));
+
                 var bxidlen = bxid.length;
                 var pos = bxid.indexOf("_");
                 var bxCol = num(bxid.substr(pos+1, bxidlen));
                 if( notMovedYet && bxCol !== col ) {
-                    //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " bxid" + bxid + " col036Moved: " + col0Moved + col3Moved + col6Moved;
-                    //x = (x + 1)%14;
+
                     if( bxCol === 0 && !col0Moved ||
                         bxCol === 3 && !col3Moved ||
                         bxCol === 6 && !col6Moved    ) {
-                        // list for deletion, dont move it and set inc to 1 for all sections
-
-                        deleteThis[one] = whatBx; //bxid;
+                        // list for deletion
+                        deleteThis[one] = whatBx;
                         one = one + 1;
                         col0Moved = col0Moved || bxCol === 0;
                         col3Moved = col3Moved || bxCol === 3;
                         col6Moved = col6Moved || bxCol === 6;
-                        //doc.getElementById("statusBox" + x).innerHTML = "deleting " + bxid + " col0Moved: " + col0Moved + " col3Moved: " + col3Moved + " col6Moved: " + col6Moved;
-                        //x = (x + 1)%nSbxs;
-                        //alert("ok");
+
                         if( col0Moved && col3Moved && col6Moved ) {
                             break;
                         }
@@ -1140,8 +1069,8 @@ function draggerSetup(){
             var col = num(whatId.substr(unPos+1,idlen));
             var whatValue = whatGhost.value;
             if( row === "0" || (col%3 === 0 && whatValue !== "" ) ) {
-                whatGhost.style.background = "#4270b1"; // midrange
-                whatGhost.style.color = "#11397a";
+                whatGhost.style.background = "#6a91c8"; // midrange
+                whatGhost.style.color = "#0c2a5a";
                 var testInput = doc.createElement("input");
 		var newId = "d" + whatId.substring(1, idlen);
                 var pos = getPosition(whatGhost);

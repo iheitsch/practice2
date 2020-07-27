@@ -121,11 +121,11 @@
         num7s = 1;
         num11s = 3;
         num11s = 1;
-        num3s = 2;
+        num3s = 2; // 3s, 2s and 5s are twice as probable as 7s and 11s
         num5s = 2;
         num2s = 2;
         inc = 30;
-        inc = 90;
+        inc = 90; // larger inc => larger probability of a big factor
         possbl = (double)( num2s + num3s + num5s + num7s + num11s + 20*inc );
         blueOp = 0;
         redOp = 0;

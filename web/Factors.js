@@ -35,7 +35,6 @@ var gfactors;
 var gindexes = new Array();
 var gprod = 1;
 var gans = -1;
-var sprod = 1; // use an aray instead? what order are arrays stored? really would be nice to push and pop fixit
 var gmdx = 0;
 var fmdx = 0;
 var cdx = 0;
@@ -62,14 +61,8 @@ var firstUp = false;
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
 //
-// reduce the number of questions reguardless of duplicates fixit
-//
 // is there a problem with moved = pos0, pos1 where you might be able to move something
 // that shouldn't be moved fixit
-//
-// error messages are way screwed up once resizing has messed up center and radius
-// move the big factor and it won't let you put it on the correct space and try to move it,
-// it tells you they're all accounted for
 //
 // dragging boxes to paper zeroes out onewides without actually clearing them fixit
 // 
@@ -88,8 +81,9 @@ var firstUp = false;
 // 
 // need a clear the board button fixit
 // 
-// need big factors more often, they keep it interesting fixit
-// 
+// if you erase and re-write in onewides, it doesn't recognize correct answer
+// 'Entered 4018, should be 4018. Press enter to continue.' fixit
+//  
 // need to lighten the color of ghosts so they're legible fixit
 // 
 // add a note somewhere: computer doesn't judge. It will tell you if you have an
@@ -117,7 +111,7 @@ var firstUp = false;
 // message to the manager button with screenshot (miffed client)
 //
 // directions: same order, start with lowest except for 7, divide by 3 and 11 rules
-// multiply by 11 rule, drag highest numbers first
+// multiply by 11 rule, drag highest numbers first, talk like olden times 'four and twenty'
 // bored sheep reading long page of fine print
 
 var NQUES = 17; // assumes all three operands are perfect squares
@@ -141,8 +135,8 @@ function blank() {
     for( var i = 0; i < l; ++i ) {
         var whatBx = allBoxes[i];
         whatBx.value = "";
-        whatBx.style.color = "#11397a";
-        whatBx.style.backgroundColor = "#d2edf9";
+        whatBx.style.color = "#0c2a5a";
+        whatBx.style.backgroundColor = "white"; //#e2eeeb";
     }
     
 }
@@ -181,7 +175,7 @@ function putBoxesBack() {
         var whatBx = dBoxes[i];  
         if( whatBx ) {
             var whatPos = whatBx.getAttribute("moved");
-            var displaced = whatPos === "pos2";
+            var displaced = whatPos === "pos2"; // if you move it but don't place it on the paper, it never gets "moved" attribute set to pos2 fixit
             //alert("whatBx[" + i + "] position: " + whatPos + " displaced: " + displaced);
             if( displaced ) {
                 var homeLeft = whatBx.getAttribute("backHomeX");
@@ -192,13 +186,6 @@ function putBoxesBack() {
                 whatBx.setAttribute("style", styles);
                 //alert("homeLeft: " + homeLeft + " homeTop: " + homeTop );
                 whatBx.setAttribute("moved", "pos1");
-          /*  } else {
-                var homeLeft = whatBx.getAttribute("backHomeX");
-                var homeTop = whatBx.getAttribute("backHomeY");
-                var styles = "backgroundColor: orange;"
-                + "top: " + homeTop + "px;"
-                + "left: " + homeLeft + "px;";
-                whatBx.setAttribute("style", styles); */
             }
         }
     }
@@ -300,13 +287,13 @@ function askTorF( s1, s2 ) {
 	    + "top: " + bTop + "px;"
 	    + "left: " + 0 + "px;"
 	    + "border: none;"
-	    + "color: #11397a;";
+	    + "color: #0c2a5a;";
     TorFdiv.setAttribute("style", styles);
 
     bTop = 1;
     var tLbl = doc.createElement("label");
     tLbl.innerHTML = "True";
-    styles = "color: #11397a;"
+    styles = "color: #0c2a5a;"
 	    + "margin: 0px;"
 	    + "position: absolute;"
 	    + "top: " + bTop + "px;"
@@ -331,7 +318,7 @@ function askTorF( s1, s2 ) {
     bLeft = bLeft + 2*bWid;
     var fLbl = doc.createElement("label");
     fLbl.innerHTML = "False";
-    styles = "color: #11397a;"
+    styles = "color: #0c2a5a;"
 	    + "margin: 0px;"
 	    + "position: absolute;"
 	    + "top: " + bTop + "px;"
@@ -375,6 +362,7 @@ function askQuestions() {
             break;
         }
     }
+    doc.getElementById("finstr1").style.color = "#0c2a5a";
     if( udx === lques ) {
         //allDone = true;
         // Refresh your browser doesn't work for firefox, still has old values
@@ -418,7 +406,7 @@ function askQuestions() {
     var greenfactor = num(doc.getElementById("greenfactor").value);
     var expAns = 0;
     
-    doc.getElementById("finstr1").style.color = "#11397a";
+    
 
     var numAns = false;
     var showTorF = false;
@@ -891,6 +879,7 @@ function multiply() {
             td.style.border = 0;
             td.style.padding = 0;
             var nput = doc.createElement("input");
+            nput.style.color = "#3961a2";
             nput.style.margin = 0;
             nput.style.padding = 0;
             nput.style.width = "0.58em";
@@ -951,6 +940,7 @@ function multiply() {
             td.style.border = 0;
             td.style.padding = 0;
             var nput = doc.createElement("input");
+            nput.style.color = "#3961a2";
             nput.style.margin = 0;
             nput.style.padding = 0;
             nput.style.width = "0.58em";
@@ -1019,7 +1009,7 @@ function eraseAll( ev ) {
     var doc = document;
 
 
-    ansBx.style.color = "#11397a";
+    ansBx.style.color = "#0c2a5a";
     var answer = ansBx.value;
     var len = answer.length;
     //doc.getElementById("statusBox" + x).innerHTML = "IN eraseAll! noIntermeds: " + noIntermeds;
@@ -1034,7 +1024,7 @@ function eraseAll( ev ) {
         if( ( parentNode = parents[i]).tagName === "TD" ) {
             var allBoxes = parentNode.childNodes;
             allBoxes[0].value = "";
-            allBoxes[0].style.color = "#11397a";
+            allBoxes[0].style.color = "#0c2a5a";
         }
     }
     ansBx.value = answer.substring(len, len);
@@ -1043,7 +1033,7 @@ function erase( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
     if( ansBx.style.color === "red") {
-        ansBx.style.color = "#11397a";
+        ansBx.style.color = "#0c2a5a";
         var answer = ansBx.value;
         var len = answer.length;
         ansBx.value = answer.substring(len, len);
@@ -1157,8 +1147,8 @@ function setPaper() {
     gPutHere = topPos;
     var finalIns0 = doc.getElementById("finstr0");
     var finalIns1 = doc.getElementById("finstr1");
-    finalIns0.style.color = "#11397a";
-    finalIns1.style.color = "#11397a";
+    finalIns0.style.color = "#0c2a5a";
+    finalIns1.style.color = "#0c2a5a";
     var linespace = 0.05*imgHgt;
     topPos = 1 + linespace;
     finalIns0.style.top = topPos + "px";
@@ -1178,7 +1168,7 @@ function setPaper() {
         if( nput ) {
             nput.onkeyup=passFocus;
             nput.disabled = false;
-            nput.style.backgroundColor = "#d2edf9";
+            nput.style.backgroundColor = "#e2eeeb";
             if( i === leasDig ) {
                 doc.activeElement.blur();
                 //nput.style.background = "pink";
@@ -1358,7 +1348,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
             var allfactors = doc.getElementsByName(whatColor);
             var fLen = allfactors.length;
             for( var i = 0; i < fLen; ++i ) {
-                allfactors[i].style.color = "#11397a";
+                allfactors[i].style.color = "#0c2a5a";
                 //allfactors[i].setAttribute("class", "deadBox");
                 // put a draggable copy
                 //putDraggableCopy( allfactors[i] );
@@ -1389,10 +1379,6 @@ function checkBackM( ev ) { // check multiplication entered in arrays
             var plaidIdx = gPlaidIdx;
             // set focus
             if( nextId < 0 ) {
-                //gprod = sprod; // don't do it. multplication may be correct, but wrong factors dragged
-                
-                //doc.getElementById("statusBox" + x).innerHTML = "focussing on onewides lsb";
-                //x = (x + 1)%nSbxs;
                 var yourClue = plaids[0].getAttribute("id");
                 //doc.getElementById("statusBox" + x).innerHTML = "yourclue: " + yourClue;
                 //x = (x + 1)%nSbxs;
@@ -1581,6 +1567,41 @@ function checkBackM( ev ) { // check multiplication entered in arrays
         }   
     }
 }
+function evalTbl(whatTable) {
+    //var doc = document;
+    var num = Number;
+    //var parents = whatTable.childNodes;
+    var parents = whatTable.childNodes[0].childNodes;
+    var boxLen = 0;
+    var boxes = new Array(); // should i give it a worst case size? fixit
+    var len = parents.length;
+    //doc.getElementById("statusBox" + x).innerHTML = "evalTbl len: " + len;
+    //x = (x + 1)%nSbxs;
+    var parentNode = parents[0];
+    // is all this really necessary? fixit
+    for( var i = 0; i < len; ++i ) {
+        if( ( parentNode = parents[i]).tagName === "TD" ) {
+            var allBoxes = parentNode.childNodes;
+            var ansBx = allBoxes[0];
+            boxes[boxLen] = num(ansBx.value);
+            //doc.getElementById("statusBox" + x).innerHTML = "boxes[" + boxLen + "]: " + boxes[boxLen];
+            //x = (x + 1)%nSbxs;
+            if( typeof( boxes[boxLen] ) === "number" ) { 
+                ++boxLen;
+            }
+        }
+    }
+    // calculate the answer by adding each digit times appropiate ten2pow
+    var multiplier = 0;
+    var ten2pow = 1;
+    for( var i = boxLen-1; i >= 0; --i ) {
+        //doc.getElementById("statusBox" + x).innerHTML = "multiplier: " + multiplier + " boxes[" + i + "]: " + boxes[i];
+        //x = (x + 1)%nSbxs;
+        multiplier = multiplier + ten2pow*boxes[i];
+        ten2pow = ten2pow*10;
+    }
+    return multiplier;
+}
 function putDraggableCopy( whatGhost ) {
     var doc = document;
     
@@ -1609,8 +1630,8 @@ function putDraggableCopy( whatGhost ) {
         replacement.setAttribute("moved","pos1");
         replacement.setAttribute("backHomeX", leftPos );
         replacement.setAttribute("backHomeY", topPos );
-        replacement.style.background = "#4270b1"; // midrange
-        replacement.style.color = "#11397a";
+        replacement.style.background = "#6a91c8"; // midrange
+        replacement.style.color = "#0c2a5a";
         replacement.style.left = xcoord + "px";
         replacement.style.top = ycoord + "px";
         doc.body.appendChild(replacement);
@@ -1622,8 +1643,8 @@ function putDraggableCopy( whatGhost ) {
         //x = (x + 1)%nSbxs;
     } else {
         whatValue = whatGhost.value;
-        whatGhost.style.background = "#4270b1"; // midrange
-        whatGhost.style.color = "#11397a";
+        whatGhost.style.background = "#6a91c8"; // midrange
+        whatGhost.style.color = "#0c2a5a";
 
     }
 
@@ -1636,7 +1657,7 @@ function putDraggableCopy( whatGhost ) {
     testInput.setAttribute("backHomeX", leftPos );
     testInput.setAttribute("backHomeY", topPos );
 
-    testInput.style.background = "#e2eeeb";
+    testInput.style.background = "#d2edf9";
     //testInput.style.background = "orange";
     testInput.style.color = "#3961a2";
     testInput.style.left = xcoord + "px";
@@ -1722,9 +1743,10 @@ function check( ev ) { // checks original factorization
                         row = row + 1;
                         var nextIn = doc.getElementById( "g" + row + "_" + col );
                         nextIn.type = "text";
+                        nextIn.color = "#11397a";
                         var nextTd = nextIn.parentNode;
-                        nextTd.style.borderLeftColor = "#11397a";
-                        nextTd.style.borderBottomColor = "#11397a";
+                        nextTd.style.borderLeftColor = "#0c2a5a";
+                        nextTd.style.borderBottomColor = "#0c2a5a";
 
                         //alert("next row: " + row + " next col: " + col);
                         
@@ -1745,8 +1767,8 @@ function check( ev ) { // checks original factorization
                             doc.getElementById("instr1").innerHTML = 
                                 "What prime number evenly divides " + nextVal + "? (Enter)";
                             var nextTd = nextOp.parentNode;
-                            nextTd.style.borderLeftColor = "#11397a";
-                            nextTd.style.borderBottomColor = "#11397a";
+                            nextTd.style.borderLeftColor = "#0c2a5a";
+                            nextTd.style.borderBottomColor = "#0c2a5a";
                             var nextIn = doc.getElementById( "g" + row + "_" + col );
                             nextIn.type = "text";
                             //doc.getElementById("statusBox" + x).innerHTML = "foc line 438";
@@ -1793,7 +1815,7 @@ function check( ev ) { // checks original factorization
                             len = links.length;
                             for(var i=0;i<links.length;i++) {
                                 if(links[i].href) {
-                                    links[i].style.color = "black";//"#11397a"; 
+                                    links[i].style.color = "black";//"#0c2a5a"; 
                                 }
                             }  
                             movelabels();
@@ -1852,12 +1874,12 @@ function check( ev ) { // checks original factorization
                             cyanLabel4.style.color = "black";
                             cyanLabel4.innerHTML = greenValue;
 
-                            var stillBoxes = doc.getElementsByClassName("stillBox");
+                            /* var stillBoxes = doc.getElementsByClassName("stillBox");
                             len = stillBoxes.length;
                             for( var i = 0; i < len; ++i ) {
                                 stillBoxes[i].style.backgroundColor = water;
                                 stillBoxes[i].style.color = snow;
-                            }
+                            } */
                             var tds = doc.getElementsByTagName("td");
                             len = tds.length;
                             for( var i = 0; i < len; ++i ) {
@@ -1907,6 +1929,7 @@ function check( ev ) { // checks original factorization
                 //var ghost = doc.getElementById( "g" + row + "_" + col );
                 //ghost.type = "text";
                 //ghost.value = answer;
+                ansBx.style.color = "#11397a";
                 ansBx.disabled = true;
                 col = prevCol;
                 doc.getElementById("instr1").innerHTML = 
