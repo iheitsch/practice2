@@ -711,6 +711,7 @@ function checklineup() {
                 //alert("on paper center = " + center);
                 dHelperIdx.style.left = center + "px";
                 dHelperIdx.setAttribute("moved", "pos2");
+                dHelperIdx.disabled = true;
                 // position vertically so they start at the bottom fixit
                 // order biggest to smallest -- no don't
                 // put back in circles or in table if dragged off the paper
@@ -1097,7 +1098,7 @@ function draggerSetup(){
                 testInput.style.color = "#3961a2";
                 testInput.style.left = xcoord + "px";
                 testInput.style.top = ycoord + "px";
-                testInput.readonly = true;
+                //testInput.readonly = true; // readonly does nothing
             	doc.body.appendChild(testInput);
                 
             }

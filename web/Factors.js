@@ -186,6 +186,7 @@ function putBoxesBack() {
                 whatBx.setAttribute("style", styles);
                 //alert("homeLeft: " + homeLeft + " homeTop: " + homeTop );
                 whatBx.setAttribute("moved", "pos1");
+                whatBx.disabled = false;
             }
         }
     }
@@ -1543,6 +1544,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                 }
             }
             alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: gprod" + gprod + " DoingMults: " + doingMults + ". Press 'Enter' to continue.");
         } else if( srcid === "fans" ) { 
              //var allBoxes = doc.getElementsByClassName("onewide"); // onewide s are inputs, childNodes are TDs
             var kids = greatgparent.childNodes[0].childNodes;
@@ -1560,10 +1562,12 @@ function checkBackM( ev ) { // check multiplication entered in arrays
             }
             redBoxes(allBoxes);
             alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be gprod: " + gprod + " gans: " + gans + " srcid: " + srcid + "boxesdraged: " + boxesdragged + ". Press 'Enter' to continue.");
         } else {    
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
             alert("Entered: " + answer + ", should be: " + gans + ". Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: gand" + gans + " gprod: " + gprod + " scrid: " + srcid + ". Press 'Enter' to continue.");
         }   
     }
 }
