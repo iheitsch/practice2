@@ -62,10 +62,6 @@ var firstUp = false;
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
 //
-// operands need to be draggable but not editable fixit
-//
-// go over askQuestions with a fine toothed comb to make sure there are no duplicates fixit
-//
 // reduce the number of questions reguardless of duplicates fixit
 //
 // is there a problem with moved = pos0, pos1 where you might be able to move something
@@ -83,8 +79,6 @@ var firstUp = false;
 // input and put another input over the rest of the sections as well. put ones in
 // in the sections that don't have any other factors. it's confusing when you
 // can't see the numbers in the sections any more. leave a ghost fixit
-// 
-// sorting still not fixed fixit
 // 
 // after entering a bad answer on intermediate mult0 on paper, keeps giving
 // bizarre error messages, expected answers and suposed given answers that never existed
@@ -121,12 +115,17 @@ var firstUp = false;
 // happy parent, grandparent proud but dignified student)
 //
 // message to the manager button with screenshot (miffed client)
+//
+// directions: same order, start with lowest except for 7, divide by 3 and 11 rules
+// multiply by 11 rule, drag highest numbers first
+// bored sheep reading long page of fine print
 
 var NQUES = 17; // assumes all three operands are perfect squares
 var alreadyasked = new Array(NQUES);
 
 var x = 0;
-var nSbxs = 24; 
+var nSbxs = 24;
+var noMoreStpdQstns = false;
 
 function askSqrt( val, root ) {
     var doc = document;
@@ -220,15 +219,15 @@ function checkTorF( ev ) {
 
     if( ansBtn.id === "True" ) {
 	if( isTrue ) {
-            alert("Correct. Press 'Enter' to Continue?");
+            alert("Correct. Press 'Enter' to Continue.");
 	} else {
-            alert("No. Press 'Enter' to Continue?");
+            alert("No. Press 'Enter' to Continue.");
 	}
     } else {
 	if( !isTrue ) {
-            alert("Correct. Press 'Enter' to Continue?");
+            alert("Correct. Press 'Enter' to Continue.");
 	} else {
-            alert("No. Press 'Enter' to Continue?");
+            alert("No. Press 'Enter' to Continue.");
 	}
     }
     askQuestions();
@@ -254,10 +253,13 @@ function rmTorF() {
         parent.removeChild(TorF);
     }
 }
-function askTorF( op1, op2 ) {
+function askTorF( s1, s2 ) {
     var doc = document;
     var mat = Math;
+    var num = Number;
     
+    var op1 = num(s1);
+    var op2 = num(s2);
     var imgWid = gImageWidth;
     var imgHgt = gImageHeight;
     var bWid = 0.125*imgWid;
@@ -267,13 +269,24 @@ function askTorF( op1, op2 ) {
 
     doc.activeElement.blur();
     var instruction1 = " is a factor of ";
-    var whatInstr = 2*mat.random() < 1;
-    if( whatInstr ) {
+
+    var chooseM = 2*mat.random() < 1;
+    if( chooseM ) {
         instruction1 = " is a multiple of ";
     }
     instruction1 = op1 + instruction1 + op2;
-    isTrue = whatInstr? op1%op2 === 0 : op2%op1 === 0;
-
+    isTrue = chooseM? op1%op2 === 0 : op2%op1 === 0;
+    //var onesmall = op1 < op2;
+    //var onebig = op1 > op2;
+    var stupidQuestion = (chooseM && (op1 < op2)) || (!chooseM && (op1 > op2));
+    //alert("stupid question? " + stupidQuestion  + " onesmall: " + onesmall + " onebig: " + onebig + " chooseM: " + chooseM + " no more? " + noMoreStpdQstns);
+    if( stupidQuestion ) {
+        if( noMoreStpdQstns ) {
+            askQuestions();
+            return;
+        }
+        noMoreStpdQstns = true;
+    }
     doc.getElementById("finstr0").innerHTML = "True or False:";
     doc.getElementById("finstr1").innerHTML = instruction1;
     
@@ -1194,6 +1207,7 @@ function setPaper() {
     }
     var lques = NQUES - 3 + howManySquares;
     NQUES = lques;
+    noMoreStpdQstns = false;
     askQuestions();
 }
 function checkBackM( ev ) { // check multiplication entered in arrays
@@ -1201,21 +1215,19 @@ function checkBackM( ev ) { // check multiplication entered in arrays
     var ansBx = ev.target;
     var doc = document;
     var num = Number;
-    var mat = Math; // how often is this used? fixit
     var parent = ansBx.parentNode;
     var grandparent = parent.parentNode;
     var greatgparent = grandparent.parentNode;
     var parents = grandparent.childNodes;
 
     var answer = evalTbl(greatgparent);
-    var nointrmeds = noIntermeds;
-    var paperExists = doc.getElementById("graphPaper");
     var boxesdragged = boxesDragged;
     //
     //alert("answer:" + answer + " gprod: " + gprod + " boxesdragged: " + boxesdragged + " gans: " + gans);
+    var ancestor = greatgparent.parentNode;
+    var srcid = ancestor.id;
     if( (answer === gprod && !boxesdragged) || (answer === gans && boxesdragged) ) {
-        var ancestor = greatgparent.parentNode;
-        var srcid = ancestor.id;
+
         //var srcnm = ancestor.name;
         //var srctg = ancestor.tagName;
         //alert( "answer: " + answer + " boxesDragged: " + boxesdragged + " grpod: " + gprod + " gans: " + gans + " srcid: " + srcid);
@@ -1544,7 +1556,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     }
                 }
             }
-            alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
+            alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
         } else if( srcid === "fans" ) { 
              //var allBoxes = doc.getElementsByClassName("onewide"); // onewide s are inputs, childNodes are TDs
             var kids = greatgparent.childNodes[0].childNodes;
@@ -1561,10 +1573,11 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                 //x = (x + 1)%nSbxs;
             }
             redBoxes(allBoxes);
+            alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
         } else {    
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
-            alert("entered: " + answer + " should be: " + gans + ". Press 'Enter' to continue.");
+            alert("Entered: " + answer + ", should be: " + gans + ". Press 'Enter' to continue.");
         }   
     }
 }

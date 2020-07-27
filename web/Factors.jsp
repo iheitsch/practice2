@@ -121,11 +121,12 @@
         num7s = 1;
         num11s = 3;
         num11s = 1;
-        num3s = 1;
-        num5s = 1;
-        num2s = 1;
+        num3s = 2;
+        num5s = 2;
+        num2s = 2;
         inc = 30;
-        possbl = (double)( num2s + num3s + num5s + num7s + num11s + 30*inc );
+        inc = 90;
+        possbl = (double)( num2s + num3s + num5s + num7s + num11s + 20*inc );
         blueOp = 0;
         redOp = 0;
         greenOp = 0;
