@@ -61,9 +61,6 @@ var firstUp = false;
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
 //
-// is there a problem with moved = pos0, pos1 where you might be able to move something
-// that shouldn't be moved fixit
-//
 // dragging boxes to paper zeroes out onewides without actually clearing them fixit
 // 
 // box dragged for a TorF question disappeared for all time fixit
@@ -80,12 +77,7 @@ var firstUp = false;
 // looks like an input but is not fixit
 // 
 // need a clear the board button fixit
-// 
-// if you erase and re-write in onewides, it doesn't recognize correct answer
-// 'Entered 4018, should be 4018. Press enter to continue.' fixit
-//  
-// need to lighten the color of ghosts so they're legible fixit
-// 
+//   
 // add a note somewhere: computer doesn't judge. It will tell you if you have an
 // incorrect answer, but don't take it personally, it's a machine, it doesn't 
 // look up to you or down on you, it's a tool (wrench) to help you learn. (Judge and
@@ -180,9 +172,12 @@ function putBoxesBack() {
             if( displaced ) {
                 var homeLeft = whatBx.getAttribute("backHomeX");
                 var homeTop = whatBx.getAttribute("backHomeY");
-                var styles = "backgroundColor: fuschia;"
-                + "top: " + homeTop + "px;"
+                var styles = "top: " + homeTop + "px;"
                 + "left: " + homeLeft + "px;";
+                //var whatCol = Number(whatBx.id.substr(3,4));
+                //if( (whatCol+2)%3 === 0 ) { // operands are in columns 1, 4 and 7
+                //    styles = styles + "backgroundColor:  #b4c5e2";
+                //} // this doesn't work, reverts to element background color
                 whatBx.setAttribute("style", styles);
                 //alert("homeLeft: " + homeLeft + " homeTop: " + homeTop );
                 whatBx.setAttribute("moved", "pos1");
@@ -190,6 +185,7 @@ function putBoxesBack() {
             }
         }
     }
+    doc.getElementById("leasDig").focus();
 }
 function whiteout() {
     var allBoxes = document.getElementsByClassName("onewide");
@@ -218,6 +214,7 @@ function checkTorF( ev ) {
             alert("No. Press 'Enter' to Continue.");
 	}
     }
+    document.getElementById("leasDig").focus();
     askQuestions();
 }
 function rmTorF() {
@@ -270,6 +267,7 @@ function askTorF( s1, s2 ) {
     //alert("stupid question? " + stupidQuestion  + " onesmall: " + onesmall + " onebig: " + onebig + " chooseM: " + chooseM + " no more? " + noMoreStpdQstns);
     if( stupidQuestion ) {
         if( noMoreStpdQstns ) {
+            doc.getElementById("leasDig").focus();
             askQuestions();
             return;
         }
@@ -437,7 +435,7 @@ function askQuestions() {
         //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = magentafactor*whitefactor;
-	    doc.getElementById("leasDig").focus();
+	    //doc.getElementById("leasDig").focus();
         //askNum( BLUE, RED, expAns );
     } else if( whichQues < 2 ) {
 	blank();
@@ -450,7 +448,7 @@ function askQuestions() {
         //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = yellowfactor*whitefactor;
-	    doc.getElementById("leasDig").focus();
+	    //doc.getElementById("leasDig").focus();
         //askNum( RED, GREEN, expAns );
      } else if( whichQues < 3 ) {
 	blank();
@@ -463,7 +461,7 @@ function askQuestions() {
         //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = cyanfactor*whitefactor;
-	    doc.getElementById("leasDig").focus();
+	    //doc.getElementById("leasDig").focus();
         //askNum( BLUE, GREEN, expAns );
      } else if( whichQues < 4 ) {
 	blank();
@@ -477,7 +475,7 @@ function askQuestions() {
         //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = whitefactor;
-	    doc.getElementById("leasDig").focus();
+	    //doc.getElementById("leasDig").focus();
         //askNum( BLUE, RED, GREEN, expAns );
      } else if( whichQues < 5 ) {
 	blank();
@@ -491,7 +489,7 @@ function askQuestions() {
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*yellowfactor*bluefactor*redfactor;
         gprod = expAns*cyanfactor*magentafactor;
-	    doc.getElementById("leasDig").focus();
+	    //doc.getElementById("leasDig").focus();
         //askNum( BLUE, RED, expAns );
      } else if( whichQues < 6 ) {
 	blank();
@@ -505,7 +503,7 @@ function askQuestions() {
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*yellowfactor*greenfactor*redfactor;
         gprod = expAns*cyanfactor*magentafactor;
-	    doc.getElementById("leasDig").focus();
+	    //doc.getElementById("leasDig").focus();
         //askNum( RED, GREEN, expAns );
      } else if( whichQues < 7 ) {
 	blank();
@@ -519,7 +517,7 @@ function askQuestions() {
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*cyanfactor*bluefactor*greenfactor;
         gprod = expAns*yellowfactor*magentafactor;
-	    doc.getElementById("leasDig").focus();
+	   //doc.getElementById("leasDig").focus();
         //askNum( BLUE, GREEN, expAns );
      } else if( whichQues < 8 ) {
 	blank();
@@ -534,7 +532,7 @@ function askQuestions() {
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*yellowfactor*greenfactor*redfactor;
         gprod = expAns*cyanfactor*magentafactor*bluefactor;
-	    doc.getElementById("leasDig").focus();
+	    //doc.getElementById("leasDig").focus();
         //askNum( BLUE, RED, GREEN, expAns );
      } else {
 	 whiteout();
@@ -1144,6 +1142,19 @@ function setPaper() {
     //alert("imgWid: " + imgWid + " fansWid: " + fansWid + " fansleft: " + fansleft + " pfansleft: " + pfansleft);
     var fleftStr = fansleft + "px";
     fans.style.left = fleftStr;
+    var clr = doc.createElement("button");
+    clr.innerHTML = "Erase";
+    clr.onclick=putBoxesBack;
+    var btnPosX = 0.75*imgWid;
+    var btnPosY = 0.9*imgHgt;
+    var styles = "position: absolute;"
+	    + "top: " + btnPosY + "px;"
+	    + "left: " + btnPosX + "px;";
+    clr.setAttribute("style", styles);
+    frame.insertBefore(clr, frame.childNodes[0]);
+        //var frame = doc.getElementById("circles");
+        //var img = frame.childNodes[0];
+        //img.insertBefore(restrtbtn, img.childNodes[0]);
     topPos = getPos(fans).y;
     gPutHere = topPos;
     var finalIns0 = doc.getElementById("finstr0");
@@ -1199,6 +1210,7 @@ function setPaper() {
     var lques = NQUES - 3 + howManySquares;
     NQUES = lques;
     noMoreStpdQstns = false;
+    doc.getElementById("leasDig").focus();
     askQuestions();
 }
 function checkBackM( ev ) { // check multiplication entered in arrays
