@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Sorting Factors Hints</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="Factors.css" type="text/css">
+    </head>
+    <body>
+        <div>Drag the larger prime factors first, it will make multiplication easier
+            <br>
+            <br>To multiply a number by 11, write the least significant digit,
+            <br>then add the two least significant digits,
+            <br>then the other consecutive pairs of digits,
+            <br>then the most significant digit. You may have to carry a '1'
+            <br>from one pair to the next pair of digits.
+            <br>
+            <br>
+            <table>
+            <tr>
+                <td></td><td></td>
+                <td></td><td></td>
+                <td></td><td></td>
+                <td class="red">carry 1</td><td></td>
+                <td class="red">carry 1</td><td></td>
+                <td></td><td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><table class="split"><tr>
+		<td class="onewide">12910</td><td class="red">7</td>
+                </tr></table></td><td></td>
+                <td><table class="split"><tr>
+		<td class="onewide">1291</td><td class="red onewide">07</td>
+                </tr></table></td><td></td>
+                <td><table class="split"><tr>
+		<td class="onewide">129</td><td class="red onewide">10</td><td class="onewide">7</td>
+                </tr></table></td><td></td>
+                <td><table class="split"><tr>
+		<td class="onewide">12</td><td class="red onewide">91</td><td class="onewide">07</td>
+                </tr></table></td><td></td>
+                <td><table class="split"><tr>
+		<td class="onewide">1</td><td class="red onewide">29</td><td class="onewide">107</td>
+                </tr></table></td><td></td>
+                <td><table class="split"><tr>
+		<td class="red onewide">12</td><td class="onewide">9107</td>
+                </tr></table></td><td></td>
+                <td><table class="split"><tr>
+                <td class="red onewide">1</td><td class="onewide">29107</td>
+                </tr></table></td>
+            </tr>
+            <tr>
+                <td class="ru"> x  11</td><td></td><td class="ru">x  11</td><td></td><td class="ru">x  11</td><td></td><td class="ru">x  11</td><td></td><td class="ru">x  11</td><td></td><td class="ru">x  11</td><td></td><td class="ru">x  11</td>
+            </tr>
+            <tr>
+                <td class="r red">7</td><td></td>
+                <td class="r"><table class="split"><tr>
+                <td class="r red onewide">7</td><td class="r onewide">7</td>
+                </tr></table></td><td></td>
+                <td class="r"><table class="split"><tr>
+                <td class="r red onewide">1</td><td class="r onewide">77</td>
+                </tr></table></td><td></td>
+                <td class="r"><table class="split"><tr>
+                <td class="r red onewide">0</td><td class="r onewide">177</td>
+                </tr></table></td><td></td>
+                <td class="r"><table class="split"><tr>
+                <td class="r red onewide">2</td><td class="r onewide">0177</td>
+                </tr></table></td><td></td>
+                <td class="r"><table class="split"><tr>
+                <td class="r red onewide">4</td><td class="r onewide">20177</td>
+                </tr></table></td><td></td>
+                <td class="r"><table class="split"><tr>
+                <td class="r red onewide">1</td><td class="r onewide">420177</td>
+                </tr></table></td>
+            </tr>
+            </table>
+            
+        </div>
+    </body>
+</html>

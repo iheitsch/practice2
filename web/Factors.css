@@ -39,6 +39,10 @@ td{
     /* height: 1.4em; */
     height: 20px;
     /* width: 4em; */
+        width: auto;
+    margin-right: 0px;
+    margin-left: auto;
+    text-align: right;
 }
 th{
     width: 28em;
@@ -81,6 +85,18 @@ th{
     height: 1.4em;
     height: 20px;
 }
+.r{
+    text-align: right;
+    margin-right: 0px;
+    padding-right: 0px;
+}
+.red{
+    color: red;
+}
+.ru{
+    text-align: right;
+    border-bottom-color: black;
+}
 .section{
     width: 12em;
     position: absolute;
@@ -91,6 +107,13 @@ th{
     text-align: center;
     color: red;
     font: inherit;
+}
+.split{
+/*horizontal-align: middle; */
+/* displlay: inline-table; */
+    padding: 0;
+    border-collapse: collapse;
+    float: right;
 }
 .stillBox{
     margin: 0px;

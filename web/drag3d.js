@@ -157,7 +157,8 @@ function mouseDown(ev){
             var id = dHelp.id;
             //doc.getElementById("statusBox" + x).innerHTML = "mousedown at target " + i + " value: " + val + " id: " + id;
             //x = (x + 1)%nSbxs;
-            // find all possible targets   
+            // find all possible targets 
+            dHelp.setAttribute("moved", "");
             var cats = doc.getElementsByClassName("cat");
             var len = cats.length;
             for( var j = 0; j < len; ++j ){
@@ -693,8 +694,8 @@ function checklineup() {
             var getstyle = getComputedStyle;
             //var actual = getstyle(frame).width;
             //var actual2 = getstyle(paperExists).width;
-            var leftSide = num(getstyle(frame).left.match(/[0-9]+/));
-            var paperWid = num(getstyle(paperExists).width.match(/[0-9]+/));
+            var leftSide = gLeftPos; //num(getstyle(frame).left.match(/[0-9]+/));
+            var paperWid = gImageWidth; //num(getstyle(paperExists).width.match(/[0-9]+/));
             var rightSide = leftSide + paperWid;
             var topSide = num(getstyle(frame).top.match(/[0-9]+/));
             var bottomSide = 
@@ -704,9 +705,10 @@ function checklineup() {
                 topSide < dPosY &&
                 dPosY < bottomSide ) {
                 
+                var fansWid = gFansWid; 
                 var fans = doc.getElementById("fans");
-                var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
-                var center = mat.floor(leftSide) + paperWid/2 + fansWid/2 - boxWidth; 
+                //var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
+                var center = mat.round(leftSide + paperWid/2 - fansWid/2 + bxWid/7); 
                 //alert("leftside = " + leftSide + " paperWid: " + paperWid + " fansWid: " + fansWid + " boxWidth: " + boxWidth);
                 //alert("on paper center = " + center);
                 dHelperIdx.style.left = center + "px";
@@ -795,10 +797,9 @@ function checklineup() {
                     if( ntermedIdx === 0 ) {
                         fans.setAttribute("name","mult");
                     }
-                    var newId = "add";
-                    
-                    //var dTbl = createTable(newId, ntermedIdx, false, putHere, center );
-                    var dTbl = createTable(newId, ntermedIdx, true, putHere, center );
+                    var whatName = "add";
+                    var newId = "ntermed" + ntermedIdx;
+                    var dTbl = createTable(whatName, newId, true, putHere, center, 7 );
                     //doc.getElementById("statusBox" + x).innerHTML = "add bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
                     //x = (x + 1)%nSbxs;
                     putHere = mat.round(putHere - linespace);
@@ -809,9 +810,10 @@ function checklineup() {
                 } else if( nFactors > 2 ) {
                     singDigMul = true;
                     noIntermeds = false;
-                    newId = "mult";
+                    var whatName = "mult";
                     
-                    var dTbl = createTable( newId, ntermedIdx, true, putHere, center );
+                    var newId = "ntermed" + ntermedIdx;
+                    var dTbl = createTable(whatName, newId, true, putHere, center, 7 );
                     //doc.getElementById("statusBox" + x).innerHTML = "mult bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
                     //x = (x + 1)%nSbxs;
                     putHere = mat.round(putHere - linespace);
@@ -834,10 +836,10 @@ function checklineup() {
                         }
                         // create 2+ table rows of answer boxes
                         for( var dgt = nDgts-1; dgt >=0; --dgt ) {
-                            var newId = "mult" + dgt;
+                            var whatName = "mult" + dgt;
                             putHere = mat.round(putHere - linespace);
-                            //var dTbl = createTable(newId, ntermedIdx, dgt === 0, putHere, center );
-                            var dTbl = createTable(newId, ntermedIdx, true, putHere, center );
+                            var newId = "ntermed" + ntermedIdx;
+                            var dTbl = createTable(whatName, newId, true, putHere, center, 7 );
                             //doc.getElementById("statusBox" + x).innerHTML = "mult" + dgt + " bx at y: " + putHere + " plaidIdx: " + plaidIdx + " id: " + newId;
                             //x = (x + 1)%nSbxs;
                             plaids[plaidIdx] = dTbl;
@@ -923,12 +925,12 @@ function putBar(more2left, putHere) {
     bar.setAttribute("style", styles);
     bar.setAttribute("name","paperBar");
 }
-function createTable(whatName, ntermedIdx, focusHere, putHere, fansleft ) {
+function createTable(whatName, newId, focusHere, putHere, fansleft, nBxs ) {
     var doc = document;
     
     var dTbl = doc.createElement("table");
     var dBox = doc.createElement("tr");
-    var newId = "ntermed" + ntermedIdx;
+    //var newId = "ntermed" + ntermedIdx;
     dTbl.setAttribute("id", newId);
     dTbl.setAttribute("class","ntrmed");
     dTbl.setAttribute("name",whatName);
@@ -937,8 +939,8 @@ function createTable(whatName, ntermedIdx, focusHere, putHere, fansleft ) {
     dBox.style.margin = 0;
     doc.body.appendChild(dTbl);
     dTbl.appendChild(dBox);
-    var nBxs = 7;
-    var leasDig = 6;
+    //var nBxs = 7;
+    var leasDig = nBxs - 1;
     for( var i = 0; i < nBxs; ++i ) {
         var td = doc.createElement("td");
         td.style.margin = 0;

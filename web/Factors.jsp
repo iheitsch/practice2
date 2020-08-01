@@ -13,8 +13,11 @@
         <link rel="stylesheet" href="Factors.css" type="text/css">
         <script src="Factors.js"></script>
         <script src="drag3d.js"></script>
+        <script src="Open.js"></script>
     </head>
     <body id="thisbody">
+    <form id="th-id3" onsubmit="return false;">
+    <a href="javaScript:{openNewWindow( whatHints );}">Click Here for Hints</a>
         <% 
             // this needs some serious commenting so I know how to modify distribution fixit
         final int MAXBOXES = 5000; // one too many 0s fixit
@@ -524,7 +527,8 @@
 
         
              %>    
-            <input type="<%=itype%>" id="<%=catIdx%>" value="<%=cat[idx]%>" class="cat">
+
+             <input type="<%=itype%>" id="<%=catIdx%>" value="<%=cat[idx]%>" class="cat">
             <input type="<%=itype%>" id="<%=whiteIdx%>" value ="<%=nWhiteIdx%>" >
             <input type="<%=itype%>" id="<%=magentaIdx%>" value ="<%=nMagentaIdx%>" >
             <input type="<%=itype%>" id="<%=redIdx%>" value ="<%=nRedIdx%>" >
@@ -639,18 +643,7 @@ for( int row = 0; row < maxrow; ++row ) { %>
     <div id="paperFrame">   
         <label id="finstr0"></label>       
         <label id="finstr1"></label>       
-	<table id="fans">
-        <tr>
-		<td class="nomargin"><input class="onewide"  disabled></input></td>
-                <td class="nomargin"><input class="onewide"  disabled></input></td>
-                <td class="nomargin"><input class="onewide"  disabled></input></td>
-                <td class="nomargin"><input class="onewide"  disabled></input></td>
-                <td class="nomargin"><input class="onewide"  disabled></input></td>
-                <td class="nomargin"><input class="onewide"  disabled></input></td>
-                <td class="nomargin"><input class="onewide"  disabled></input></td>
-                <td class="nomargin"><input class="onewide"  disabled></input></td>
-	</tr>
-        </table>
+
     </div>
     <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
     <table id="statusTable">
@@ -660,5 +653,6 @@ for( int row = 0; row < maxrow; ++row ) { %>
     <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
 <% } %>
     </table>
+    </form>
     </body>
 </html>

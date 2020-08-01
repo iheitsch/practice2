@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+var whatHints = 'FactorsHints.html';
 var allprimes = [    2,  3,  5,  7, 11, 
                     13, 17, 19, 23, 29, 
                     31, 37, 41, 43, 47, 
@@ -52,6 +53,8 @@ var instr2txt;
 var gPutHere = 0;
 var gNfactors = 0;
 var firstUp = false;
+var gFansWid = 80;
+var gLeftPos = 0;
 
 //  "oc delete all --all" from command line removes entire application
 //  so you can upload a new one
@@ -60,6 +63,8 @@ var firstUp = false;
 //  
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
+// 
+// it's possible to type in onewide boxes and get a false error message for a T/F question fixit
 //
 // dragging boxes to paper zeroes out onewides without actually clearing them fixit
 // 
@@ -119,26 +124,39 @@ function askSqrt( val, root ) {
     doc.getElementById("finstr0").innerHTML = "What is the square root of " + val + "?";
     doc.getElementById("finstr1").style.color = "white";
     gprod = root;
-    doc.getElementById("leasDig").focus();
+    //doc.getElementById("leasDig").focus();
 }
 function blank() {
-    var allBoxes = document.getElementsByClassName("onewide");
+    //var table = document.getElementById("fans").tagName;
+    //var row = document.getElementById("fans").childNodes[0].tagName;
+    //alert("in blank, table: " + table + " row: " + row);
+    var allBoxes = document.getElementById("fans").childNodes[0].childNodes;//document.getElementsByClassName("onewide");
     var l = allBoxes.length;
+    var leasDig = l - 1;
     for( var i = 0; i < l; ++i ) {
-        var whatBx = allBoxes[i];
+        var whatBx = allBoxes[i].childNodes[0];
         whatBx.value = "";
+        whatBx.disable = false;
         whatBx.style.color = "#0c2a5a";
-        whatBx.style.backgroundColor = "white"; //#e2eeeb";
+        whatBx.style.backgroundColor = "#e2eeeb";
+        if( i === leasDig ) {
+            whatBx.focus();
+        }
     }
     
 }
 function putBoxesBack() {
     var doc = document;
+    var win = window;
+    var num = Number;
+    var mat = Math;
     //for( x = 0; x < nSbxs; ++x ) {
         //doc.getElementById("statusBox" + x).innerHTML = "";
     //}
     //x = 0;
-    
+    //for( x = 0; x < nSbxs; ++x ) {
+        //d
+    //alert("in putboxes back removing bars");
     var paperBars = doc.getElementsByName("paperBar");
     var l = paperBars.length;
     for( var i = 0; i < l; ++i ) {
@@ -148,12 +166,22 @@ function putBoxesBack() {
 
     var pboxes = doc.getElementsByClassName("ntrmed");
     var l = pboxes.length;
-    for( var i = 0; i < l; ++i ) {
-        var parent = pboxes[0].parentNode;
-        parent.removeChild( pboxes[0] );
+    var start = 0;
+    if( pboxes[0].id === "fans" ) {
+        start = 1;
     }
-    
-    gPutHere = getPos(doc.getElementById("fans")).y;
+    for( var i = start; i < l; ++i ) {
+        //doc.getElementById("statusBox" + x).innerHTML = "pbox id: " + pboxes[0].id;
+        //x = x + 1;
+        if( pboxes[start].id !== "fans" ) {
+            var parent = pboxes[start].parentNode;
+            parent.removeChild( pboxes[start] );
+        }
+    }
+    //alert("in putboxes back removed ntermeds");
+    var hgt = num(win.innerHeight);
+    //var imgHgt = mat.floor(0.37*hgt); //0.45*hgt);
+    gPutHere = 0.95*num(hgt); //getPos(doc.getElementById("fans")).y;
     gNfactors = 0;
     gPlaidIdx = 0;
     gNtermedIdx = 0;
@@ -167,7 +195,7 @@ function putBoxesBack() {
         var whatBx = dBoxes[i];  
         if( whatBx ) {
             var whatPos = whatBx.getAttribute("moved");
-            var displaced = whatPos === "pos2"; // if you move it but don't place it on the paper, it never gets "moved" attribute set to pos2 fixit
+            var displaced = whatPos !== "pos1"; // if you move it but don't place it on the paper, it never gets "moved" attribute set to pos2 fixit
             //alert("whatBx[" + i + "] position: " + whatPos + " displaced: " + displaced);
             if( displaced ) {
                 var homeLeft = whatBx.getAttribute("backHomeX");
@@ -186,15 +214,18 @@ function putBoxesBack() {
         }
     }
     doc.getElementById("leasDig").focus();
+    return false;
 }
 function whiteout() {
-    var allBoxes = document.getElementsByClassName("onewide");
+    var allBoxes = document.getElementById("fans").childNodes[0].childNodes;//document.getElementsByClassName("onewide");
     var l = allBoxes.length;
     for( var i = 0; i < l; ++i ) {
         //doc.getElementById("statusBox" + x).innerHTML = "in eraseAll doingMults: " + doingMults + " len: " + l + " allBoxes[" + i + "]: " + allBoxes[i].value;
         //x = (x + 1)%nSbxs;
-        allBoxes[i].value = "";
-        allBoxes[i].style.backgroundColor = "white"; 
+        var whatBx = allBoxes[i].childNodes[0];
+        whatBx.value = "";
+        whatBx.style.backgroundColor = "white";
+        whatBx.disable = true;
     }
 }
 function checkTorF( ev ) {
@@ -214,7 +245,7 @@ function checkTorF( ev ) {
             alert("No. Press 'Enter' to Continue.");
 	}
     }
-    document.getElementById("leasDig").focus();
+    //document.getElementById("leasDig").focus();
     askQuestions();
 }
 function rmTorF() {
@@ -556,6 +587,7 @@ function askQuestions() {
             validQues = askTorF( doc.getElementById("g0_7").value, doc.getElementById("g0_4").value );
             //validQues = askTorF( GREEN, RED );
         } else {
+            blank();
 	    var sqCount = 0;
 	    var col = 1;
 	    var inc = 3;
@@ -1055,19 +1087,22 @@ function passFocus( ev ) {
         var parentNode = parents[i];
         var foundCurrentBx = false;
 	while( ( parentNode = parents[i]).NodeType !== 1 ) {
-		if( parentNode.tagName === "TD" ) {
-            var children = parentNode.childNodes;
-            thisBox = children[0];
-            if( foundCurrentBx ) {
-                thisBox.value = "";
-                thisBox.focus();
-                break;
+            if( parentNode.tagName === "TD" ) {
+                var children = parentNode.childNodes;
+                thisBox = children[0];
+                if( foundCurrentBx ) {
+                    thisBox.value = "";
+                    thisBox.focus();
+                    break;
+                }
+                if( thisBox === ansBx ) {
+                    foundCurrentBx = true;
+                }
             }
-            if( thisBox === ansBx ) {
-		foundCurrentBx = true;
-            }
-		}
             ++i;
+            if( !parents[i] ) {
+                return;
+            }
 	}
     } else if (ev.which === 13 || ev.keyCode === 13) { // return
         checkBackM(ev);
@@ -1101,7 +1136,7 @@ function setPaper() {
     var num = Number;
     var win = window;
     var mat = Math;
-    var getStyle = getComputedStyle;
+    //var getStyle = getComputedStyle;
     var instr0 = doc.getElementById("instr0");
     var instr1 = doc.getElementById("instr1");
     var instr2 = doc.getElementById("instr2");
@@ -1115,7 +1150,8 @@ function setPaper() {
     instr1.innerHTML = instr1txt;
     instr2.innerHTML = instr2txt;
     var frame = doc.getElementById("paperFrame");
-    var fans = doc.getElementById("fans");
+
+    //doc.getElementById("fans");
     var graphP = doc.createElement("img");
     graphP.style.position = "absolute";
     
@@ -1130,18 +1166,22 @@ function setPaper() {
         imgWid += 1;
     }
     graphP.style.width = imgWid + "px";
-    var leftPos = 0.31*wid; //0.27*wid; // needs to clear both factor table
+    var leftPos = mat.round(0.31*wid); //0.27*wid; // needs to clear both factor table
                                         // and circles image on all browsers
 	//leftPos = mat.round(0.34*wid);
     frame.style.left = leftPos + "px";  
     frame.style.top = topPos + "px";
     
     var pfansleft = 0.35*imgWid;
-    var fansWid = num(getStyle(fans).width.match(/[0-9]+/));
-    var fansleft = imgWid/2 - fansWid/2; // centered
+    var fansWid = gFansWid; //num(getStyle(fans).width.match(/[0-9]+/));
+    
+    var fansleft = mat.round(leftPos + imgWid/2 - fansWid/2); // centered
     //alert("imgWid: " + imgWid + " fansWid: " + fansWid + " fansleft: " + fansleft + " pfansleft: " + pfansleft);
-    var fleftStr = fansleft + "px";
-    fans.style.left = fleftStr;
+    //var fleftStr = fansleft + "px";
+    var putHere = 0.95*num(hgt);
+    //alert("imgWid: " + imgWid + " fansWid: " + fansWid + " fansleft: " + fansleft + " pfansleft: " + pfansleft + " puthere: " + putHere);
+    var fans = createTable("", "fans", true, putHere, fansleft, 8 );
+    //fans.style.left = fleftStr;
     var clr = doc.createElement("button");
     clr.innerHTML = "Erase";
     clr.onclick=putBoxesBack;
@@ -1155,8 +1195,8 @@ function setPaper() {
         //var frame = doc.getElementById("circles");
         //var img = frame.childNodes[0];
         //img.insertBefore(restrtbtn, img.childNodes[0]);
-    topPos = getPos(fans).y;
-    gPutHere = topPos;
+    //topPos = getPos(fans).y;
+   //gPutHere = topPos;
     var finalIns0 = doc.getElementById("finstr0");
     var finalIns1 = doc.getElementById("finstr1");
     finalIns0.style.color = "#0c2a5a";
@@ -1172,27 +1212,27 @@ function setPaper() {
     graphP.src = 'Images/allwhite.png';
     graphP.id = "graphPaper";
 
-    var ansBx = doc.getElementsByClassName("onewide");
-    var nBxs = ansBx.length;
-    var leasDig = nBxs - 1;
-    for( var i = 0; i < nBxs; ++i ) {
-        var nput = ansBx[i];
-        if( nput ) {
-            nput.onkeyup=passFocus;
+    //var ansBx = doc.getElementsByClassName("onewide");
+    //redBox
+    var allBoxes = fans.childNodes[0].childNodes;
+    var len = allBoxes.length;
+    var leasDig = len - 1;
+    for( var i = 0; i < len; ++i ) {
+        if( allBoxes[i].tagName === "TD" ) {
+            var nput = allBoxes[i].childNodes[0];
             nput.disabled = false;
             nput.style.backgroundColor = "#e2eeeb";
-            if( i === leasDig ) {
-                doc.activeElement.blur();
-                //nput.style.background = "pink";
-                nput.focus();
-                nput.onkeydown=eraseAll;
+            if( i === leasDig ){ //|| allBoxes[i].childNodes[0].id === "leasDig") {
 		nput.id = "leasDig";
             }
         }
     }
+
+    gLeftPos = leftPos;
     gImageWidth = imgWid;
     gImageHeight = imgHgt;
     doingMults = false;
+    gPutHere = putHere;
     var howManySquares = 0;
     var blueRoot = mat.sqrt(num(doc.getElementById("g0_1").value));
     var redRoot = mat.sqrt(num(doc.getElementById("g0_4").value));
@@ -1210,7 +1250,9 @@ function setPaper() {
     var lques = NQUES - 3 + howManySquares;
     NQUES = lques;
     noMoreStpdQstns = false;
-    doc.getElementById("leasDig").focus();
+    
+    //doc.getElementById("leasDig").focus();
+    //alert("finishing setPaper about to ask questions");
     askQuestions();
 }
 function checkBackM( ev ) { // check multiplication entered in arrays
@@ -1227,8 +1269,8 @@ function checkBackM( ev ) { // check multiplication entered in arrays
     var boxesdragged = boxesDragged;
     //
     //alert("answer:" + answer + " gprod: " + gprod + " boxesdragged: " + boxesdragged + " gans: " + gans);
-    var ancestor = greatgparent.parentNode;
-    var srcid = ancestor.id;
+    //var ancestor = greatgparent.parentNode;
+    var srcid = greatgparent.id;
     if( (answer === gprod && !boxesdragged) || (answer === gans && boxesdragged) ) {
 
         //var srcnm = ancestor.name;
@@ -1263,14 +1305,14 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     alert("Correct. Press 'Enter' to continue.");
                     //x = (x + 1)%nSbxs;
                     noIntermeds = true; 
-                    var leasDig = doc.getElementById("leasDig");
-                    leasDig.focus();
+                    //var leasDig = doc.getElementById("leasDig");
+                    //leasDig.focus();
                     askQuestions();    
                 }
             } else {
                 alert("Correct. Press 'Enter' to continue."); 
-                var leasDig = doc.getElementById("leasDig");
-                leasDig.focus();
+                //var leasDig = doc.getElementById("leasDig");
+                //leasDig.focus();
                 askQuestions();
             }
         }
@@ -1404,8 +1446,8 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                 }
                 nextBox = doc.getElementById("fans");
                 //noIntermeds = true;  // not yet, need to compare multiplication with actual answer
-                var leasDig = doc.getElementById("leasDig");
-                leasDig.focus();
+                //var leasDig = doc.getElementById("leasDig");
+                doc.getElementById("leasDig").focus();
             } else {
                 //doc.getElementById("statusBox" + x).innerHTML = "focusing on ntermed" + nextId;
                 //x = (x + 1)%nSbxs;
@@ -1555,11 +1597,11 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     }
                 }
             }
-            alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
-            //alert("Entered: " + answer + ", should be: gprod" + gprod + " DoingMults: " + doingMults + ". Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
+            alert("Entered: " + answer + ", should be: gprod" + gprod + " DoingMults: " + doingMults + ". Press 'Enter' to continue.");
         } else if( srcid === "fans" ) { 
              //var allBoxes = doc.getElementsByClassName("onewide"); // onewide s are inputs, childNodes are TDs
-            var kids = greatgparent.childNodes[0].childNodes;
+         /*   var kids = greatgparent.childNodes[0].childNodes;
             var l = kids.length;
             var allBoxes = new Array();
             var r = 0;
@@ -1569,12 +1611,13 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     allBoxes[r] = kids[q];
                     ++r;
                 }
-                //doc.getElementById("statusBox" + x).innerHTML = "kid[" + q + "]: " + t;
-                //x = (x + 1)%nSbxs;
-            }
+                doc.getElementById("statusBox" + x).innerHTML = "kid[" + q + "]: " + t;
+                x = (x + 1)%nSbxs;
+            } */
+            var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
-            alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
-            //alert("Entered: " + answer + ", should be gprod: " + gprod + " gans: " + gans + " srcid: " + srcid + "boxesdraged: " + boxesdragged + ". Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
+            alert("Entered: " + answer + ", should be gprod: " + gprod + " gans: " + gans + " srcid: " + srcid + " boxesdraged: " + boxesdragged + ". Press 'Enter' to continue.");
         } else {    
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
@@ -1686,22 +1729,12 @@ function redBoxes( allBoxes ) {
     var len = allBoxes.length;
     var leasDig = len - 1;
     for( var i = 0; i < len; ++i ) {
-        /* var tag = allBoxes[i].tagName;
-                        doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " tag: " + tag;
-                x = (x + 1)%nSbxs;
-                if( parentNode.tagName === "TD" ) {
-                    var allBoxes = parentNode.childNodes;
-                    allBoxes[0].style.color = "red";
-                    if( i === leasDig ) {
-                        allBoxes[0].focus();
-                    }
-                } */
         if( allBoxes[i].tagName === "TD" ) {
             allBoxes[i].childNodes[0].style.color = "red";
             var val = allBoxes[i].childNodes[0].value;
             //doc.getElementById("statusBox" + x).innerHTML = "allBoxes[" + i + "]: " + val + " leasDig: " + leasDig;
             //x = (x + 1)%nSbxs;
-            if( i === leasDig || allBoxes[i].childNodes[0].id === "leasDig") {
+            if( i === leasDig ){ //|| allBoxes[i].childNodes[0].id === "leasDig") {
                 allBoxes[i].childNodes[0].focus();
             }
         }
@@ -1796,11 +1829,11 @@ function check( ev ) { // checks original factorization
                             var water = "#3961a2"; //"#3f66a1";
                             doc.body.style.backgroundColor = "#3961a2";
                             //doc.body.style.backgroundColor = "#295192"; // debug resize
-                            var onewides = doc.getElementsByClassName("onewide");
-                            var len = onewides.length;
-                            for( var i = 0; i < len; ++i ) {
-                                onewides[i].style.backgroundColor = "#3961a2";
-                            }
+                            //var onewides = doc.getElementsByClassName("onewide");
+                            //var len = onewides.length;
+                            //for( var i = 0; i < len; ++i ) {
+                            //    onewides[i].style.backgroundColor = "#3961a2";
+                            //}
                             var win = window;
                             var hgt = num(win.innerHeight);
                             var wid = num(win.innerWidth);
@@ -1827,6 +1860,7 @@ function check( ev ) { // checks original factorization
                             img.src = 'Images/factors.png'; // "url('Images/factors.png')";
                             doc.getElementById("instr1").style.color = "#3961a2";
                             doc.getElementById("instr2").style.color = "#3961a2";
+                            whatHints = 'FactorsHints2.html';
                             var links = document.getElementsByTagName("a");
                             len = links.length;
                             for(var i=0;i<links.length;i++) {
