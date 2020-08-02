@@ -47,21 +47,37 @@ td{
 th{
     width: 28em;
 }
+.blackbox{
+    width: 5em;
+    text-align: center;
+    color: black;
+    background-color: #f0f4f9;
+    border-top-color: #2E7FA7;
+    border-left-color: #2E7FA7;
+    border-bottom-color: #D6DAD8;
+    border-right-color: #D6DAD8;
+    font: inherit;
+}
 .blank{
     width: 2em;
     height: 1.4em;
     height: 20px;
 }
-.dragBox{
-    margin: 0px;
-    position: absolute;
-    border-collapse: collapse;
+.d5{
+    position: fixed;
+    top: 1%;
+    right: 1%;
 }
 .dead{
     margin: 0px;
     position: absolute;
     border-collapse: collapse;
     background-color: orange;
+}
+.dragBox{
+    margin: 0px;
+    position: absolute;
+    border-collapse: collapse;
 }
 .ghost{
     margin: 0px;

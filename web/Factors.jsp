@@ -16,7 +16,7 @@
         <script src="Open.js"></script>
     </head>
     <body id="thisbody">
-    <form id="th-id3" onsubmit="return false;">
+    <form id="th-id2">
     <a href="javaScript:{openNewWindow( whatHints );}">Click Here for Hints</a>
         <% 
             // this needs some serious commenting so I know how to modify distribution fixit
@@ -612,9 +612,84 @@ for( int row = 0; row < maxrow; ++row ) { %>
             } %>
             </tr>
             
-<%      } %>
+<%      } 
+    String numAttmptdV = "0";
+    String numWoErr = "0";
+    String consWoErr = "0";
+    String corrPerHr = "0";
+    String strtTime = String.valueOf(System.currentTimeMillis());
+    String errs = "0";
+    String tmp = "";      // temporary storage for newly gotten 
+                          // request parameter
+
+    //retrieves the value of the DOM object with name="numAttmptdP"
+    if(( tmp = request.getParameter("numAttmptdP")) != null) {
+        numAttmptdV = tmp.toString();
+    }
+    
+    if(( tmp = request.getParameter("numWoErrP")) != null) {
+        numWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("consWoErrP")) != null) {
+        consWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("corrPerHrP")) != null) {
+        corrPerHr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("strtTimeP")) != null) {
+        strtTime = tmp.toString();
+    } 
+
+%>
 
     </table>
+<input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
+<div class="d5">
+<table>
+<tr>    
+    <td><label>Sets Attempted</label></td>
+    <td>
+    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Completed Without Error</label></td>   
+    <td>
+    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Consecutive Without Error</label></td>   
+    <td>
+    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Correct Per Hour</label></td>   
+    <td>
+    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Errors This Set</label></td>
+    <td><input type="text" id="errs" name="errs" value="<%=errs%>"
+               class="blackbox"></td>
+</tr>
+<tr>
+<td>
+<button type="reset" value="Reset" onclick="startAgain()" >Next Set</button>
+ </td>
+<td></td>
+</tr>
+</table>
+</div>
     <div id="home">
         <a href="/" class="ndx">Home</a>
     </div>

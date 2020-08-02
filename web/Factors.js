@@ -55,6 +55,7 @@ var gNfactors = 0;
 var firstUp = false;
 var gFansWid = 80;
 var gLeftPos = 0;
+var completedSet = false;
 
 //  "oc delete all --all" from command line removes entire application
 //  so you can upload a new one
@@ -63,6 +64,9 @@ var gLeftPos = 0;
 //  
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
+// 
+// started to drag 2 to blue but put it off until last, now it won't let me;
+// wants me to multiply sections
 // 
 // it's possible to type in onewide boxes and get a false error message for a T/F question fixit
 //
@@ -80,8 +84,6 @@ var gLeftPos = 0;
 // 
 // inputs can be edited or they cannot be dragged. need to create something that
 // looks like an input but is not fixit
-// 
-// need a clear the board button fixit
 //   
 // add a note somewhere: computer doesn't judge. It will tell you if you have an
 // incorrect answer, but don't take it personally, it's a machine, it doesn't 
@@ -124,12 +126,8 @@ function askSqrt( val, root ) {
     doc.getElementById("finstr0").innerHTML = "What is the square root of " + val + "?";
     doc.getElementById("finstr1").style.color = "white";
     gprod = root;
-    //doc.getElementById("leasDig").focus();
 }
 function blank() {
-    //var table = document.getElementById("fans").tagName;
-    //var row = document.getElementById("fans").childNodes[0].tagName;
-    //alert("in blank, table: " + table + " row: " + row);
     var allBoxes = document.getElementById("fans").childNodes[0].childNodes;//document.getElementsByClassName("onewide");
     var l = allBoxes.length;
     var leasDig = l - 1;
@@ -143,7 +141,6 @@ function blank() {
             whatBx.focus();
         }
     }
-    
 }
 function putBoxesBack() {
     var doc = document;
@@ -154,8 +151,6 @@ function putBoxesBack() {
         //doc.getElementById("statusBox" + x).innerHTML = "";
     //}
     //x = 0;
-    //for( x = 0; x < nSbxs; ++x ) {
-        //d
     //alert("in putboxes back removing bars");
     var paperBars = doc.getElementsByName("paperBar");
     var l = paperBars.length;
@@ -171,8 +166,6 @@ function putBoxesBack() {
         start = 1;
     }
     for( var i = start; i < l; ++i ) {
-        //doc.getElementById("statusBox" + x).innerHTML = "pbox id: " + pboxes[0].id;
-        //x = x + 1;
         if( pboxes[start].id !== "fans" ) {
             var parent = pboxes[start].parentNode;
             parent.removeChild( pboxes[start] );
@@ -180,8 +173,7 @@ function putBoxesBack() {
     }
     //alert("in putboxes back removed ntermeds");
     var hgt = num(win.innerHeight);
-    //var imgHgt = mat.floor(0.37*hgt); //0.45*hgt);
-    gPutHere = 0.95*num(hgt); //getPos(doc.getElementById("fans")).y;
+    gPutHere = 0.95*num(hgt);
     gNfactors = 0;
     gPlaidIdx = 0;
     gNtermedIdx = 0;
@@ -195,8 +187,7 @@ function putBoxesBack() {
         var whatBx = dBoxes[i];  
         if( whatBx ) {
             var whatPos = whatBx.getAttribute("moved");
-            var displaced = whatPos !== "pos1"; // if you move it but don't place it on the paper, it never gets "moved" attribute set to pos2 fixit
-            //alert("whatBx[" + i + "] position: " + whatPos + " displaced: " + displaced);
+            var displaced = whatPos !== "pos1";
             if( displaced ) {
                 var homeLeft = whatBx.getAttribute("backHomeX");
                 var homeTop = whatBx.getAttribute("backHomeY");
@@ -207,7 +198,6 @@ function putBoxesBack() {
                 //    styles = styles + "backgroundColor:  #b4c5e2";
                 //} // this doesn't work, reverts to element background color
                 whatBx.setAttribute("style", styles);
-                //alert("homeLeft: " + homeLeft + " homeTop: " + homeTop );
                 whatBx.setAttribute("moved", "pos1");
                 whatBx.disabled = false;
             }
@@ -217,11 +207,9 @@ function putBoxesBack() {
     return false;
 }
 function whiteout() {
-    var allBoxes = document.getElementById("fans").childNodes[0].childNodes;//document.getElementsByClassName("onewide");
+    var allBoxes = document.getElementById("fans").childNodes[0].childNodes;
     var l = allBoxes.length;
     for( var i = 0; i < l; ++i ) {
-        //doc.getElementById("statusBox" + x).innerHTML = "in eraseAll doingMults: " + doingMults + " len: " + l + " allBoxes[" + i + "]: " + allBoxes[i].value;
-        //x = (x + 1)%nSbxs;
         var whatBx = allBoxes[i].childNodes[0];
         whatBx.value = "";
         whatBx.style.backgroundColor = "white";
@@ -231,40 +219,39 @@ function whiteout() {
 function checkTorF( ev ) {
     ev = ev || window.event;
     var ansBtn = ev.target;
+    var doc = document;
 
     if( ansBtn.id === "True" ) {
 	if( isTrue ) {
             alert("Correct. Press 'Enter' to Continue.");
 	} else {
             alert("No. Press 'Enter' to Continue.");
+            var errs = num(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
 	}
     } else {
 	if( !isTrue ) {
             alert("Correct. Press 'Enter' to Continue.");
 	} else {
             alert("No. Press 'Enter' to Continue.");
+            var errs = num(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
 	}
     }
-    //document.getElementById("leasDig").focus();
     askQuestions();
 }
 function rmTorF() {
     var doc = document;
     
     var TorF = doc.getElementById("TorF");
-    
-    //alert("removing TorF: " + TorF );
     if( TorF ) {
         var parent = TorF.parentNode;
 	var allKids = TorF.childNodes;
 	var len = allKids.length;
-        //alert("removing all " + len + " children of TorF");
 	for( var i = 0; i < len; ++i ) {
 	    var whichKid = allKids[0];
             var whichParent = whichKid.parentNode;
 	    whichParent.removeChild( whichKid );
-	    var newlen = whichParent.childNodes.length;
-            //alert("i: " + i + " new length " + newlen);
 	}
         parent.removeChild(TorF);
     }
@@ -279,7 +266,7 @@ function askTorF( s1, s2 ) {
     var imgWid = gImageWidth;
     var imgHgt = gImageHeight;
     var bWid = 0.125*imgWid;
-    var bHgt = .05*imgHgt; //0.03*Number(window.innerHeight); 
+    var bHgt = .05*imgHgt;
     var bTop = 6*bHgt;
     var bLeft = 0.1875*imgWid;
 
@@ -292,10 +279,7 @@ function askTorF( s1, s2 ) {
     }
     instruction1 = op1 + instruction1 + op2;
     isTrue = chooseM? op1%op2 === 0 : op2%op1 === 0;
-    //var onesmall = op1 < op2;
-    //var onebig = op1 > op2;
     var stupidQuestion = (chooseM && (op1 < op2)) || (!chooseM && (op1 > op2));
-    //alert("stupid question? " + stupidQuestion  + " onesmall: " + onesmall + " onebig: " + onebig + " chooseM: " + chooseM + " no more? " + noMoreStpdQstns);
     if( stupidQuestion ) {
         if( noMoreStpdQstns ) {
             doc.getElementById("leasDig").focus();
@@ -343,7 +327,6 @@ function askTorF( s1, s2 ) {
 	    + "left: " + bLeft + "px;";
     tBtn.setAttribute("style", styles);
     tBtn.onclick = checkTorF;
-    //alert("T or F op1: " + op1 + ", op2: " + op2 + " styles: " + styles );
 	
     bLeft = bLeft + 2*bWid;
     var fLbl = doc.createElement("label");
@@ -397,13 +380,14 @@ function askQuestions() {
         //allDone = true;
         // Refresh your browser doesn't work for firefox, still has old values
         doc.getElementById("finstr0").innerHTML = "All Done.";
-        doc.getElementById("finstr1").innerHTML = "Refresh your browser window to go again.";
+        doc.getElementById("finstr1").innerHTML = "Click 'Next Set' to go again.";
         doc.getElementById("instr0").style.color = "#3961a2";
         doc.getElementById("instr1").style.color = "#3961a2";
         doc.getElementById("instr2").style.color = "#3961a2";
 	whiteout();
         putBoxesBack();
         doc.activeElement.blur();
+        completedSet = true;
         // turn this into a restart button
         //<a href="Factors.jsp">Go to Factors page</a>
         // can't see it when I inspect, no errors show in colsole
@@ -447,145 +431,102 @@ function askQuestions() {
     }
 
     alreadyasked[whichQues] = true;
-//    var whichBit = 1 << whichQues;
-//    indicator = indicator | whichBit
-//    doc.getElementById("statusBox" + x).innerHTML = "whichQues: " + whichQues;
-//    x = (x + 1)%nSbxs;
-//    doc.getElementById("statusBox" + x).innerHTML = "indicator: " + indicator.toString(16);
-//    x = (x + 1)%nSbxs;
+
     validQues = true;
 
     if( whichQues < 1 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_1").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_4").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = magentafactor*whitefactor;
-	    //doc.getElementById("leasDig").focus();
-        //askNum( BLUE, RED, expAns );
     } else if( whichQues < 2 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_4").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = yellowfactor*whitefactor;
-	    //doc.getElementById("leasDig").focus();
-        //askNum( RED, GREEN, expAns );
      } else if( whichQues < 3 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_1").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = cyanfactor*whitefactor;
-	    //doc.getElementById("leasDig").focus();
-        //askNum( BLUE, GREEN, expAns );
      } else if( whichQues < 4 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_1").value;
         inStr1 = inStr1 + ", " + doc.getElementById("g0_4").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         gprod = whitefactor;
-	    //doc.getElementById("leasDig").focus();
-        //askNum( BLUE, RED, GREEN, expAns );
      } else if( whichQues < 5 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_1").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_4").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*yellowfactor*bluefactor*redfactor;
         gprod = expAns*cyanfactor*magentafactor;
-	    //doc.getElementById("leasDig").focus();
-        //askNum( BLUE, RED, expAns );
      } else if( whichQues < 6 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_4").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*yellowfactor*greenfactor*redfactor;
         gprod = expAns*cyanfactor*magentafactor;
-	    //doc.getElementById("leasDig").focus();
-        //askNum( RED, GREEN, expAns );
      } else if( whichQues < 7 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_1").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*cyanfactor*bluefactor*greenfactor;
         gprod = expAns*yellowfactor*magentafactor;
-	   //doc.getElementById("leasDig").focus();
-        //askNum( BLUE, GREEN, expAns );
      } else if( whichQues < 8 ) {
 	blank();
         putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
-        //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
         var inStr1 = doc.getElementById("g0_1").value;
         inStr1 = inStr1 + ", " + doc.getElementById("g0_4").value;
         inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-        //doc.getElementById("instr1").innerHTML = inStr1;
         doc.getElementById("finstr1").innerHTML = inStr1;
         expAns = whitefactor*yellowfactor*greenfactor*redfactor;
         gprod = expAns*cyanfactor*magentafactor*bluefactor;
-	    //doc.getElementById("leasDig").focus();
-        //askNum( BLUE, RED, GREEN, expAns );
      } else {
 	 whiteout();
          putBoxesBack();
          if( whichQues < 9 ) {
             validQues = askTorF( doc.getElementById("g0_1").value, doc.getElementById("g0_4").value );
-            //validQues = askTorF( BLUE, RED );
          } else if( whichQues < 10 ) {
             validQues = askTorF( doc.getElementById("g0_1").value, doc.getElementById("g0_7").value );
-            //validQues = askTorF( BLUE, GREEN );
          } else if( whichQues < 11 ) {
             validQues = askTorF( doc.getElementById("g0_4").value, doc.getElementById("g0_1").value );
-            //validQues = askTorF( RED, BLUE );
          } else if( whichQues < 12 ) {
             validQues = askTorF( doc.getElementById("g0_4").value, doc.getElementById("g0_7").value );
-            //validQues = askTorF( RED, GREEN );
          } else if( whichQues < 13 ) {
             validQues = askTorF( doc.getElementById("g0_7").value, doc.getElementById("g0_1").value );
-            //validQues = askTorF( GREEN, BLUE );
          } else if( whichQues < 14 ) {
             validQues = askTorF( doc.getElementById("g0_7").value, doc.getElementById("g0_4").value );
-            //validQues = askTorF( GREEN, RED );
         } else {
             blank();
 	    var sqCount = 0;
@@ -638,8 +579,6 @@ var ndx = cdx;
 
 var len = 0;
     var factors;
-    //alert("get multiplying " + ndx);
-    //x = (x + 1)%nSbxs;
     while( len < 2 && ndx < 7 ) {
         // what color section are you multiplying out?
         // load factors array with all the dragboxes in that color section
@@ -1247,6 +1186,7 @@ function setPaper() {
     if( greenRoot === mat.floor( greenRoot ) ) {
 	howManySquares += 1;
     }
+    whatHints = 'FactorsHints3.html';
     var lques = NQUES - 3 + howManySquares;
     NQUES = lques;
     noMoreStpdQstns = false;
@@ -1467,10 +1407,6 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                 parents[leasDig].childNodes[0].focus();
             }
             // set gans
-            var test = whatOp === "add";
-            
-            //doc.getElementById("statusBox" + x).innerHTML = "whatOp: " + whatOp + " test: " + test + " firstUp: " + firstUp;
-            //x = (x + 1)%nSbxs;
             if( whatOp === "add" ) {
                 // find exp from previous mult box
                 // add what? (id = plaid + exp higher indexes)
@@ -1632,7 +1568,7 @@ function evalTbl(whatTable) {
     //var parents = whatTable.childNodes;
     var parents = whatTable.childNodes[0].childNodes;
     var boxLen = 0;
-    var boxes = new Array(); // should i give it a worst case size? fixit
+    var boxes = new Array(8); // should i give it a worst case size? fixit
     var len = parents.length;
     //doc.getElementById("statusBox" + x).innerHTML = "evalTbl len: " + len;
     //x = (x + 1)%nSbxs;
@@ -1731,14 +1667,13 @@ function redBoxes( allBoxes ) {
     for( var i = 0; i < len; ++i ) {
         if( allBoxes[i].tagName === "TD" ) {
             allBoxes[i].childNodes[0].style.color = "red";
-            var val = allBoxes[i].childNodes[0].value;
-            //doc.getElementById("statusBox" + x).innerHTML = "allBoxes[" + i + "]: " + val + " leasDig: " + leasDig;
-            //x = (x + 1)%nSbxs;
-            if( i === leasDig ){ //|| allBoxes[i].childNodes[0].id === "leasDig") {
+            if( i === leasDig ){
                 allBoxes[i].childNodes[0].focus();
             }
         }
     }
+    var errs = Number(doc.getElementById("errs").value);
+    doc.getElementById("errs").value = errs + 1;
 }
 function check( ev ) { // checks original factorization
     ev = ev || window.event;
@@ -1781,10 +1716,6 @@ function check( ev ) { // checks original factorization
                     /* water 57, 97, 162       #3961a2 */
                     ansBx.style.backgroundColor = "#b4c5e2";
                     ansBx.disabled = true;
-                    //var ghost = doc.getElementById( "g" + row + "_" + col );
-                    //ghost.type = "text";
-                    //ghost.value = answer;
-                    //ghost.style.backgroundColor = "#4270b1";
 
                     var notDone = answer !== whatOp; 
                     if( notDone ) { // not done with this column
@@ -1796,11 +1727,6 @@ function check( ev ) { // checks original factorization
                         var nextTd = nextIn.parentNode;
                         nextTd.style.borderLeftColor = "#0c2a5a";
                         nextTd.style.borderBottomColor = "#0c2a5a";
-
-                        //alert("next row: " + row + " next col: " + col);
-                        
-                        //doc.getElementById("statusBox" + x).innerHTML = "foc line 438";
-                        //x = (x + 1)%nSbxs;
                         nextIn.focus();
                         doc.getElementById("instr1").innerHTML = 
                                 "What is " + whatOp + " divided by " + answer + "? (Enter)";
@@ -1820,20 +1746,11 @@ function check( ev ) { // checks original factorization
                             nextTd.style.borderBottomColor = "#0c2a5a";
                             var nextIn = doc.getElementById( "g" + row + "_" + col );
                             nextIn.type = "text";
-                            //doc.getElementById("statusBox" + x).innerHTML = "foc line 438";
-                            //x = (x + 1)%nSbxs;
                             nextIn.focus();
                         } else {
-                            //alert("adding image, labels and testInput");
                             var snow = "#e2eeeb";
                             var water = "#3961a2"; //"#3f66a1";
                             doc.body.style.backgroundColor = "#3961a2";
-                            //doc.body.style.backgroundColor = "#295192"; // debug resize
-                            //var onewides = doc.getElementsByClassName("onewide");
-                            //var len = onewides.length;
-                            //for( var i = 0; i < len; ++i ) {
-                            //    onewides[i].style.backgroundColor = "#3961a2";
-                            //}
                             var win = window;
                             var hgt = num(win.innerHeight);
                             var wid = num(win.innerWidth);
@@ -1848,15 +1765,7 @@ function check( ev ) { // checks original factorization
                             var imgWid = 1.05*imgHgt;
                             img.style.width = imgWid + "px";
                             frame.style.width = imgWid + "px";
-                            //var leftPos = wid - imgWid;
-                            //alert("wid: " + wid + " imgWid: " + imgWid);
-                            //frame.style.left = leftPos + "px";  
-                            //frame.style.top = topPos + "px";
-
-                            //var firstlabel = frame.getElements[0];
-                            //frame.appendChild(img);
                             frame.insertBefore(img, frame.childNodes[0]);
-                            //doc.body.appendChild(frame);
                             img.src = 'Images/factors.png'; // "url('Images/factors.png')";
                             doc.getElementById("instr1").style.color = "#3961a2";
                             doc.getElementById("instr2").style.color = "#3961a2";
@@ -1924,12 +1833,6 @@ function check( ev ) { // checks original factorization
                             cyanLabel4.style.color = "black";
                             cyanLabel4.innerHTML = greenValue;
 
-                            /* var stillBoxes = doc.getElementsByClassName("stillBox");
-                            len = stillBoxes.length;
-                            for( var i = 0; i < len; ++i ) {
-                                stillBoxes[i].style.backgroundColor = water;
-                                stillBoxes[i].style.color = snow;
-                            } */
                             var tds = doc.getElementsByTagName("td");
                             len = tds.length;
                             for( var i = 0; i < len; ++i ) {
@@ -1945,12 +1848,8 @@ function check( ev ) { // checks original factorization
                                         if( (col+2)%3 === 0 ) { 
                                             hasChild.style.backgroundColor = water; // #3961a2"; 
                                             hasChild.style.color = snow; /* snow colored text  */
-                                            /* tds[i].style.backgroundColor = "#3961a2"; /* water colored background */
-                                            /* tds[i].style.color = "#e2eeeb"; /* snow colored divider text  */
                                             var val = num(hasChild.value);
                                             if( val > 1 ) {
-                                                //doc.getElementById("statusBox" + x).innerHTML = "value is " + hasChild.value;
-                                                //++x;
                                                 tds[i].style.borderLeftColor =  snow;
                                                 tds[i].style.borderBottomColor =  snow;
                                             }
@@ -1963,13 +1862,14 @@ function check( ev ) { // checks original factorization
                 } else {
                     ansBx.style.color = "red";    
                     doc.getElementById("instr1").innerHTML = answer + " is not prime.";
+                    var errs = num(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                 }
             } else {
                 ansBx.style.color = "red";   
                 doc.getElementById("instr1").innerHTML = answer + " does not divide " + whatOp + " evenly.";
             }
         } else {
-            //alert("checking division");
             var prevRow = row - 1;
             var prevCol = col - 1;
             var colPlus2;
@@ -1996,6 +1896,8 @@ function check( ev ) { // checks original factorization
             } else {
                 ansBx.style.color = "red";
                 doc.getElementById("instr1").innerHTML = prevOp + " divided by " + prevPrime + " is not " + answer + ".";
+                var errs = num(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
             }
         }
         return false;
@@ -2265,6 +2167,39 @@ window.onload = function(){
         
 	
 };
+// start again button code
+function startAgain() {
+    var doc = document;
+    var Num = Number;
+    
+    var errCt = Num(doc.getElementById("errs").value);
+    var numAttmptd = Num(doc.getElementById("numAttmptd").value);
+    var numWoErr = Num(doc.getElementById("numWoErr").value);
+    var consWoErr = Num(doc.getElementById("consWoErr").value);
+
+    //alert("boxNo = " + boxNo + " max = " + max + " errCt = " + errCt + " errMsg = " + errMsg);
+
+    // update problem counts
+    doc.getElementById("numAttmptd").value = numAttmptd + 1;
+    if( errCt === 0 && completedSet ) {
+            doc.getElementById("numWoErr").value = numWoErr + 1;    
+            doc.getElementById("consWoErr").value = consWoErr + 1;
+    } else {
+        doc.getElementById("consWoErr").value = '0';
+    }
+    
+    var jstime = Num(Date.now());
+    var jatime = Num(doc.getElementById("strtTime").value);
+    var timediff = jstime - jatime;
+    if( timediff === 0 ) {
+        doc.getElementById("corrPerHr").value = 0;
+    } else {
+        doc.getElementById("corrPerHr").value = 
+        Math.floor(3600000*Num(doc.getElementById("numWoErr").value)/timediff);
+    }
+
+    doc.getElementById('th-id2').submit();
+}
 window.onresize = function() {
     setTimeout( function() { movelabels(); }, 1000 );
     
