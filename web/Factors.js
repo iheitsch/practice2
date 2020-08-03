@@ -226,7 +226,7 @@ function checkTorF( ev ) {
             //alert("Correct. Press 'Enter' to Continue.");
 	//} else {
             alert("No. Press 'Enter' to Continue.");
-            var errs = num(doc.getElementById("errs").value);
+            var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
 	}
     } else {
@@ -234,7 +234,7 @@ function checkTorF( ev ) {
             //alert("Correct. Press 'Enter' to Continue.");
 	//} else {
             alert("No. Press 'Enter' to Continue.");
-            var errs = num(doc.getElementById("errs").value);
+            var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
 	}
     }
