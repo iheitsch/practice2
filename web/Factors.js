@@ -222,17 +222,17 @@ function checkTorF( ev ) {
     var doc = document;
 
     if( ansBtn.id === "True" ) {
-	if( isTrue ) {
-            alert("Correct. Press 'Enter' to Continue.");
-	} else {
+	if( !isTrue ) {
+            //alert("Correct. Press 'Enter' to Continue.");
+	//} else {
             alert("No. Press 'Enter' to Continue.");
             var errs = num(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
 	}
     } else {
-	if( !isTrue ) {
-            alert("Correct. Press 'Enter' to Continue.");
-	} else {
+	if( isTrue ) {
+            //alert("Correct. Press 'Enter' to Continue.");
+	//} else {
             alert("No. Press 'Enter' to Continue.");
             var errs = num(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
@@ -1242,7 +1242,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     noIntermeds = true;
                 } else {
                     //alert("gprod = gans so we're good");
-                    alert("Correct. Press 'Enter' to continue.");
+                    //alert("Correct. Press 'Enter' to continue.");
                     //x = (x + 1)%nSbxs;
                     noIntermeds = true; 
                     //var leasDig = doc.getElementById("leasDig");
@@ -1250,7 +1250,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                     askQuestions();    
                 }
             } else {
-                alert("Correct. Press 'Enter' to continue."); 
+                //alert("Correct. Press 'Enter' to continue."); 
                 //var leasDig = doc.getElementById("leasDig");
                 //leasDig.focus();
                 askQuestions();
@@ -1516,7 +1516,7 @@ function checkBackM( ev ) { // check multiplication entered in arrays
         //alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
         var leasDig = -1;
         if( doingMults ) {
-            var len = parents.length;
+            /* var len = parents.length;
             leasDig = len - 1;
             //doc.getElementById("statusBox" + x).innerHTML = "len: " + len + " leasDig: " + leasDig;
             //x = (x + 1)%nSbxs;
@@ -1532,28 +1532,16 @@ function checkBackM( ev ) { // check multiplication entered in arrays
                         allBoxes[0].focus();
                     }
                 }
-            }
-            //alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
-            alert("Entered: " + answer + ", should be: gprod" + gprod + " DoingMults: " + doingMults + ". Press 'Enter' to continue.");
-        } else if( srcid === "fans" ) { 
-             //var allBoxes = doc.getElementsByClassName("onewide"); // onewide s are inputs, childNodes are TDs
-         /*   var kids = greatgparent.childNodes[0].childNodes;
-            var l = kids.length;
-            var allBoxes = new Array();
-            var r = 0;
-            for( var q = 0; q < l; ++q ) {
-                var t = kids[q].tagName;
-                if( t === "TD") {
-                    allBoxes[r] = kids[q];
-                    ++r;
-                }
-                doc.getElementById("statusBox" + x).innerHTML = "kid[" + q + "]: " + t;
-                x = (x + 1)%nSbxs;
             } */
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
-            //alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
-            alert("Entered: " + answer + ", should be gprod: " + gprod + " gans: " + gans + " srcid: " + srcid + " boxesdraged: " + boxesdragged + ". Press 'Enter' to continue.");
+            alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: gprod" + gprod + " DoingMults: " + doingMults + ". Press 'Enter' to continue.");
+        } else if( srcid === "fans" ) { 
+            var allBoxes = greatgparent.childNodes[0].childNodes;
+            redBoxes(allBoxes);
+            alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be gprod: " + gprod + " gans: " + gans + " srcid: " + srcid + " boxesdraged: " + boxesdragged + ". Press 'Enter' to continue.");
         } else {    
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);

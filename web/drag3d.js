@@ -663,7 +663,7 @@ function checklineup() {
         //doc.getElementById("statusBox0").innerHTML = "len: " + len;
         for( var i = 0; i < len; ++i ) {
 	    whatDBx = allboxes[i];
-            if( whatDBx.getAttribute("moved") === "pos0" ) {
+            if( whatDBx.getAttribute("moved") !== "pos1" ) {
 		// check if it's one of the ones that should not be moved
             	var whatId = whatDBx.id;
 	        var idlen = whatId.length;
