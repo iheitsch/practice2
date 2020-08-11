@@ -15,7 +15,7 @@
 </head>
 <body>
 <% 
-    int possbl = 4;
+    int possbl = 3; //4;
     int indcatr = (int)(StrictMath.random()*possbl);
     String instrs = "blank";
     final int MAXROWS = 4;
@@ -30,10 +30,11 @@
     int nfives = 2;
     String whatOp = "&divide";
     boolean isDivide = true;
-    final double EXP = 2.4;
+    final double EXP = 2.4; //4.4;
     boolean showArros = false;
     if( indcatr < 1 ) {
         instrs = "Simplify this Fraction";
+        // come up with the simplified fraction first, then multiply by factors
         int acttwos = (int)(StrictMath.random()*ntwos);
         int actthrees = (int)(StrictMath.random()*nthrees);
         int actfives = (int)(StrictMath.random()*nfives);
@@ -54,7 +55,7 @@
     } else if( indcatr < 2 ) {
         instrs = "Convert these Fractions to a Common Denominator and use Arrows to Put in Order, Lowest at the Top";
         showArros = true;
-        nrows = 2 + (int)(StrictMath.random()*(MAXROWS-1));
+        nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
         int maxcols = 0;
         for( int i = 0; i < nrows; ++i ) {
             int acttwos = (int)(StrictMath.random()*ntwos);
@@ -64,7 +65,7 @@
             int threefact = (int)(StrictMath.pow(3,actthrees));
             int fivefact = (int)(StrictMath.pow(5,actfives));
             den[i] = twofact*threefact*fivefact;
-            num[i] = (int)(StrictMath.random()*den[i]);
+            num[i] = (new Double((den[i])*(1 - Math.pow(Math.random(),EXP)))).intValue();
             ncols = (int)(acttwos + actthrees + actfives);
             if( ncols > maxcols ) {
                 maxcols = ncols;
@@ -76,6 +77,8 @@
     } else if( indcatr < 3 ) {
         // figure out what table is going to look for these before you go any further fixit
         instrs = "Convert this Fraction to a Mixed Number";
+        num[0] = 1 + (new Double((MAXDEN)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+        den[0] = 1 + (new Double((num[0])*(1 - Math.pow(Math.random(),EXP)))).intValue();
     } else if( indcatr < 4 ) {
         instrs = "Convert this Mixed Number to a Fraction";
     }
@@ -91,16 +94,16 @@
             String nid = "n" + i + "_0";
             String did = "d" + i + "_0"; %>
         <tr>
-    <%      if( showArros ) { 
+<%          if( showArros ) { 
                 String upArroId = "u" + i; 
                 String dnArroId = "d" + i; %>
     <td>
         <table>
                 <tr><td>
-                    <i onclick="raise()" id="<%=upArroId%>" class="arrow up"></i>
+                    <i onclick="move()" id="<%=upArroId%>" class="arrow up sym"></i>
                 </td></tr>
                 <tr><td>
-                    <i onclick="lower()"  id="<%=dnArroId%>" class="arrow down"></i>
+                    <i onclick="move()"  id="<%=dnArroId%>" class="arrow down"></i>
                 </td></tr>
             </table>
     </td>
@@ -116,42 +119,135 @@
             </table>
         </td>
     <%      String itype = "text";
+            String equalSgn = "=";
+            String op = whatOp;
+            String ntd = "num";
             for( int j = 0, k = 0; j < ncols; ++j ) { 
                 k = k + 1;
                 nid = "n" + i + "_" + k;
                 did = "d" + i + "_" + k; 
-                String oid = "o" + i + "_" + k; %>
-    <td id="<%=oid%>"><%=whatOp%></td>
+                String oid = "o" + i + "_" + k; 
+                String eid = "e" + i + "_" + k; %>
+    <td id="<%=oid%>" class="sym"><%=op%></td>
         <td>
             <table>
-                <tr><td class="num">
-                    <input type="<%=itype%>" class="<%=nclass%>" id="<%=nid%>" onkeyup="checkN( event )" value="">
+                <tr><td class="<%=ntd%>">
+                    <input type="<%=itype%>" class="<%=nclass%>" id="<%=nid%>" onkeyup="checkN( event )" onkeydown="erase( event )" value="">
                 </td></tr>
                 <tr><td>
-                    <input type="<%=itype%>" id="<%=did%>" onkeyup="checkD( event )" value="">     
+                    <input type="<%=itype%>" id="<%=did%>" onkeyup="checkD( event )" onkeydown="erase( event )" value="">     
                 </td></tr>
             </table>
         </td>
-        <td>=</td>
+        <td class="sym" id="<%=eid%>"><%=equalSgn%></td>
     <%          k = k + 1; 
                 nid = "n" + i + "_" + k;
                 did = "d" + i + "_" + k; %>
         <td>
             <table>
-                <tr><td class="num">
-                    <input type="<%=itype%>" class="<%=nclass%>" id="<%=nid%>" onkeyup="checkM( event )" value="">
+                <tr><td class="<%=ntd%>">
+                    <input type="<%=itype%>" class="<%=nclass%>" id="<%=nid%>" onkeyup="checkM( event )" onkeydown="erase( event )" value="">
                 </td></tr>
                 <tr><td>
-                    <input type="<%=itype%>" id="<%=did%>" onkeyup="checkM( event )" value=""> 
+                    <input type="<%=itype%>" id="<%=did%>" onkeyup="checkM( event )" onkeydown="erase( event )" value=""> 
                 </td></tr>
             </table>
         </td>
-    <%  itype = "hidden";      } %>
+    <%          itype = "hidden";
+                ntd = "";
+                equalSgn = "";
+                op = "";
+            }
+    %>
         </tr>
     <%  } 
-    }   %>
+    }  else if( indcatr < 3 ) { %>
+    <tr>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input disabled="true" value="<%=num[0]%>" id="onum">  
+                </td></tr>
+                <tr><td>
+                    <input disabled="true" value="<%=den[0]%>" id="oden">
+                </td></tr>
+            </table>
+        </td>
+        <td class="sym">=</td>
+        <td>
+            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="whlprt">
+        </td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input onkeyup="checkFrcN( event )" onkeydown="erase( event )" id="frcnum">  
+                </td></tr>
+                <tr><td>
+                    <input onkeyup="checkFrcD( event )" onkeydown="erase( event )" id="frcden">
+                </td></tr>
+            </table>
+        </td>
+        <td class="sym">=</td>
+        <td>
+            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="redprt">
+        </td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input onkeyup="checkFrcN( event )" onkeydown="erase( event )" id="rednum">  
+                </td></tr>
+                <tr><td>
+                    <input onkeyup="checkFrcD( event )" onkeydown="erase( event )" id="redden">
+                </td></tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <th colspan="1"></th><th colspan="3" class="bar"></th>
+    </tr>
+    <tr>
+        <td>
+            <input onkeyup="checkDen( event )" onkeydown="erase( event )" id="dvsr">
+        </td>
+        <td class="sym">
+            )
+        </td>
+        <td>
+            <input onkeyup="checkNum( event )" onkeydown="erase( event )" id="d0_1">
+        </td>
+    </tr>
+     <tr>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+            <input onkeyup="checkProd( event )" onkeydown="erase( event )" id="prod">
+        </td>
+    </tr>
+    <tr>
+        <th colspan="2"></th><th colspan="1" class="bar"></th>
+    </tr>
+        <tr>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+            <input onkeyup="checkDiff( event )" onkeydown="erase( event )" id="diff">
+        </td>
+    </tr>
+<%  } %>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <th colspan="2"><button onclick="check()" id="chkBx">Check</button></th>
+    </tr>
     </table>
-    <button onclick="check()">Check</button>
+    
 <table id="statusTable">
 <% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
     String whatId = "statusBox" + i; 
