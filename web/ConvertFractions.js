@@ -6,6 +6,11 @@
 /* in lcd & order exercise, doesn't check that numerator is equal to denominator
  * before moving on to product box fixit 
  * 
+ * allow users to move around using up, down, left right arrows, particularly 
+ * in the LCD and order exercise
+ * 
+ * reduce improper fraction fixit
+ * 
  * checkMix doesn't check for existence of whole part in reduced fraction fixit
  */
 var x = 0;
@@ -101,7 +106,7 @@ function checkOrd() {
     }
    //alert("checkOrd blkCount: " + blkCount);
     // if all the others are ok, the first one must be ok also
-    if( blkCount == 3 ) { // MAXROWS = 4
+    if( blkCount === 3 ) { // MAXROWS = 4
         nums = doc.getElementsByClassName("n0");
         var cols = nums.length;
         for( var i = 0; i < cols; ++i ) {
@@ -349,7 +354,50 @@ function checkMix() {
     }
 }
 function checkFrc() {
-    alert("checkFrc");
+    var num = Number;
+    var doc = document;
+    
+    var allgood = true;
+    var oden = doc.getElementById("oden").value;
+    for( var col = 0; col < 4; ++col ) {
+        var id = "frcnum" + col;
+        var ansBx = doc.getElementById(id);
+        var ans = ansBx.value;
+        var id = ansBx.id;        
+
+        var whlprt = doc.getElementById("whlprt").value;
+        
+        var onum = doc.getElementById("onum").value;
+        if( col === 0 && ans === whlprt ||
+            col === 1 && ans === oden ||
+            col === 2 && ans === onum ||
+            col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ) {
+            ansBx.style.color = "#0033cc";
+            ansBx.style.borderColor = "#e9d398"; 
+        } else {
+            ansBx.style.color = "red";
+            ansBx.style.borderColor = "red";
+            allgood = false;
+        }
+    }
+    var ansBx = doc.getElementById("d0_1");
+    for( var i = 0; i < 2; ++i ) {
+        if( ansBx.value === oden ) {
+            ansBx.style.color = "#0033cc";
+            ansBx.style.borderColor = "#e9d398"; 
+        } else {
+            ansBx.style.color = "red";
+            ansBx.style.borderColor = "red";
+            allgood = false;
+        }
+        ansBx = doc.getElementById("frcden4");
+    }
+    if( !allgood ) {
+        //alert("not all good");
+        doc.getElementById("chkBx").style.borderColor = "red";
+    } else {
+        doc.getElementById("chkBx").style.borderColor = "#e9d398";
+    }
 }
 function move( ev ) {
     ev = ev || window.event;
@@ -414,6 +462,62 @@ function move( ev ) {
         }
     }
 }
+function checkMprN( ev ) {
+    ev = ev || window.event;
+    if (ev.which === 13 || ev.keyCode === 13) { 
+        var num = Number;
+        var doc = document;
+
+        var ansBx = ev.target;
+        var ans = ansBx.value;
+        var id = ansBx.id;
+        
+        var col = num(id.substring(6,7));
+        var nextCol = col + 1;
+        var nextBx = ansBx;
+        var whlprt = doc.getElementById("whlprt").value;
+        var oden = doc.getElementById("oden").value;
+        var onum = doc.getElementById("onum").value;
+        if( col === 0 && ans === whlprt ||
+            col === 1 && ans === oden ||
+            col === 2 && ans === onum ||
+            col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ) {
+            ansBx.style.color = "#0033cc";
+            ansBx.style.borderColor = "#e9d398"; 
+            var p = col < 3? "frcnum" : "frcden";
+            nextBx = doc.getElementById(p + nextCol);
+        } else {
+            //alert("checkMprN id: " + id + " ans: " + ans + " whlprt: " + whlprt + " oden: " + oden + " onum: " + onum);
+            ansBx.style.color = "red";
+            ansBx.style.borderColor = "red"; 
+        }
+        nextBx.focus();
+    }
+}
+function checkMprD( ev ) {
+    ev = ev || window.event;
+    if (ev.which === 13 || ev.keyCode === 13) { 
+        var doc = document;
+
+        var ansBx = ev.target;
+        var ans = ansBx.value;
+        var id = ansBx.id;
+        var nextBx = ansBx;
+        //alert("checkMprD id: " + id );
+        var cmp = doc.getElementById("oden").value;
+        if( ans && ans === cmp ) {
+            ansBx.style.color = "#0033cc";
+            ansBx.style.borderColor = "#e9d398"; 
+            if( id === "d0_1") {
+                nextBx = doc.getElementById("frcnum0");
+            }
+        } else {
+            ansBx.style.color = "red";
+            ansBx.style.borderColor = "red";
+        }
+        nextBx.focus();
+    }
+}
 function checkD( ev ) {
     ev = ev || window.event;
     if (ev.which === 13 || ev.keyCode === 13) { 
@@ -423,7 +527,6 @@ function checkD( ev ) {
         var ansBx = ev.target;
         var ans = ansBx.value;
         var id = ansBx.id;
-        var tag = ansBx.tagName;
         
         var len = id.length;
         var pos = id.indexOf("_");
@@ -449,7 +552,7 @@ function checkD( ev ) {
             var nAns = num(ans);
             var test = doc.getElementById("indcatr").value === "0";
             //alert("checkD test: " + test);
-            if( test ) {
+            if( test ) { // simplifying
                 if( nPrevD%nAns === 0 && nPrevN%nAns === 0 ) {
                     if( !currN || currN.value === "" || num(currN.value) === nAns ) {
                         ansBx.style.color = "#0033cc";
@@ -474,12 +577,17 @@ function checkD( ev ) {
                     alert("denominator needs to evenly divide previous numerator and denominator");
                     ansBx.style.color = "red";
                 }
-            } else if( currN ) {
-                if( currN.value ) {
-                    //alert("current numerator value: " + currN.value);
-                    var nextcol = col + 1;
-                    var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
-                    nextBx.focus();
+            } else if( currN ) { // finding LCM and putting in order
+                var currnVal = currN.value;
+                if( currnVal ) {
+                    if( ans !== currnVal ) {
+                        ansBx.style.color = "red";
+                    } else {
+                        ansBx.style.color = "#0033cc";
+                        var nextcol = col + 1;
+                        var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
+                        nextBx.focus();
+                    }
                 } else {
                     //alert("no value in current numerator");
                     currN.focus();
@@ -593,8 +701,8 @@ function checkFrcN( ev ) {
                 denBx.focus();
             } else {
                 ansBx.style.color = "red";
-                doc.getElementById("statusBox" + x).innerHTML = "checkFrcN id: " + id + " oden: " + oden + " frcden: " + frcden + " rem: " + rem;
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkFrcN id: " + id + " oden: " + oden + " frcden: " + frcden + " rem: " + rem;
+                //x = (x + 1)%nSbxs;
             }
         }
     }
@@ -655,7 +763,7 @@ function checkWhl( ev ) {
         var ans = ansBx.value;
         var oden = num(doc.getElementById("oden").value);
         var onum = num(doc.getElementById("onum").value);
-        if( ans && Math.floor(onum/oden) == ans ) {
+        if( ans && !isNaN(ans) && Math.floor(onum/oden) === num(ans) ) {
             ansBx.style.color = "#0033cc";
             var nextBx = ansBx.id === "whlprt" ? doc.getElementById("prod") : doc.getElementById("rednum");
             nextBx.focus();
@@ -707,7 +815,6 @@ function checkN( ev ) {
         var ansBx = ev.target;
         var ans = ansBx.value;
         var id = ansBx.id;
-        var tag = ansBx.tagName;
         
         var len = id.length;
         var pos = id.indexOf("_");
@@ -733,7 +840,7 @@ function checkN( ev ) {
             var nAns = num(ans);
             var test = doc.getElementById("indcatr").value === "0";
             //alert("checkN test: " + test);
-            if( test ) {
+            if( test ) { // simplifying
                 if ( nPrevD%nAns === 0 && nPrevN%nAns === 0 ) {
                     if( !currD || currD.value === "" || num(currD.value) === nAns ) {
                         ansBx.style.color = "#0033cc";
@@ -758,12 +865,17 @@ function checkN( ev ) {
                     alert("numerator needs to evenly divide previous numerator and denominator");
                     ansBx.style.color = "red";
                 }
-            } else if( currD ) {
-                if( currD.value ) {
-                    //alert("current numerator value: " + currD.value);
-                    var nextcol = col + 1;
-                    var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
-                    nextBx.focus();
+            } else if( currD ) { // finding LCD and putting in order
+                var currdVal = currD.value;
+                if( currdVal ) {
+                    if( ans !== currdVal ) {
+                        ansBx.style.color = "red";
+                    } else {
+                        ansBx.style.color = "#0033cc";
+                        var nextcol = col + 1;
+                        var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
+                        nextBx.focus();
+                    }
                 } else {
                     //alert("no value in current numerator");
                     currD.focus();

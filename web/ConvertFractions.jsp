@@ -15,7 +15,7 @@
 </head>
 <body>
 <% 
-    int possbl = 3; //4;
+    int possbl = 4;
     int indcatr = (int)(StrictMath.random()*possbl);
     String instrs = "blank";
     final int MAXROWS = 4;
@@ -23,6 +23,8 @@
     final int MAXDEN = 25;
     int[] num = new int[MAXROWS];
     int[] den = new int[MAXROWS];
+    int whol = 1;
+    int maxwhol = 5;
     int nrows = 1;
     int ncols = 1;
     int ntwos = 6; // one more than actual max
@@ -81,6 +83,9 @@
         den[0] = 1 + (new Double((num[0])*(1 - Math.pow(Math.random(),EXP)))).intValue();
     } else if( indcatr < 4 ) {
         instrs = "Convert this Mixed Number to a Fraction";
+        whol = 1 + (int)(StrictMath.random()*maxwhol);
+        den[0] = 1 + (new Double((MAXDEN)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+        num[0] = 1 + (new Double((den[0])*(1 - Math.pow(Math.random(),EXP)))).intValue();
     }
 %>
 
@@ -237,7 +242,55 @@
             <input onkeyup="checkDiff( event )" onkeydown="erase( event )" id="diff">
         </td>
     </tr>
-<%  } %>
+<%  } else { %>
+    <tr>
+        <td>
+            <input disabled="true" value=<%=whol%> id="whlprt">
+        </td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input disabled="true" value="<%=num[0]%>" id="onum">  
+                </td></tr>
+                <tr><td>
+                    <input disabled="true" value="<%=den[0]%>" id="oden">
+                </td></tr>
+            </table>
+        </td>
+        <td class="sym">=</td>
+        <td>
+            <table>
+                <tr>
+                    <td class="num">
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum0">  
+                    </td>
+                    <td class="num">&times</td>
+                    <td class="num">
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum1">  
+                    </td>
+                    <td class="num">+</td>
+                    <td class="num">
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum2">  
+                    </td>
+                </tr>
+                <tr><th colspan="5">
+                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="d0_1">
+                </th></tr>
+            </table>
+        </td>
+        <td class="sym">=</td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum3">  
+                </td></tr>
+                <tr><td>
+                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden4">
+                </td></tr>
+            </table>
+        </td>
+    </tr>
+<% } %>
     <tr>
         <td></td>
         <td></td>
