@@ -285,7 +285,29 @@
                     <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum3">  
                 </td></tr>
                 <tr><td>
+                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden3">
+                </td></tr>
+            </table>
+        </td>
+        <td class="sym">&divide</td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum4">  
+                </td></tr>
+                <tr><td>
                     <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden4">
+                </td></tr>
+            </table>
+        </td>
+        <td class="sym">=</td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum5">  
+                </td></tr>
+                <tr><td>
+                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden5">
                 </td></tr>
             </table>
         </td>

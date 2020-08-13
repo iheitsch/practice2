@@ -9,7 +9,11 @@
  * allow users to move around using up, down, left right arrows, particularly 
  * in the LCD and order exercise
  * 
+ * don't expect num & den to be equal if they're red; you're replacing them fixit
+ * 
  * reduce improper fraction fixit
+ * 
+ * mx > improper too many errors, separate them and have error message specific to each fixit
  * 
  * checkMix doesn't check for existence of whole part in reduced fraction fixit
  */
@@ -359,21 +363,55 @@ function checkFrc() {
     
     var allgood = true;
     var oden = doc.getElementById("oden").value;
-    for( var col = 0; col < 4; ++col ) {
+    var frcnum3 = doc.getElementById("frcnum3").value;
+    var n3isnum = !isNaN(frcnum3);
+    var nNum3 = n3isnum? num(frcnum3) : 0;
+    var frcden3 = doc.getElementById("frcden3").value;
+    var d3isnum = !isNaN(frcden3);
+    var dNum3 = d3isnum? num(frcden3) : 0;
+    var frcnum4 = doc.getElementById("frcnum4").value;
+    var frcden4 = doc.getElementById("frcden4").value;
+    var frcnum5 = doc.getElementById("frcnum5").value;
+    var frcden5 = doc.getElementById("frcden5").value;
+    var d5isnum = !isNaN(frcden5);
+    var dNum5 = d5isnum? num(frcden5) : 0;
+    var done = !isNaN(frcnum3) && !isNaN(frcden3) && isRed(num(frcnum3),num(frcden3));
+    for( var col = 0; col < 6; ++col ) {
         var id = "frcnum" + col;
         var ansBx = doc.getElementById(id);
         var ans = ansBx.value;
-        var id = ansBx.id;        
 
-        var whlprt = doc.getElementById("whlprt").value;
-        
-        var onum = doc.getElementById("onum").value;
-        if( col === 0 && ans === whlprt ||
-            col === 1 && ans === oden ||
-            col === 2 && ans === onum ||
-            col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ) {
-            ansBx.style.color = "#0033cc";
-            ansBx.style.borderColor = "#e9d398"; 
+        if( !isNaN(ans) ) {
+            var nAns = num(ans);
+            var id = ansBx.id;        
+
+            var whlprt = doc.getElementById("whlprt").value;
+            var onum = doc.getElementById("onum").value;
+            
+            doc.getElementById("statusBox" + x).innerHTML = "col: " + col + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
+            x = (x + 1)%nSbxs;
+            doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
+            x = (x + 1)%nSbxs;
+            // what if it's already reduced in col 3? fixit
+            if( col === 0 && ans === whlprt ||
+                col === 1 && ans === oden ||
+                col === 2 && ans === onum ||
+                col === 3 && nAns === num(whlprt)*num(oden) + num(onum) ||
+                col === 4 && ( done ||
+                ((!frcden4 || (!isNaN(frcden4) && ans === frcden4)) &&
+                n3isnum && d3isnum && nNum3%nAns === 0 && dNum3%nAns === 0)) ||
+                col === 5 && ( done ||
+                (frcnum3 && frcnum4 && n3isnum && !isNaN(frcnum4) &&
+                nNum3/num(frcnum4) === nAns && 
+                (!frcden5 || d5isnum && isRed(nAns, dNum5) )) ) ) {
+                
+                ansBx.style.color = "#0033cc";
+                ansBx.style.borderColor = "#e9d398"; 
+            } else {
+                ansBx.style.color = "red";
+                //ansBx.style.borderColor = "red";
+                allgood = false;
+            }
         } else {
             ansBx.style.color = "red";
             ansBx.style.borderColor = "red";
@@ -390,7 +428,40 @@ function checkFrc() {
             ansBx.style.borderColor = "red";
             allgood = false;
         }
-        ansBx = doc.getElementById("frcden4");
+        doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
+            x = (x + 1)%nSbxs;
+            doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
+            x = (x + 1)%nSbxs;
+        ansBx = doc.getElementById("frcden3");
+    }
+    for( var i = 4; i < 6; ++i ) {
+        ansBx = doc.getElementById("frcden" + i);
+        ans = ansBx.value;
+        var ansisnum = !isNaN(ans);
+        var nAns = ans && ansisnum? num(ans) : 0;
+        if( !done && !ans ) {
+            ansBx.style.borderColor = "red";
+            allgood = false;
+        } else if( ans && !ansisnum ) {
+            ansBx.style.color = "red";
+            allgood = false;
+        } else if( i === 4 && ( done || n3isnum && d3isnum && 
+                nNum3%nAns === 0 && dNum3%nAns === 0 && 
+                (!frcden4 || (!isNaN(frcden4) && ans === frcden4)))) {
+            ansBx.style.color = "#0033cc";
+            ansBx.style.borderColor = "#e9d398"; 
+        } else if( i === 5 && (done || d3isnum && !isNaN(frcden4) &&
+                dNum3/num(frcden4) === nAns && isRed( num(frcnum5), nAns) )) {
+            ansBx.style.color = "#0033cc";
+            ansBx.style.borderColor = "#e9d398"; 
+        } else {
+            ansBx.style.color = "red";
+            allgood = false;
+        }
+        doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
+            x = (x + 1)%nSbxs;
+            doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
+            x = (x + 1)%nSbxs;
     }
     if( !allgood ) {
         //alert("not all good");
@@ -470,52 +541,139 @@ function checkMprN( ev ) {
 
         var ansBx = ev.target;
         var ans = ansBx.value;
-        var id = ansBx.id;
-        
-        var col = num(id.substring(6,7));
-        var nextCol = col + 1;
-        var nextBx = ansBx;
-        var whlprt = doc.getElementById("whlprt").value;
-        var oden = doc.getElementById("oden").value;
-        var onum = doc.getElementById("onum").value;
-        if( col === 0 && ans === whlprt ||
-            col === 1 && ans === oden ||
-            col === 2 && ans === onum ||
-            col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ) {
-            ansBx.style.color = "#0033cc";
-            ansBx.style.borderColor = "#e9d398"; 
-            var p = col < 3? "frcnum" : "frcden";
-            nextBx = doc.getElementById(p + nextCol);
+        if( !isNaN( ans ) ) {
+            var id = ansBx.id;
+
+            var col = num(id.substring(6,7));
+            var nextCol = col + 1;
+            var nextBx = ansBx;
+            var whlprt = doc.getElementById("whlprt").value;
+            var oden = doc.getElementById("oden").value;
+            var onum = doc.getElementById("onum").value;
+            var frcnum3 = doc.getElementById("frcnum3").value;
+            //var frcnum4 = doc.getElementById("frcnum4").value;
+            var frcden3 = doc.getElementById("frcden3").value;
+            var frcnum4 = doc.getElementById("frcnum4").value;
+            var frcden4 = doc.getElementById("frcden4").value;
+            var frcden5 = doc.getElementById("frcden5").value;
+            var nAns = num(ans);
+            if( col === 0 && ans === whlprt ||
+                col === 1 && ans === oden ||
+                col === 2 && ans === onum ||
+                col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ||
+                col === 4 && (!frcden4 || (!isNaN(frcden4) && ans === frcden4)) &&
+                !isNaN(frcnum3) && !isNaN(frcden3) &&
+                num(frcnum3)%nAns === 0 && num(frcden3)%nAns === 0 ||
+                col === 5 && frcnum3 && frcnum4 && !isNaN(frcnum3) && !isNaN(frcnum4) &&
+                num(frcnum3)/num(frcnum4) === nAns ) { //&& 
+                //(!frcden5 || (!isNaN(frcden5) && isRed(nAns, num(frcden5)) )) ) {
+                ansBx.style.color = "#0033cc";
+                ansBx.style.borderColor = "#e9d398"; 
+                var p = col < 3? "frcnum" + nextCol : "frcden" + col;
+                nextBx = doc.getElementById(p);
+            } else {
+                ansBx.style.color = "red";
+                ansBx.style.borderColor = "red"; 
+            }
+            nextBx.focus();
         } else {
-            //alert("checkMprN id: " + id + " ans: " + ans + " whlprt: " + whlprt + " oden: " + oden + " onum: " + onum);
             ansBx.style.color = "red";
             ansBx.style.borderColor = "red"; 
+            alert(ans + " is not a number");
         }
-        nextBx.focus();
     }
 }
 function checkMprD( ev ) {
     ev = ev || window.event;
     if (ev.which === 13 || ev.keyCode === 13) { 
         var doc = document;
+        var num = Number;
 
         var ansBx = ev.target;
         var ans = ansBx.value;
         var id = ansBx.id;
+        var len = id.length;
+        var col = num(id.substring(len-1, len));
         var nextBx = ansBx;
-        //alert("checkMprD id: " + id );
-        var cmp = doc.getElementById("oden").value;
-        if( ans && ans === cmp ) {
-            ansBx.style.color = "#0033cc";
-            ansBx.style.borderColor = "#e9d398"; 
-            if( id === "d0_1") {
-                nextBx = doc.getElementById("frcnum0");
+        doc.getElementById("statusBox" + x).innerHTML = "checkMprD ans: " + ans + " id: " + id + " col: " + col;
+        x = (x + 1)%nSbxs;
+        if( !isNaN(ans) ) {
+            var oden = doc.getElementById("oden").value;
+            if( ans && col < 4 && ans === oden ) {
+                doc.getElementById("statusBox" + x).innerHTML = "checkMprD col < 5 and ans = oden block";
+                x = (x + 1)%nSbxs;
+                ansBx.style.color = "#0033cc";
+                ansBx.style.borderColor = "#e9d398"; 
+                if( id === "d0_1") {
+                    nextBx = doc.getElementById("frcnum0");
+                } else {
+                    nextBx = doc.getElementById("frcnum4");
+                }
+            } else if( col === 4 ) {
+                doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 5 block";
+                x = (x + 1)%nSbxs;
+                var prevN = doc.getElementById("frcnum3").value;
+                var prevD = doc.getElementById("frcden3").value;
+                if( prevN && prevD && !isNaN(prevN) && !isNaN(prevD)) {
+                    var nVal = num(prevN);
+                    var dVal = num(prevD);
+                    var aVal = num(ans);
+                    var thisN = doc.getElementById("frcnum4").value;
+                    if( nVal%aVal === 0 && dVal%aVal === 0 && 
+                                (!thisN || !isNaN(thisN) && ans === thisN ) ) {
+                        ansBx.style.color = "#0033cc";
+                        ansBx.style.borderColor = "#e9d398"; 
+                        nextBx = !thisN? doc.getElementById("frcnum4") : doc.getElementById("frcnum5");
+                    } else {
+                        ansBx.style.color = "red";
+                        ansBx.style.borderColor = "red"; 
+                        alert(ans + " does not evenly divide " + prevN + " and " + prevD + " or " + ans + " is not equal to " + thisN);
+                    }
+                } else {
+                    ansBx.style.color = "red";
+                    ansBx.style.borderColor = "red";
+                    alert("fill in previous numerator and denominator first");
+                }
+            } else if( col === 5 ) {
+                doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 6 block";
+                x = (x + 1)%nSbxs;
+                var prev2D = doc.getElementById("frcden3").value;
+                var prevD = doc.getElementById("frcden4").value;
+                var frcnum5 = doc.getElementById("frcnum5");
+                var currN = frcnum5.value;
+                var currNisnum = !isNaN(currN);
+                var nCurrN = currNisnum? num(currN) : 0;
+                var nAns = num(ans);
+                if( prev2D && prevD &&
+                    !isNaN(prev2D)&& !isNaN(prevD) &&
+                    num(prev2D)/num(prevD) === nAns ) {
+                        //&&
+                    //(!currN || (currNisnum && isRed(nCurrN,nAns)))) { at what point do you want to check for reduced?
+                    // here? check if frcnum4 = frnden4 is gcd? or leave it to final check? fixit
+                    // what if user skips intermediate and just puts reduced value?
+                    ansBx.style.color = "#0033cc";
+                    ansBx.style.borderColor = "#e9d398";
+                    if( !currN ) {
+                        nextBx = frcnum5;
+                    }
+                } else {
+                    ansBx.style.color = "red";
+                    ansBx.style.borderColor = "red";
+                    //alert(ans + " is not " + prev2D + " divided by " + prevD);
+                }
+            } else { //one of 1st 2 denominators was wrong
+                doc.getElementById("statusBox" + x).innerHTML = "1st 2 denominators wrong block";
+                x = (x + 1)%nSbxs;
+                ansBx.style.color = "red";
+                ansBx.style.borderColor = "red";
+                alert("col: " + col + " ans: " + ans + " should be the same as the first denominator: " + oden);
             }
+            nextBx.focus();
         } else {
             ansBx.style.color = "red";
-            ansBx.style.borderColor = "red";
+            ansBx.style.borderColor = "red"; 
+            alert(ans + " is not a number");
         }
-        nextBx.focus();
     }
 }
 function checkD( ev ) {
@@ -963,5 +1121,8 @@ function checkM( ev ) {
 }
 window.onload = function(){
     var doc = document;
-    doc.getElementById("d0_1").focus();
+    var strtBx = doc.getElementById("d0_1");
+    if( strtBx ) {
+        strtBx.focus();
+    }
 };
