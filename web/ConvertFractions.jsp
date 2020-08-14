@@ -16,7 +16,7 @@
 <body>
 <% 
     int possbl = 4;
-    int indcatr = (int)(StrictMath.random()*possbl);
+    int indcatr = 0; //(int)(StrictMath.random()*possbl);
     String instrs = "blank";
     final int MAXROWS = 4;
     final int MAXCOLS = 3;
@@ -28,30 +28,71 @@
     int nrows = 1;
     int ncols = 1;
     int ntwos = 6; // one more than actual max
-    int nthrees = 3;
-    int nfives = 2;
+    int nthrees = 4;
+    int nfives = 3;
     String whatOp = "&divide";
     boolean isDivide = true;
     final double EXP = 2.4; //4.4;
     boolean showArros = false;
+    int twogen;
+    int threegen;
+    int fivegen;
+    int gran = 100;
+    int acttwos;
+    int actthrees;
+    int actfives;
+    int d2fact;
+    int d3fact;
+    int d5fact;
+    double max2;
+    double max3;
+    double max5;
+    int numtwos;
+    int numthrees;
+    int numfives;
+    int n2fact;
+    int n3fact;
+    int n5fact;
+    
     if( indcatr < 1 ) {
         instrs = "Simplify this Fraction";
         // come up with the simplified fraction first, then multiply by factors
-        int acttwos = (int)(StrictMath.random()*ntwos);
-        int actthrees = (int)(StrictMath.random()*nthrees);
-        int actfives = (int)(StrictMath.random()*nfives);
-        int twofact = (int)(StrictMath.pow(2,acttwos));
-        int threefact = (int)(StrictMath.pow(3,actthrees));
-        int fivefact = (int)(StrictMath.pow(5,actfives));
-        den[0] = twofact*threefact*fivefact;
-        //System.out.println("acttwos: " + acttwos + " twofact: " + twofact + " actthrees: " + actthrees + " threefact: " + threefact + " actfives: " + actfives + " fivefact: " + fivefact);
-        int numtwos = (new Double((acttwos)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-        int numthrees = (new Double((actthrees)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-        int numfives = (new Double((actfives)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-        twofact = (int)(StrictMath.pow(2,numtwos));
-        threefact = (int)(StrictMath.pow(3,numthrees));
-        fivefact = (int)(StrictMath.pow(5,numfives));
-        num[0] = twofact*threefact*fivefact;
+        twogen = (int)(gran*ntwos*Math.random());
+        acttwos = twogen > 5*gran? 5 : twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+        d2fact = (int)(StrictMath.pow(2,acttwos));
+
+        threegen = (int)(gran*nthrees*Math.random());
+        actthrees = threegen > 3*gran? 3 : threegen > 2*gran? 2 : threegen > gran? 1 : 0;
+        d3fact = (int)(StrictMath.pow(3,actthrees));
+
+        fivegen = (int)(gran*nfives*Math.random());
+        actfives = fivegen > 2*gran? 2 : fivegen > gran? 1 : 0;
+        d5fact = (int)(StrictMath.pow(5,actfives));
+
+        den[0] = d2fact*d3fact*d5fact;
+
+        max2 = new Double((den[0]+1)*(1 - Math.random()));
+        numtwos = (int)(Math.log(max2)/Math.log(2));
+        if( numtwos < 0 ) {
+          numtwos = 0;
+        } else if( numtwos > ntwos - 1 ) {
+          numtwos = ntwos - 1;
+        }
+        n2fact = (int)(StrictMath.pow(2,numtwos));
+        System.out.println("den: " + den + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+//        s.next();
+        max3 = new Double((den[0]/n2fact+1)*(1 - Math.random()));
+        numthrees = (int)(Math.log(max3)/Math.log(3));
+        numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
+        //numthrees = (new Double((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+        n3fact = (int)(StrictMath.pow(3,numthrees));
+        max5 = new Double((den[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
+        numfives = (int)(Math.log(max5)/Math.log(5));
+        numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
+        n5fact = (int)(StrictMath.pow(5,numfives));
+
+        num[0] = n2fact*n3fact*n5fact;
+
         // how many columns do you really need? max would be # prime factors fixit
         ncols = (int)(acttwos + actthrees + actfives);
     } else if( indcatr < 2 ) {
@@ -60,9 +101,9 @@
         nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
         int maxcols = 0;
         for( int i = 0; i < nrows; ++i ) {
-            int acttwos = (int)(StrictMath.random()*ntwos);
-            int actthrees = (int)(StrictMath.random()*nthrees);
-            int actfives = (int)(StrictMath.random()*nfives);
+            acttwos = (int)(StrictMath.random()*ntwos);
+            actthrees = (int)(StrictMath.random()*nthrees);
+            actfives = (int)(StrictMath.random()*nfives);
             int twofact = (int)(StrictMath.pow(2,acttwos));
             int threefact = (int)(StrictMath.pow(3,actthrees));
             int fivefact = (int)(StrictMath.pow(5,actfives));

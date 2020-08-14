@@ -13,6 +13,8 @@
  * 
  * reduce improper fraction fixit
  * 
+ * simplify doesn't let you get away with leaving out the denominator for a whole number it hangs fixit
+ * 
  * mx > improper too many errors, separate them and have error message specific to each fixit
  * 
  * checkMix doesn't check for existence of whole part in reduced fraction fixit
