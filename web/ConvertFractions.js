@@ -17,6 +17,8 @@
  * 
  * mx > improper too many errors, separate them and have error message specific to each fixit
  * 
+ * indcatr = 3 hangs up sometimes when denominator is 1 and you try to take browser to previous page fixit
+ * 
  * checkMix doesn't check for existence of whole part in reduced fraction fixit
  */
 var x = 0;
@@ -175,8 +177,8 @@ function checkMix() {
         if( isNaN( whlVal ) ) {
             whlBx.style.color = "red";
             allgood = false;
-            doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value: " + whlBx.value + " not a number";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value: " + whlBx.value + " not a number";
+            //x = (x + 1)%nSbxs;
         } else {
             if( num(whlVal) === whol ) {
                 whlBx.style.color = "#0033cc";
@@ -184,15 +186,15 @@ function checkMix() {
             } else {
                 whlBx.style.color = "red";
                 allgood = false;
-                doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value: " + whlBx.value + " not: " + whol;
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value: " + whlBx.value + " not: " + whol;
+                //x = (x + 1)%nSbxs;
             }
         }
     } else if( whol !== 0 ) {
         whlBx.style.borderColor = "red";
         allgood = false;
-        doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
+        //x = (x + 1)%nSbxs;
     }
     whlBx = doc.getElementById("redprt");
     var whlVal = whlBx.value;
@@ -207,8 +209,8 @@ function checkMix() {
         if( isNaN( whlVal ) ) {
             whlBx.style.color = "red";
             allgood = false;
-            doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value redprt: " + whlBx.value + " not a number";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value redprt: " + whlBx.value + " not a number";
+            //x = (x + 1)%nSbxs;
         } else {
             if( num(whlVal) === whol ) {
                 whlBx.style.color = "#0033cc";
@@ -216,15 +218,15 @@ function checkMix() {
             } else {
                 whlBx.style.color = "red";
                 allgood = false;
-                doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value redprt: " + whlBx.value + " not: " + whol;
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value redprt: " + whlBx.value + " not: " + whol;
+                //x = (x + 1)%nSbxs;
             }
         }
     } else if( whol !== 0  && rednum ) {
         whlBx.style.borderColor = "red";
         allgood = false;
-        doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
+        //x = (x + 1)%nSbxs;
     }
     // some boxes can be blank if user figured it out in her head, or it
     // equals zero, but need to make sure anything entered is correct
@@ -240,8 +242,8 @@ function checkMix() {
             } else {
                 denBx.style.color = "red";
                 allgood = false;
-                doc.getElementById("statusBox" + x).innerHTML = "checkMix den value: ";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMix den value: ";
+                //x = (x + 1)%nSbxs;
             }
         } else {
             denBx.style.color = "red";
@@ -254,8 +256,8 @@ function checkMix() {
         } else {
             denBx.style.borderColor = "red";
             allgood = false;
-            doc.getElementById("statusBox" + x).innerHTML = "checkMix no denominator";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "checkMix no denominator";
+            //x = (x + 1)%nSbxs;
         }
     }  
     if( numnum ) {
@@ -270,8 +272,8 @@ function checkMix() {
             } else {
                 numBx.style.color = "red";
                 allgood = false;
-                doc.getElementById("statusBox" + x).innerHTML = "checkMix numBx value: " + numBx.value + " not: " + rem + " and ratio not right";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMix numBx value: " + numBx.value + " not: " + rem + " and ratio not right";
+                //x = (x + 1)%nSbxs;
             }
         } else {
             numBx.style.color = "red";
@@ -284,8 +286,8 @@ function checkMix() {
         } else {
             numBx.style.borderColor = "red";
             allgood = false;
-            doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: not there but should be";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: not there but should be";
+            //x = (x + 1)%nSbxs;
         }
     }
 
@@ -300,8 +302,8 @@ function checkMix() {
             } else {
                 rddBx.style.color = "red";
                 allgood = false;
-                doc.getElementById("statusBox" + x).innerHTML = "checkMix den value: ";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMix den value: ";
+                //x = (x + 1)%nSbxs;
             }
         } else {
             rddBx.style.color = "red";
@@ -316,8 +318,8 @@ function checkMix() {
             rddBx.style.borderColor = "red";
             whlBx.style.borderColor = "red";
             allgood = false;
-            doc.getElementById("statusBox" + x).innerHTML = "checkMix no denominator";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "checkMix no denominator";
+            //x = (x + 1)%nSbxs;
         }
     }
     if( rednum ) {
@@ -333,8 +335,8 @@ function checkMix() {
             } else {
                 rdnBx.style.color = "red";
                 allgood = false;
-                doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: " + rdnBx.value + " not: " + rem + " and ratio not right";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: " + rdnBx.value + " not: " + rem + " and ratio not right";
+                //x = (x + 1)%nSbxs;
             }
         }
     } else {
@@ -346,8 +348,8 @@ function checkMix() {
             rdnBx.style.borderColor = "red";
             whlBx.style.borderColor = "red";
             allgood = false;
-            doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: not there but should be";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: not there but should be";
+            //x = (x + 1)%nSbxs;
         }
     }
 
@@ -390,10 +392,10 @@ function checkFrc() {
             var whlprt = doc.getElementById("whlprt").value;
             var onum = doc.getElementById("onum").value;
             
-            doc.getElementById("statusBox" + x).innerHTML = "col: " + col + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
-            x = (x + 1)%nSbxs;
-            doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "col: " + col + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
+            //x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
+            //x = (x + 1)%nSbxs;
             // what if it's already reduced in col 3? fixit
             if( col === 0 && ans === whlprt ||
                 col === 1 && ans === oden ||
@@ -430,10 +432,10 @@ function checkFrc() {
             ansBx.style.borderColor = "red";
             allgood = false;
         }
-        doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
-            x = (x + 1)%nSbxs;
-            doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
-            x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
+            //x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
+            //x = (x + 1)%nSbxs;
         ansBx = doc.getElementById("frcden3");
     }
     for( var i = 4; i < 6; ++i ) {
@@ -460,10 +462,10 @@ function checkFrc() {
             ansBx.style.color = "red";
             allgood = false;
         }
-        doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
-            x = (x + 1)%nSbxs;
-            doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
-            x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
+            //x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
+            //x = (x + 1)%nSbxs;
     }
     if( !allgood ) {
         //alert("not all good");
@@ -597,13 +599,13 @@ function checkMprD( ev ) {
         var len = id.length;
         var col = num(id.substring(len-1, len));
         var nextBx = ansBx;
-        doc.getElementById("statusBox" + x).innerHTML = "checkMprD ans: " + ans + " id: " + id + " col: " + col;
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "checkMprD ans: " + ans + " id: " + id + " col: " + col;
+        //x = (x + 1)%nSbxs;
         if( !isNaN(ans) ) {
             var oden = doc.getElementById("oden").value;
             if( ans && col < 4 && ans === oden ) {
-                doc.getElementById("statusBox" + x).innerHTML = "checkMprD col < 5 and ans = oden block";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col < 5 and ans = oden block";
+                //x = (x + 1)%nSbxs;
                 ansBx.style.color = "#0033cc";
                 ansBx.style.borderColor = "#e9d398"; 
                 if( id === "d0_1") {
@@ -612,8 +614,8 @@ function checkMprD( ev ) {
                     nextBx = doc.getElementById("frcnum4");
                 }
             } else if( col === 4 ) {
-                doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 5 block";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 5 block";
+                //x = (x + 1)%nSbxs;
                 var prevN = doc.getElementById("frcnum3").value;
                 var prevD = doc.getElementById("frcden3").value;
                 if( prevN && prevD && !isNaN(prevN) && !isNaN(prevD)) {
@@ -637,8 +639,8 @@ function checkMprD( ev ) {
                     alert("fill in previous numerator and denominator first");
                 }
             } else if( col === 5 ) {
-                doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 6 block";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 6 block";
+                //x = (x + 1)%nSbxs;
                 var prev2D = doc.getElementById("frcden3").value;
                 var prevD = doc.getElementById("frcden4").value;
                 var frcnum5 = doc.getElementById("frcnum5");
@@ -664,8 +666,8 @@ function checkMprD( ev ) {
                     //alert(ans + " is not " + prev2D + " divided by " + prevD);
                 }
             } else { //one of 1st 2 denominators was wrong
-                doc.getElementById("statusBox" + x).innerHTML = "1st 2 denominators wrong block";
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "1st 2 denominators wrong block";
+                //x = (x + 1)%nSbxs;
                 ansBx.style.color = "red";
                 ansBx.style.borderColor = "red";
                 alert("col: " + col + " ans: " + ans + " should be the same as the first denominator: " + oden);
