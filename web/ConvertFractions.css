@@ -45,7 +45,11 @@ td{
   display: inline-block;
   padding: 3px;
 }
-
+.bar{
+    border-color: pink;
+    border-width: 2px;
+    background-color: #005511;
+}
 .right {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
@@ -60,10 +64,11 @@ td{
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
 }
-.bar{
-    border-color: pink;
-    border-width: 2px;
-    background-color: #005511;
+
+.d5{
+    position: fixed;
+    top: 1%;
+    right: 1%;
 }
 .den{
     border-top: 2px solid black;

@@ -19,19 +19,26 @@
  * 
  * indcatr = 3 hangs up sometimes when denominator is 1 and you try to take browser to previous page fixit
  * 
+ * probably double and triple counting some errors fixit
+ * 
  * checkMix doesn't check for existence of whole part in reduced fraction fixit
  */
 var x = 0;
 var nSbxs = 24;
+var allgood = true;
+
 function erase( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
     if( ansBx.style.color === "red") {
+        //alert("erasing");
         ansBx.style.color = "#0033cc";
         //var answer = ansBx.value;
         //var len = answer.length;
         ansBx.value = "";//answer.substring(len, len);
     }
+    //ev.preventDefault(); // this locks everything up so no input box anywhere works
+    return false
 }
 function check() {
     var indcatr = Number(document.getElementById("indcatr").value);
@@ -44,12 +51,14 @@ function check() {
     } else if( indcatr < 4 ) {
             checkFrc();
     }
+    return false
 }
 function checkOrd() {
     var doc = document;
     var num = Number;
     
     var lastrow = 0;
+    allgood = true;
     for( var j = 0; j < 4; ++j ) { // MAXROWS = 4
         var dBx = doc.getElementById("d" + j + "_0");
         if( dBx ) {
@@ -97,6 +106,9 @@ function checkOrd() {
                 for( var k = 0; k < j; ++k ) { // inefficient but small array
                     if( quot[j] < quot[k] ) {
                         whatColor = "red";
+                        allgood = false;
+                        var errs = Number(doc.getElementById("errs").value);
+                        doc.getElementById("errs").value = errs + 1;
                     }
                 }
                 nums[lastcol].style.color = whatColor;
@@ -112,7 +124,7 @@ function checkOrd() {
             }
         }
     }
-   //alert("checkOrd blkCount: " + blkCount);
+    //alert("checkOrd blkCount: " + blkCount);
     // if all the others are ok, the first one must be ok also
     if( blkCount === 3 ) { // MAXROWS = 4
         nums = doc.getElementsByClassName("n0");
@@ -123,8 +135,10 @@ function checkOrd() {
                 doc.getElementById("d0_" + i).style.color = "#0033cc";
             }
         }
-        
+        startAgain(); 
     }
+   //alert("checkOrd returning false");
+    return false
 }
 function checkRed() { // assumes only prime factors are 2's, 3's and 5's fixit
     var doc = document;
@@ -133,6 +147,7 @@ function checkRed() { // assumes only prime factors are 2's, 3's and 5's fixit
     var nums = doc.getElementsByClassName("n0");
     var cols = nums.length;
     var lastcol = cols - 1;
+    allgood = true;
     for( var i = 0; i < cols; ++i ) {
         if( nums[i].value !== "" ) {
            lastcol = i; 
@@ -147,11 +162,15 @@ function checkRed() { // assumes only prime factors are 2's, 3's and 5's fixit
     if( !isRed( lastn, lastd ) ) {
         nBx.style.color = "red";
         dBx.style.color = "red";
+        allgood = false;
+        var errs = Number(doc.getElementById("errs").value);
+        doc.getElementById("errs").value = errs + 1;
     } else {
         for( var i = 0; i < cols; ++i ) {
             nums[i].style.color = "#0033cc";
             doc.getElementById("d0_" + i).style.color = "#0033cc";
         }
+        startAgain();
     }
 }
 function checkMix() {
@@ -169,13 +188,14 @@ function checkMix() {
     var rem = onum%oden;
     var whol = Math.floor(onum/oden);
     var red = rem/oden;
-    var allgood = true;
+    allgood = true;
     var whlVal = whlBx.value;
 
-    
     if( whlVal ) {
         if( isNaN( whlVal ) ) {
             whlBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
             //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value: " + whlBx.value + " not a number";
             //x = (x + 1)%nSbxs;
@@ -185,6 +205,8 @@ function checkMix() {
                 whlBx.style.borderColor = "#e9d398";
             } else {
                 whlBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 allgood = false;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value: " + whlBx.value + " not: " + whol;
                 //x = (x + 1)%nSbxs;
@@ -192,6 +214,8 @@ function checkMix() {
         }
     } else if( whol !== 0 ) {
         whlBx.style.borderColor = "red";
+        var errs = Number(doc.getElementById("errs").value);
+        doc.getElementById("errs").value = errs + 1;
         allgood = false;
         //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
         //x = (x + 1)%nSbxs;
@@ -208,6 +232,8 @@ function checkMix() {
     if( whlVal ) {
         if( isNaN( whlVal ) ) {
             whlBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
             //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value redprt: " + whlBx.value + " not a number";
             //x = (x + 1)%nSbxs;
@@ -217,6 +243,8 @@ function checkMix() {
                 whlBx.style.borderColor = "#e9d398";
             } else {
                 whlBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 allgood = false;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMix whole value redprt: " + whlBx.value + " not: " + whol;
                 //x = (x + 1)%nSbxs;
@@ -224,6 +252,8 @@ function checkMix() {
         }
     } else if( whol !== 0  && rednum ) {
         whlBx.style.borderColor = "red";
+        var errs = Number(doc.getElementById("errs").value);
+        doc.getElementById("errs").value = errs + 1;
         allgood = false;
         //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
         //x = (x + 1)%nSbxs;
@@ -241,12 +271,16 @@ function checkMix() {
                 denBx.style.borderColor = "#e9d398";
             } else {
                 denBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 allgood = false;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMix den value: ";
                 //x = (x + 1)%nSbxs;
             }
         } else {
             denBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
     } else {
@@ -255,6 +289,8 @@ function checkMix() {
             denBx.style.borderColor = "#e9d398";
         } else {
             denBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
             //doc.getElementById("statusBox" + x).innerHTML = "checkMix no denominator";
             //x = (x + 1)%nSbxs;
@@ -271,12 +307,16 @@ function checkMix() {
                 numBx.style.borderColor = "#e9d398";
             } else {
                 numBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 allgood = false;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMix numBx value: " + numBx.value + " not: " + rem + " and ratio not right";
                 //x = (x + 1)%nSbxs;
             }
         } else {
             numBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
     } else {
@@ -285,6 +325,8 @@ function checkMix() {
             numBx.style.borderColor = "#e9d398";
         } else {
             numBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
             //doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: not there but should be";
             //x = (x + 1)%nSbxs;
@@ -301,12 +343,16 @@ function checkMix() {
                 rddBx.style.borderColor = "#e9d398";
             } else {
                 rddBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 allgood = false;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMix den value: ";
                 //x = (x + 1)%nSbxs;
             }
         } else {
             rddBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
     } else {
@@ -317,6 +363,8 @@ function checkMix() {
         } else {
             rddBx.style.borderColor = "red";
             whlBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
             //doc.getElementById("statusBox" + x).innerHTML = "checkMix no denominator";
             //x = (x + 1)%nSbxs;
@@ -334,6 +382,8 @@ function checkMix() {
                 whlBx.style.borderColor = "#e9d398";
             } else {
                 rdnBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 allgood = false;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: " + rdnBx.value + " not: " + rem + " and ratio not right";
                 //x = (x + 1)%nSbxs;
@@ -347,6 +397,8 @@ function checkMix() {
         } else {
             rdnBx.style.borderColor = "red";
             whlBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
             //doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: not there but should be";
             //x = (x + 1)%nSbxs;
@@ -357,15 +409,19 @@ function checkMix() {
     if( !allgood ) {
         //alert("not all good");
         doc.getElementById("chkBx").style.borderColor = "red";
+        var errs = Number(doc.getElementById("errs").value);
+        doc.getElementById("errs").value = errs + 1;
     } else {
         doc.getElementById("chkBx").style.borderColor = "#e9d398";
+        startAgain();
     }
+    return false
 }
 function checkFrc() {
     var num = Number;
     var doc = document;
     
-    var allgood = true;
+    allgood = true;
     var oden = doc.getElementById("oden").value;
     var frcnum3 = doc.getElementById("frcnum3").value;
     var n3isnum = !isNaN(frcnum3);
@@ -414,11 +470,15 @@ function checkFrc() {
             } else {
                 ansBx.style.color = "red";
                 //ansBx.style.borderColor = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 allgood = false;
             }
         } else {
             ansBx.style.color = "red";
             ansBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
     }
@@ -430,6 +490,8 @@ function checkFrc() {
         } else {
             ansBx.style.color = "red";
             ansBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
         //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
@@ -445,9 +507,13 @@ function checkFrc() {
         var nAns = ans && ansisnum? num(ans) : 0;
         if( !done && !ans ) {
             ansBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         } else if( ans && !ansisnum ) {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         } else if( i === 4 && ( done || n3isnum && d3isnum && 
                 nNum3%nAns === 0 && dNum3%nAns === 0 && 
@@ -460,6 +526,8 @@ function checkFrc() {
             ansBx.style.borderColor = "#e9d398"; 
         } else {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
         //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
@@ -470,8 +538,11 @@ function checkFrc() {
     if( !allgood ) {
         //alert("not all good");
         doc.getElementById("chkBx").style.borderColor = "red";
+        var errs = Number(doc.getElementById("errs").value);
+        doc.getElementById("errs").value = errs + 1;
     } else {
         doc.getElementById("chkBx").style.borderColor = "#e9d398";
+        startAgain();
     }
 }
 function move( ev ) {
@@ -577,15 +648,20 @@ function checkMprN( ev ) {
                 nextBx = doc.getElementById(p);
             } else {
                 ansBx.style.color = "red";
-                ansBx.style.borderColor = "red"; 
+                ansBx.style.borderColor = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
             }
             nextBx.focus();
         } else {
             ansBx.style.color = "red";
-            ansBx.style.borderColor = "red"; 
+            ansBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             alert(ans + " is not a number");
         }
-    }
+        return false
+    }    
 }
 function checkMprD( ev ) {
     ev = ev || window.event;
@@ -631,11 +707,15 @@ function checkMprD( ev ) {
                     } else {
                         ansBx.style.color = "red";
                         ansBx.style.borderColor = "red"; 
+                        var errs = Number(doc.getElementById("errs").value);
+                        doc.getElementById("errs").value = errs + 1;
                         alert(ans + " does not evenly divide " + prevN + " and " + prevD + " or " + ans + " is not equal to " + thisN);
                     }
                 } else {
                     ansBx.style.color = "red";
                     ansBx.style.borderColor = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                     alert("fill in previous numerator and denominator first");
                 }
             } else if( col === 5 ) {
@@ -663,6 +743,8 @@ function checkMprD( ev ) {
                 } else {
                     ansBx.style.color = "red";
                     ansBx.style.borderColor = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                     //alert(ans + " is not " + prev2D + " divided by " + prevD);
                 }
             } else { //one of 1st 2 denominators was wrong
@@ -670,14 +752,19 @@ function checkMprD( ev ) {
                 //x = (x + 1)%nSbxs;
                 ansBx.style.color = "red";
                 ansBx.style.borderColor = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 alert("col: " + col + " ans: " + ans + " should be the same as the first denominator: " + oden);
             }
             nextBx.focus();
         } else {
             ansBx.style.color = "red";
-            ansBx.style.borderColor = "red"; 
+            ansBx.style.borderColor = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             alert(ans + " is not a number");
         }
+       return false
     }
 }
 function checkD( ev ) {
@@ -708,12 +795,14 @@ function checkD( ev ) {
         if( !prevDV || !prevNV ) {
             alert("you need to enter something in previous boxes first");
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         } else {
             var nPrevD = num(prevDV); 
             var nPrevN = num(prevNV);
             var nAns = num(ans);
             var test = doc.getElementById("indcatr").value === "0";
-            //alert("checkD test: " + test);
+            //alert("checkD test: " + test + " ans: " + ans + " prevDV: " + prevDV + " prevNV: " + prevNV + " id: " + id);
             if( test ) { // simplifying
                 if( nPrevD%nAns === 0 && nPrevN%nAns === 0 ) {
                     if( !currN || currN.value === "" || num(currN.value) === nAns ) {
@@ -734,16 +823,22 @@ function checkD( ev ) {
                     } else {
                         alert("denominator: " + ans + " needs to be the same value as numerator: " + currN.value + " or you are changing the value of the fraction, not converting it.");
                         ansBx.style.color = "red";
+                        var errs = Number(doc.getElementById("errs").value);
+                        doc.getElementById("errs").value = errs + 1;
                     }
                 } else {
                     alert("denominator needs to evenly divide previous numerator and denominator");
                     ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                 }
             } else if( currN ) { // finding LCM and putting in order
                 var currnVal = currN.value;
                 if( currnVal ) {
                     if( ans !== currnVal ) {
                         ansBx.style.color = "red";
+                        var errs = Number(doc.getElementById("errs").value);
+                        doc.getElementById("errs").value = errs + 1;
                     } else {
                         ansBx.style.color = "#0033cc";
                         var nextcol = col + 1;
@@ -756,6 +851,8 @@ function checkD( ev ) {
                 }
             }
         }
+        //alert("checkD about to//return false");
+         return false
     }
 }
 function checkFrcD( ev ) {
@@ -775,6 +872,8 @@ function checkFrcD( ev ) {
         var rem = onum%oden;
         if( isNaN(ans) ) {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         } else {
             var nans = num(ans);
             
@@ -787,8 +886,11 @@ function checkFrcD( ev ) {
                 ansBx.style.color = "#0033cc";
             } else {
                 ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
             }
         }
+        return false
     }
 }
 function isRed( n, d ) {
@@ -826,7 +928,7 @@ function isRed( n, d ) {
     if( ntwos > 0 && dtwos > 0 ||
             nthrees > 0 && dthrees > 0 ||
             nfives > 0 && dfives > 0 ) {
-        return false;
+        return false
     } else {
         return true;
     }
@@ -850,6 +952,8 @@ function checkFrcN( ev ) {
         //x = (x + 1)%nSbxs;
         if( isNaN(ans) ) {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
             //doc.getElementById("statusBox" + x).innerHTML = "checkFrcN ans: " + ans + " is NaN";
         } else {
             var nans = num(ans);
@@ -863,10 +967,13 @@ function checkFrcN( ev ) {
                 denBx.focus();
             } else {
                 ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkFrcN id: " + id + " oden: " + oden + " frcden: " + frcden + " rem: " + rem;
                 //x = (x + 1)%nSbxs;
             }
         }
+       return false
     }
 }
 function checkDiff( ev ) {
@@ -886,10 +993,15 @@ function checkDiff( ev ) {
                 doc.getElementById("frcnum").focus();
             } else {
                 ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
             }
         } else {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         }
+       return false
     }
 }
 function checkProd( ev ) {
@@ -912,7 +1024,10 @@ function checkProd( ev ) {
             }
         } else {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         }
+       return false
     }
 }
 function checkWhl( ev ) {
@@ -931,7 +1046,10 @@ function checkWhl( ev ) {
             nextBx.focus();
         } else {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         }
+        return false
     }
 }
 function checkDen( ev ) {
@@ -948,7 +1066,10 @@ function checkDen( ev ) {
             doc.getElementById("whlprt").focus();
         } else {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         }
+        return false
     }
 }
 function checkNum( ev ) {
@@ -965,7 +1086,11 @@ function checkNum( ev ) {
             doc.getElementById("dvsr").focus();
         } else {
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         }
+        //ev.preventDefault();
+        return false
     }
 }
 function checkN( ev ) {
@@ -996,6 +1121,8 @@ function checkN( ev ) {
         if( !prevDV || !prevNV ) {
             alert("you need to enter something in previous boxes first");
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         } else {
             var nPrevD = num(prevDV); 
             var nPrevN = num(prevNV);
@@ -1022,16 +1149,22 @@ function checkN( ev ) {
                     } else {
                         alert("numerator: " + ans + " needs to be the same value as  denominator: " + currD.value + " or you are changing the value of the fraction, not converting it.");
                         ansBx.style.color = "red";
+                        var errs = Number(doc.getElementById("errs").value);
+                        doc.getElementById("errs").value = errs + 1;
                     }
                 } else {
                     alert("numerator needs to evenly divide previous numerator and denominator");
                     ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                 }
             } else if( currD ) { // finding LCD and putting in order
                 var currdVal = currD.value;
                 if( currdVal ) {
                     if( ans !== currdVal ) {
                         ansBx.style.color = "red";
+                        var errs = Number(doc.getElementById("errs").value);
+                        doc.getElementById("errs").value = errs + 1;
                     } else {
                         ansBx.style.color = "#0033cc";
                         var nextcol = col + 1;
@@ -1044,6 +1177,7 @@ function checkN( ev ) {
                 }
             }
         }
+        return false
     }
 }
 function checkM( ev ) {
@@ -1076,6 +1210,8 @@ function checkM( ev ) {
         if( !prevDV || !prev2DV ) {
             alert("you need to enter something in previous boxes first");
             ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
         } else {
             var nPrevD = num(prevDV); 
             var nPrev2D = num(prev2DV);
@@ -1119,8 +1255,48 @@ function checkM( ev ) {
                 var whatOp = doc.getElementById("o0_1").innerHTML;
                 alert(prev2DV + " " + whatOp + " " + prevDV + " is not " + ans);
                 ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
             }
         }
+        return false
+    }
+}
+function startAgain() {
+    var doc = document;
+    var Num = Number;
+    
+    var errCt = Num(doc.getElementById("errs").value);
+    var numAttmptd = Num(doc.getElementById("numAttmptd").value);
+    var numWoErr = Num(doc.getElementById("numWoErr").value);
+    var consWoErr = Num(doc.getElementById("consWoErr").value);
+
+    
+
+    // update problem counts
+    doc.getElementById("numAttmptd").value = numAttmptd + 1;
+    if( errCt === 0 ) {
+            doc.getElementById("numWoErr").value = numWoErr + 1;    
+            doc.getElementById("consWoErr").value = consWoErr + 1;
+    } else {
+        doc.getElementById("consWoErr").value = '0';
+    }
+    
+    var jstime = Num(Date.now());
+    var jatime = Num(doc.getElementById("strtTime").value);
+    var timediff = jstime - jatime;
+    if( timediff === 0 ) {
+        doc.getElementById("corrPerHr").value = 0;
+    } else {
+        doc.getElementById("corrPerHr").value = 
+        Math.floor(3600000*Num(doc.getElementById("numWoErr").value)/timediff);
+    }
+    //alert(" errCt = " + errCt + " jstime: " + jstime + " allgood: " + allgood);
+    if( allgood ) {
+        alert("all good");
+        doc.getElementById('th-id2').submit();
+    //else {
+        return false;
     }
 }
 window.onload = function(){

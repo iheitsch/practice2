@@ -14,6 +14,7 @@
         <script src="ConvertFractions.js"></script>
 </head>
 <body>
+<form id="th-id2">
 <% 
     int possbl = 4;
     int indcatr = (int)(StrictMath.random()*possbl);
@@ -415,17 +416,84 @@
             </table>
         </td>
     </tr>
-<% } %>
+<% } 
+String numAttmptdV = "0";
+    String numWoErr = "0";
+    String consWoErr = "0";
+    String corrPerHr = "0";
+    String strtTime = String.valueOf(System.currentTimeMillis());
+    String errs = "0";
+    String tmp = "";      // temporary storage for newly gotten 
+                          // request parameter
+
+    //retrieves the value of the DOM object with name="numAttmptdP"
+    if(( tmp = request.getParameter("numAttmptdP")) != null) {
+        numAttmptdV = tmp.toString();
+    }
+    
+    if(( tmp = request.getParameter("numWoErrP")) != null) {
+        numWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("consWoErrP")) != null) {
+        consWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("corrPerHrP")) != null) {
+        corrPerHr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("strtTimeP")) != null) {
+        strtTime = tmp.toString();
+    } 
+%>
     <tr>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
-        <th colspan="2"><button onclick="check()" id="chkBx">Check</button></th>
+        <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
     </tr>
     </table>
-    
+ 
+<input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
+<div class="d5">
+<table>
+<tr>    
+    <td><label>Problems Attempted</label></td>
+    <td>
+    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Completed Without Error</label></td>   
+    <td>
+    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Consecutive Without Error</label></td>   
+    <td>
+    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Correct Per Hour</label></td>   
+    <td>
+    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Errors This Problem</label></td>
+    <td><input type="text" id="errs" name="errs" value="<%=errs%>"
+               class="blackbox"></td>
+</tr>
+</table>
 <table id="statusTable">
 <% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
     String whatId = "statusBox" + i; 
@@ -433,6 +501,8 @@
     <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
 <% } %>
 </table>
+
 <input type="hidden" id="indcatr" value="<%=indcatr%>">
+</form>
 </body>
 </html>
