@@ -3,8 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-/* in lcd & order exercise, doesn't check that numerator is equal to denominator
- * before moving on to product box fixit 
+/*  
  * 
  * allow users to move around using up, down, left right arrows, particularly 
  * in the LCD and order exercise
@@ -20,6 +19,8 @@
  * indcatr = 3 hangs up sometimes when denominator is 1 and you try to take browser to previous page fixit
  * 
  * probably double and triple counting some errors fixit
+ * 
+ * add decimal to fraction and back exercises
  * 
  * checkMix doesn't check for existence of whole part in reduced fraction fixit
  */
@@ -38,20 +39,20 @@ function erase( ev ) {
         ansBx.value = "";//answer.substring(len, len);
     }
     //ev.preventDefault(); // this locks everything up so no input box anywhere works
-    return false
+    return false;
 }
 function check() {
     var indcatr = Number(document.getElementById("indcatr").value);
     if( indcatr < 1 ) {
-            checkRed();
+        checkRed();
     } else if( indcatr < 2 ) {
-            checkOrd();
+        checkOrd();
     } else if( indcatr < 3 ) {
-            checkMix();
+        checkMix();
     } else if( indcatr < 4 ) {
-            checkFrc();
+        checkFrc();
     }
-    return false
+    return false;
 }
 function checkOrd() {
     var doc = document;
@@ -138,7 +139,7 @@ function checkOrd() {
         startAgain(); 
     }
    //alert("checkOrd returning false");
-    return false
+    return false;
 }
 function checkRed() { // assumes only prime factors are 2's, 3's and 5's fixit
     var doc = document;
@@ -415,7 +416,7 @@ function checkMix() {
         doc.getElementById("chkBx").style.borderColor = "#e9d398";
         startAgain();
     }
-    return false
+    return false;
 }
 function checkFrc() {
     var num = Number;
@@ -423,55 +424,137 @@ function checkFrc() {
     
     allgood = true;
     var oden = doc.getElementById("oden").value;
-    var frcnum3 = doc.getElementById("frcnum3").value;
-    var n3isnum = !isNaN(frcnum3);
-    var nNum3 = n3isnum? num(frcnum3) : 0;
-    var frcden3 = doc.getElementById("frcden3").value;
-    var d3isnum = !isNaN(frcden3);
-    var dNum3 = d3isnum? num(frcden3) : 0;
-    var frcnum4 = doc.getElementById("frcnum4").value;
-    var frcden4 = doc.getElementById("frcden4").value;
-    var frcnum5 = doc.getElementById("frcnum5").value;
-    var frcden5 = doc.getElementById("frcden5").value;
-    var d5isnum = !isNaN(frcden5);
-    var dNum5 = d5isnum? num(frcden5) : 0;
-    var done = !isNaN(frcnum3) && !isNaN(frcden3) && isRed(num(frcnum3),num(frcden3));
-    for( var col = 0; col < 6; ++col ) {
+    var allNums = doc.getElementsByClassName("nput");
+    var len = allNums.length;
+
+    //doc.getElementById("statusBox" + x).innerHTML = "checkFrc oden: " + oden + " allnums len: " + len;
+    //x = (x + 1)%nSbxs;
+    //alert("ok?");
+    for( var col = 0; col < len; ++col ) {
         var id = "frcnum" + col;
         var ansBx = doc.getElementById(id);
-        var ans = ansBx.value;
-
-        if( !isNaN(ans) ) {
+        var ans;
+        if( ansBx ) {
+            ans = ansBx.value;
+        } else {
+            alert("input with id: " + id + " does not exist");
+        }
+        var prevcol = col - 1;
+        var prevcolIsOdd = prevcol%2 === 1;
+        var nextcol = col + 1;
+        
+        var prevnum;
+        var prevden = "1";
+        var nextnum;
+        var prevnIsnum = false;
+        var nPrevn = 0;
+        var prevdIsnum = false;
+        var nPrevd = 1;
+        var done = false;
+        var notans = !ans;
+        if( prevcol > 2 ) {
+            prevnum = doc.getElementById("frcnum" + prevcol).value;
+            prevden = doc.getElementById("frcden" + prevcol).value;
+            prevnIsnum = !isNaN(prevnum);
+            nPrevn = prevnIsnum? num(prevnum) : 0;
+            prevdIsnum = !isNaN(prevden);
+            if( prevden && prevden !== "" && prevden !== "0" && !isNaN(prevden) ) {
+                nPrevd = num(prevden);
+            }
+            //m && prevden !== "0"? num(prevden) : 1;
+            var nextBx = doc.getElementById("frcnum" + nextcol);
+            var nextnum = !nextBx? null : nextBx.value;
+            //alert("col: " + col + " ans: " + ans + " notans: " + notans + " prevcol: " + prevcol + " prevcolIsOdd: " + prevcolIsOdd + " nPrevn: " + nPrevn + " nPrevd: " + nPrevd + " prevden: " + prevden + " prevdIsnum: " + prevdIsnum + " done: " + done + " allgood: " + allgood);
+            done = prevcolIsOdd && prevnIsnum && prevdIsnum && isRed(nPrevn,nPrevd);
+        }
+        
+        if( notans && done) {
+            //alert("breaktime!");
+            break;
+        } else if( !isNaN(ans) ) {
             var nAns = num(ans);
             var id = ansBx.id;        
 
             var whlprt = doc.getElementById("whlprt").value;
             var onum = doc.getElementById("onum").value;
-            
-            //doc.getElementById("statusBox" + x).innerHTML = "col: " + col + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
-            //x = (x + 1)%nSbxs;
-            //doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
-            //x = (x + 1)%nSbxs;
+
             // what if it's already reduced in col 3? fixit
+            var prev2col = col - 2;
+            var prev2Bx = doc.getElementById("frcnum" + prev2col);
+            var prev2num = prev2Bx? prev2Bx.value : 0;
+            //doc.getElementById("statusBox" + x).innerHTML = "col: " + col + " ans: " + ans + " prevnum: " + prevnum + " prevden: " + prevden;
+            //x = (x + 1)%nSbxs;
+            //alert("ok?");
+            // what if it's already reduced in col 3? fixitElementById("frcnum" + prev2col);
+            //var prev2den = doc.getElementById("frcden" + prev2col);
+            var currden;
+            if( col > 2 ) {
+                currden = doc.getElementById("frcden" + col).value;
+                if( !currden ) {
+                    currden = 1;
+                }
+            }
+            
+            var prev2nIsnum = !isNaN(prev2num);
+            var nPrev2n = prev2nIsnum? num(prev2num) : 0;
+            //doc.getElementById("statusBox" + x).innerHTML = "currden: " + currden + " nPrev2n: " + nPrev2n + " nextnum: " + nextnum;
+            //x = (x + 1)%nSbxs;
+            //alert("ok?");
+            
             if( col === 0 && ans === whlprt ||
                 col === 1 && ans === oden ||
                 col === 2 && ans === onum ||
-                col === 3 && nAns === num(whlprt)*num(oden) + num(onum) ||
-                col === 4 && ( done ||
-                ((!frcden4 || (!isNaN(frcden4) && ans === frcden4)) &&
-                n3isnum && d3isnum && nNum3%nAns === 0 && dNum3%nAns === 0)) ||
-                col === 5 && ( done ||
-                (frcnum3 && frcnum4 && n3isnum && !isNaN(frcnum4) &&
-                nNum3/num(frcnum4) === nAns && 
-                (!frcden5 || d5isnum && isRed(nAns, dNum5) )) ) ) {
+                col === 3 && nAns === num(whlprt)*num(oden) + num(onum) ) {
                 
                 ansBx.style.color = "#0033cc";
                 ansBx.style.borderColor = "#e9d398"; 
+            } else if( col%2 === 0 ) {
+                if( currden && !isNaN(currden) && ans !== currden) {
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    allgood = false;
+                    alert("numerator: " + ans + " must be the same as denominator: " + currden);
+                } else if( prevnum && prevden && prevnIsnum && prevdIsnum && 
+                        (nPrevn%nAns !== 0 || nPrevd%nAns !== 0) ) {
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    allgood = false;
+                    alert(ans + " must evenly divide " + prevnum + " and " + prevden);
+                } else {
+                    ansBx.style.color = "#0033cc";
+                    ansBx.style.borderColor = "#e9d398";
+                }
+            } else if( col%2 === 1 ) {
+                //alert("odd col");
+                if( prev2num && prevnum && prev2nIsnum && prevnIsnum &&
+                        nPrev2n/nPrevn !== nAns ) {
+                    alert("division wrong");
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    allgood = false;
+                    alert(prev2num + " divided by " + prevnum + " is not " + ans);
+                } else if( currden && !isNaN(currden) && !isRed(nAns, num(currden)) &&
+                        !nextnum ) {
+                    alert("not reduced");
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    allgood = false;
+                    alert(ans + " divided by " + currden + " is not reduced");
+                } else {
+                    //alert("correct");
+                    ansBx.style.color = "#0033cc";
+                    ansBx.style.borderColor = "#e9d398";
+                }
             } else {
                 ansBx.style.color = "red";
                 //ansBx.style.borderColor = "red";
                 var errs = Number(doc.getElementById("errs").value);
                 doc.getElementById("errs").value = errs + 1;
+                alert(ans + " is not correct numerator input " + col);
                 allgood = false;
             }
         } else {
@@ -479,9 +562,13 @@ function checkFrc() {
             ansBx.style.borderColor = "red";
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
+            alert(ans + " is not a number");
             allgood = false;
         }
     }
+    //doc.getElementById("statusBox" + x).innerHTML = "checkFrc done with numerators ";
+    //x = (x + 1)%nSbxs;
+    //alert("ok?");
     var ansBx = doc.getElementById("d0_1");
     for( var i = 0; i < 2; ++i ) {
         if( ansBx.value === oden ) {
@@ -494,47 +581,117 @@ function checkFrc() {
             doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
-        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
-            //x = (x + 1)%nSbxs;
+        
             //doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
             //x = (x + 1)%nSbxs;
         ansBx = doc.getElementById("frcden3");
     }
-    for( var i = 4; i < 6; ++i ) {
-        ansBx = doc.getElementById("frcden" + i);
-        ans = ansBx.value;
+    //alert("after checking 1st 2 denominators len: " + len);
+    for( var i = 4; i < len; ++i ) {
+        var id = "frcden" + i;
+        ansBx = doc.getElementById(id);
+        if( ansBx ) {
+            ans = ansBx.value;
+        } else {
+            alert("input with id: " + id + " does not exist");
+        }
         var ansisnum = !isNaN(ans);
-        var nAns = ans && ansisnum? num(ans) : 0;
-        if( !done && !ans ) {
+        var nAns = ans && ansisnum && ans !== "0"? num(ans) : 1;
+        var prev2den;
+        var prev2dIsnum = false;
+        var nPrev2d = 0;
+        var nextcol = i + 1;
+        var nextBx = doc.getElementById("frcnum" + nextcol);
+        var nextnum = !nextBx? 0 : nextBx.value;
+        var prevcol = i - 1;
+        var prevcolIsOdd = prevcol%2 === 1;
+        var prev2col = i - 2;
+        var prevnum = doc.getElementById("frcnum" + prevcol).value;
+        var prevden = doc.getElementById("frcden" + prevcol).value;
+        var currnum = doc.getElementById("frcnum" + i).value;
+        var prevnIsnum = !isNaN(prevnum);
+        var nPrevn = prevnIsnum? num(prevnum) : 0;
+        var prevdIsnum = !isNaN(prevden);
+        var nPrevd = 1;
+        if(  prevden && prevdIsnum && prevden !== "" && prevden !== "0" ) {
+            nPrevd = num(prevden);
+        }
+        
+        var    done = prevcolIsOdd && isRed(nPrevn,nPrevd);
+        if( i > 4 ) {
+            prev2den = doc.getElementById("frcden" + prev2col).value;
+            prev2dIsnum = !isNaN(prev2den);
+            nPrev2d = prev2dIsnum? num(prev2den) : 0;
+        }
+        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " prevcol: " + prevcol + " prevcolIsOdd: " + prevcolIsOdd + " nPrevn: " + nPrevn + " nPrev2d: " + prev2den + " nPrevd: " + nPrevd + " prevden: " + prevden + "prevdIsnum: " + prevdIsnum + " done: " + done + " allgood: " + allgood;
+        //x = (x + 1)%nSbxs;
+        //alert("ok?");
+        
+        if( done && !ans ) {
+            //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " done and no ans";
+            //x = (x + 1)%nSbxs;
+            break;
+        } else if( !done && !ans && 
+                prev2den && prev2dIsnum && prevden && prevdIsnum && 
+                nPrev2d/nPrevd !== 1 ) {
             ansBx.style.borderColor = "red";
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
+            alert("not done, no answer and not an implied 1");
             allgood = false;
         } else if( ans && !ansisnum ) {
             ansBx.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
             allgood = false;
-        } else if( i === 4 && ( done || n3isnum && d3isnum && 
-                nNum3%nAns === 0 && dNum3%nAns === 0 && 
-                (!frcden4 || (!isNaN(frcden4) && ans === frcden4)))) {
-            ansBx.style.color = "#0033cc";
-            ansBx.style.borderColor = "#e9d398"; 
-        } else if( i === 5 && (done || d3isnum && !isNaN(frcden4) &&
-                dNum3/num(frcden4) === nAns && isRed( num(frcnum5), nAns) )) {
-            ansBx.style.color = "#0033cc";
-            ansBx.style.borderColor = "#e9d398"; 
+            alert(ans + " is not a number");
+        } else if( i%2 === 0 ) {
+            if( prevnIsnum && prevdIsnum && 
+                (nPrevn%nAns !== 0 || nPrevd%nAns !== 0) ) {
+                ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
+                allgood = false;
+                alert(ans + " needs to evenly divide " + prevnum + " and " + prevden);
+            } else if( currnum && !isNaN(currnum) && ans !== currnum ) {
+                ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
+                allgood = false;
+                alert("Denominator: " + ans + " needs to equal numerator " + currnum);
+            } else {
+                ansBx.style.color = "#0033cc";
+                ansBx.style.borderColor = "#e9d398";
+            }
+        } else if( i%2 === 1 ) {
+            if( prev2num && prevden && prev2dIsnum && prevdIsnum &&
+                nPrev2d/nPrevd !== nAns && nPrev2d/nPrevd !== 1 ) {
+                ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
+                allgood = false;
+                alert("Denominator: " + ans + " is not " + prev2den + " / " + prevden);
+            } else if( currnum && !isNaN(currnum) && !isRed( num(currnum), nAns) && 
+                    !nextnum ) {
+                ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
+                allgood = false;
+                alert(currnum + " / " + ans + " is not reduced");
+            } else {
+                ansBx.style.color = "#0033cc";
+                ansBx.style.borderColor = "#e9d398";
+            }
         } else {
             ansBx.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
             allgood = false;
         }
-        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood + " frcnum3: " + frcnum3;
-            //x = (x + 1)%nSbxs;
-            //doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
-            //x = (x + 1)%nSbxs;
+        //alert("i: " + i + " ans: " + ans + " done: " + done + " allgood: " + allgood);
+        //x = (x + 1)%nSbxs;
     }
+    //alert("after checking the rest of the denominators allgood: " + allgood);
     if( !allgood ) {
         //alert("not all good");
         doc.getElementById("chkBx").style.borderColor = "red";
@@ -621,32 +778,91 @@ function checkMprN( ev ) {
 
             var col = num(id.substring(6,7));
             var nextCol = col + 1;
-            var nextBx = ansBx;
+            var nextBx = ansBx; // for now
             var whlprt = doc.getElementById("whlprt").value;
             var oden = doc.getElementById("oden").value;
             var onum = doc.getElementById("onum").value;
-            var frcnum3 = doc.getElementById("frcnum3").value;
-            //var frcnum4 = doc.getElementById("frcnum4").value;
-            var frcden3 = doc.getElementById("frcden3").value;
-            var frcnum4 = doc.getElementById("frcnum4").value;
-            var frcden4 = doc.getElementById("frcden4").value;
-            var frcden5 = doc.getElementById("frcden5").value;
+
             var nAns = num(ans);
             if( col === 0 && ans === whlprt ||
                 col === 1 && ans === oden ||
                 col === 2 && ans === onum ||
-                col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ||
-                col === 4 && (!frcden4 || (!isNaN(frcden4) && ans === frcden4)) &&
-                !isNaN(frcnum3) && !isNaN(frcden3) &&
-                num(frcnum3)%nAns === 0 && num(frcden3)%nAns === 0 ||
-                col === 5 && frcnum3 && frcnum4 && !isNaN(frcnum3) && !isNaN(frcnum4) &&
-                num(frcnum3)/num(frcnum4) === nAns ) { //&& 
-                //(!frcden5 || (!isNaN(frcden5) && isRed(nAns, num(frcden5)) )) ) {
+                col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ) { 
                 ansBx.style.color = "#0033cc";
-                ansBx.style.borderColor = "#e9d398"; 
-                var p = col < 3? "frcnum" + nextCol : "frcden" + col;
-                nextBx = doc.getElementById(p);
-            } else {
+                ansBx.style.borderColor = "#e9d398";
+                nextBx = doc.getElementById("frcnum" + nextCol);
+                if( col === 3 ) {
+                    nextBx = doc.getElementById("frcden" + col);
+                }
+            } else if( col > 3 && col%2 === 0 ) {
+                /* col === 4 && (!frcden4 || (!isNaN(frcden4) && ans === frcden4)) &&
+                !isNaN(frcnum3) && !isNaN(frcden3) &&
+                num(frcnum3)%nAns === 0 && num(frcden3)%nAns === 0 */
+                
+                var prevCol = col - 1;
+                var prevNum = doc.getElementById("frcnum" + prevCol).value;
+                var prevDen = doc.getElementById("frcden" + prevCol).value;
+                var thisDen = doc.getElementById("frcden" + col).value;
+                if( (thisDen && isNaN(thisDen)) || isNaN(prevNum) || isNaN(prevDen) ) {
+                    alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prevDen + ", " + thisDen);
+                } else if( thisDen && ans !== thisDen ) {
+                    ansBx.style.color = "red";
+                    alert("Numerator: " + ans + " needs to be the same value as denominator: " + thisDen + " or you are changing the value of the fraction, not converting it.");
+                    allgood = false;
+                } else if( num(prevNum)%nAns !== 0 || num(prevDen)%nAns !== 0 ) { // not catching. fixit
+                    ansBx.style.color = "red";
+                    alert(ans + " needs to evenly divide " + prevNum + " and " + prevDen);
+                    allgood = false;
+                } else {
+                    ansBx.style.color = "#0033cc";
+                    ansBx.style.borderColor = "#e9d398";
+                    nextBx = doc.getElementById("frcden" + col);
+                    if( nextBx.value ) {
+                        nextBx = doc.getElementById("frcnum" + nextCol);
+                    }
+                }
+            } else if( col > 3 && col%2 === 1 ) {
+                /* col === 5 && frcnum3 && frcnum4 && !isNaN(frcnum3) && !isNaN(frcnum4) &&
+                num(frcnum3)/num(frcnum4) === nAns ) { */
+                var prevCol = col - 1;
+                var prevNum = doc.getElementById("frcnum" + prevCol).value;
+                var prev2col = col - 2;
+                var prev2Num = doc.getElementById("frcnum" + prev2col).value;
+                if( !prevNum || !prev2Num || isNaN(prevNum) || isNaN(prev2Num) ) {
+                    alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prev2Num);
+                } else if( num(prev2Num)/num(prevNum) !== nAns ) {
+                    ansBx.style.color = "red";
+                    alert(prev2Num + " divided by " + prevNum + " is not " + ans);
+                    allgood = false;
+                } else {
+                    ansBx.style.color = "#0033cc";
+                    ansBx.style.borderColor = "#e9d398"; 
+                    var p = "frcden" + col;
+                    nextBx = doc.getElementById(p);
+                    //doc.getElementById("statusBox" + x).innerHTML ="nextBx: " + p + " value: " + nextBx.value;
+                    //x = (x + 1)%nSbxs;
+                    if( nextBx.value ) {
+                        var nextcol = col + 1;
+                        nextBx = doc.getElementById("frcden" + nextcol);
+                        nextBx.type = "text";
+                        var othrBx = doc.getElementById("frcnum" + nextcol);
+                        othrBx.type = "text";
+                        var par = othrBx.parentNode;
+                        par.style.borderBottom = "2px solid #005511";
+                        //doc.getElementById("statusBox" + x).innerHTML = "checkMpr: e/o" + nextcol;
+                        //x = (x + 1)%nSbxs;
+                        doc.getElementById("e" + nextcol).innerHTML = "=";
+                        doc.getElementById("o" + nextcol).innerHTML ="&divide";
+                        nextcol = nextcol + 1;
+                        othrBx = doc.getElementById("frcnum" + nextcol);
+                        othrBx.type = "text"; 
+                        var par = othrBx.parentNode;
+                        par.style.borderBottom = "2px solid #005511";
+                        othrBx = doc.getElementById("frcden" + nextcol);
+                        othrBx.type = "text";  
+                    } 
+                }
+            } else { // one of 1st 4 numerators was wrong
                 ansBx.style.color = "red";
                 ansBx.style.borderColor = "red";
                 var errs = Number(doc.getElementById("errs").value);
@@ -660,7 +876,7 @@ function checkMprN( ev ) {
             doc.getElementById("errs").value = errs + 1;
             alert(ans + " is not a number");
         }
-        return false
+        return false;
     }    
 }
 function checkMprD( ev ) {
@@ -674,6 +890,7 @@ function checkMprD( ev ) {
         var id = ansBx.id;
         var len = id.length;
         var col = num(id.substring(len-1, len));
+        var nextcol = col + 1;
         var nextBx = ansBx;
         //doc.getElementById("statusBox" + x).innerHTML = "checkMprD ans: " + ans + " id: " + id + " col: " + col;
         //x = (x + 1)%nSbxs;
@@ -689,21 +906,22 @@ function checkMprD( ev ) {
                 } else {
                     nextBx = doc.getElementById("frcnum4");
                 }
-            } else if( col === 4 ) {
+            } else if( col%2 === 0 && col > 3 ) { // used to be col === 4
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 5 block";
                 //x = (x + 1)%nSbxs;
-                var prevN = doc.getElementById("frcnum3").value;
-                var prevD = doc.getElementById("frcden3").value;
+                var lastcol = col - 1;
+                var prevN = doc.getElementById("frcnum" + lastcol).value;
+                var prevD = doc.getElementById("frcden" + lastcol).value;
                 if( prevN && prevD && !isNaN(prevN) && !isNaN(prevD)) {
                     var nVal = num(prevN);
                     var dVal = num(prevD);
                     var aVal = num(ans);
-                    var thisN = doc.getElementById("frcnum4").value;
+                    var thisN = doc.getElementById("frcnum" + col).value;
                     if( nVal%aVal === 0 && dVal%aVal === 0 && 
                                 (!thisN || !isNaN(thisN) && ans === thisN ) ) {
                         ansBx.style.color = "#0033cc";
                         ansBx.style.borderColor = "#e9d398"; 
-                        nextBx = !thisN? doc.getElementById("frcnum4") : doc.getElementById("frcnum5");
+                        nextBx = !thisN? doc.getElementById("frcnum" + col) : doc.getElementById("frcnum" + nextcol);
                     } else {
                         ansBx.style.color = "red";
                         ansBx.style.borderColor = "red"; 
@@ -718,13 +936,17 @@ function checkMprD( ev ) {
                     doc.getElementById("errs").value = errs + 1;
                     alert("fill in previous numerator and denominator first");
                 }
-            } else if( col === 5 ) {
-                //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 6 block";
+            } else if( col%2 === 1 && col > 3) { // used to be 5
+                //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = " + col + " block";
                 //x = (x + 1)%nSbxs;
-                var prev2D = doc.getElementById("frcden3").value;
-                var prevD = doc.getElementById("frcden4").value;
-                var frcnum5 = doc.getElementById("frcnum5");
-                var currN = frcnum5.value;
+                var prev2col = col - 2;
+                var prevcol = col - 1;
+                
+                var prev2D = doc.getElementById("frcden" + prev2col).value;
+                var prevD = doc.getElementById("frcden" + prevcol).value;
+                var thisNid = "frcnum" + col;
+                var thisNum = doc.getElementById(thisNid);
+                var currN = thisNum.value;
                 var currNisnum = !isNaN(currN);
                 var nCurrN = currNisnum? num(currN) : 0;
                 var nAns = num(ans);
@@ -738,7 +960,43 @@ function checkMprD( ev ) {
                     ansBx.style.color = "#0033cc";
                     ansBx.style.borderColor = "#e9d398";
                     if( !currN ) {
-                        nextBx = frcnum5;
+                        nextBx = thisNum;
+                        nextBx.type = "text";
+                        var par = thisNum.parentNode;
+                        //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = " + col + " thisNum id: " + thisNum.id + " ?= " + thisNid;
+                        //x = (x + 1)%nSbxs;
+                        par.style.borderBottom = "2px solid #005511";
+                        
+                        doc.getElementById("e" + nextcol).innerHTML = "=";
+                        doc.getElementById("o" + nextcol).innerHTML ="&divide";
+                        nextcol = nextcol + 1;
+                        var othrBx = doc.getElementById("frcnum" + nextcol);
+                        othrBx.type = "text"; 
+                        var par = othrBx.parentNode;
+                        par.style.borderBottom = "2px solid #005511";
+                        othrBx = doc.getElementById("frcden" + nextcol);
+                        othrBx.type = "text";  
+                    } else {
+                        var nextId = "frcnum" + nextcol;
+                        nextBx = doc.getElementById(nextId);
+                        nextBx.type = "text";
+                        var par = nextBx.parentNode;
+                        //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = " + col + " nextBx id: " + nextBx.id + " =? " + nextId;
+                        //x = (x + 1)%nSbxs;
+                        par.style.borderBottom = "2px solid #005511";
+                        var othrBx = doc.getElementById("frcden" + nextcol);
+                        othrBx.type = "text"; 
+                        doc.getElementById("e" + nextcol).innerHTML = "=";
+                        doc.getElementById("o" + nextcol).innerHTML ="&divide";
+                        nextcol = nextcol + 1;
+                        //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = " + col + " after e/o, nextcol: " + nextcol;
+                        //x = (x + 1)%nSbxs;
+                        othrBx = doc.getElementById("frcnum" + nextcol);
+                        othrBx.type = "text"; 
+                        var par = othrBx.parentNode;
+                        par.style.borderBottom = "2px solid #005511";
+                        othrBx = doc.getElementById("frcden" + nextcol);
+                        othrBx.type = "text"; 
                     }
                 } else {
                     ansBx.style.color = "red";
@@ -764,7 +1022,7 @@ function checkMprD( ev ) {
             doc.getElementById("errs").value = errs + 1;
             alert(ans + " is not a number");
         }
-       return false
+       return false;
     }
 }
 function checkD( ev ) {
@@ -818,7 +1076,7 @@ function checkD( ev ) {
                                 currN.focus();
                             }
                         } else {
-                            alert("currN doesn't exist");
+                            alert("numerator input doesn't exist");
                         }
                     } else {
                         alert("denominator: " + ans + " needs to be the same value as numerator: " + currN.value + " or you are changing the value of the fraction, not converting it.");
@@ -852,7 +1110,7 @@ function checkD( ev ) {
             }
         }
         //alert("checkD about to//return false");
-         return false
+         return false;
     }
 }
 function checkFrcD( ev ) {
@@ -890,7 +1148,7 @@ function checkFrcD( ev ) {
                 doc.getElementById("errs").value = errs + 1;
             }
         }
-        return false
+        return false;
     }
 }
 function isRed( n, d ) {
@@ -928,7 +1186,7 @@ function isRed( n, d ) {
     if( ntwos > 0 && dtwos > 0 ||
             nthrees > 0 && dthrees > 0 ||
             nfives > 0 && dfives > 0 ) {
-        return false
+        return false;
     } else {
         return true;
     }
@@ -973,7 +1231,7 @@ function checkFrcN( ev ) {
                 //x = (x + 1)%nSbxs;
             }
         }
-       return false
+       return false;
     }
 }
 function checkDiff( ev ) {
@@ -1001,7 +1259,7 @@ function checkDiff( ev ) {
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
         }
-       return false
+       return false;
     }
 }
 function checkProd( ev ) {
@@ -1027,7 +1285,7 @@ function checkProd( ev ) {
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
         }
-       return false
+       return false;
     }
 }
 function checkWhl( ev ) {
@@ -1049,7 +1307,7 @@ function checkWhl( ev ) {
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
         }
-        return false
+        return false;
     }
 }
 function checkDen( ev ) {
@@ -1069,7 +1327,7 @@ function checkDen( ev ) {
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
         }
-        return false
+        return false;
     }
 }
 function checkNum( ev ) {
@@ -1090,7 +1348,7 @@ function checkNum( ev ) {
             doc.getElementById("errs").value = errs + 1;
         }
         //ev.preventDefault();
-        return false
+        return false;
     }
 }
 function checkN( ev ) {
@@ -1144,7 +1402,7 @@ function checkN( ev ) {
                                 currD.focus();
                             }
                         } else {
-                            alert("currD doesn't exist");
+                            alert("denominator input doesn't exist");
                         }    
                     } else {
                         alert("numerator: " + ans + " needs to be the same value as  denominator: " + currD.value + " or you are changing the value of the fraction, not converting it.");
@@ -1177,7 +1435,7 @@ function checkN( ev ) {
                 }
             }
         }
-        return false
+        return false;
     }
 }
 function checkM( ev ) {
@@ -1230,7 +1488,6 @@ function checkM( ev ) {
                 var nextBx = doc.getElementById(othr + row + "_" + col);
                 if( nextBx.value ) {
                     var nextcol = col + 1;
-                    //var nxt2col = nextcol + 1;
                     nextBx = doc.getElementById("d" + row + "_" + nextcol);
                     var othrBx = doc.getElementById("n" + row + "_" + nextcol);
                     othrBx.type = "text";
@@ -1245,7 +1502,6 @@ function checkM( ev ) {
                     othrBx.type = "text"; 
                     var par = othrBx.parentNode;
                     par.style.borderBottom = "2px solid #005511";
-                    //border-bottom: 2px solid #005511;
                     othrBx = doc.getElementById("d" + row + "_" + nextcol);
                     othrBx.type = "text";  
                 }
@@ -1259,7 +1515,7 @@ function checkM( ev ) {
                 doc.getElementById("errs").value = errs + 1;
             }
         }
-        return false
+        return false;
     }
 }
 function startAgain() {
@@ -1270,8 +1526,6 @@ function startAgain() {
     var numAttmptd = Num(doc.getElementById("numAttmptd").value);
     var numWoErr = Num(doc.getElementById("numWoErr").value);
     var consWoErr = Num(doc.getElementById("consWoErr").value);
-
-    
 
     // update problem counts
     doc.getElementById("numAttmptd").value = numAttmptd + 1;
@@ -1291,11 +1545,10 @@ function startAgain() {
         doc.getElementById("corrPerHr").value = 
         Math.floor(3600000*Num(doc.getElementById("numWoErr").value)/timediff);
     }
-    //alert(" errCt = " + errCt + " jstime: " + jstime + " allgood: " + allgood);
+
     if( allgood ) {
         alert("all good");
         doc.getElementById('th-id2').submit();
-    //else {
         return false;
     }
 }

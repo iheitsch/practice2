@@ -39,9 +39,9 @@
     int threegen;
     int fivegen;
     int gran = 100;
-    int acttwos;
-    int actthrees;
-    int actfives;
+    int acttwos = 0;
+    int actthrees = 0;
+    int actfives = 0;
     int d2fact;
     int d3fact;
     int d5fact;
@@ -158,16 +158,19 @@
         ntwos = ntwos - 3;
         nthrees = nthrees - 2;
         nfives = nfives - 1;
-        twogen = (int)(gran*ntwos*Math.random());
-        acttwos = twogen > 2*gran? 2 : twogen > gran? 1 : 0;
-        d2fact = (int)(StrictMath.pow(2,acttwos));
-        threegen = (int)(gran*nthrees*Math.random());
-        actthrees = threegen > gran? 1 : 0;
-        d3fact = (int)(StrictMath.pow(3,actthrees));
-        fivegen = (int)(gran*nfives*Math.random());
-        actfives = fivegen > gran? 1 : 0;
-        d5fact = (int)(StrictMath.pow(5,actfives));
-        den[0] = d2fact*d3fact*d5fact;
+        den[0] = 1;
+        while( den[0] == 1 ) {
+            twogen = (int)(gran*ntwos*Math.random());
+            acttwos = twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+            d2fact = (int)(StrictMath.pow(2,acttwos));
+            threegen = (int)(gran*nthrees*Math.random());
+            actthrees = threegen > gran? 1 : 0;
+            d3fact = (int)(StrictMath.pow(3,actthrees));
+            fivegen = (int)(gran*nfives*Math.random());
+            actfives = fivegen > gran? 1 : 0;
+            d5fact = (int)(StrictMath.pow(5,actfives));
+            den[0] = d2fact*d3fact*d5fact;
+        }
 
         max2 = new Double((den[0]+1)*(1 - Math.random()));
         numtwos = (int)(Math.log(max2)/Math.log(2));
@@ -366,15 +369,15 @@
             <table>
                 <tr>
                     <td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum0">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum0" class="nput">  
                     </td>
                     <td class="num">&times</td>
                     <td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum1">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum1" class="nput">  
                     </td>
                     <td class="num">+</td>
                     <td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum2">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum2" class="nput">  
                     </td>
                 </tr>
                 <tr><th colspan="5">
@@ -386,38 +389,68 @@
         <td>
             <table>
                 <tr><td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum3">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum3" class="nput">  
                 </td></tr>
                 <tr><td>
                     <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden3">
                 </td></tr>
             </table>
         </td>
-        <td class="sym">&divide</td>
+<%      
+        String itype = "text";
+        String equalSgn = "=";
+        String op = whatOp;
+        String ntd = "num";
+        for( int j = 0, k = 3; j < ncols; ++j ) { 
+            k = k + 1;
+            String nid = "frcnum" + k;
+            String did = "frcden" + k; 
+            String oid = "o" + k; 
+            String eid = "e" + k; %>
+        <td id="<%=oid%>" class="sym"><%=op%></td>
         <td>
             <table>
-                <tr><td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum4">  
+                <tr><td class="<%=ntd%>">
+                    <input type="<%=itype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=nid%>" class="nput">  
                 </td></tr>
                 <tr><td>
-                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden4">
+                    <input type="<%=itype%>" onkeyup="checkMprD( event )" onkeydown="erase( event )" id="<%=did%>">
                 </td></tr>
             </table>
         </td>
-        <td class="sym">=</td>
+        <td id="<%=eid%>" class="sym"><%=equalSgn%></td>
+<%          k = k + 1; 
+            nid = "frcnum" + k;
+            did = "frcden" + k; %>
         <td>
             <table>
-                <tr><td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum5">  
+                <tr><td class="<%=ntd%>">
+                    <input type="<%=itype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=nid%>" class="nput">  
                 </td></tr>
                 <tr><td>
-                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden5">
+                    <input type="<%=itype%>" onkeyup="checkMprD( event )" onkeydown="erase( event )" id="<%=did%>">
                 </td></tr>
             </table>
         </td>
+    
+<%          itype = "hidden";
+            ntd = "";
+            equalSgn = "";
+            op = "";
+        }
+    } %> 
+</tr>
+
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
     </tr>
-<% } 
-String numAttmptdV = "0";
+    </table>
+<%   String numAttmptdV = "0";
     String numWoErr = "0";
     String consWoErr = "0";
     String corrPerHr = "0";
@@ -447,16 +480,6 @@ String numAttmptdV = "0";
         strtTime = tmp.toString();
     } 
 %>
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
-    </tr>
-    </table>
- 
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <div class="d5">
 <table>
