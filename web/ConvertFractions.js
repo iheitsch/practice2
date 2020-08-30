@@ -10,23 +10,17 @@
  * 
  * don't expect num & den to be equal if they're red; you're replacing them fixit
  * 
- * reduce improper fraction fixit
- * 
- * simplify doesn't let you get away with leaving out the denominator for a whole number it hangs fixit
- * 
  * mx > improper too many errors, separate them and have error message specific to each fixit
- * 
- * indcatr = 3 hangs up sometimes when denominator is 1 and you try to take browser to previous page fixit
  * 
  * probably double and triple counting some errors fixit
  * 
  * add decimal to fraction and back exercises
  * 
- * checkMix doesn't check for existence of whole part in reduced fraction fixit
  */
 var x = 0;
 var nSbxs = 24;
 var allgood = true;
+var partner = null;
 
 function erase( ev ) {
     ev = ev || window.event;
@@ -37,6 +31,12 @@ function erase( ev ) {
         //var answer = ansBx.value;
         //var len = answer.length;
         ansBx.value = "";//answer.substring(len, len);
+    }
+    var local = partner;
+    if( local ) {
+        local.style.color = "#0033cc";
+        local.value = "";
+        partner = null;
     }
     //ev.preventDefault(); // this locks everything up so no input box anywhere works
     return false;
@@ -1134,18 +1134,43 @@ function checkFrcD( ev ) {
             doc.getElementById("errs").value = errs + 1;
         } else {
             var nans = num(ans);
-            
-            if( nans === oden && id === "frcden" ) { // check id, if redNum, must be reduced
-                ansBx.style.color = "#0033cc";
-                doc.getElementById("redprt").focus();
-            } else if( frcnum &&  !isNaN(frcnum) && 
-                    num(frcnum)/nans === rem/oden &&    
-                    (id === "frcden" || isRed(frcnum, nans) ) ) {
-                ansBx.style.color = "#0033cc";
+            if( frcnum &&  !isNaN(frcnum) ) {
+                if( num(frcnum)/nans !== rem/oden ) {
+                    ansBx.style.color = "red";
+                    numBx.style.color = "red";
+                    partner = ansBx;
+                    numBx.focus();
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    alert(frcnum + "/" + nans + " needs to equal " + rem + "/" + oden);
+                } else if ( id !== "frcden" && !isRed(frcnum, nans) ) {
+                    ansBx.style.color = "red";
+                    numBx.style.color = "red";
+                    partner = ansBx;
+                    numBx.focus();
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    alert(frcnum + "/" + nans + " is not reduced");
+                } else {
+                    ansBx.style.color = "#0033cc";
+                    if( id === "frcden" ) {
+                        doc.getElementById("redprt").focus();
+                    } else {
+                        doc.activeElement.blur();
+                    }
+                }
+            } else if( id === "frcden" ) {
+                if( nans === oden ) { // check id, if redNum, must be reduced
+                    ansBx.style.color = "#0033cc";
+                    doc.getElementById("redprt").focus();
+                } else {
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    alert(nans + " needs to be " + oden);
+                }
             } else {
-                ansBx.style.color = "red";
-                var errs = Number(doc.getElementById("errs").value);
-                doc.getElementById("errs").value = errs + 1;
+               numBx.focus();
             }
         }
         return false;
@@ -1191,6 +1216,7 @@ function isRed( n, d ) {
         return true;
     }
 }
+// doesnt check first numerator fixit
 function checkFrcN( ev ) {
     ev = ev || window.event;
     if (ev.which === 13 || ev.keyCode === 13) { 
@@ -1216,19 +1242,43 @@ function checkFrcN( ev ) {
         } else {
             var nans = num(ans);
             var id = ansBx.id;
-            if( (nans === rem && id === "frcnum") ||
-                    (frcden &&  !isNaN(frcden) && 
-                    nans/num(frcden) === rem/num(oden) &&
-                    (id === "frcnum" || isRed(nans, frcden) ) ) ||
-                    !frcden ) {
-                ansBx.style.color = "#0033cc";
-                denBx.focus();
+            if( frcden && !isNaN(frcden) ) {
+                if( nans/num(frcden) !== rem/num(oden) ) {
+                    ansBx.style.color = "red";
+                    denBx.style.color = "red";
+                    partner = denBx;
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    alert(nans + "/" + frcden + " needs to equal " + rem + "/" + oden);
+                } else if ( id !== "frcnum" && !isRed(nans, frcden) ) {
+                    ansBx.style.color = "red";
+                    denBx.style.color = "red";
+                    partner = denBx;
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    alert(nans + "/" + frcden + " is not reduced");
+                } else {
+                    ansBx.style.color = "#0033cc";
+                    if( id === "frcnum" ) {
+                        doc.getElementById("redprt").focus();
+                    } else {
+                        doc.activeElement.blur();
+                    }
+                }
+            } else if( id === "frcnum" ) {
+                if( nans === rem ) {
+                    ansBx.style.color = "#0033cc";
+                    denBx.focus();
+                } else {
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                    alert(nans + " needs to be " + rem);
+                    //doc.getElementById("statusBox" + x).innerHTML = "checkFrcN id: " + id + " oden: " + oden + " frcden: " + frcden + " rem: " + rem;
+                    //x = (x + 1)%nSbxs;
+                }
             } else {
-                ansBx.style.color = "red";
-                var errs = Number(doc.getElementById("errs").value);
-                doc.getElementById("errs").value = errs + 1;
-                //doc.getElementById("statusBox" + x).innerHTML = "checkFrcN id: " + id + " oden: " + oden + " frcden: " + frcden + " rem: " + rem;
-                //x = (x + 1)%nSbxs;
+                denBx.focus();
             }
         }
        return false;

@@ -124,10 +124,10 @@
         acttwos = twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
         d2fact = (int)(StrictMath.pow(2,acttwos));
         threegen = (int)(gran*nthrees*Math.random());
-        actthrees = threegen > 2*gran? 2 : threegen > gran? 1 : 0;
+        actthrees = threegen > 2*0.7*gran? 2 : threegen > 0.7*gran? 1 : 0;
         d3fact = (int)(StrictMath.pow(3,actthrees));
         fivegen = (int)(gran*nfives*Math.random());
-        actfives = fivegen > gran? 1 : 0;
+        actfives = fivegen > 0.7*gran? 1 : 0; // make fives more likely
         d5fact = (int)(StrictMath.pow(5,actfives));
         num[0] = d2fact*d3fact*d5fact;
 
@@ -155,13 +155,13 @@
     } else if( indcatr < 4 ) {
         instrs = "Convert this Mixed Number to a Fraction";
         whol = 1 + (int)(StrictMath.random()*maxwhol);
-        ntwos = ntwos - 3;
+        ntwos = ntwos - 2;
         nthrees = nthrees - 2;
         nfives = nfives - 1;
         den[0] = 1;
         while( den[0] == 1 ) {
             twogen = (int)(gran*ntwos*Math.random());
-            acttwos = twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+            acttwos = twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
             d2fact = (int)(StrictMath.pow(2,acttwos));
             threegen = (int)(gran*nthrees*Math.random());
             actthrees = threegen > gran? 1 : 0;
@@ -169,6 +169,15 @@
             fivegen = (int)(gran*nfives*Math.random());
             actfives = fivegen > gran? 1 : 0;
             d5fact = (int)(StrictMath.pow(5,actfives));
+            // keep denominator from being too big and cumbersome
+            if( acttwos == 3 && actthrees == 1 && actfives == 1 ) {
+                boolean cutthrees = 2*Math.random() > 1;
+                if( cutthrees ) {
+                    d3fact = d3fact/3;
+                } else {
+                    d5fact = d5fact/5;
+                }
+            }
             den[0] = d2fact*d3fact*d5fact;
         }
 
