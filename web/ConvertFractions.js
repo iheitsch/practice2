@@ -69,73 +69,63 @@ function checkOrd() {
             }
         }
     }
-   //alert("checkOrd lastrow: " + lastrow);
-    //var lastcol = new Array(4); // MAXROWS = 4
 
-    var nums = doc.getElementsByClassName("n0");
-    var cols = nums.length;
-    var lastcol = cols - 1;
-    for( var i = 0; i < cols; ++i ) {
-        if( nums[i].value !== "" ) {
-            lastcol = i;
-        } else {
-            break;
-        }
-    }
-    var lastn = num(nums[lastcol].value);
-    var lastdBx = doc.getElementById("d0_" + lastcol);
-    var lastd = num(lastdBx.value);
+    var nums; // = doc.getElementsByClassName("n0");
+    var cols; // = nums.length;
+    var lastn;
+    var lastdBx;
+    var lastd;
+
     // what order should they be in?
     // mark it red if it's not in that spot
     var quot = new Array(4); // MAXROWS = 4
-    quot[0] = lastn/lastd;
+    var lastcol = new Array(4);
     var blkCount = 0;
-    for( var j = 1; j <= lastrow; ++j ) {
+    for( var j = 0; j <= lastrow; ++j ) {
         nums = doc.getElementsByClassName("n" + j);
         cols = nums.length;
-        lastcol = cols - 1;
+        lastcol[j] = cols - 1;
         for( var i = 0; i < cols; ++i ) {
             if( nums[i].value !== "" ) {
-               lastcol = i;
+               lastcol[j] = i;
             } else {
-                lastn = num(nums[lastcol].value);
-                lastdBx = doc.getElementById("d" + j + "_" + lastcol);
+                lastn = num(nums[lastcol[j]].value);
+                lastdBx = doc.getElementById("d" + j + "_" + lastcol[j]);
                 lastd = num(lastdBx.value);
                 quot[j] = lastn/lastd;
-               //alert("row: " + j + " lastcol: " + lastcol + " lastn: " + lastn + " lastd: " + lastd + " quot: " + quot);
-                var whatColor = "#0033cc";
-                for( var k = 0; k < j; ++k ) { // inefficient but small array
-                    if( quot[j] < quot[k] ) {
-                        whatColor = "red";
-                        allgood = false;
-                        var errs = Number(doc.getElementById("errs").value);
-                        doc.getElementById("errs").value = errs + 1;
-                    }
-                }
-                nums[lastcol].style.color = whatColor;
-                lastdBx.style.color = whatColor;
-                if( whatColor === "#0033cc") {
-                    blkCount = blkCount + 1;
-                    for( var k = 0; k < lastcol; ++k ) {
-                        nums[k].style.color = "#0033cc";
-                        doc.getElementById("d" + j + "_" + k).style.color = "#0033cc";
-                    }
-                }
-                break;
             }
         }
     }
-    //alert("checkOrd blkCount: " + blkCount);
-    // if all the others are ok, the first one must be ok also
-    if( blkCount === 3 ) { // MAXROWS = 4
-        nums = doc.getElementsByClassName("n0");
-        var cols = nums.length;
-        for( var i = 0; i < cols; ++i ) {
-            if( nums[i].value !== "" ) {
-                nums[i].style.color = "#0033cc";
-                doc.getElementById("d0_" + i).style.color = "#0033cc";
+    for( j = 0; j < lastrow; ++j ) {
+        for( var k = j+1; k <= lastrow; ++k ) { // inefficient but small array
+            if( quot[j] > quot[k] ) {
+                var tmp = quot[j];
+                quot[j] = quot[k];
+                quot[k] = tmp;
             }
         }
+    }
+    for( var j = 0; j <= lastrow; ++j ) {
+        nums = doc.getElementsByClassName("n" + j);
+        lastn = num(nums[lastcol[j]].value);
+        lastdBx = doc.getElementById("d" + j + "_" + lastcol[j]);
+        lastd = num(lastdBx.value);
+        var qt = lastn/lastd;
+        //alert("row: " + j + " lastcol: " + lastcol[j] + " lastn: " + lastn + " lastd: " + lastd + " qt: " + qt + " quot: " + quot[j]);
+        if( qt !== quot[j] ) {
+            nums[lastcol[j]].style.color = "red";
+            lastdBx.style.color = "red";
+            allgood = false;
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
+        } else {
+            nums[lastcol[j]].style.color = "#0033cc";
+            lastdBx.style.color = "#0033cc";
+            blkCount = blkCount + 1;
+        }
+    }
+    //alert("blkCount: " + blkCount);
+    if( blkCount === 4 ) { // MAXROWS = 4
         startAgain(); 
     }
    //alert("checkOrd returning false");
