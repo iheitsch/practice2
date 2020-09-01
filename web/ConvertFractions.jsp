@@ -17,7 +17,7 @@
 <form id="th-id2">
 <% 
     int possbl = 4;
-    int indcatr = (int)(StrictMath.random()*possbl);
+    
     String instrs = "blank";
     final int MAXROWS = 4;
     final int MAXCOLS = 3;
@@ -55,153 +55,207 @@
     int n3fact;
     int n5fact;
     
-    if( indcatr < 1 ) {
-        instrs = "Simplify this Fraction";
-        twogen = (int)(gran*ntwos*Math.random());
-        acttwos = twogen > 5*gran? 5 : twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
-        d2fact = (int)(StrictMath.pow(2,acttwos));
-        threegen = (int)(gran*nthrees*Math.random());
-        actthrees = threegen > 3*gran? 3 : threegen > 2*gran? 2 : threegen > gran? 1 : 0;
-        d3fact = (int)(StrictMath.pow(3,actthrees));
-        fivegen = (int)(gran*nfives*Math.random());
-        actfives = fivegen > 2*gran? 2 : fivegen > gran? 1 : 0;
-        d5fact = (int)(StrictMath.pow(5,actfives));
-        den[0] = d2fact*d3fact*d5fact;
+    boolean simplifyCk = false;
+    String isSimplify = "";
 
-        max2 = new Double((den[0]+1)*(1 - Math.random()));
-        numtwos = (int)(Math.log(max2)/Math.log(2));
-        if( numtwos < 0 ) {
-          numtwos = 0;
-        } else if( numtwos > ntwos - 1 ) {
-          numtwos = ntwos - 1;
+    boolean commonDenomCk = true;
+    String isCommonDenom = "checked";
+    
+    boolean fracToMxCk = true;
+    String isFracToMx = "checked";
+    
+    boolean mxToFracCk = true;
+    String isMxToFrac = "checked";
+    
+    // checks is null on first rendition of page, will contain
+    // last settings after that so they can be carried forward
+    String[] checks = request.getParameterValues("selected");
+    int len = 0;
+    if( checks != null ) {
+        len = checks.length;
+        simplifyCk = false;
+        isSimplify = "";
+        commonDenomCk = false;
+        isCommonDenom = "";
+        fracToMxCk = false;
+        isFracToMx = "";
+        mxToFracCk = false;
+        isMxToFrac = "";
+    }
+    for( int i = 0; i < len; ++i ) {
+        System.out.println("checks[" + i + "]: " + checks[i]);
+        if( checks[i].compareTo("simplify") == 0 ) {
+            simplifyCk = true;
+            isSimplify = "checked";
+        } else if( checks[i].compareTo("commonDenom") == 0 ) {
+            commonDenomCk = true;
+            isCommonDenom = "checked";
+        } else if( checks[i].compareTo("fracToMx") == 0 ) {
+            fracToMxCk = true;
+            isFracToMx = "checked";       
+        } else if( checks[i].compareTo("mxToFrac") == 0 ) {
+            mxToFracCk = true;
+            isMxToFrac = "checked";
         }
-        n2fact = (int)(StrictMath.pow(2,numtwos));
-        System.out.println("den: " + den + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
-        max3 = new Double((den[0]/n2fact+1)*(1 - Math.random()));
-        numthrees = (int)(Math.log(max3)/Math.log(3));
-        numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-        //numthrees = (new Double((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-        n3fact = (int)(StrictMath.pow(3,numthrees));
-        max5 = new Double((den[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
-        numfives = (int)(Math.log(max5)/Math.log(5));
-        numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
-        n5fact = (int)(StrictMath.pow(5,numfives));
-        num[0] = n2fact*n3fact*n5fact;
-
-        ncols = (int)(acttwos + actthrees + actfives);
-    } else if( indcatr < 2 ) {
-        instrs = "Convert these Fractions to a Common Denominator and use Arrows to Put in Order, Lowest at the Top";
-        showArros = true;
-        nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
-        int maxcols = 0;
-        ntwos = ntwos - 1;
-        nthrees = nthrees - 1;
-        nfives = nfives - 1;
-        for( int i = 0; i < nrows; ++i ) {
-            acttwos = (int)(StrictMath.random()*ntwos);
-            actthrees = (int)(StrictMath.random()*nthrees);
-            actfives = (int)(StrictMath.random()*nfives);
-            int twofact = (int)(StrictMath.pow(2,acttwos));
-            int threefact = (int)(StrictMath.pow(3,actthrees));
-            int fivefact = (int)(StrictMath.pow(5,actfives));
-            den[i] = twofact*threefact*fivefact;
-            num[i] = (new Double((den[i])*(1 - Math.pow(Math.random(),EXP)))).intValue();
-            ncols = (int)(acttwos + actthrees + actfives);
-            if( ncols > maxcols ) {
-                maxcols = ncols;
-            }
-        }
-        ncols = maxcols;
-        whatOp = "&times";
-        isDivide = false;
-    } else if( indcatr < 3 ) {
-        // figure out what table is going to look for these before you go any further fixit
-        instrs = "Convert this Fraction to a Mixed Number";
-        ntwos = ntwos - 1;
-        nthrees = nthrees - 1;
-        nfives = nfives - 1;
-        twogen = (int)(gran*ntwos*Math.random());
-        acttwos = twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
-        d2fact = (int)(StrictMath.pow(2,acttwos));
-        threegen = (int)(gran*nthrees*Math.random());
-        actthrees = threegen > 2*0.7*gran? 2 : threegen > 0.7*gran? 1 : 0;
-        d3fact = (int)(StrictMath.pow(3,actthrees));
-        fivegen = (int)(gran*nfives*Math.random());
-        actfives = fivegen > 0.7*gran? 1 : 0; // make fives more likely
-        d5fact = (int)(StrictMath.pow(5,actfives));
-        num[0] = d2fact*d3fact*d5fact;
-
-        max2 = new Double((num[0]+1)*(1 - Math.random()));
-        numtwos = (int)(Math.log(max2)/Math.log(2));
-        if( numtwos < 0 ) {
-          numtwos = 0;
-        } else if( numtwos > ntwos - 1 ) {
-          numtwos = ntwos - 1;
-        }
-        n2fact = (int)(StrictMath.pow(2,numtwos));
-        System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
-        max3 = new Double((num[0]/n2fact+1)*(1 - Math.random()));
-        numthrees = (int)(Math.log(max3)/Math.log(3));
-        numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-        //numthrees = (new Double((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-        n3fact = (int)(StrictMath.pow(3,numthrees));
-        max5 = new Double((num[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
-        numfives = (int)(Math.log(max5)/Math.log(5));
-        numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
-        n5fact = (int)(StrictMath.pow(5,numfives));
-        den[0] = n2fact*n3fact*n5fact;
-
-        ncols = (int)(acttwos + actthrees + actfives);
-    } else if( indcatr < 4 ) {
-        instrs = "Convert this Mixed Number to a Fraction";
-        whol = 1 + (int)(StrictMath.random()*maxwhol);
-        ntwos = ntwos - 2;
-        nthrees = nthrees - 2;
-        nfives = nfives - 1;
-        den[0] = 1;
-        while( den[0] == 1 ) {
+    }
+    
+    boolean running = false;
+    int indcatr = 0;
+    
+    while( !running ) {
+        indcatr = (int)(StrictMath.random()*possbl);
+        if( indcatr == 0 && simplifyCk ) {
+            running = true;
+            instrs = "Simplify this Fraction";
             twogen = (int)(gran*ntwos*Math.random());
-            acttwos = twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+            acttwos = twogen > 5*gran? 5 : twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
             d2fact = (int)(StrictMath.pow(2,acttwos));
             threegen = (int)(gran*nthrees*Math.random());
-            actthrees = threegen > gran? 1 : 0;
+            actthrees = threegen > 3*gran? 3 : threegen > 2*gran? 2 : threegen > gran? 1 : 0;
             d3fact = (int)(StrictMath.pow(3,actthrees));
             fivegen = (int)(gran*nfives*Math.random());
-            actfives = fivegen > gran? 1 : 0;
+            actfives = fivegen > 2*gran? 2 : fivegen > gran? 1 : 0;
             d5fact = (int)(StrictMath.pow(5,actfives));
-            // keep denominator from being too big and cumbersome
-            if( acttwos == 3 && actthrees == 1 && actfives == 1 ) {
-                boolean cutthrees = 2*Math.random() > 1;
-                if( cutthrees ) {
-                    d3fact = d3fact/3;
-                } else {
-                    d5fact = d5fact/5;
+            den[0] = d2fact*d3fact*d5fact;
+
+            max2 = new Double((den[0]+1)*(1 - Math.random()));
+            numtwos = (int)(Math.log(max2)/Math.log(2));
+            if( numtwos < 0 ) {
+              numtwos = 0;
+            } else if( numtwos > ntwos - 1 ) {
+              numtwos = ntwos - 1;
+            }
+            n2fact = (int)(StrictMath.pow(2,numtwos));
+            System.out.println("den: " + den + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+            max3 = new Double((den[0]/n2fact+1)*(1 - Math.random()));
+            numthrees = (int)(Math.log(max3)/Math.log(3));
+            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
+            //numthrees = (new Double((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+            n3fact = (int)(StrictMath.pow(3,numthrees));
+            max5 = new Double((den[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
+            numfives = (int)(Math.log(max5)/Math.log(5));
+            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
+            n5fact = (int)(StrictMath.pow(5,numfives));
+            num[0] = n2fact*n3fact*n5fact;
+
+            ncols = (int)(acttwos + actthrees + actfives);
+        } else if( indcatr == 1 && commonDenomCk ) {
+            running = true;
+            instrs = "Convert these Fractions to a Common Denominator and use Arrows to Put in Order, Lowest at the Top";
+            showArros = true;
+            nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
+            int maxcols = 0;
+            ntwos = ntwos - 1;
+            nthrees = nthrees - 1;
+            nfives = nfives - 1;
+            for( int i = 0; i < nrows; ++i ) {
+                acttwos = (int)(StrictMath.random()*ntwos);
+                actthrees = (int)(StrictMath.random()*nthrees);
+                actfives = (int)(StrictMath.random()*nfives);
+                int twofact = (int)(StrictMath.pow(2,acttwos));
+                int threefact = (int)(StrictMath.pow(3,actthrees));
+                int fivefact = (int)(StrictMath.pow(5,actfives));
+                den[i] = twofact*threefact*fivefact;
+                num[i] = (new Double((den[i])*(1 - Math.pow(Math.random(),EXP)))).intValue();
+                ncols = (int)(acttwos + actthrees + actfives);
+                if( ncols > maxcols ) {
+                    maxcols = ncols;
                 }
             }
-            den[0] = d2fact*d3fact*d5fact;
-        }
+            ncols = maxcols;
+            whatOp = "&times";
+            isDivide = false;
+        } else if( indcatr == 2 && fracToMxCk ) {
+            running = true;
+            // figure out what table is going to look for these before you go any further fixit
+            instrs = "Convert this Fraction to a Mixed Number";
+            ntwos = ntwos - 1;
+            nthrees = nthrees - 1;
+            nfives = nfives - 1;
+            twogen = (int)(gran*ntwos*Math.random());
+            acttwos = twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+            d2fact = (int)(StrictMath.pow(2,acttwos));
+            threegen = (int)(gran*nthrees*Math.random());
+            actthrees = threegen > 2*0.7*gran? 2 : threegen > 0.7*gran? 1 : 0;
+            d3fact = (int)(StrictMath.pow(3,actthrees));
+            fivegen = (int)(gran*nfives*Math.random());
+            actfives = fivegen > 0.7*gran? 1 : 0; // make fives more likely
+            d5fact = (int)(StrictMath.pow(5,actfives));
+            num[0] = d2fact*d3fact*d5fact;
 
-        max2 = new Double((den[0]+1)*(1 - Math.random()));
-        numtwos = (int)(Math.log(max2)/Math.log(2));
-        if( numtwos < 0 ) {
-          numtwos = 0;
-        } else if( numtwos > ntwos - 1 ) {
-          numtwos = ntwos - 1;
-        }
-        n2fact = (int)(StrictMath.pow(2,numtwos));
-        System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
-        max3 = new Double((den[0]/n2fact+1)*(1 - Math.random()));
-        numthrees = (int)(Math.log(max3)/Math.log(3));
-        numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-        //numthrees = (new Double((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-        n3fact = (int)(StrictMath.pow(3,numthrees));
-        max5 = new Double((den[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
-        numfives = (int)(Math.log(max5)/Math.log(5));
-        numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
-        n5fact = (int)(StrictMath.pow(5,numfives));
-        num[0] = n2fact*n3fact*n5fact;
+            max2 = new Double((num[0]+1)*(1 - Math.random()));
+            numtwos = (int)(Math.log(max2)/Math.log(2));
+            if( numtwos < 0 ) {
+              numtwos = 0;
+            } else if( numtwos > ntwos - 1 ) {
+              numtwos = ntwos - 1;
+            }
+            n2fact = (int)(StrictMath.pow(2,numtwos));
+            //System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+            max3 = new Double((num[0]/n2fact+1)*(1 - Math.random()));
+            numthrees = (int)(Math.log(max3)/Math.log(3));
+            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
+            //numthrees = (new Double((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+            n3fact = (int)(StrictMath.pow(3,numthrees));
+            max5 = new Double((num[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
+            numfives = (int)(Math.log(max5)/Math.log(5));
+            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
+            n5fact = (int)(StrictMath.pow(5,numfives));
+            den[0] = n2fact*n3fact*n5fact;
 
-        ncols = (int)(acttwos + actthrees + actfives);
+            ncols = (int)(acttwos + actthrees + actfives);
+        } else if( indcatr == 3 && mxToFracCk ) {
+            running = true;
+            instrs = "Convert this Mixed Number to a Fraction";
+            whol = 1 + (int)(StrictMath.random()*maxwhol);
+            ntwos = ntwos - 2;
+            nthrees = nthrees - 2;
+            nfives = nfives - 1;
+            den[0] = 1;
+            while( den[0] == 1 ) {
+                twogen = (int)(gran*ntwos*Math.random());
+                acttwos = twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+                d2fact = (int)(StrictMath.pow(2,acttwos));
+                threegen = (int)(gran*nthrees*Math.random());
+                actthrees = threegen > gran? 1 : 0;
+                d3fact = (int)(StrictMath.pow(3,actthrees));
+                fivegen = (int)(gran*nfives*Math.random());
+                actfives = fivegen > gran? 1 : 0;
+                d5fact = (int)(StrictMath.pow(5,actfives));
+                // keep denominator from being too big and cumbersome
+                if( acttwos == 3 && actthrees == 1 && actfives == 1 ) {
+                    boolean cutthrees = 2*Math.random() > 1;
+                    if( cutthrees ) {
+                        d3fact = d3fact/3;
+                    } else {
+                        d5fact = d5fact/5;
+                    }
+                }
+                den[0] = d2fact*d3fact*d5fact;
+            }
+
+            max2 = new Double((den[0]+1)*(1 - Math.random()));
+            numtwos = (int)(Math.log(max2)/Math.log(2));
+            if( numtwos < 0 ) {
+              numtwos = 0;
+            } else if( numtwos > ntwos - 1 ) {
+              numtwos = ntwos - 1;
+            }
+            n2fact = (int)(StrictMath.pow(2,numtwos));
+            //System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+            max3 = new Double((den[0]/n2fact+1)*(1 - Math.random()));
+            numthrees = (int)(Math.log(max3)/Math.log(3));
+            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
+            //numthrees = (new Double((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+            n3fact = (int)(StrictMath.pow(3,numthrees));
+            max5 = new Double((den[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
+            numfives = (int)(Math.log(max5)/Math.log(5));
+            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
+            n5fact = (int)(StrictMath.pow(5,numfives));
+            num[0] = n2fact*n3fact*n5fact;
+
+            ncols = (int)(acttwos + actthrees + actfives);
+        }
     }
 %>
 
@@ -209,7 +263,7 @@
 <tr>
     <caption><%=instrs%></caption>
 </tr>
-<%  if( indcatr < 2 ) {
+<%  if( indcatr < 2 && ( simplifyCk || commonDenomCk ) ) {
         for( int i = 0; i < nrows; ++i ) { 
             String nclass = "n" + i; 
             String nid = "n" + i + "_0";
@@ -226,7 +280,7 @@
                 <tr><td>
                     <i onclick="move()"  id="<%=dnArroId%>" class="arrow down"></i>
                 </td></tr>
-            </table>
+        </table>
     </td>
     <%      } %>
         <td>
@@ -282,7 +336,7 @@
     %>
         </tr>
     <%  } 
-    }  else if( indcatr < 3 ) { %>
+    }  else if( indcatr < 3 && fracToMxCk ) { %>
     <tr>
         <td>
             <table>
@@ -358,7 +412,7 @@
             <input onkeyup="checkDiff( event )" onkeydown="erase( event )" id="diff">
         </td>
     </tr>
-<%  } else { %>
+<%  } else if( indcatr < 4 && mxToFracCk ) { %>
     <tr>
         <td>
             <input disabled="true" value=<%=whol%> id="whlprt">
@@ -447,7 +501,8 @@
             equalSgn = "";
             op = "";
         }
-    } %> 
+    } else {
+    }%> 
 </tr>
 
     <tr>
@@ -459,14 +514,14 @@
         <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
     </tr>
     </table>
-<%   String numAttmptdV = "0";
+<%  String numAttmptdV = "0";
     String numWoErr = "0";
     String consWoErr = "0";
     String corrPerHr = "0";
     String strtTime = String.valueOf(System.currentTimeMillis());
     String errs = "0";
-    String tmp = "";      // temporary storage for newly gotten 
-                          // request parameter
+    String tmp = "";    // temporary storage for newly gotten 
+                        // request parameter      
 
     //retrieves the value of the DOM object with name="numAttmptdP"
     if(( tmp = request.getParameter("numAttmptdP")) != null) {
@@ -490,8 +545,12 @@
     } 
 %>
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
+
 <div class="d5">
-<table>
+<table >
+<tr>
+    <th class="title">Score</th>     
+</tr>
 <tr>    
     <td><label>Problems Attempted</label></td>
     <td>
@@ -526,6 +585,36 @@
                class="blackbox"></td>
 </tr>
 </table>
+<table >
+<tr>
+    <th class="title">Types of Problems</th>
+</tr>
+<tr><td><input type="checkbox" value="simplify" name="selected" 
+                   <%=isSimplify%> onclick="zeroCounts()">
+            <label>Simplify</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="commonDenom" name="selected" 
+                   <%=isCommonDenom%> onclick="zeroCounts()">
+            <label>Find Common Denominator</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="fracToMx" name="selected" 
+                   <%=isFracToMx%> onclick="zeroCounts()">
+            <label>Fraction to Mixed Number</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="mxToFrac" name="selected" 
+                   <%=isMxToFrac%> onclick="zeroCounts()">
+            <label>Mixed Number to Fraction</label>
+        </td>
+</tr>
+</table>
+</div>
+
 <table id="statusTable">
 <% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
     String whatId = "statusBox" + i; 
