@@ -19,6 +19,8 @@
     int possbl = 4;
     
     String instrs = "blank";
+    String instr2 = "blank";
+    String instr3 = "";//Click 'done' when finished";
     final int MAXROWS = 4;
     final int MAXCOLS = 3;
     final int MAXDEN = 25;
@@ -55,17 +57,17 @@
     int n3fact;
     int n5fact;
     
-    boolean simplifyCk = false;
-    String isSimplify = "";
+    boolean simplifyCk = true;
+    String isSimplify = "checked";
 
-    boolean commonDenomCk = true;
-    String isCommonDenom = "checked";
+    boolean commonDenomCk = false;
+    String isCommonDenom = "";
     
-    boolean fracToMxCk = true;
-    String isFracToMx = "checked";
+    boolean fracToMxCk = false;
+    String isFracToMx = "";
     
-    boolean mxToFracCk = true;
-    String isMxToFrac = "checked";
+    boolean mxToFracCk = false;
+    String isMxToFrac = "";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -83,7 +85,7 @@
         isMxToFrac = "";
     }
     for( int i = 0; i < len; ++i ) {
-        System.out.println("checks[" + i + "]: " + checks[i]);
+        //System.out.println("checks[" + i + "]: " + checks[i]);
         if( checks[i].compareTo("simplify") == 0 ) {
             simplifyCk = true;
             isSimplify = "checked";
@@ -101,12 +103,13 @@
     
     boolean running = false;
     int indcatr = 0;
+    String startHere = "d0_1";
     
     while( !running ) {
         indcatr = (int)(StrictMath.random()*possbl);
         if( indcatr == 0 && simplifyCk ) {
             running = true;
-            instrs = "Simplify this Fraction";
+            instrs = "Simplify this Fraction.";
             twogen = (int)(gran*ntwos*Math.random());
             acttwos = twogen > 5*gran? 5 : twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
             d2fact = (int)(StrictMath.pow(2,acttwos));
@@ -139,15 +142,18 @@
             num[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
+            instr2 = "Is there a number (besides 1) that evenly divides both " + num[0] + " and " + den[0] + "? If so, enter it. Otherwise, click 'Done'";
         } else if( indcatr == 1 && commonDenomCk ) {
             running = true;
-            instrs = "Convert these Fractions to a Common Denominator and use Arrows to Put in Order, Lowest at the Top";
+            instrs = "Convert these Fractions to a Common Denominator, then use Arrows to Put in Order, Lowest at the Top.";
             showArros = true;
             nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
             int maxcols = 0;
             ntwos = ntwos - 1;
             nthrees = nthrees - 1;
             nfives = nfives - 1;
+            int x = -1;
+            int y = 0;
             for( int i = 0; i < nrows; ++i ) {
                 acttwos = (int)(StrictMath.random()*ntwos);
                 actthrees = (int)(StrictMath.random()*nthrees);
@@ -161,14 +167,42 @@
                 if( ncols > maxcols ) {
                     maxcols = ncols;
                 }
+                if( i > 0 && num[i] != 0 && num[0] != 0 &&
+                        den[i] != den[0] && den[i]%den[0] == 0 ) {
+                    x = i;
+                }
             }
             ncols = maxcols;
             whatOp = "&times";
             isDivide = false;
+            // need to find actual denominators to put in this message fixit
+            if( x < 0 ) {
+                for( int i = 0; i <= nrows; ++i ) {
+                    for( int j = i+1; j < nrows; ++j ) {
+                        if( den[j] != den[i] && num[j] != 0 && num[i] != 0 ) {
+                            if( den[i]%den[j] == 0 ) {
+                                x = i;
+                                y = j;
+                            } else if( den[j]%den[i] == 0 ) {
+                                x = j;
+                                y = i;
+                            }  
+                        }
+                    }
+                }
+
+            }
+            if( x >= 0 ) {
+                startHere = "d" + y + "_1";
+                instr2 = "What factor does " + den[x] + " have, but " + den[y] + " does not?";
+            } else {
+                running = false;
+            }
         } else if( indcatr == 2 && fracToMxCk ) {
             running = true;
             // figure out what table is going to look for these before you go any further fixit
-            instrs = "Convert this Fraction to a Mixed Number";
+            instrs = "Convert this Fraction to a Mixed Number.";
+            //instr3 = " Click 'done' when reduced.";
             ntwos = ntwos - 1;
             nthrees = nthrees - 1;
             nfives = nfives - 1;
@@ -204,9 +238,11 @@
             den[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
+            instr2 = "copy the numerator: '" + num[0] + "' to the box under the 'divide by' sign";
         } else if( indcatr == 3 && mxToFracCk ) {
             running = true;
-            instrs = "Convert this Mixed Number to a Fraction";
+            instrs = "Convert this Mixed Number to a Fraction.";
+            //instr3 = "Click 'done' when reduced.";
             whol = 1 + (int)(StrictMath.random()*maxwhol);
             ntwos = ntwos - 2;
             nthrees = nthrees - 2;
@@ -255,14 +291,16 @@
             num[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
+            instr2 = "copy the denominator of the fractional part of the mixed number: " + den[0];
         }
     }
 %>
 
+
+<div class="d3"><%=instrs%></div>
+<div id="instr2" class="d4"><%=instr2%></div>
+<div class="d1">
 <table>
-<tr>
-    <caption><%=instrs%></caption>
-</tr>
 <%  if( indcatr < 2 && ( simplifyCk || commonDenomCk ) ) {
         for( int i = 0; i < nrows; ++i ) { 
             String nclass = "n" + i; 
@@ -504,16 +542,19 @@
     } else {
     }%> 
 </tr>
-
-    <tr>
+<tr>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
         <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
-    </tr>
-    </table>
+</tr>
+<tr>
+        <th colspan="6" class="d2"><%=instr3%></th>
+</tr>
+</table>
+</div>
 <%  String numAttmptdV = "0";
     String numWoErr = "0";
     String consWoErr = "0";
@@ -545,6 +586,7 @@
     } 
 %>
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
+<input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
 
 <div class="d5">
 <table >

@@ -27,7 +27,7 @@ input{
 input:focus { outline: 1px solid #ff1ac6; color: #0033cc;}
 input:disabled{ background-color: #fff9ea;}
 label{
-    color: #0033cc;
+    color: #005511;
 }
 table{
     margin: 0;
@@ -38,7 +38,9 @@ table{
 td{
     margin: 0;
     border: 0;
-    /* padding: 0; */
+    /* text-align: center; */
+    /* align-items: center; */
+    /* padding: 1px; */
     border-collapse: collapse;
 }
 .arrow {
@@ -66,6 +68,28 @@ td{
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
 }
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+.d1{
+    position: fixed;
+    top: 15%;
+    left: 1%;
+}
+.d2{
+    color: #b38f00;
+    font-weight: normal;
+    /* font-size: 90%; */
+}
+.d3{
+    color: #005511;
+}
+.d4{
+    color: #b38f00;
+    padding: 2%;
+    width: 70%;
+}
 .d5{
     position: fixed;
     top: 1%;
@@ -75,12 +99,10 @@ td{
     border-top: 2px solid black;
 }
 .sym{
+    text-align: center;
     color: #005511;
 }
-.down {
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-}
+
 .num{
     border-bottom: 2px solid #005511;
 }

@@ -14,7 +14,9 @@
  * 
  * probably double and triple counting some errors fixit
  * 
- * add decimal to fraction and back exercises
+ * add decimal to fraction and back, percent exercises fixit
+ * 
+ * simplify: if it simplifies to a whole number, not entering 1 in the final denominator hangs the program fixit
  * 
  */
 var x = 0;
@@ -1060,9 +1062,11 @@ function checkD( ev ) {
                                 //alert("current numerator value: " + currN.value);
                                 var nextcol = col + 1;
                                 var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
+                                doc.getElementById("instr2").innerHTML = "what is " + prevDV + " &divide " + ans;
                                 nextBx.focus();
                             } else {
                                 //alert("no value in current numerator");
+                                doc.getElementById("instr2").innerHTML = "copy denominator value into numerator so the number you are dividing by is 1";
                                 currN.focus();
                             }
                         } else {
@@ -1089,12 +1093,18 @@ function checkD( ev ) {
                         doc.getElementById("errs").value = errs + 1;
                     } else {
                         ansBx.style.color = "#0033cc";
+                        doc.getElementById("instr2").innerHTML = "what is " + prevDV + " &times " + ans;
                         var nextcol = col + 1;
                         var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
                         nextBx.focus();
                     }
                 } else {
                     //alert("no value in current numerator");
+                    var op = "multiply";
+                    if( test) {
+                        op = "divid";
+                    }
+                    doc.getElementById("instr2").innerHTML = "copy denominator value into numerator so the number you are " + op + "ing by is 1";
                     currN.focus();
                 }
             }
@@ -1434,11 +1444,12 @@ function checkN( ev ) {
                         if( currD ) {
                             if( currD.value ) {
                                 //alert("current denominator value: " + currD.value);
+                                doc.getElementById("instr2").innerHTML = "what is " + prevNV + " &divide " + ans;
                                 var nextcol = col + 1;
                                 var nextBx = doc.getElementById("n" + row + "_" + nextcol);
                                 nextBx.focus();
                             } else {
-                                //alert("no value in current denominator");
+                                doc.getElementById("instr2").innerHTML = "copy numerator value into denominator so the number you are dividing by is 1";
                                 currD.focus();
                             }
                         } else {
@@ -1465,12 +1476,14 @@ function checkN( ev ) {
                         doc.getElementById("errs").value = errs + 1;
                     } else {
                         ansBx.style.color = "#0033cc";
+                        doc.getElementById("instr2").innerHTML = "what is " + prevDV + " &times " + currdVal;
                         var nextcol = col + 1;
                         var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
                         nextBx.focus();
                     }
                 } else {
                     //alert("no value in current numerator");
+                    doc.getElementById("instr2").innerHTML = "copy numerator value into denominator so the number you are multiplying by is 1";
                     currD.focus();
                 }
             }
@@ -1526,7 +1539,17 @@ function checkM( ev ) {
                     othr = "n";
                 }
                 var nextBx = doc.getElementById(othr + row + "_" + col);
+                prevD = doc.getElementById(othr + row + "_" + prevcol);
+                prev2D = doc.getElementById(othr + row + "_" + prev2col);
+                prevDV = prevD.value;
+                prev2DV = prev2D.value;
+                var op = testD? "&divide" : "&times";
+                var instr2 = "what is " + prev2DV + " " + op + " " + prevDV;
                 if( nextBx.value ) {
+                    instr2 = "Is there a number (besides 1) that evenly divides both " + ans + " and " + nextBx.value + "? If so, enter it. Otherwise, click 'Done'";
+                    if( testM ) {
+                        instr2 = "Is there a factor one denominator has, but another does not? If so, enter the factor by the denominator that does not have it.";
+                    }
                     var nextcol = col + 1;
                     nextBx = doc.getElementById("d" + row + "_" + nextcol);
                     var othrBx = doc.getElementById("n" + row + "_" + nextcol);
@@ -1545,6 +1568,7 @@ function checkM( ev ) {
                     othrBx = doc.getElementById("d" + row + "_" + nextcol);
                     othrBx.type = "text";  
                 }
+                doc.getElementById("instr2").innerHTML = instr2;
                 nextBx.type = "text";
                 nextBx.focus();
             } else {
@@ -1597,7 +1621,7 @@ function startAgain() {
 function zeroCounts() {
     var doc = document;
 
-    alert("zerocounts");
+    //alert("zerocounts");
     doc.getElementById("numAttmptd").value = 0;
     doc.getElementById("errs").value = 0;
     doc.getElementById("numWoErr").value = 0;
@@ -1609,7 +1633,10 @@ function zeroCounts() {
 }
 window.onload = function(){
     var doc = document;
-    var strtBx = doc.getElementById("d0_1");
+    var startWhere = doc.getElementById("startHere").value;
+    //alert("startWhere: " + startWhere + ":");
+    var strtBx = doc.getElementById(startWhere);
+    //alert("strtBx: " + strtBx + ":");
     if( strtBx ) {
         strtBx.focus();
     }
