@@ -57,8 +57,8 @@
     int n3fact;
     int n5fact;
     
-    boolean simplifyCk = true;
-    String isSimplify = "checked";
+    boolean simplifyCk = false;
+    String isSimplify = "";
 
     boolean commonDenomCk = false;
     String isCommonDenom = "";
@@ -66,8 +66,8 @@
     boolean fracToMxCk = false;
     String isFracToMx = "";
     
-    boolean mxToFracCk = false;
-    String isMxToFrac = "";
+    boolean mxToFracCk = true;
+    String isMxToFrac = "checked";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -142,7 +142,8 @@
             num[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
-            instr2 = "Is there a number (besides 1) that evenly divides both " + num[0] + " and " + den[0] + "? If so, enter it. Otherwise, click 'Done'";
+            instr2 = "Is there a number (besides 1) that evenly divides both " + num[0] + " and " + den[0] + "?";
+            instr3 = "If so, enter it. Otherwise, click 'Done'";
         } else if( indcatr == 1 && commonDenomCk ) {
             running = true;
             instrs = "Convert these Fractions to a Common Denominator, then use Arrows to Put in Order, Lowest at the Top.";
@@ -238,7 +239,7 @@
             den[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
-            instr2 = "copy the numerator: '" + num[0] + "' to the box under the 'divide by' sign";
+            instr2 = "Copy the numerator: '" + num[0] + "' to the box under the 'divide by' sign";
         } else if( indcatr == 3 && mxToFracCk ) {
             running = true;
             instrs = "Convert this Mixed Number to a Fraction.";
@@ -291,7 +292,7 @@
             num[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
-            instr2 = "copy the denominator of the fractional part of the mixed number: " + den[0];
+            instr2 = "Copy the denominator of the fractional part of the mixed number: " + den[0];
         }
     }
 %>
@@ -299,6 +300,7 @@
 
 <div class="d3"><%=instrs%></div>
 <div id="instr2" class="d4"><%=instr2%></div>
+<div id="instr3" class="d4"><%=instr3%></div>
 <div class="d1">
 <table>
 <%  if( indcatr < 2 && ( simplifyCk || commonDenomCk ) ) {
@@ -549,9 +551,6 @@
         <td></td>
         <td></td>
         <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
-</tr>
-<tr>
-        <th colspan="6" class="d2"><%=instr3%></th>
 </tr>
 </table>
 </div>

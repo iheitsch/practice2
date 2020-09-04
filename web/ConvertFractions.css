@@ -77,17 +77,18 @@ td{
     top: 15%;
     left: 1%;
 }
+/*
 .d2{
     color: #b38f00;
     font-weight: normal;
     /* font-size: 90%; */
-}
+} */
 .d3{
     color: #005511;
 }
 .d4{
     color: #b38f00;
-    padding: 2%;
+    padding-left: 2%;
     width: 70%;
 }
 .d5{

@@ -18,6 +18,8 @@
  * 
  * simplify: if it simplifies to a whole number, not entering 1 in the final denominator hangs the program fixit
  * 
+ * fraction to mixed number: if result is a whole number and you enter 0 in numerator of mixed number, program hangs fixit
+ * 
  */
 var x = 0;
 var nSbxs = 24;
@@ -770,11 +772,16 @@ function checkMprN( ev ) {
 
             var col = num(id.substring(6,7));
             var nextCol = col + 1;
-            var nextBx = ansBx; // for now
+            var nextBx = doc.getElementById("frcden" + col); // for now
             var whlprt = doc.getElementById("whlprt").value;
             var oden = doc.getElementById("oden").value;
             var onum = doc.getElementById("onum").value;
-
+            var prevCol = col - 1;
+            var prevNum;
+            var prevDen;
+            var thisDen;
+            var instr2;
+            var instr3;
             var nAns = num(ans);
             if( col === 0 && ans === whlprt ||
                 col === 1 && ans === oden ||
@@ -782,19 +789,27 @@ function checkMprN( ev ) {
                 col === 3 && num(ans) === num(whlprt)*num(oden) + num(onum) ) { 
                 ansBx.style.color = "#0033cc";
                 ansBx.style.borderColor = "#e9d398";
+                instr2 = "Copy denominator: " + oden + " to second box";
+                if( nextCol === 2 ) {
+                    instr2 = "Copy numerator of mixed number: " + onum + " to third box";
+                } else if( nextCol === 3 ) {
+                    instr2 = "What is " + whlprt + " &times " + oden + " + " + onum;
+                }
                 nextBx = doc.getElementById("frcnum" + nextCol);
                 if( col === 3 ) {
+                    instr2 = "Copy denominator: " + oden + " to third denominator"
                     nextBx = doc.getElementById("frcden" + col);
                 }
+                doc.getElementById("instr2").innerHTML = instr2;
+                doc.getElementById("instr3").innerHTML = "";
+                nextBx.focus();
             } else if( col > 3 && col%2 === 0 ) {
                 /* col === 4 && (!frcden4 || (!isNaN(frcden4) && ans === frcden4)) &&
                 !isNaN(frcnum3) && !isNaN(frcden3) &&
                 num(frcnum3)%nAns === 0 && num(frcden3)%nAns === 0 */
-                
-                var prevCol = col - 1;
-                var prevNum = doc.getElementById("frcnum" + prevCol).value;
-                var prevDen = doc.getElementById("frcden" + prevCol).value;
-                var thisDen = doc.getElementById("frcden" + col).value;
+                prevNum = doc.getElementById("frcnum" + prevCol).value;
+                prevDen = doc.getElementById("frcden" + prevCol).value;
+                thisDen = doc.getElementById("frcden" + col).value;
                 if( (thisDen && isNaN(thisDen)) || isNaN(prevNum) || isNaN(prevDen) ) {
                     alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prevDen + ", " + thisDen);
                 } else if( thisDen && ans !== thisDen ) {
@@ -809,17 +824,22 @@ function checkMprN( ev ) {
                     ansBx.style.color = "#0033cc";
                     ansBx.style.borderColor = "#e9d398";
                     nextBx = doc.getElementById("frcden" + col);
+                    instr2 = "Copy numerator to denominator so the number you are dividing by is 1";
                     if( nextBx.value ) {
+                        instr2 = "What is " + prevDen + " &divide " + ans;
                         nextBx = doc.getElementById("frcnum" + nextCol);
                     }
+                    doc.getElementById("instr2").innerHTML = instr2;
+                    doc.getElementById("instr3").innerHTML = "";
+                    nextBx.focus();
                 }
             } else if( col > 3 && col%2 === 1 ) {
                 /* col === 5 && frcnum3 && frcnum4 && !isNaN(frcnum3) && !isNaN(frcnum4) &&
                 num(frcnum3)/num(frcnum4) === nAns ) { */
-                var prevCol = col - 1;
                 var prevNum = doc.getElementById("frcnum" + prevCol).value;
                 var prev2col = col - 2;
                 var prev2Num = doc.getElementById("frcnum" + prev2col).value;
+                prevDen = doc.getElementById("frcden" + prevCol).value;
                 if( !prevNum || !prev2Num || isNaN(prevNum) || isNaN(prev2Num) ) {
                     alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prev2Num);
                 } else if( num(prev2Num)/num(prevNum) !== nAns ) {
@@ -833,10 +853,16 @@ function checkMprN( ev ) {
                     nextBx = doc.getElementById(p);
                     //doc.getElementById("statusBox" + x).innerHTML ="nextBx: " + p + " value: " + nextBx.value;
                     //x = (x + 1)%nSbxs;
-                    if( nextBx.value ) {
+                    var thisDen = nextBx.value;
+                    var prev2Den = doc.getElementById("frcden" + prev2col).value;
+                    instr2 = "What is " + prev2Den + " &divide " + prevDen;
+                    instr3 = "";
+                    if( thisDen ) {
                         var nextcol = col + 1;
                         nextBx = doc.getElementById("frcden" + nextcol);
                         nextBx.type = "text";
+                        instr2 = "Is there a factor that divides both " + thisDen + " and " + ans + "?";
+                        instr3 = " If so enter it, otherwise click 'Done'";
                         var othrBx = doc.getElementById("frcnum" + nextcol);
                         othrBx.type = "text";
                         var par = othrBx.parentNode;
@@ -852,7 +878,10 @@ function checkMprN( ev ) {
                         par.style.borderBottom = "2px solid #005511";
                         othrBx = doc.getElementById("frcden" + nextcol);
                         othrBx.type = "text";  
-                    } 
+                    }
+                    doc.getElementById("instr2").innerHTML = instr2;
+                    doc.getElementById("instr3").innerHTML = instr3;
+                    nextBx.focus();
                 }
             } else { // one of 1st 4 numerators was wrong
                 ansBx.style.color = "red";
@@ -860,7 +889,7 @@ function checkMprN( ev ) {
                 var errs = Number(doc.getElementById("errs").value);
                 doc.getElementById("errs").value = errs + 1;
             }
-            nextBx.focus();
+            
         } else {
             ansBx.style.color = "red";
             ansBx.style.borderColor = "red";
@@ -894,8 +923,14 @@ function checkMprD( ev ) {
                 ansBx.style.color = "#0033cc";
                 ansBx.style.borderColor = "#e9d398"; 
                 if( id === "d0_1") {
+                    var whl = doc.getElementById("whlprt").value;
+                    doc.getElementById("instr2").innerHTML = "Copy whole part of mixed number: " + whl + " to first box";
+                    doc.getElementById("instr3").innerHTML = "";
                     nextBx = doc.getElementById("frcnum0");
                 } else {
+                    var thisNum = doc.getElementById("frcnum3").value;
+                    doc.getElementById("instr2").innerHTML = "Is there a factor that divides both " + thisNum + " and " + ans + "?";
+                    doc.getElementById("instr3").innerHTML = " If so, enter it. If not click 'Done'";
                     nextBx = doc.getElementById("frcnum4");
                 }
             } else if( col%2 === 0 && col > 3 ) { // used to be col === 4
@@ -913,7 +948,14 @@ function checkMprD( ev ) {
                                 (!thisN || !isNaN(thisN) && ans === thisN ) ) {
                         ansBx.style.color = "#0033cc";
                         ansBx.style.borderColor = "#e9d398"; 
-                        nextBx = !thisN? doc.getElementById("frcnum" + col) : doc.getElementById("frcnum" + nextcol);
+                        nextBx = doc.getElementById("frcnum" + col);
+                        var instr2 = "Copy denominator to numerator so the number you are dividing by is 1"; 
+                        if( thisN ) {
+                            nextBx = doc.getElementById("frcnum" + nextcol);
+                            instr2 = "What is " + prevN+ " &divide " + thisN;
+                        }
+                        doc.getElementById("instr2").innerHTML = instr2;
+                        doc.getElementById("instr3").innerHTML = "";
                     } else {
                         ansBx.style.color = "red";
                         ansBx.style.borderColor = "red"; 
@@ -972,6 +1014,8 @@ function checkMprD( ev ) {
                         var nextId = "frcnum" + nextcol;
                         nextBx = doc.getElementById(nextId);
                         nextBx.type = "text";
+                        doc.getElementById("instr2").innerHTML = "Is there a factor that divides both " + currN + " and " + ans + "?";
+                        doc.getElementById("instr3").innerHTML = " If so enter it, otherwise click 'Done'";
                         var par = nextBx.parentNode;
                         //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = " + col + " nextBx id: " + nextBx.id + " =? " + nextId;
                         //x = (x + 1)%nSbxs;
@@ -1062,11 +1106,13 @@ function checkD( ev ) {
                                 //alert("current numerator value: " + currN.value);
                                 var nextcol = col + 1;
                                 var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
-                                doc.getElementById("instr2").innerHTML = "what is " + prevDV + " &divide " + ans;
+                                doc.getElementById("instr2").innerHTML = "What is " + prevDV + " &divide " + ans;
+                                doc.getElementById("instr3").innerHTML = "";
                                 nextBx.focus();
                             } else {
                                 //alert("no value in current numerator");
-                                doc.getElementById("instr2").innerHTML = "copy denominator value into numerator so the number you are dividing by is 1";
+                                doc.getElementById("instr2").innerHTML = "Copy denominator value into numerator so the number you are dividing by is 1";
+                                doc.getElementById("instr3").innerHTML = "";
                                 currN.focus();
                             }
                         } else {
@@ -1093,7 +1139,8 @@ function checkD( ev ) {
                         doc.getElementById("errs").value = errs + 1;
                     } else {
                         ansBx.style.color = "#0033cc";
-                        doc.getElementById("instr2").innerHTML = "what is " + prevDV + " &times " + ans;
+                        doc.getElementById("instr2").innerHTML = "What is " + prevDV + " &times " + ans;
+                        doc.getElementById("instr3").innerHTML = "";
                         var nextcol = col + 1;
                         var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
                         nextBx.focus();
@@ -1104,7 +1151,8 @@ function checkD( ev ) {
                     if( test) {
                         op = "divid";
                     }
-                    doc.getElementById("instr2").innerHTML = "copy denominator value into numerator so the number you are " + op + "ing by is 1";
+                    doc.getElementById("instr2").innerHTML = "Copy denominator value into numerator so the number you are " + op + "ing by is 1";
+                    doc.getElementById("instr3").innerHTML = "";
                     currN.focus();
                 }
             }
@@ -1154,8 +1202,12 @@ function checkFrcD( ev ) {
                 } else {
                     ansBx.style.color = "#0033cc";
                     if( id === "frcden" ) {
+                        doc.getElementById("instr2").innerHTML = "If fraction is reduced, click 'Done'.";
+                        doc.getElementById("instr3").innerHTML = "Otherwise copy the whole part of the mixed number.";
                         doc.getElementById("redprt").focus();
                     } else {
+                        doc.getElementById("instr2").innerHTML = "Click 'Done'";
+                        doc.getElementById("instr3").innerHTML = "";
                         doc.activeElement.blur();
                     }
                 }
@@ -1268,6 +1320,8 @@ function checkFrcN( ev ) {
             } else if( id === "frcnum" ) {
                 if( nans === rem ) {
                     ansBx.style.color = "#0033cc";
+                    doc.getElementById("instr2").innerHTML = "Copy original denominator: '" + oden + "' to mixed number denominator";
+                    doc.getElementById("instr3").innerHTML = "";
                     denBx.focus();
                 } else {
                     ansBx.style.color = "red";
@@ -1298,6 +1352,8 @@ function checkDiff( ev ) {
             var prod = num(doc.getElementById("prod").value);
             if( ansVal === dvdnd - prod ) {
                 ansBx.style.color = "#0033cc";
+                doc.getElementById("instr2").innerHTML = "Copy remainder: '" + ans + "' to numerator of mixed number";
+                doc.getElementById("instr3").innerHTML = "";
                 doc.getElementById("frcnum").focus();
             } else {
                 ansBx.style.color = "red";
@@ -1326,6 +1382,9 @@ function checkProd( ev ) {
             var whlprt = num(doc.getElementById("whlprt").value);
             if( ansVal === dvsr*whlprt ) {
                 ansBx.style.color = "#0033cc";
+                var onum = doc.getElementById("onum").value;
+                doc.getElementById("instr2").innerHTML = "What is " + onum + " - " + ans;
+                doc.getElementById("instr3").innerHTML = "";
                 doc.getElementById("diff").focus();
             } else {
                 ansBx.style.color = "red";
@@ -1350,7 +1409,14 @@ function checkWhl( ev ) {
         var onum = num(doc.getElementById("onum").value);
         if( ans && !isNaN(ans) && Math.floor(onum/oden) === num(ans) ) {
             ansBx.style.color = "#0033cc";
-            var nextBx = ansBx.id === "whlprt" ? doc.getElementById("prod") : doc.getElementById("rednum");
+            var nextBx = doc.getElementById("rednum");
+            var instr2 = "Divide both numerator and denominator by some number to reduce fraction"
+            if( ansBx.id === "whlprt" ) {
+                nextBx = doc.getElementById("prod");
+                instr2 = "What is " + ans + " &times " + oden;
+            }
+            doc.getElementById("instr2").innerHTML = instr2;
+            doc.getElementById("instr3").innerHTML = "";
             nextBx.focus();
         } else {
             ansBx.style.color = "red";
@@ -1371,6 +1437,9 @@ function checkDen( ev ) {
         
         if( ans === doc.getElementById("oden").value ) {
             ansBx.style.color = "#0033cc";
+            var num = doc.getElementById("d0_1").value;
+            doc.getElementById("instr2").innerHTML = "What is " + num + " &divide " + ans;
+            doc.getElementById("instr3").innerHTML = "";
             doc.getElementById("whlprt").focus();
         } else {
             ansBx.style.color = "red";
@@ -1383,7 +1452,6 @@ function checkDen( ev ) {
 function checkNum( ev ) {
     ev = ev || window.event;
     if (ev.which === 13 || ev.keyCode === 13) { 
-        var num = Number;
         var doc = document;
         
         var ansBx = ev.target;
@@ -1391,6 +1459,9 @@ function checkNum( ev ) {
         
         if( ans === doc.getElementById("onum").value ) {
             ansBx.style.color = "#0033cc";
+            var oden = doc.getElementById("oden").value;
+            doc.getElementById("instr2").innerHTML = "Copy the denominator: '" + oden + "' to the box to the left of the 'divide by' sign";
+            doc.getElementById("instr3").innerHTML = "";
             doc.getElementById("dvsr").focus();
         } else {
             ansBx.style.color = "red";
@@ -1444,12 +1515,14 @@ function checkN( ev ) {
                         if( currD ) {
                             if( currD.value ) {
                                 //alert("current denominator value: " + currD.value);
-                                doc.getElementById("instr2").innerHTML = "what is " + prevNV + " &divide " + ans;
+                                doc.getElementById("instr2").innerHTML = "What is " + prevNV + " &divide " + ans;
+                                doc.getElementById("instr3").innerHTML = "";
                                 var nextcol = col + 1;
                                 var nextBx = doc.getElementById("n" + row + "_" + nextcol);
                                 nextBx.focus();
                             } else {
-                                doc.getElementById("instr2").innerHTML = "copy numerator value into denominator so the number you are dividing by is 1";
+                                doc.getElementById("instr2").innerHTML = "Copy numerator value into denominator so the number you are dividing by is 1";
+                                doc.getElementById("instr3").innerHTML = "";
                                 currD.focus();
                             }
                         } else {
@@ -1476,14 +1549,16 @@ function checkN( ev ) {
                         doc.getElementById("errs").value = errs + 1;
                     } else {
                         ansBx.style.color = "#0033cc";
-                        doc.getElementById("instr2").innerHTML = "what is " + prevDV + " &times " + currdVal;
+                        doc.getElementById("instr2").innerHTML = "What is " + prevDV + " &times " + currdVal;
+                        doc.getElementById("instr3").innerHTML = "";
                         var nextcol = col + 1;
                         var nextBx = doc.getElementById("d"+ row + "_" + nextcol);
                         nextBx.focus();
                     }
                 } else {
                     //alert("no value in current numerator");
-                    doc.getElementById("instr2").innerHTML = "copy numerator value into denominator so the number you are multiplying by is 1";
+                    doc.getElementById("instr2").innerHTML = "Copy numerator value into denominator so the number you are multiplying by is 1";
+                    doc.getElementById("instr3").innerHTML = "";
                     currD.focus();
                 }
             }
@@ -1544,11 +1619,14 @@ function checkM( ev ) {
                 prevDV = prevD.value;
                 prev2DV = prev2D.value;
                 var op = testD? "&divide" : "&times";
-                var instr2 = "what is " + prev2DV + " " + op + " " + prevDV;
+                var instr2 = "What is " + prev2DV + " " + op + " " + prevDV;
+                var instr3 = "";
                 if( nextBx.value ) {
-                    instr2 = "Is there a number (besides 1) that evenly divides both " + ans + " and " + nextBx.value + "? If so, enter it. Otherwise, click 'Done'";
+                    instr2 = "Is there a number (besides 1) that evenly divides both " + ans + " and " + nextBx.value + "?";
+                    instr3 = " If so, enter it. Otherwise, click 'Done'";
                     if( testM ) {
-                        instr2 = "Is there a factor one denominator has, but another does not? If so, enter the factor by the denominator that does not have it.";
+                        instr2 = "Is there a factor one denominator has, but another does not?";
+                        instr3 = " If so, enter the factor by the denominator that does not have it.";
                     }
                     var nextcol = col + 1;
                     nextBx = doc.getElementById("d" + row + "_" + nextcol);
@@ -1569,6 +1647,7 @@ function checkM( ev ) {
                     othrBx.type = "text";  
                 }
                 doc.getElementById("instr2").innerHTML = instr2;
+                doc.getElementById("instr3").innerHTML = instr3;
                 nextBx.type = "text";
                 nextBx.focus();
             } else {
