@@ -18,6 +18,8 @@
  * 
  * simplify: if it simplifies to a whole number, not entering 1 in the final denominator hangs the program fixit
  * 
+ * lcd: not sure if multiplication is ever checked if user doesn't 'enter' fixit
+ * 
  * fraction to mixed number: if result is a whole number and you enter 0 in numerator of mixed number, program hangs fixit
  * 
  */
@@ -1710,12 +1712,111 @@ function zeroCounts() {
     doc.getElementById('th-id2').submit();
     return false;
 }
+function pusharo( ev ) {
+    ev = ev || window.event;
+    var x = ev.keyCode;
+    var doc = document;
+    var num = Number;
+    
+    var indcatr = doc.getElementById("indcatr").value;
+    //alert("key pressed. indcatr: " + indcatr);
+    if( indcatr === '1' ) {
+        var id = doc.activeElement.id;
+        var len = id.length;
+        var typ = id.substring(0,1);
+
+        var row = num(id.substring(1,2));
+        var col = num(id.substring(3,len));
+        if( x === 37 ) {
+            var prevCol = col - 1;
+            var whereTo = typ + row + "_" + prevCol;
+            //alert("we are here: " + id + ", going left to " + whereTo);
+            var nextBx = doc.getElementById(whereTo);
+            if( nextBx ) {
+                nextBx.focus();
+            }        
+        } else if ( x === 38 ) {
+            var id = doc.activeElement.id;
+            
+            var othr = 'n';
+            if( typ === 'n' ) {
+                othr = 'd';
+                row = row - 1;
+             }
+            var whereTo = othr + row + "_" + col;
+            //alert("we are here: " + id + ", going up  to " + whereTo);
+            var nextBx = doc.getElementById(whereTo);
+            if( nextBx && nextBx.type !== "hidden" ) {
+                nextBx.focus();
+            } else {
+                if( col%2 == 0 ) {
+                    col = col - 1;
+                } else {
+                    col = col - 2;
+                }
+                while( col > 0 ) {
+                    whereTo = othr + row + "_" + col;
+                    //alert("we are here: " + id + ", going up  to " + whereTo);
+                    nextBx = doc.getElementById(whereTo);
+                    if( nextBx && nextBx.type !== "hidden" ) {
+                        nextBx.focus();
+                        break;
+                    }
+                    col = col - 2;
+                }
+            }
+        } else if( x === 39 ) {
+            var id = doc.activeElement.id;
+            
+            var nextCol = col + 1;
+            var whereTo = typ + row + "_" + nextCol;
+            //alert("we are here: " + id + ", going right to " + whereTo);
+            var nextBx = doc.getElementById(whereTo);
+            if( nextBx ) {
+                nextBx.focus();
+            } 
+        } else if( x === 40 ) {
+            var id = doc.activeElement.id;
+            
+            var othr = 'd';
+            if( typ === 'd' ) {
+                othr = 'n';
+                row = row + 1;
+             }
+            var whereTo = othr + row + "_" + col;
+            //alert("we are here: " + id + ", going down to " + whereTo);
+            var nextBx = doc.getElementById(whereTo);
+            if( nextBx && nextBx.type !== "hidden" ) {
+                nextBx.focus();
+            } else {
+                if( col%2 == 0 ) {
+                    col = col - 1;
+                } else {
+                    col = col - 2;
+                }
+                while( col > 0 ) {
+                    whereTo = othr + row + "_" + col;
+                    //alert("we are here: " + id + ", going down to " + whereTo);
+                    nextBx = doc.getElementById(whereTo);
+                    if( nextBx && nextBx.type !== "hidden" ) {
+                        nextBx.focus();
+                        break;
+                    }
+                    col = col - 2;
+                }
+            } 
+        } else {
+            //alert("not going anywhere");
+        }
+    }
+}
 window.onload = function(){
     var doc = document;
     var startWhere = doc.getElementById("startHere").value;
     //alert("startWhere: " + startWhere + ":");
     var strtBx = doc.getElementById(startWhere);
     //alert("strtBx: " + strtBx + ":");
+    doc.addEventListener('keydown', pusharo);
     if( strtBx ) {
         strtBx.focus();
     }

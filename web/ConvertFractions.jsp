@@ -60,14 +60,14 @@
     boolean simplifyCk = false;
     String isSimplify = "";
 
-    boolean commonDenomCk = false;
-    String isCommonDenom = "";
+    boolean commonDenomCk = true;
+    String isCommonDenom = "checked";
     
     boolean fracToMxCk = false;
     String isFracToMx = "";
     
-    boolean mxToFracCk = true;
-    String isMxToFrac = "checked";
+    boolean mxToFracCk = false;
+    String isMxToFrac = "";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -376,7 +376,7 @@
     %>
         </tr>
     <%  } 
-    }  else if( indcatr < 3 && fracToMxCk ) { %>
+    }  else if( indcatr == 2 && fracToMxCk ) { %>
     <tr>
         <td>
             <table>
@@ -452,7 +452,7 @@
             <input onkeyup="checkDiff( event )" onkeydown="erase( event )" id="diff">
         </td>
     </tr>
-<%  } else if( indcatr < 4 && mxToFracCk ) { %>
+<%  } else if( indcatr == 3 && mxToFracCk ) { %>
     <tr>
         <td>
             <input disabled="true" value=<%=whol%> id="whlprt">
