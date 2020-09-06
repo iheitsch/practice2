@@ -5,9 +5,6 @@
  */
 /*  
  * 
- * allow users to move around using up, down, left right arrows, particularly 
- * in the LCD and order exercise
- * 
  * don't expect num & den to be equal if they're red; you're replacing them fixit
  * 
  * mx > improper too many errors, separate them and have error message specific to each fixit
@@ -155,8 +152,23 @@ function checkRed() { // assumes only prime factors are 2's, 3's and 5's fixit
     
     var dBx = doc.getElementById("d0_" + lastcol);
     var lastd = num(dBx.value);
+    if( !lastd ) {
+        lastd = 1;
+    }
+    var frstn = num(doc.getElementById("n0_0").value);
+    var frstd = num(doc.getElementById("d0_0").value);
  
     if( !isRed( lastn, lastd ) ) {
+        var errm = lastn + " over " + lastd + " is not reduced";
+        alert(errm);
+        nBx.style.color = "red";
+        dBx.style.color = "red";
+        allgood = false;
+        var errs = Number(doc.getElementById("errs").value);
+        doc.getElementById("errs").value = errs + 1;
+    } else if( lastn/lastd !== frstn/frstd ) {
+        var errm = lastn + " / " + lastd + " does not equal " + frstn + " / " + frstd;
+        alert(errm);
         nBx.style.color = "red";
         dBx.style.color = "red";
         allgood = false;
@@ -539,7 +551,7 @@ function checkFrc() {
                     var errs = Number(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
                     allgood = false;
-                    alert(ans + " divided by " + currden + " is not reduced");
+                    alert(ans + " over " + currden + " is not reduced");
                 } else {
                     //alert("correct");
                     ansBx.style.color = "#0033cc";
@@ -799,7 +811,7 @@ function checkMprN( ev ) {
                 }
                 nextBx = doc.getElementById("frcnum" + nextCol);
                 if( col === 3 ) {
-                    instr2 = "Copy denominator: " + oden + " to third denominator"
+                    instr2 = "Copy denominator: " + oden + " to third denominator";
                     nextBx = doc.getElementById("frcden" + col);
                 }
                 doc.getElementById("instr2").innerHTML = instr2;
@@ -1412,7 +1424,7 @@ function checkWhl( ev ) {
         if( ans && !isNaN(ans) && Math.floor(onum/oden) === num(ans) ) {
             ansBx.style.color = "#0033cc";
             var nextBx = doc.getElementById("rednum");
-            var instr2 = "Divide both numerator and denominator by some number to reduce fraction"
+            var instr2 = "Divide both numerator and denominator by some number to reduce fraction";
             if( ansBx.id === "whlprt" ) {
                 nextBx = doc.getElementById("prod");
                 instr2 = "What is " + ans + " &times " + oden;
@@ -1627,8 +1639,8 @@ function checkM( ev ) {
                     instr2 = "Is there a number (besides 1) that evenly divides both " + ans + " and " + nextBx.value + "?";
                     instr3 = " If so, enter it. Otherwise, click 'Done'";
                     if( testM ) {
-                        instr2 = "Is there a factor one denominator has, but another does not?";
-                        instr3 = " If so, enter the factor by the denominator that does not have it.";
+                        instr2 = "Is there a factor one denominator has, but another does not? If so, enter the factor by the denominator";
+                        instr3 = "that does not have it. Once denominators are the same, use arrows to put in order, lowest at top, then click 'Done'";
                     }
                     var nextcol = col + 1;
                     nextBx = doc.getElementById("d" + row + "_" + nextcol);
@@ -1720,7 +1732,7 @@ function pusharo( ev ) {
     
     var indcatr = doc.getElementById("indcatr").value;
     //alert("key pressed. indcatr: " + indcatr);
-    if( indcatr === '1' ) {
+    //if( num(indcatr) < 3 ) {
         var id = doc.activeElement.id;
         var len = id.length;
         var typ = id.substring(0,1);
@@ -1749,7 +1761,7 @@ function pusharo( ev ) {
             if( nextBx && nextBx.type !== "hidden" ) {
                 nextBx.focus();
             } else {
-                if( col%2 == 0 ) {
+                if( col%2 === 0 ) {
                     col = col - 1;
                 } else {
                     col = col - 2;
@@ -1789,7 +1801,7 @@ function pusharo( ev ) {
             if( nextBx && nextBx.type !== "hidden" ) {
                 nextBx.focus();
             } else {
-                if( col%2 == 0 ) {
+                if( col%2 === 0 ) {
                     col = col - 1;
                 } else {
                     col = col - 2;
@@ -1808,7 +1820,7 @@ function pusharo( ev ) {
         } else {
             //alert("not going anywhere");
         }
-    }
+    //}
 }
 window.onload = function(){
     var doc = document;

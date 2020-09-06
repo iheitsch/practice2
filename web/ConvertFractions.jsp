@@ -146,7 +146,7 @@
             instr3 = "If so, enter it. Otherwise, click 'Done'";
         } else if( indcatr == 1 && commonDenomCk ) {
             running = true;
-            instrs = "Convert these Fractions to a Common Denominator, then use Arrows to Put in Order, Lowest at the Top.";
+            instrs = "Convert these Fractions to a Common Denominator.";
             showArros = true;
             nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
             int maxcols = 0;
@@ -176,7 +176,6 @@
             ncols = maxcols;
             whatOp = "&times";
             isDivide = false;
-            // need to find actual denominators to put in this message fixit
             if( x < 0 ) {
                 for( int i = 0; i <= nrows; ++i ) {
                     for( int j = i+1; j < nrows; ++j ) {
@@ -201,7 +200,6 @@
             }
         } else if( indcatr == 2 && fracToMxCk ) {
             running = true;
-            // figure out what table is going to look for these before you go any further fixit
             instrs = "Convert this Fraction to a Mixed Number.";
             //instr3 = " Click 'done' when reduced.";
             ntwos = ntwos - 1;
