@@ -13,8 +13,6 @@
  * 
  * add decimal to fraction and back, percent exercises fixit
  * 
- * simplify: if it simplifies to a whole number, not entering 1 in the final denominator hangs the program fixit
- * 
  * lcd: not sure if multiplication is ever checked if user doesn't 'enter' fixit
  * 
  * fraction to mixed number: if result is a whole number and you enter 0 in numerator of mixed number, program hangs fixit
@@ -114,8 +112,10 @@ function checkOrd() {
         lastdBx = doc.getElementById("d" + j + "_" + lastcol[j]);
         lastd = num(lastdBx.value);
         var qt = lastn/lastd;
+        var frstn = num(doc.getElementById("n" + j + "_0").value );
+        var frstd = num(doc.getElementById("d" + j + "_0").value );
         //alert("row: " + j + " lastcol: " + lastcol[j] + " lastn: " + lastn + " lastd: " + lastd + " qt: " + qt + " quot: " + quot[j]);
-        if( qt !== quot[j] ) {
+        if( qt !== quot[j] || frstn/frstd !== quot[j] ) {
             nums[lastcol[j]].style.color = "red";
             lastdBx.style.color = "red";
             allgood = false;
@@ -1640,7 +1640,7 @@ function checkM( ev ) {
                     instr3 = " If so, enter it. Otherwise, click 'Done'";
                     if( testM ) {
                         instr2 = "Is there a factor one denominator has, but another does not? If so, enter the factor by the denominator";
-                        instr3 = "that does not have it. Once denominators are the same, use arrows to put in order, lowest at top, then click 'Done'";
+                        instr3 = "that does not have it. Once fractions are in order, click 'Done'";
                     }
                     var nextcol = col + 1;
                     nextBx = doc.getElementById("d" + row + "_" + nextcol);
@@ -1732,7 +1732,7 @@ function pusharo( ev ) {
     
     var indcatr = doc.getElementById("indcatr").value;
     //alert("key pressed. indcatr: " + indcatr);
-    //if( num(indcatr) < 3 ) {
+    if( num(indcatr) < 2 ) {
         var id = doc.activeElement.id;
         var len = id.length;
         var typ = id.substring(0,1);
@@ -1820,7 +1820,7 @@ function pusharo( ev ) {
         } else {
             //alert("not going anywhere");
         }
-    //}
+    }
 }
 window.onload = function(){
     var doc = document;

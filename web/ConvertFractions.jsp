@@ -146,7 +146,7 @@
             instr3 = "If so, enter it. Otherwise, click 'Done'";
         } else if( indcatr == 1 && commonDenomCk ) {
             running = true;
-            instrs = "Convert these Fractions to a Common Denominator.";
+            instrs = "Use arrows to put these fractions in order, lowest at the top.";
             showArros = true;
             nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
             int maxcols = 0;
