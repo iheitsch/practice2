@@ -12,8 +12,9 @@
  * probably double and triple counting some errors fixit
  * 
  * add decimal to fraction and back, percent exercises fixit
- *  
- * fraction to mixed number: if result is a whole number and you enter 0 in numerator of mixed number, program hangs fixit
+ * 
+ * arrows only work for 1st two types of problems. is it possible or usefule to 
+ * make them work for other types of problems? fixit
  * 
  */
 var x = 0;
@@ -181,7 +182,6 @@ function checkRed() { // assumes only prime factors are 2's, 3's and 5's fixit
     }
 }
 function checkMix() {
-    //alert("checkMix");
     var num = Number;
     var doc = document;
         
@@ -227,7 +227,6 @@ function checkMix() {
         //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
         //x = (x + 1)%nSbxs;
     }
-    //alert("first whole value done");
     whlBx = doc.getElementById("redprt");
     var whlVal = whlBx.value;
     var numnum = numBx.value;
@@ -268,10 +267,9 @@ function checkMix() {
         //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
         //x = (x + 1)%nSbxs;
     }
-    //alert("second whole value done");
+
     // some boxes can be blank if user figured it out in her head, or it
     // equals zero, but need to make sure anything entered is correct
-
     if( dennum ) { // initial, posibly unreduced denominator, string variable
         if( !isNaN(numnum) && !isNaN(dennum) ) {
             numVal = num(numnum);
@@ -308,7 +306,7 @@ function checkMix() {
             //x = (x + 1)%nSbxs;
         }
     }  
-//alert("first denominator done");
+
     if( numnum ) { // initial numerator
         if( !isNaN(numnum) ) {
             numVal = num(numnum);
@@ -348,7 +346,7 @@ function checkMix() {
             //x = (x + 1)%nSbxs;
         }
     }
-//alert("first numerator done");
+
     if( redden ) { // final reduced denominator
         if( !isNaN(rednum) && !isNaN(redden) ) {
             var rdnVal = num(rednum);
@@ -387,7 +385,7 @@ function checkMix() {
             //x = (x + 1)%nSbxs;
         }
     }
-    //alert("2nd denominator done");
+
     if( rednum && !isNaN(rednum) ) {
             rdnVal = num(rednum);
             if( redden && !isNaN(redden) ) {
