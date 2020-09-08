@@ -12,9 +12,7 @@
  * probably double and triple counting some errors fixit
  * 
  * add decimal to fraction and back, percent exercises fixit
- * 
- * lcd: not sure if multiplication is ever checked if user doesn't 'enter' fixit
- * 
+ *  
  * fraction to mixed number: if result is a whole number and you enter 0 in numerator of mixed number, program hangs fixit
  * 
  */
@@ -196,11 +194,11 @@ function checkMix() {
     var rddBx = doc.getElementById("redden");
     var rem = onum%oden;
     var whol = Math.floor(onum/oden);
-    var red = rem/oden;
+    var frcn = rem/oden;
     allgood = true;
     var whlVal = whlBx.value;
 
-    if( whlVal ) {
+    if( whlVal ) { // initial whole value
         if( isNaN( whlVal ) ) {
             whlBx.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
@@ -229,16 +227,19 @@ function checkMix() {
         //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
         //x = (x + 1)%nSbxs;
     }
+    //alert("first whole value done");
     whlBx = doc.getElementById("redprt");
     var whlVal = whlBx.value;
     var numnum = numBx.value;
     var dennum = denBx.value;
     var numVal = 0;
-    var denVal = 0;
+    var denVal = 1;
     var rednum = rdnBx.value;
     var redden = rddBx.value;
+    var rdnVal = 0;
+    var rddVal = 1;
     
-    if( whlVal ) {
+    if( whlVal ) { // last whole value that goes with reduced fraction
         if( isNaN( whlVal ) ) {
             whlBx.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
@@ -267,15 +268,16 @@ function checkMix() {
         //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
         //x = (x + 1)%nSbxs;
     }
+    //alert("second whole value done");
     // some boxes can be blank if user figured it out in her head, or it
     // equals zero, but need to make sure anything entered is correct
 
-    if( dennum ) {
+    if( dennum ) { // initial, posibly unreduced denominator, string variable
         if( !isNaN(numnum) && !isNaN(dennum) ) {
             numVal = num(numnum);
             denVal = num(dennum);
-            if( numVal/denVal === rem/oden &&
-                    (isRed(numVal, denVal) || (rednum && redden)) ) {
+            if( numVal/denVal === frcn &&
+                    (isRed(numVal, denVal) || rednum ) ) {
                 denBx.style.color = "#0033cc";
                 denBx.style.borderColor = "#e9d398";
             } else {
@@ -293,7 +295,8 @@ function checkMix() {
             allgood = false;
         }
     } else {
-        if( !numnum && rem === 0 ) { // no numerator either and numerator should be 0
+        // no numerator either and numerator should be 0
+        if( (!numnum || (!isNaN(numnum) && num(numnum) === 0)) && rem === 0 ) { 
             denBx.style.color = "#0033cc";
             denBx.style.borderColor = "#e9d398";
         } else {
@@ -305,13 +308,17 @@ function checkMix() {
             //x = (x + 1)%nSbxs;
         }
     }  
-    if( numnum ) {
-        if( !isNaN(numnum) && !isNaN(dennum) ) {
-            var numVal = num(numnum);
-            var denVal = num(dennum);
-            // ratio is correct
-            if( (dennum || rem === 0) && numVal/denVal === rem/oden &&
-                    (isRed(numVal, denVal) || (rednum && redden)) ) {  
+//alert("first denominator done");
+    if( numnum ) { // initial numerator
+        if( !isNaN(numnum) ) {
+            numVal = num(numnum);
+            if( dennum && !isNaN(dennum) ) {
+                 denVal = num(dennum);
+            }
+             
+            // ratio is correct, ratio is reduced or there is an entry for reduced value
+            if( numVal/denVal === frcn &&
+                    (isRed(numVal, denVal) || rednum ) ) {  
                 numBx.style.color = "#0033cc";
                 numBx.style.borderColor = "#e9d398";
             } else {
@@ -341,12 +348,12 @@ function checkMix() {
             //x = (x + 1)%nSbxs;
         }
     }
-
-    if( redden ) {
+//alert("first numerator done");
+    if( redden ) { // final reduced denominator
         if( !isNaN(rednum) && !isNaN(redden) ) {
             var rdnVal = num(rednum);
             var rddVal = num(redden);
-            if( rednum && rdnVal/rddVal === rem/oden &&
+            if( rednum && rdnVal/rddVal === frcn &&
                     isRed(rdnVal, rddVal)  ) {
                 rddBx.style.color = "#0033cc";
                 rddBx.style.borderColor = "#e9d398";
@@ -365,8 +372,9 @@ function checkMix() {
             allgood = false;
         }
     } else {
-        if( !rednum && rem === 0 || isRed(numVal, denVal) ) { // no numerator either and numerator should be 0
-            rddBx.style.color = "#0033cc";
+        if( ((!rednum || (!isNan(rednum && num(rednum) === 0 ))) && rem === 0 ) || 
+                isRed(numVal, denVal) ) { // no numerator either and numerator should be 0
+            rddBx.style.color = "#0033cc";                    // or original fraction was reduced
             rddBx.style.borderColor = "#e9d398";
             whlBx.style.borderColor = "#e9d398";
         } else {
@@ -379,24 +387,24 @@ function checkMix() {
             //x = (x + 1)%nSbxs;
         }
     }
-    if( rednum ) {
-        if( num(rednum) === rem ) {
+    //alert("2nd denominator done");
+    if( rednum && !isNaN(rednum) ) {
+            rdnVal = num(rednum);
+            if( redden && !isNaN(redden) ) {
+                rddVal = num(redden);
+            }
+        // ratio is correct and reduced
+        if( rdnVal/rddVal === frcn && isRed(rdnVal, rddVal) ) { 
             rdnBx.style.color = "#0033cc";
+            rdnBx.style.borderColor = "#e9d398";
+            whlBx.style.borderColor = "#e9d398";
         } else {
-            // ratio is correct 
-            if( redden && num(rednum)/num(redden) === rem/oden &&
-                    isRed(rdnVal, rddVal) ) { 
-                rdnBx.style.color = "#0033cc";
-                rdnBx.style.borderColor = "#e9d398";
-                whlBx.style.borderColor = "#e9d398";
-            } else {
-                rdnBx.style.color = "red";
-                var errs = Number(doc.getElementById("errs").value);
-                doc.getElementById("errs").value = errs + 1;
-                allgood = false;
+            rdnBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
+            allgood = false;
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMix num value: " + rdnBx.value + " not: " + rem + " and ratio not right";
                 //x = (x + 1)%nSbxs;
-            }
         }
     } else {
         if( rem === 0 || isRed(numVal, denVal) ) {
@@ -413,7 +421,7 @@ function checkMix() {
             //x = (x + 1)%nSbxs;
         }
     }
-
+    //alert("2nd numerator done");
     // if dvsr or d0_1 are entered, are they correct?
     if( !allgood ) {
         //alert("not all good");
@@ -1243,9 +1251,14 @@ function checkFrcD( ev ) {
     }
 }
 function isRed( n, d ) {
+    //alert("is " + n + "/" + d + " reduced?");
     var ntwos = 0;
     var nthrees = 0;
     var nfives = 0;
+    if( n === 0 ) {
+        return true;
+        alert("n: " + n + ", so yes, reduced");
+    }
     while( n%2 === 0 ) {
         ntwos = ntwos + 1;
         n = n / 2; 
@@ -1279,6 +1292,7 @@ function isRed( n, d ) {
             nfives > 0 && dfives > 0 ) {
         return false;
     } else {
+        //alert("no common fctors, so yes, reduced");
         return true;
     }
 }
