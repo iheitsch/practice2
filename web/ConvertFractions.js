@@ -156,8 +156,8 @@ function checkRed() { // assumes only prime factors are 2's, 3's and 5's fixit
     }
     var frstn = num(doc.getElementById("n0_0").value);
     var frstd = num(doc.getElementById("d0_0").value);
- 
-    if( !isRed( lastn, lastd ) ) {
+    var rdfrac = reduce( lastn, lastd );
+    if( lastn !== rdfrac.n &&  lastd !== rdfrac.d ) {
         var errm = lastn + " over " + lastd + " is not reduced";
         alert(errm);
         nBx.style.color = "red";
@@ -193,6 +193,7 @@ function checkMix() {
     var rdnBx = doc.getElementById("rednum");
     var rddBx = doc.getElementById("redden");
     var rem = onum%oden;
+    var rdfrac = reduce(rem, oden);
     var whol = Math.floor(onum/oden);
     var frcn = rem/oden;
     allgood = true;
@@ -274,8 +275,9 @@ function checkMix() {
         if( !isNaN(numnum) && !isNaN(dennum) ) {
             numVal = num(numnum);
             denVal = num(dennum);
+            
             if( numVal/denVal === frcn &&
-                    (isRed(numVal, denVal) || rednum ) ) {
+                    ( (numVal === rdfrac.n && denVal === rdfrac.d) || rednum ) ) {
                 denBx.style.color = "#0033cc";
                 denBx.style.borderColor = "#e9d398";
             } else {
@@ -315,8 +317,9 @@ function checkMix() {
             }
              
             // ratio is correct, ratio is reduced or there is an entry for reduced value
+            //var rdfrac = reduce(numVal, denVal);
             if( numVal/denVal === frcn &&
-                    (isRed(numVal, denVal) || rednum ) ) {  
+                    ((numVal === rdfrac.n && denVal === rdfrac.d) || rednum ) ) {  
                 numBx.style.color = "#0033cc";
                 numBx.style.borderColor = "#e9d398";
             } else {
@@ -351,8 +354,9 @@ function checkMix() {
         if( !isNaN(rednum) && !isNaN(redden) ) {
             var rdnVal = num(rednum);
             var rddVal = num(redden);
+            //var rdfrac = reduce(rdnVal, rddVal);
             if( rednum && rdnVal/rddVal === frcn &&
-                    isRed(rdnVal, rddVal)  ) {
+                    rdnVal === rdfrac.n && rddVal === rdfrac.d ) {
                 rddBx.style.color = "#0033cc";
                 rddBx.style.borderColor = "#e9d398";
             } else {
@@ -370,8 +374,9 @@ function checkMix() {
             allgood = false;
         }
     } else {
+        //var rdfrac = reduce(numVal, denVal);
         if( ((!rednum || (!isNan(rednum && num(rednum) === 0 ))) && rem === 0 ) || 
-                isRed(numVal, denVal) ) { // no numerator either and numerator should be 0
+                (numVal === rdfrac.n && denVal === rdfrac.d) ) { // no numerator either and numerator should be 0
             rddBx.style.color = "#0033cc";                    // or original fraction was reduced
             rddBx.style.borderColor = "#e9d398";
             whlBx.style.borderColor = "#e9d398";
@@ -392,7 +397,8 @@ function checkMix() {
                 rddVal = num(redden);
             }
         // ratio is correct and reduced
-        if( rdnVal/rddVal === frcn && isRed(rdnVal, rddVal) ) { 
+        //var rdfrac = reduce(rdnVal, rddVal);
+        if( rdnVal/rddVal === frcn && rdnVal === rdfrac.n && rddVal === rdfrac.d ) { 
             rdnBx.style.color = "#0033cc";
             rdnBx.style.borderColor = "#e9d398";
             whlBx.style.borderColor = "#e9d398";
@@ -405,7 +411,8 @@ function checkMix() {
                 //x = (x + 1)%nSbxs;
         }
     } else {
-        if( rem === 0 || isRed(numVal, denVal) ) {
+        //var rdfrac = reduce(numVal, denVal);
+        if( rem === 0 || (numVal === rdfrac.n && denVal === rdfrac.d ) ) {
             rdnBx.style.color = "#0033cc";
             rdnBx.style.borderColor = "#e9d398";
             whlBx.style.borderColor = "#e9d398";
@@ -479,7 +486,8 @@ function checkFrc() {
             var nextBx = doc.getElementById("frcnum" + nextcol);
             var nextnum = !nextBx? null : nextBx.value;
             //alert("col: " + col + " ans: " + ans + " notans: " + notans + " prevcol: " + prevcol + " prevcolIsOdd: " + prevcolIsOdd + " nPrevn: " + nPrevn + " nPrevd: " + nPrevd + " prevden: " + prevden + " prevdIsnum: " + prevdIsnum + " done: " + done + " allgood: " + allgood);
-            done = prevcolIsOdd && prevnIsnum && prevdIsnum && isRed(nPrevn,nPrevd);
+            var rdfrac = reduce(nPrevn,nPrevd);
+            done = prevcolIsOdd && prevnIsnum && prevdIsnum && nPrevn === rdfrac.n && nPrevd === rdfrac.d;
         }
         
         if( notans && done) {
@@ -542,6 +550,8 @@ function checkFrc() {
                 }
             } else if( col%2 === 1 ) {
                 //alert("odd col");
+                var ncurrden = num(currden);
+                var rdfrac = reduce(nAns, ncurrden);
                 if( prev2num && prevnum && prev2nIsnum && prevnIsnum &&
                         nPrev2n/nPrevn !== nAns ) {
                     alert("division wrong");
@@ -550,7 +560,7 @@ function checkFrc() {
                     doc.getElementById("errs").value = errs + 1;
                     allgood = false;
                     alert(prev2num + " divided by " + prevnum + " is not " + ans);
-                } else if( currden && !isNaN(currden) && !isRed(nAns, num(currden)) &&
+                } else if( currden && !isNaN(currden) && ( nAns !== rdfrac.n || ncurrden !== rdfrac.d ) &&
                         !nextnum ) {
                     alert("not reduced");
                     ansBx.style.color = "red";
@@ -630,8 +640,8 @@ function checkFrc() {
         if(  prevden && prevdIsnum && prevden !== "" && prevden !== "0" ) {
             nPrevd = num(prevden);
         }
-        
-        var    done = prevcolIsOdd && isRed(nPrevn,nPrevd);
+        var rdfrac = reduce(nPrevn,nPrevd);
+        var done = prevcolIsOdd && nPrevn === rdfrac.n && nPrevd === rdfrac.d;
         if( i > 4 ) {
             prev2den = doc.getElementById("frcden" + prev2col).value;
             prev2dIsnum = !isNaN(prev2den);
@@ -678,6 +688,8 @@ function checkFrc() {
                 ansBx.style.borderColor = "#e9d398";
             }
         } else if( i%2 === 1 ) {
+            var ncurrnum = num(currnum);
+            var rdfrac = reduce( ncurrnum, nAns);
             if( prev2num && prevden && prev2dIsnum && prevdIsnum &&
                 nPrev2d/nPrevd !== nAns && nPrev2d/nPrevd !== 1 ) {
                 ansBx.style.color = "red";
@@ -685,7 +697,7 @@ function checkFrc() {
                 doc.getElementById("errs").value = errs + 1;
                 allgood = false;
                 alert("Denominator: " + ans + " is not " + prev2den + " / " + prevden);
-            } else if( currnum && !isNaN(currnum) && !isRed( num(currnum), nAns) && 
+            } else if( currnum && !isNaN(currnum) && ( ncurrnum !== rdfrac.n || nAns !== rdfrac.d) && 
                     !nextnum ) {
                 ansBx.style.color = "red";
                 var errs = Number(doc.getElementById("errs").value);
@@ -834,10 +846,14 @@ function checkMprN( ev ) {
                     alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prevDen + ", " + thisDen);
                 } else if( thisDen && ans !== thisDen ) {
                     ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                     alert("Numerator: " + ans + " needs to be the same value as denominator: " + thisDen + " or you are changing the value of the fraction, not converting it.");
                     allgood = false;
                 } else if( num(prevNum)%nAns !== 0 || num(prevDen)%nAns !== 0 ) { // not catching. fixit
                     ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                     alert(ans + " needs to evenly divide " + prevNum + " and " + prevDen);
                     allgood = false;
                 } else {
@@ -864,6 +880,8 @@ function checkMprN( ev ) {
                     alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prev2Num);
                 } else if( num(prev2Num)/num(prevNum) !== nAns ) {
                     ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
                     alert(prev2Num + " divided by " + prevNum + " is not " + ans);
                     allgood = false;
                 } else {
@@ -1068,7 +1086,7 @@ function checkMprD( ev ) {
                 ansBx.style.borderColor = "red";
                 var errs = Number(doc.getElementById("errs").value);
                 doc.getElementById("errs").value = errs + 1;
-                alert("col: " + col + " ans: " + ans + " should be the same as the first denominator: " + oden);
+                alert(ans + " should be the same as the first denominator: " + oden);
             }
             nextBx.focus();
         } else {
@@ -1152,7 +1170,11 @@ function checkD( ev ) {
                 }
             } else if( currN ) { // finding LCM and putting in order
                 var currnVal = currN.value;
-                if( currnVal ) {
+                if( isNaN(ans) ) {
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                } else if( currnVal ) {
                     if( ans !== currnVal ) {
                         ansBx.style.color = "red";
                         var errs = Number(doc.getElementById("errs").value);
@@ -1166,6 +1188,7 @@ function checkD( ev ) {
                         nextBx.focus();
                     }
                 } else {
+                    ansBx.style.color = "#0033cc";
                     //alert("no value in current numerator");
                     var op = "multiply";
                     if( test) {
@@ -1196,6 +1219,7 @@ function checkFrcD( ev ) {
                 doc.getElementById("rednum");
         var frcnum = numBx.value;
         var rem = onum%oden;
+        var rdfrac = reduce(rem, oden);
         if( isNaN(ans) ) {
             ansBx.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
@@ -1203,7 +1227,8 @@ function checkFrcD( ev ) {
         } else {
             var nans = num(ans);
             if( frcnum &&  !isNaN(frcnum) ) {
-                if( num(frcnum)/nans !== rem/oden ) {
+                var nfrcnum = num(frcnum);
+                if( nfrcnum/nans !== rem/oden ) {
                     ansBx.style.color = "red";
                     numBx.style.color = "red";
                     partner = ansBx;
@@ -1211,7 +1236,7 @@ function checkFrcD( ev ) {
                     var errs = Number(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
                     alert(frcnum + "/" + nans + " needs to equal " + rem + "/" + oden);
-                } else if ( id !== "frcden" && !isRed(frcnum, nans) ) {
+                } else if ( id !== "frcden" && ( nfrcnum !== rdfrac.n || nans !== rdfrac.d ) ) {
                     ansBx.style.color = "red";
                     numBx.style.color = "red";
                     partner = ansBx;
@@ -1232,14 +1257,14 @@ function checkFrcD( ev ) {
                     }
                 }
             } else if( id === "frcden" ) {
-                if( nans === oden ) { // check id, if redNum, must be reduced
+                if( nans === oden || nans === rdfrac.n) { // check id, if redNum, must be reduced
                     ansBx.style.color = "#0033cc";
                     doc.getElementById("redprt").focus();
                 } else {
                     ansBx.style.color = "red";
                     var errs = Number(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
-                    alert(nans + " needs to be " + oden);
+                    alert(nans + " needs to be " + oden + " or " + rdfrac.n);
                 }
             } else {
                numBx.focus();
@@ -1248,51 +1273,33 @@ function checkFrcD( ev ) {
         return false;
     }
 }
-function isRed( n, d ) {
-    //alert("is " + n + "/" + d + " reduced?");
+function reduce(  num, den ) {
+    //alert("is " +  num + "/" + den + " reduced?");
     var ntwos = 0;
     var nthrees = 0;
     var nfives = 0;
-    if( n === 0 ) {
-        return true;
-        alert("n: " + n + ", so yes, reduced");
+    if(  num === 0 ) {
+        //alert(" num: " +  num + ", so yes, reduced");
+        return {n:num, d:1};
     }
-    while( n%2 === 0 ) {
+    while(  num%2 === 0 && den%2 === 0 ) {
         ntwos = ntwos + 1;
-        n = n / 2; 
+         num =  num / 2;
+        den = den / 2;
     }
-    while( n%3 === 0 ) {
+    while(  num%3 === 0 && den%3 === 0 ) {
         nthrees = nthrees + 1;
-        n = n / 3; 
+         num =  num / 3;
+        den = den / 3;
     }
-    while( n%5 === 0 ) {
+    while(  num%5 === 0 && den%5 === 0 ) {
         nfives = nfives + 1; 
-        n = n / 5;
+         num =  num / 5;
+        den = den / 5;
     }
-    var dtwos = 0;
-    var dthrees = 0;
-    var dfives = 0;
-    while( d%2 === 0 ) {      
-        dtwos = dtwos + 1;
-        d = d / 2;
-    }
-    while( d%3 === 0 ) {
-        dthrees = dthrees + 1; 
-        d = d / 3;
-    }
-    while( d%5 === 0 ) {
-        dfives = dfives + 1;
-        d = d / 5;
-    }
-    // if both numerator and denominator have > 1 of any factor, not reduced
-    if( ntwos > 0 && dtwos > 0 ||
-            nthrees > 0 && dthrees > 0 ||
-            nfives > 0 && dfives > 0 ) {
-        return false;
-    } else {
-        //alert("no common fctors, so yes, reduced");
-        return true;
-    }
+    //alert("reduced num: " + num + " den: " + den);
+        //return true;
+    return {n:num, d:den}; 
 }
 // doesnt check first numerator fixit
 function checkFrcN( ev ) {
@@ -1309,7 +1316,8 @@ function checkFrcN( ev ) {
         var denBx = id === "frcnum"? doc.getElementById("frcden") :
                 doc.getElementById("redden");
         var frcden = denBx.value;
-        var rem = num(onum)%num(oden);
+        var rem = onum%oden;
+        var rdfrac = reduce(rem, oden);
         //doc.getElementById("statusBox" + x).innerHTML = "checkFrcN ans: " + ans + " onum: " + onum + " oden: " + oden + " frcden: " + frcden + " rem: " + rem;
         //x = (x + 1)%nSbxs;
         if( isNaN(ans) ) {
@@ -1320,15 +1328,16 @@ function checkFrcN( ev ) {
         } else {
             var nans = num(ans);
             var id = ansBx.id;
+            
             if( frcden && !isNaN(frcden) ) {
-                if( nans/num(frcden) !== rem/num(oden) ) {
+                if( nans/num(frcden) !== rem/oden ) {
                     ansBx.style.color = "red";
                     denBx.style.color = "red";
                     partner = denBx;
                     var errs = Number(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
                     alert(nans + "/" + frcden + " needs to equal " + rem + "/" + oden);
-                } else if ( id !== "frcnum" && !isRed(nans, frcden) ) {
+                } else if ( id !== "frcnum" && ( nans !== rdfrac.n || frcden !== rdfrac.d ) ) {
                     ansBx.style.color = "red";
                     denBx.style.color = "red";
                     partner = denBx;
@@ -1344,7 +1353,7 @@ function checkFrcN( ev ) {
                     }
                 }
             } else if( id === "frcnum" ) {
-                if( nans === rem ) {
+                if( nans === rem || nans === rdfrac.n ) {
                     ansBx.style.color = "#0033cc";
                     doc.getElementById("instr2").innerHTML = "Copy original denominator: '" + oden + "' to mixed number denominator";
                     doc.getElementById("instr3").innerHTML = "";
@@ -1353,7 +1362,7 @@ function checkFrcN( ev ) {
                     ansBx.style.color = "red";
                     var errs = Number(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
-                    alert(nans + " needs to be " + rem);
+                    alert(nans + " needs to be " + rem + " or " + rdfrac.n);
                     //doc.getElementById("statusBox" + x).innerHTML = "checkFrcN id: " + id + " oden: " + oden + " frcden: " + frcden + " rem: " + rem;
                     //x = (x + 1)%nSbxs;
                 }
@@ -1414,6 +1423,8 @@ function checkProd( ev ) {
                 doc.getElementById("diff").focus();
             } else {
                 ansBx.style.color = "red";
+                var errs = Number(doc.getElementById("errs").value);
+                doc.getElementById("errs").value = errs + 1;
             }
         } else {
             ansBx.style.color = "red";
@@ -1568,7 +1579,11 @@ function checkN( ev ) {
                 }
             } else if( currD ) { // finding LCD and putting in order
                 var currdVal = currD.value;
-                if( currdVal ) {
+                if( isNaN(ans) ) {
+                    ansBx.style.color = "red";
+                    var errs = Number(doc.getElementById("errs").value);
+                    doc.getElementById("errs").value = errs + 1;
+                } else if( currdVal ) {
                     if( ans !== currdVal ) {
                         ansBx.style.color = "red";
                         var errs = Number(doc.getElementById("errs").value);
@@ -1582,6 +1597,7 @@ function checkN( ev ) {
                         nextBx.focus();
                     }
                 } else {
+                    ansBx.style.color = "#0033cc";
                     //alert("no value in current numerator");
                     doc.getElementById("instr2").innerHTML = "Copy numerator value into denominator so the number you are multiplying by is 1";
                     doc.getElementById("instr3").innerHTML = "";
