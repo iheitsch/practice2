@@ -60,11 +60,11 @@
     boolean simplifyCk = false;
     String isSimplify = "";
 
-    boolean commonDenomCk = true;
-    String isCommonDenom = "checked";
+    boolean commonDenomCk = false;
+    String isCommonDenom = "";
     
-    boolean fracToMxCk = false;
-    String isFracToMx = "";
+    boolean fracToMxCk = true;
+    String isFracToMx = "checked";
     
     boolean mxToFracCk = false;
     String isMxToFrac = "";
@@ -238,6 +238,7 @@
 
             ncols = (int)(acttwos + actthrees + actfives);
             instr2 = "Copy the numerator: '" + num[0] + "' to the box under the 'divide by' sign";
+           //startHere = "d1_1";
         } else if( indcatr == 3 && mxToFracCk ) {
             running = true;
             instrs = "Convert this Mixed Number to a Fraction.";
@@ -388,29 +389,29 @@
         </td>
         <td class="sym">=</td>
         <td>
-            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="whlprt">
+            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="n0_1">
         </td>
         <td>
             <table>
                 <tr><td class="num">
-                    <input onkeyup="checkFrcN( event )" onkeydown="erase( event )" id="frcnum">  
+                    <input onkeyup="checkFrcN( event )" onkeydown="erase( event )" id="n0_2">  
                 </td></tr>
                 <tr><td>
-                    <input onkeyup="checkFrcD( event )" onkeydown="erase( event )" id="frcden">
+                    <input onkeyup="checkFrcD( event )" onkeydown="erase( event )" id="d0_2">
                 </td></tr>
             </table>
         </td>
         <td class="sym">=</td>
         <td>
-            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="redprt">
+            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="n0_3">
         </td>
         <td>
             <table>
                 <tr><td class="num">
-                    <input onkeyup="checkFrcN( event )" onkeydown="erase( event )" id="rednum">  
+                    <input onkeyup="checkFrcN( event )" onkeydown="erase( event )" id="n0_4">  
                 </td></tr>
                 <tr><td>
-                    <input onkeyup="checkFrcD( event )" onkeydown="erase( event )" id="redden">
+                    <input onkeyup="checkFrcD( event )" onkeydown="erase( event )" id="d0_4">
                 </td></tr>
             </table>
         </td>
@@ -420,7 +421,7 @@
     </tr>
     <tr>
         <td>
-            <input onkeyup="checkDen( event )" onkeydown="erase( event )" id="dvsr">
+            <input onkeyup="checkDen( event )" onkeydown="erase( event )" id="d0_0">
         </td>
         <td class="sym">
             )
@@ -435,7 +436,7 @@
         <td>
         </td>
         <td>
-            <input onkeyup="checkProd( event )" onkeydown="erase( event )" id="prod">
+            <input onkeyup="checkProd( event )" onkeydown="erase( event )" id="n1_1">
         </td>
     </tr>
     <tr>
@@ -447,7 +448,7 @@
         <td>
         </td>
         <td>
-            <input onkeyup="checkDiff( event )" onkeydown="erase( event )" id="diff">
+            <input onkeyup="checkDiff( event )" onkeydown="erase( event )" id="d1_1">
         </td>
     </tr>
 <%  } else if( indcatr == 3 && mxToFracCk ) { %>

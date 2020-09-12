@@ -187,11 +187,11 @@ function checkMix() {
         
     var onum = num(doc.getElementById("onum").value);
     var oden = num(doc.getElementById("oden").value);
-    var whlBx = doc.getElementById("whlprt");
-    var numBx = doc.getElementById("frcnum");
-    var denBx = doc.getElementById("frcden");
-    var rdnBx = doc.getElementById("rednum");
-    var rddBx = doc.getElementById("redden");
+    var whlBx = doc.getElementById("n0_1");
+    var numBx = doc.getElementById("n0_2");
+    var denBx = doc.getElementById("d0_2");
+    var rdnBx = doc.getElementById("n0_4");
+    var rddBx = doc.getElementById("d0_4");
     var rem = onum%oden;
     var rdfrac = reduce(rem, oden);
     var whol = Math.floor(onum/oden);
@@ -228,7 +228,7 @@ function checkMix() {
         //doc.getElementById("statusBox" + x).innerHTML = "checkMix nothing in whole value";
         //x = (x + 1)%nSbxs;
     }
-    whlBx = doc.getElementById("redprt");
+    whlBx = doc.getElementById("n0_3");
     var whlVal = whlBx.value;
     var numnum = numBx.value;
     var dennum = denBx.value;
@@ -497,7 +497,7 @@ function checkFrc() {
             var nAns = num(ans);
             var id = ansBx.id;        
 
-            var whlprt = doc.getElementById("whlprt").value;
+            var whlprt = doc.getElementById("n0_1").value;
             var onum = doc.getElementById("onum").value;
 
             // what if it's already reduced in col 3? fixit
@@ -805,7 +805,7 @@ function checkMprN( ev ) {
             var col = num(id.substring(6,7));
             var nextCol = col + 1;
             var nextBx = doc.getElementById("frcden" + col); // for now
-            var whlprt = doc.getElementById("whlprt").value;
+            var whlprt = doc.getElementById("n0_1").value;
             var oden = doc.getElementById("oden").value;
             var onum = doc.getElementById("onum").value;
             var prevCol = col - 1;
@@ -961,7 +961,7 @@ function checkMprD( ev ) {
                 ansBx.style.color = "#0033cc";
                 ansBx.style.borderColor = "#e9d398"; 
                 if( id === "d0_1") {
-                    var whl = doc.getElementById("whlprt").value;
+                    var whl = doc.getElementById("n0_1").value;
                     doc.getElementById("instr2").innerHTML = "Copy whole part of mixed number: " + whl + " to first box";
                     doc.getElementById("instr3").innerHTML = "";
                     nextBx = doc.getElementById("frcnum0");
@@ -1215,8 +1215,8 @@ function checkFrcD( ev ) {
         var onum = num(doc.getElementById("onum").value);
         var oden = num(doc.getElementById("oden").value);
         var id = ansBx.id;
-        var numBx = id === "frcden"? doc.getElementById("frcnum"):
-                doc.getElementById("rednum");
+        var numBx = id === "d0_2"? doc.getElementById("n0_2"):
+                doc.getElementById("n0_4");
         var frcnum = numBx.value;
         var rem = onum%oden;
         var rdfrac = reduce(rem, oden);
@@ -1236,7 +1236,7 @@ function checkFrcD( ev ) {
                     var errs = Number(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
                     alert(frcnum + "/" + nans + " needs to equal " + rem + "/" + oden);
-                } else if ( id !== "frcden" && ( nfrcnum !== rdfrac.n || nans !== rdfrac.d ) ) {
+                } else if ( id !== "d0_2" && ( nfrcnum !== rdfrac.n || nans !== rdfrac.d ) ) {
                     ansBx.style.color = "red";
                     numBx.style.color = "red";
                     partner = ansBx;
@@ -1246,20 +1246,20 @@ function checkFrcD( ev ) {
                     alert(frcnum + "/" + nans + " is not reduced");
                 } else {
                     ansBx.style.color = "#0033cc";
-                    if( id === "frcden" ) {
+                    if( id === "d0_2" ) {
                         doc.getElementById("instr2").innerHTML = "If fraction is reduced, click 'Done'.";
                         doc.getElementById("instr3").innerHTML = "Otherwise copy the whole part of the mixed number.";
-                        doc.getElementById("redprt").focus();
+                        doc.getElementById("n0_3").focus();
                     } else {
                         doc.getElementById("instr2").innerHTML = "Click 'Done'";
                         doc.getElementById("instr3").innerHTML = "";
                         doc.activeElement.blur();
                     }
                 }
-            } else if( id === "frcden" ) {
+            } else if( id === "d0_2" ) {
                 if( nans === oden || nans === rdfrac.n) { // check id, if redNum, must be reduced
                     ansBx.style.color = "#0033cc";
-                    doc.getElementById("redprt").focus();
+                    doc.getElementById("n0_3").focus();
                 } else {
                     ansBx.style.color = "red";
                     var errs = Number(doc.getElementById("errs").value);
@@ -1313,8 +1313,8 @@ function checkFrcN( ev ) {
         var onum = num(doc.getElementById("onum").value);
         var oden = num(doc.getElementById("oden").value);
         var id = ansBx.id;
-        var denBx = id === "frcnum"? doc.getElementById("frcden") :
-                doc.getElementById("redden");
+        var denBx = id === "n0_2"? doc.getElementById("d0_2") :
+                doc.getElementById("d0_4");
         var frcden = denBx.value;
         var rem = onum%oden;
         var rdfrac = reduce(rem, oden);
@@ -1337,7 +1337,7 @@ function checkFrcN( ev ) {
                     var errs = Number(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
                     alert(nans + "/" + frcden + " needs to equal " + rem + "/" + oden);
-                } else if ( id !== "frcnum" && ( nans !== rdfrac.n || frcden !== rdfrac.d ) ) {
+                } else if ( id !== "n0_2" && ( nans !== rdfrac.n || frcden !== rdfrac.d ) ) {
                     ansBx.style.color = "red";
                     denBx.style.color = "red";
                     partner = denBx;
@@ -1346,13 +1346,13 @@ function checkFrcN( ev ) {
                     alert(nans + "/" + frcden + " is not reduced");
                 } else {
                     ansBx.style.color = "#0033cc";
-                    if( id === "frcnum" ) {
-                        doc.getElementById("redprt").focus();
+                    if( id === "n0_2" ) {
+                        doc.getElementById("n0_3").focus();
                     } else {
                         doc.activeElement.blur();
                     }
                 }
-            } else if( id === "frcnum" ) {
+            } else if( id === "n0_2" ) {
                 if( nans === rem || nans === rdfrac.n ) {
                     ansBx.style.color = "#0033cc";
                     doc.getElementById("instr2").innerHTML = "Copy original denominator: '" + oden + "' to mixed number denominator";
@@ -1384,12 +1384,12 @@ function checkDiff( ev ) {
         if( !isNaN( ans )) {
             var ansVal = num(ans);
             var dvdnd = num(doc.getElementById("d0_1").value);
-            var prod = num(doc.getElementById("prod").value);
+            var prod = num(doc.getElementById("n1_1").value);
             if( ansVal === dvdnd - prod ) {
                 ansBx.style.color = "#0033cc";
                 doc.getElementById("instr2").innerHTML = "Copy remainder: '" + ans + "' to numerator of mixed number";
                 doc.getElementById("instr3").innerHTML = "";
-                doc.getElementById("frcnum").focus();
+                doc.getElementById("n0_2").focus();
             } else {
                 ansBx.style.color = "red";
                 var errs = Number(doc.getElementById("errs").value);
@@ -1413,14 +1413,14 @@ function checkProd( ev ) {
         var ans = ansBx.value;
         if( !isNaN( ans )) {
             var ansVal = num(ans);
-            var dvsr = num(doc.getElementById("dvsr").value);
-            var whlprt = num(doc.getElementById("whlprt").value);
+            var dvsr = num(doc.getElementById("d0_0").value);
+            var whlprt = num(doc.getElementById("n0_1").value);
             if( ansVal === dvsr*whlprt ) {
                 ansBx.style.color = "#0033cc";
                 var onum = doc.getElementById("onum").value;
                 doc.getElementById("instr2").innerHTML = "What is " + onum + " - " + ans;
                 doc.getElementById("instr3").innerHTML = "";
-                doc.getElementById("diff").focus();
+                doc.getElementById("d1_1").focus();
             } else {
                 ansBx.style.color = "red";
                 var errs = Number(doc.getElementById("errs").value);
@@ -1446,10 +1446,10 @@ function checkWhl( ev ) {
         var onum = num(doc.getElementById("onum").value);
         if( ans && !isNaN(ans) && Math.floor(onum/oden) === num(ans) ) {
             ansBx.style.color = "#0033cc";
-            var nextBx = doc.getElementById("rednum");
+            var nextBx = doc.getElementById("n0_4");
             var instr2 = "Divide both numerator and denominator by some number to reduce fraction";
-            if( ansBx.id === "whlprt" ) {
-                nextBx = doc.getElementById("prod");
+            if( ansBx.id === "n0_1" ) {
+                nextBx = doc.getElementById("n1_1");
                 instr2 = "What is " + ans + " &times " + oden;
             }
             doc.getElementById("instr2").innerHTML = instr2;
@@ -1477,7 +1477,7 @@ function checkDen( ev ) {
             var num = doc.getElementById("d0_1").value;
             doc.getElementById("instr2").innerHTML = "What is " + num + " &divide " + ans;
             doc.getElementById("instr3").innerHTML = "";
-            doc.getElementById("whlprt").focus();
+            doc.getElementById("n0_1").focus();
         } else {
             ansBx.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
@@ -1499,7 +1499,7 @@ function checkNum( ev ) {
             var oden = doc.getElementById("oden").value;
             doc.getElementById("instr2").innerHTML = "Copy the denominator: '" + oden + "' to the box to the left of the 'divide by' sign";
             doc.getElementById("instr3").innerHTML = "";
-            doc.getElementById("dvsr").focus();
+            doc.getElementById("d0_0").focus();
         } else {
             ansBx.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
@@ -1760,7 +1760,7 @@ function pusharo( ev ) {
     
     var indcatr = doc.getElementById("indcatr").value;
     //alert("key pressed. indcatr: " + indcatr);
-    if( num(indcatr) < 2 ) {
+    if( num(indcatr) < 3 ) {
         var id = doc.activeElement.id;
         var len = id.length;
         var typ = id.substring(0,1);
