@@ -1,18 +1,19 @@
+package com.frieda;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.frieda;
 
-import javax.ejb.Stateless;
+//import javax.ejb.Stateless;
 
 /**
  *
  * @author frieda
  */
 
-@Stateless
+//@Stateless
 public class Format {
 
     // Add business logic below. (Right-click in editor and choose
@@ -56,7 +57,7 @@ public class Format {
         }
         return new String( actual );
     }
-    public static String getFormat( int num, int dp, int digs ) {
+    public static String getFormat( int num, int dp, int digs, boolean yesComma ) {
         StringBuffer actual = new StringBuffer();
         int absActual = num;
         if( num < 0 ) {
@@ -78,7 +79,7 @@ public class Format {
         for(  int j = digs - 1; j >= 0; --j ) {
             int actDig = tmp3/ten2pow;
             actual.append(String.valueOf(actDig));
-            if( j == dp && j > 0 ) {
+            if( yesComma && j == dp && j > 0 ) {
                 actual.append(".");
             } else if( ( j - dp ) % 3 == 0 && j > dp ) {
                 actual.append(",");
@@ -95,7 +96,7 @@ public class Format {
         int digs = absNum > 0? 1 + (int)Math.log10(absNum) : 1;
         return digs;
     }
-    public static String getFormat( long num, int dp ) {
+    public static String getFormat( long num, int dp, boolean yesComma ) {
         StringBuffer actual = new StringBuffer();
         long absActual = num;
         if( num < 0 ) {
@@ -120,7 +121,7 @@ public class Format {
             actual.append(String.valueOf(actDig));
             if( j == dp && j > 0 ) {
                 actual.append(".");
-            } else if( ( j - dp ) % 3 == 0 && j > dp ) {
+            } else if( yesComma && ( j - dp ) % 3 == 0 && j > dp ) {
                 actual.append(",");
             }
             tmp3 = tmp3 - ten2pow*actDig;
@@ -132,7 +133,7 @@ public class Format {
         }
         return new String( actual );
     }
-    public static String getFormat( long num, int dp, int digs ) {
+    public static String getFormat( long num, int dp, int digs, boolean yesComma ) {
         StringBuffer actual = new StringBuffer();
         long absActual = num;
         if( num < 0 ) {
@@ -156,7 +157,7 @@ public class Format {
             actual.append(String.valueOf(actDig));
             if( j == dp && j > 0 ) {
                 actual.append(".");
-            } else if( ( j - dp ) % 3 == 0 && j > dp ) {
+            } else if( yesComma && ( j - dp ) % 3 == 0 && j > dp ) {
                 actual.append(",");
             }
             tmp3 = tmp3 - ten2pow*actDig;
@@ -169,3 +170,4 @@ public class Format {
         return new String( actual );
     }
 }
+

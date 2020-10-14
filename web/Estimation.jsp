@@ -10,8 +10,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <%@ page import="java.util.regex.Pattern,javax.ejb.EJB,java.util.TreeMap" %>
-    <%@ page import="com.frieda.Question,com.frieda.Format,com.frieda.Operate" %>
+    <%@ page import="java.util.regex.Pattern,java.util.TreeMap" %>
+    <%@ page import="com.frieda.Question,com.frieda.Format" %>
     <link rel="stylesheet" href="Estimation.css" type="text/css">
     <title>Estimation</title>
     <script src="Estimation.js"></script>
@@ -22,6 +22,10 @@
     
 <% 
     // may have another infinite loop fixit.
+    // how do you really want to handle divide by zero? try again or spit back a huge number
+    // as currently done? fixit
+    // had a problem with identical answers, one with dp, one without. first was true only, other was false only
+    // how to duplicate? 369.0 * 6,268 = 2,312,892. fixit
     
     final int N_OPERATORS = 4;
     final double DEXP = 2.6;
@@ -105,7 +109,7 @@
     int multCase = -1;
     int subCase = -1;
     int divCase = -1;
-
+// no way to remove operators[nOperators] or decrease nOperators fixit?
     if( request.getParameter("started") == null ) {
         // Default at startup
         additionCk = true;
@@ -343,7 +347,7 @@
     System.out.println("decPt1 = " + decPt1 + " decPt2 = " + decPt2 + " operator = " + operator[0]);
 
     String [] expl = new String[3];
-    decPtAct = Operate.op( operator[0], MAX_DGTS, decimalsCk,
+    decPtAct = op( operator[0], MAX_DGTS, decimalsCk,
             operand1, decPt1, operand2, decPt2, 
             nDgts1, nDgts2, isNeg1, isNeg2,
             actualInt, expl );
@@ -382,10 +386,12 @@
     }
     
     String[] actual = new String[3];
+    String[] actNoComma = new String[3];
     int[] nDigsAct = new int[3];
     for( int i = 0; i < 3; ++i ) {
         nDigsAct[i] = Format.getDigs( actualInt[i] );
-        actual[i] = Format.getFormat( actualInt[i], decPtAct, nDigsAct[i] );
+        actual[i] = Format.getFormat( actualInt[i], decPtAct, nDigsAct[i], true );
+        actNoComma[i] = Format.getFormat( actualInt[i], decPtAct, nDigsAct[i], false );
         System.out.println("actualInt = " + actualInt[i] + " actual[" + i + "] = " + actual[i] + " decPtAct = " + decPtAct + " nDigsAct[" + i + "] = " + nDigsAct[i]);
     }
     
@@ -396,14 +402,14 @@
     System.out.println("doubleMin = " + doubleMin + " doubleAct = " + doubleAct + " doubleMax = " + doubleMax + " mostDig = " + mostDig );
 
     StringBuffer entireProb = new StringBuffer();
-    entireProb.append( Format.getFormat( operand1, decPt1 ) );
+    entireProb.append( Format.getFormat( operand1, decPt1, true ) );
     entireProb.append(" ");
     entireProb.append(operator[0]);
     entireProb.append(" ");
     if( isNeg2 ) {
         entireProb.append("(");
     }
-    entireProb.append( Format.getFormat( operand2, decPt2 ) );
+    entireProb.append( Format.getFormat( operand2, decPt2, true ) );
     if( isNeg2 ) {
         entireProb.append(")");
     }
@@ -414,13 +420,21 @@
     String [] muckedString = new String[nMucked];
     int [] muckedDp = new int[nMucked];
 
+    int pdx = 1;
     outer:
-    for( int idx = 1; idx < nMucked; ++idx ) {
-        operator[idx] = operator[0];
+    while( pdx < nMucked) {
+    //for( int pdx = 1; pdx < nMucked; ++pdx ) 
+    	System.out.println("pdx: " + pdx);
+        operator[pdx] = operator[0];
         stringSign1 = isNeg1? "-" : "";
         stringSign2 = isNeg2? "-" : "";
         stringDecPt1 = ".";
         stringDecPt2 = ".";
+        // 0 - 5 ? how does operand2 get mucked? fixit
+        // mucking with operand2 throws division problems way off and
+        // it's obvious which answers are not correct. Perhaps
+        // you don't want to muck with operand2 as often
+        //int whichOpIsMucked = (int)((3*nOps*(nOps-1))*Math.random()); // gives too many Answer = 0 for division
         int whichOpIsMucked = (int)(9*Math.random());
         if( whichOpIsMucked < 4 ) { // 0, 1, 2, 3:  muck with operand1
             boolean muckWithSign = isNeg1 && (int)(5*Math.random()) < 1;
@@ -451,8 +465,8 @@
                             //System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
                             int whichAlt = (int)(alt[origDig].length*Math.random());
                             StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
-                            opDgts1[whichDigIsMucked][idx] = altDig.toString();
-                            System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
+                            opDgts1[whichDigIsMucked][pdx] = altDig.toString();
+                            System.out.println(" whichAlt = " + whichAlt + " altDig = " + altDig);
                         } else {
                             System.err.println("Error origDig = " + origDig + " should be between 0 and 9 ");
                         }
@@ -466,11 +480,11 @@
             if( 0 <= origOp && origOp < 4 ) {
                 int whichAlt = (int)(altOp[origOp].length*Math.random());
                 String altDig = altOp[origOp][whichAlt];
-                operator[idx] = altDig;
+                operator[pdx] = altDig;
 
                 System.out.println("whichOp = " + whichOpIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
             } else { 
-                System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
+                System.out.println("Error: operator = " + operator[pdx] + " origOp = " + origOp);
             }
         } else { // 5, 6, 7, 8: muck with operand2
             boolean muckWithSign = isNeg2 && (int)(5*Math.random()) < 1;
@@ -501,10 +515,10 @@
                         if( 0 <= origDig && origDig <= 9 ) {
                             int whichAlt = (int)(alt[origDig].length*Math.random());
                             StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
-                            opDgts2[whichDigIsMucked][idx] = altDig.toString();
+                            opDgts2[whichDigIsMucked][pdx] = altDig.toString();
                             System.out.println(" whichAlt = " + whichAlt + " altDig = " + altDig);
                         } else { 
-                            System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
+                            System.out.println("Error: operator = " + operator[pdx] + " origOp = " + origOp);
                         }
                     } else {
                         System.err.println( "Error: whichDigIsMucked = " + whichDigIsMucked + " TWO_XDGTS = " + TWO_XDGTS);
@@ -528,7 +542,7 @@
             tmp4 = tmp4 - 1;
         }
         for( int i = nDgts1 - 1; i >= 0; --i ) {
-            muckedProb.append(opDgts1[i][idx]); 
+            muckedProb.append(opDgts1[i][pdx]); 
             //System.out.println("op1 digits muckedProb = " + muckedProb);
             if( i == decPt1 ) {
                 muckedProb.append(stringDecPt1);
@@ -536,7 +550,7 @@
             }
         }
         //muckedProb.append(" ");
-        muckedProb.append(operator[idx]);
+        muckedProb.append(operator[pdx]);
         //System.out.println("operator muckedProb = " + muckedProb);
         //muckedProb.append(" ");
         muckedProb.append(stringSign2);
@@ -552,7 +566,7 @@
             tmp4 = tmp4 - 1;
         }
         for( int i = nDgts2 - 1; i >= 0; --i ) {
-            muckedProb.append(opDgts2[i][idx]);
+            muckedProb.append(opDgts2[i][pdx]);
             //System.out.println("op2 digits muckedProb = " + muckedProb);
             if( i == decPt2 ) {
                 muckedProb.append(stringDecPt2);
@@ -690,8 +704,8 @@
             System.out.println("prelimAns[" + i + "][1] = " + prelimAns[i][1] + " prelimDp[" + i + "] = " + prelimDp[i]);
         }
 
-        finalMucked[idx] = snum[0];
-        muckedDp[idx] = dp[0];
+        finalMucked[pdx] = snum[0];
+        muckedDp[pdx] = dp[0];
         String [] junk = new String[3];
 
         for( int y = 0; y < mdx; ++y ) {
@@ -699,23 +713,25 @@
             if( z >= 0 ) {
                 System.out.print("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
                 if( prelimAns[y+1][1] == 0 && muckedOp[y].compareTo("/") == 0 ) {
-                    System.out.println("divide by zero -breaking out of loop" );
-                    for( int j = 0; j < TWO_XDGTS; ) { // reset all digits
-                        opDgts1[j][idx] = opDgts1[j][0];
-                        opDgts2[j][idx] = opDgts2[j][0];
+                    System.out.println("divide by zero -breaking out of loop TWO_XDGTS: " + TWO_XDGTS );
+                    for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
+                    	System.out.println("before reset opDgts1[" + j + "][" + pdx + "]: " + opDgts1[j][pdx] + " opDgts2[" + j + "][" + pdx + "]: " + opDgts2[j][pdx]);
+                        opDgts1[j][pdx] = opDgts1[j][0];
+                        opDgts2[j][pdx] = opDgts2[j][0];
+                        System.out.println("after reset opDgts1[" + j + "][" + pdx + "]: " + opDgts1[j][pdx] + " opDgts2[" + j + "][" + pdx + "]: " + opDgts2[j][pdx]);
                     }
-                    idx = idx - 1;
+                    System.out.println("done with reset about to continue to next loop" );
                     continue outer;
                 }
-                prelimDp[y] = Operate.op( muckedOp[y], MAX_DGTS, true,
+                prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
                 prelimAns[y], junk );
                 System.out.println(prelimAns[y][1] + " dp " + prelimDp[y]);
                 prelimAns[y+1][1] = prelimAns[y][1];
-                finalMucked[idx] = prelimAns[y][1]; // just in case there is no addidion or subtraction
+                finalMucked[pdx] = prelimAns[y][1]; // just in case there is no addidion or subtraction
                 prelimDp[y+1] = prelimDp[y];
-                muckedDp[idx] = prelimDp[y];
+                muckedDp[pdx] = prelimDp[y];
             }
         }
 
@@ -726,51 +742,54 @@
                 if( prelimAns[y+1][1] == 0 && muckedOp[y].compareTo("/") == 0 ) {
                     System.out.println("divide by zero -breaking out of loop" );
                     for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
-                        opDgts1[j][idx] = opDgts1[j][0];
-                        opDgts2[j][idx] = opDgts2[j][0];
+                        opDgts1[j][pdx] = opDgts1[j][0];
+                        opDgts2[j][pdx] = opDgts2[j][0];
                     }
-                    idx = idx - 1;
+                    //pdx = pdx - 1;
                     continue outer;
                 }
-                prelimDp[y] = Operate.op( muckedOp[y], MAX_DGTS, true,
+                prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
                 prelimAns[y], junk );
-                finalMucked[idx] = prelimAns[y][1];
+                finalMucked[pdx] = prelimAns[y][1];
 
-                muckedDp[idx] = prelimDp[y];
-                System.out.println(finalMucked[idx] + " mucked dp " + muckedDp[idx]);
+                muckedDp[pdx] = prelimDp[y];
+                System.out.println(finalMucked[pdx] + " mucked dp " + muckedDp[pdx]);
                 prelimAns[y+1][1] = prelimAns[y][1];
                 prelimDp[y+1] = prelimDp[y]; 
             }
         }      
         
-        doubleMucked[idx] = finalMucked[idx]*Math.pow(10, -muckedDp[idx]);
-        muckedString[idx] = Format.getFormat( finalMucked[idx], muckedDp[idx] );
-        System.out.println("finalMucked[" + idx + "] = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx] + " string version = " + muckedString[idx]);
+        doubleMucked[pdx] = finalMucked[pdx]*Math.pow(10, -muckedDp[pdx]);
+        muckedString[pdx] = Format.getFormat( finalMucked[pdx], muckedDp[pdx], true );
+        String muckNoComma = Format.getFormat( finalMucked[pdx], muckedDp[pdx], false );
+        System.out.println("finalMucked[" + pdx + "] = " + finalMucked[pdx] + " muckedDp = " + muckedDp[pdx] + " string version = " + muckedString[pdx]);
         // eliminate any duplicate
-        if( muckedString[idx].equals(actual[1]) ) {
+        
+        //if( muckedString[pdx].equals(actual[1]) ) { // can't handle xy.0 == xy == xy. fixit
+        if( Float.valueOf(muckNoComma).floatValue() == Float.valueOf(actNoComma[1]).floatValue() ) { // can't handle , fixit
             System.out.println("duplicate to actualInt" );
             for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
-                opDgts1[j][idx] = opDgts1[j][0];
-                opDgts2[j][idx] = opDgts2[j][0];
+                opDgts1[j][pdx] = opDgts1[j][0];
+                opDgts2[j][pdx] = opDgts2[j][0];
             }
-            idx = idx - 1;
+            //pdx = pdx - 1;
             continue outer;
         } else {
-            for( int i = 1; i < idx; ++i ) {
-                if( muckedString[idx].equals(muckedString[i]) ) {
+            for( int i = 1; i < pdx; ++i ) {
+                if( muckedString[pdx].equals(muckedString[i]) ) {
                     System.out.println("duplicate to " + i );
                     for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
-                        opDgts1[j][idx] = opDgts1[j][0];
-                        opDgts2[j][idx] = opDgts2[j][0];
+                        opDgts1[j][pdx] = opDgts1[j][0];
+                        opDgts2[j][pdx] = opDgts2[j][0];
                     }
-                    idx = idx - 1;
+                    //pdx = pdx - 1;
                     continue outer;
                 }
             }
         }
-       
+       	pdx = pdx + 1;
     }
     
     Question[] questions = new Question[maxQstns];
@@ -1041,8 +1060,8 @@
 </table>
 <table class="problem">
 <tr>
-    <td class="hdr"><div class="blank">Upper Range</td>
-    <td class="hdr"><div class="blank"><%=expl[2]%></td>
+    <td class="hdr"><div class="blank">Upper Range</div></td>
+    <td class="hdr"><div class="blank"><%=expl[2]%></div></td>
     <td><div class="blank">= <%=actual[2]%></div></td>
 </tr>
 <tr class="hdrRow">
@@ -1086,7 +1105,6 @@
                 <div class="xc blank"><%=x%></div>
             </td>
             <td>
-                <!--can't specify min-width of a td -->
                 <div id="<%=qid%>" class="firstbox">
                 <%=quesText%>
                 </div>
@@ -1188,7 +1206,305 @@
 <input type="hidden" id="lastbox" value ="no">
 </form>
 <%!
-    
+    static int op( String operator, int MAX_DGTS, boolean decimalsCk,
+            long operand1, int decPt1, long operand2, int decPt2, 
+            int nDgts1, int nDgts2, boolean isNeg1, boolean isNeg2,
+            long [] actualInt, String [] expl ) { 
+        System.out.println("op just starting operator = " + operator + " decimalsCK = " + decimalsCk + " operand1 = " + operand1 );
+        System.out.println("decPt1 = " + decPt1 + " operand2 = " + operand2 + " decPt2 = " + decPt2 + " nDgts1 = " + nDgts1 + " nDgts2 = " + nDgts2);
+        System.out.println(" isNeg1 = " + isNeg1 + " isNeg2 = " + isNeg2);
+        long absOp1 = Math.abs(operand1);
+        long absOp2= Math.abs(operand2);
+        //boolean isNeg1 = operand1 < 0;
+        //boolean isNeg2 = operand2 < 0;
+        //int nDgts1 = absOp1 > 0 ? 1 + (int)Math.log10(absOp1) : 1;
+        //int nDgts2 = absOp2 > 0 ? 1 + (int)Math.log10(absOp2) : 1;
+        int thisMuchBigger = nDgts1 - decPt1 - (nDgts2 - decPt2);
+        long round1down = operand1; // default is not rounded
+        long round1up = operand1;
+        long round2down = operand2;
+        long round2up = operand2;
+        int decPtAct = decPt1;
+
+        int ten2pow = (int)Math.pow(10, nDgts1 - 1);
+        // round to one significant digit
+        if( ten2pow != 0 ) {            
+            if( isNeg1 ) {
+                round1up = ten2pow*(operand1/ten2pow);
+                round1down = -ten2pow*((ten2pow + absOp1)/ten2pow);
+            } else {
+                round1up = ten2pow*((ten2pow + absOp1)/ten2pow);
+                round1down = ten2pow*(operand1/ten2pow);
+            }
+        } else {
+            // not sure how this would happen
+            System.out.println("nDgts1 = " + nDgts1 + " ten2pow = " + ten2pow);
+        }
+
+        ten2pow = (int)Math.pow(10, nDgts2 - 1);
+        // round to one significant digit
+        if( ten2pow != 0 ) {         
+            if( isNeg2 ) {
+                round2up = ten2pow*(operand2/ten2pow);
+                round2down = -ten2pow*((ten2pow + absOp2)/ten2pow);
+            } else {
+                round2up = ten2pow*((ten2pow + absOp2)/ten2pow);
+                round2down = ten2pow*(operand2/ten2pow);
+            }
+        } else {
+            // not sure how this would happen
+            System.out.println("nDgts2 = " + nDgts2 + " ten2pow = " + ten2pow);
+        }
+
+
+        if( operator.compareTo("+") == 0 ||
+            operator.compareTo("-") == 0 ) {   
+            int factor1 = 1;
+            int factor2 = 1;
+
+            // line up the decimal points
+            if( decPt1 < decPt2 ) {
+                factor1 = (int)Math.pow(10,decPt2-decPt1);
+                decPtAct = decPt2;
+            } else if( decPt1 > decPt2 ) {
+                factor2 = (int)Math.pow(10,decPt1-decPt2);
+            }
+            // If one operand is an order of magnitude bigger than the other,
+            // round off to the same decimal place as the smaller number
+            if( thisMuchBigger > 0 ) {
+                // if there is no overlap
+                int lsd = decPt1;
+                if( absOp1 > 0 ) {
+                    int copy = (int)absOp1;
+                    while( 10*(copy/10) == copy ) {
+                        lsd = lsd + 1;
+                        copy = copy/10;
+                    }
+                }
+                if( decPt2 - nDgts2 >= lsd ) {
+                    round1up = operand1;
+                    round1down = operand1;
+                } else {
+                    ten2pow = (int)Math.pow(10, nDgts1 - thisMuchBigger - 1);
+                    if( ten2pow != 0 ) {
+                        if( isNeg1 ) {
+                            round1up = ten2pow*(operand1/ten2pow);
+                            round1down = -ten2pow*((ten2pow + absOp1)/ten2pow);
+                        } else {
+                            round1up = ten2pow*((ten2pow + absOp1)/ten2pow);
+                            round1down = ten2pow*(operand1/ten2pow);
+                        }
+                    }
+                }
+            } else if( thisMuchBigger < 0 ) {
+                // if there is no overlap
+                int lsd = decPt2;
+                if( absOp2 > 0 ) {
+                    int copy = (int)absOp2;
+                    while( 10*(copy/10) == copy ) {
+                        lsd = lsd + 1;
+                        copy = copy/10;
+                    }
+                }
+                if( decPt1 - nDgts1 >= decPt2 ) {
+                    round2up = operand2;
+                    round2down = operand2;
+                } else {
+                    ten2pow = (int)Math.pow(10, nDgts2 + thisMuchBigger - 1);
+                    if( ten2pow != 0 ) {
+                        if( isNeg2 ) {
+                            round2up = ten2pow*(operand2/ten2pow);
+                            round2down = -ten2pow*((ten2pow + absOp2)/ten2pow);
+                        } else {
+                            round2up = ten2pow*((ten2pow + absOp2)/ten2pow);
+                            round2down = ten2pow*(operand2/ten2pow);
+                        }
+                    }
+                }
+            }
+            /*
+            System.out.println("op nDgts1 = " + nDgts1 + " decPt1 = " + decPt1 );
+            System.out.println("op nDgts2 = " + nDgts2 + " decPt2 = " + decPt2 );
+            System.out.println("op thisMuchBigger = " + thisMuchBigger + " ten2pow = " + ten2pow);
+            */
+            ten2pow = factor1 > factor2? factor1 : factor2; //(int)Math.pow(10,decPtAct);
+            if( operator.compareTo("+") == 0 ) {
+                // if real answer is positive, don't let lower range be negative
+                if( operand1*Math.pow(10,-decPt1) + operand2*Math.pow(10, -decPt2) > 0 && 
+                        round2down*Math.pow(10, -decPt2) + round1down*Math.pow(10, -decPt1) < 0 ) {
+                    round1down = 0;
+                    round2down = 0;
+                // if real answer is negative, don't let upper range be positive
+                } else if( operand1*Math.pow(10,-decPt1) + operand2*Math.pow(10, -decPt2)  < 0 && 
+                        round2up*Math.pow(10, -decPt2) + round1up*Math.pow(10, -decPt1) > 0 ) {
+                    round1up = 0;
+                    round2up = 0;
+                }
+                actualInt[2] = (factor1*round1up + factor2*round2up);
+                actualInt[1] = factor1*operand1 + factor2*operand2;
+                actualInt[0] = (factor1*round1down + factor2*round2down); 
+                if( isNeg2 ) {
+                    expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                            " ( "  + Format.getFormat( round2up, decPt2, true )  + " ) ";
+                    expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                            " ( " + Format.getFormat( round2down, decPt2, true ) + " ) ";
+                } else {
+                    expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                            " " + Format.getFormat( round2up, decPt2, true );
+                    expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                            " " + Format.getFormat( round2down, decPt2, true );
+                }
+            } else {
+                // if real answer is positive, don't let lower range be negative
+                if( operand1*Math.pow(10,-decPt1) >= operand2*Math.pow(10, -decPt2) && 
+                        round2up*Math.pow(10, -decPt2) > round1down*Math.pow(10, -decPt1) ) {
+                    round1down = 0;
+                    round2up = 0;
+                // if real answer is negative, don't let upper range be positive
+                } else if( operand1*Math.pow(10,-decPt1) < operand2*Math.pow(10, -decPt2) && 
+                        round2down*Math.pow(10, -decPt2) < round1up*Math.pow(10, -decPt1) ) {
+                    round1up = 0;
+                    round2down = 0;
+                }
+                actualInt[2] = (factor1*round1up - factor2*round2down);
+                actualInt[1] = factor1*operand1 - factor2*operand2;
+                actualInt[0] = factor1*round1down - factor2*round2up;
+                if( isNeg2 ) {
+                    operator = "+";
+                    round2down = -round2down;
+                    round2up = -round2up;
+                }
+                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                        " " + Format.getFormat( round2down, decPt2, true );
+                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                        " " + Format.getFormat( round2up, decPt2, true );
+            }
+            
+        } else if(  operator.compareTo("*") == 0  ) {
+            decPtAct = decPt1 + decPt2;
+            //ten2pow = (int)Math.pow(10,decPtAct);
+            if( isNeg1 && isNeg1 == isNeg2 ) {
+                long tmp = round1up;
+                round1up = round1down;
+                round1down = tmp;
+                tmp = round2up;
+                round2up = round2down;
+                round2down = tmp;
+            } else if( isNeg1 ) {
+                long tmp = round2up;
+                round2up = round2down;
+                round2down = tmp;  
+            } else if( isNeg2 ) {
+                long tmp = round1up;
+                round1up = round1down;
+                round1down = tmp;
+            }
+
+            actualInt[2] = round1up * round2up;
+            actualInt[1] = operand1 * operand2;
+            actualInt[0] = round1down * round2down;
+            if( isNeg2 ) {
+                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                        " ( "  + Format.getFormat( round2up, decPt2, true )  + " ) ";
+                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                        " ( " + Format.getFormat( round2down, decPt2, true ) + " ) ";
+            } else {
+                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                        " " + Format.getFormat( round2up, decPt2, true );
+                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                        " " + Format.getFormat( round2down, decPt2, true );
+            }
+            //System.out.println("op decPt1 " + decPt1 + " decPt2 " + decPt2 + " decPtAct " + decPtAct);
+            //System.out.println("op " + operator + " round1up " + round1up + " round2up " + round2up + " actualInt[2] " + actualInt[2]);
+            //System.out.println("op " + operator + " round1down " + round1down + " round2down " + round2down + " actualInt[2] " + actualInt[0]);
+        // two might be a better lower bound than 1 fixit
+        } else if(  operator.compareTo("/") == 0  ) {
+            round2down = ten2pow;
+            round2up = 10*ten2pow;
+
+            if( decimalsCk ) {
+                ten2pow = (int)Math.pow(10, MAX_DGTS + decPt2 - decPt1);
+                decPtAct = MAX_DGTS;
+            } else {
+                ten2pow = 1;
+                decPtAct = 0;
+            }
+
+            if( operand2 != 0 ) { // else error or maxint
+                /*
+                System.out.println("op ten2pow = " + ten2pow + " operand1 = " + operand1);
+                actualInt[1] = (long)ten2pow*operand1;
+                System.out.println("op ten2pow*operand1 actualInt[1] = " + actualInt[1]);
+                actualInt[1] = 10*actualInt[1];
+                System.out.println("10*actualInt[1] = " + actualInt[1]);
+                System.out.println("operand2 = " + operand2);
+                actualInt[1] = actualInt[1]  / operand2;
+                System.out.println("divided by operand2 actualInt[1] = " + actualInt[1]);
+                actualInt[1] = actualInt[1] + 5;
+                System.out.println("plus 5 actualInt[1] = " + actualInt[1]);
+                actualInt[1] = actualInt[1]/10;
+                System.out.println("op divided by 10 actualInt[1] = " + actualInt[1]);
+                */
+                actualInt[1] = (10*ten2pow*absOp1  / absOp2 + 5)/10;
+            } else { // not sure if this will work when it's not in the jsp page fixit
+                System.out.println("tried to divide by zero");
+                System.out.println("operator = " + operator);
+                System.out.println("MAX_DGTS " + MAX_DGTS);
+                System.out.println("decimalsCk = " + decimalsCk);
+                System.out.println("operand1 " + operand1);
+                System.out.println("decPt1 " + decPt1);
+                System.out.println("operand2 " + operand2);
+                System.out.println("decPt2 " + decPt2);
+                actualInt[1] = 999999;
+                //System.exit(1);
+            }
+            if( isNeg2 != isNeg1 ) {
+                long tmp = round2down;
+                round2down = round2up;
+                round2up = tmp; 
+                actualInt[1] = -actualInt[1];
+            }
+
+            if( round2up != 0 ) {
+                actualInt[0] = (10*ten2pow*absOp1  / round2up + 5)/10; // ten2pow*operand1 / round2up;
+            }
+            if( round2down != 0 ) {
+                actualInt[2] = (10*ten2pow*absOp1  / round2down + 5)/10; // ten2pow*operand1 / round2down;
+            }
+            if( isNeg2 != isNeg1 ) {
+                actualInt[0] = -actualInt[0];
+                actualInt[2] = -actualInt[2];
+            }
+            if( isNeg2 ) {
+                round2down = -round2down;
+                round2up = -round2up;
+            } 
+            if( isNeg2 ) {
+                expl[0] = Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                        " ( " + Format.getFormat( round2up, decPt2, true ) + " ) ";
+                expl[2] =  Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                        " ( " + Format.getFormat( round2down, decPt2, true ) + " ) ";
+            } else {
+                expl[0] = Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                        " " + Format.getFormat( round2up, decPt2, true );
+                expl[2] =  Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                        " " + Format.getFormat( round2down, decPt2, true );
+            }
+        }
+        //if( actualInt[1] == 0 ) {
+        //    decPtAct = 0;
+        //}
+
+        //System.out.println("op finishing operator = " + operator + " decimalsCK = " + decimalsCk + "operand1 = " + operand1 );
+        //System.out.println("decPt1 = " + decPt1 + " operand2 = " + operand2 + " decPt2 = " + decPt2 + " nDgts1 = " + nDgts1 + " nDgts2 = " + nDgts2);
+        //System.out.println(" isNeg1 = " + isNeg1 + " isNeg2 = " + isNeg2);
+        for( int q = 0; q < 3; q++ ){
+            //System.out.println("actualIn[" + q + "] = " + actualInt[q] + " expl[" + q + "] = " + expl[q] );
+        }
+        //System.out.println("op finishing");
+        return decPtAct;
+    }
+
 %>
 </body>
 </html>

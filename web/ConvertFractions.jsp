@@ -389,7 +389,7 @@
         </td>
         <td class="sym">=</td>
         <td>
-            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="n0_1">
+            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="n0_1" class="whole">
         </td>
         <td>
             <table>
@@ -403,7 +403,7 @@
         </td>
         <td class="sym">=</td>
         <td>
-            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="n0_3">
+            <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="n0_3" class="whole">
         </td>
         <td>
             <table>
@@ -454,7 +454,7 @@
 <%  } else if( indcatr == 3 && mxToFracCk ) { %>
     <tr>
         <td>
-            <input disabled="true" value=<%=whol%> id="whlprt">
+            <input disabled="true" value=<%=whol%> id="whlprt" class="whole">
         </td>
         <td>
             <table>
@@ -471,15 +471,15 @@
             <table>
                 <tr>
                     <td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum0" class="nput">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="n0_0" class="nput">  
                     </td>
                     <td class="num">&times</td>
                     <td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum1" class="nput">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="n0_1" class="nput">  
                     </td>
                     <td class="num">+</td>
                     <td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum2" class="nput">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="n0_2" class="nput">  
                     </td>
                 </tr>
                 <tr><th colspan="5">
@@ -491,10 +491,10 @@
         <td>
             <table>
                 <tr><td class="num">
-                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="frcnum3" class="nput">  
+                    <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="n0_3" class="nput">  
                 </td></tr>
                 <tr><td>
-                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="frcden3">
+                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="d0_3">
                 </td></tr>
             </table>
         </td>
@@ -505,8 +505,8 @@
         String ntd = "num";
         for( int j = 0, k = 3; j < ncols; ++j ) { 
             k = k + 1;
-            String nid = "frcnum" + k;
-            String did = "frcden" + k; 
+            String nid = "n0_" + k;
+            String did = "d0_" + k; 
             String oid = "o" + k; 
             String eid = "e" + k; %>
         <td id="<%=oid%>" class="sym"><%=op%></td>
@@ -522,8 +522,8 @@
         </td>
         <td id="<%=eid%>" class="sym"><%=equalSgn%></td>
 <%          k = k + 1; 
-            nid = "frcnum" + k;
-            did = "frcden" + k; %>
+            nid = "n0_" + k;
+            did = "d0_" + k; %>
         <td>
             <table>
                 <tr><td class="<%=ntd%>">
@@ -550,6 +550,16 @@
         <td></td>
         <td></td>
         <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
+</tr>
+<tr>
+<th colspan="6" id="back">
+	<div>
+	      <a href="/" class="ndx">Home</a>
+	</div>
+	<div>
+	      <a href="index.html" class="ndx">Back to Practice Index</a>
+	</div>
+</th>
 </tr>
 </table>
 </div>

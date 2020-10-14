@@ -16,6 +16,8 @@
  * arrows only work for 1st two types of problems. is it possible or usefule to 
  * make them work for other types of problems? fixit
  * 
+ * MIxed Number to Fraction doesn't check everything when you click 'Done' fixit
+ * 
  */
 var x = 0;
 var nSbxs = 24;
@@ -452,7 +454,7 @@ function checkFrc() {
     //x = (x + 1)%nSbxs;
     //alert("ok?");
     for( var col = 0; col < len; ++col ) {
-        var id = "frcnum" + col;
+        var id = "n0_" + col;
         var ansBx = doc.getElementById(id);
         var ans;
         if( ansBx ) {
@@ -474,8 +476,8 @@ function checkFrc() {
         var done = false;
         var notans = !ans;
         if( prevcol > 2 ) {
-            prevnum = doc.getElementById("frcnum" + prevcol).value;
-            prevden = doc.getElementById("frcden" + prevcol).value;
+            prevnum = doc.getElementById("n0_" + prevcol).value;
+            prevden = doc.getElementById("d0_" + prevcol).value;
             prevnIsnum = !isNaN(prevnum);
             nPrevn = prevnIsnum? num(prevnum) : 0;
             prevdIsnum = !isNaN(prevden);
@@ -483,7 +485,7 @@ function checkFrc() {
                 nPrevd = num(prevden);
             }
             //m && prevden !== "0"? num(prevden) : 1;
-            var nextBx = doc.getElementById("frcnum" + nextcol);
+            var nextBx = doc.getElementById("n0_" + nextcol);
             var nextnum = !nextBx? null : nextBx.value;
             //alert("col: " + col + " ans: " + ans + " notans: " + notans + " prevcol: " + prevcol + " prevcolIsOdd: " + prevcolIsOdd + " nPrevn: " + nPrevn + " nPrevd: " + nPrevd + " prevden: " + prevden + " prevdIsnum: " + prevdIsnum + " done: " + done + " allgood: " + allgood);
             var rdfrac = reduce(nPrevn,nPrevd);
@@ -497,21 +499,21 @@ function checkFrc() {
             var nAns = num(ans);
             var id = ansBx.id;        
 
-            var whlprt = doc.getElementById("n0_1").value;
+            var whlprt = doc.getElementById("whlprt").value;
             var onum = doc.getElementById("onum").value;
 
             // what if it's already reduced in col 3? fixit
             var prev2col = col - 2;
-            var prev2Bx = doc.getElementById("frcnum" + prev2col);
+            var prev2Bx = doc.getElementById("n0_" + prev2col);
             var prev2num = prev2Bx? prev2Bx.value : 0;
             //doc.getElementById("statusBox" + x).innerHTML = "col: " + col + " ans: " + ans + " prevnum: " + prevnum + " prevden: " + prevden;
             //x = (x + 1)%nSbxs;
             //alert("ok?");
-            // what if it's already reduced in col 3? fixitElementById("frcnum" + prev2col);
-            //var prev2den = doc.getElementById("frcden" + prev2col);
+            // what if it's already reduced in col 3? fixitElementById("n0_" + prev2col);
+            //var prev2den = doc.getElementById("d0_" + prev2col);
             var currden;
             if( col > 2 ) {
-                currden = doc.getElementById("frcden" + col).value;
+                currden = doc.getElementById("d0_" + col).value;
                 if( !currden ) {
                     currden = 1;
                 }
@@ -608,11 +610,11 @@ function checkFrc() {
         
             //doc.getElementById("statusBox" + x).innerHTML = "frcden3: " + frcden3 + " frcnum4: " + frcnum4 + " frcden4: " + frcden4;
             //x = (x + 1)%nSbxs;
-        ansBx = doc.getElementById("frcden3");
+        ansBx = doc.getElementById("d0_3");
     }
     //alert("after checking 1st 2 denominators len: " + len);
     for( var i = 4; i < len; ++i ) {
-        var id = "frcden" + i;
+        var id = "d0_" + i;
         ansBx = doc.getElementById(id);
         if( ansBx ) {
             ans = ansBx.value;
@@ -625,14 +627,14 @@ function checkFrc() {
         var prev2dIsnum = false;
         var nPrev2d = 0;
         var nextcol = i + 1;
-        var nextBx = doc.getElementById("frcnum" + nextcol);
+        var nextBx = doc.getElementById("n0_" + nextcol);
         var nextnum = !nextBx? 0 : nextBx.value;
         var prevcol = i - 1;
         var prevcolIsOdd = prevcol%2 === 1;
         var prev2col = i - 2;
-        var prevnum = doc.getElementById("frcnum" + prevcol).value;
-        var prevden = doc.getElementById("frcden" + prevcol).value;
-        var currnum = doc.getElementById("frcnum" + i).value;
+        var prevnum = doc.getElementById("n0_" + prevcol).value;
+        var prevden = doc.getElementById("d0_" + prevcol).value;
+        var currnum = doc.getElementById("n0_" + i).value;
         var prevnIsnum = !isNaN(prevnum);
         var nPrevn = prevnIsnum? num(prevnum) : 0;
         var prevdIsnum = !isNaN(prevden);
@@ -643,7 +645,7 @@ function checkFrc() {
         var rdfrac = reduce(nPrevn,nPrevd);
         var done = prevcolIsOdd && nPrevn === rdfrac.n && nPrevd === rdfrac.d;
         if( i > 4 ) {
-            prev2den = doc.getElementById("frcden" + prev2col).value;
+            prev2den = doc.getElementById("d0_" + prev2col).value;
             prev2dIsnum = !isNaN(prev2den);
             nPrev2d = prev2dIsnum? num(prev2den) : 0;
         }
@@ -802,10 +804,11 @@ function checkMprN( ev ) {
         if( !isNaN( ans ) ) {
             var id = ansBx.id;
 
-            var col = num(id.substring(6,7));
+            var len = id.length;
+            var col = num(id.substring(len-1, len));
             var nextCol = col + 1;
-            var nextBx = doc.getElementById("frcden" + col); // for now
-            var whlprt = doc.getElementById("n0_1").value;
+            var nextBx = doc.getElementById("d0_" + col); // for now
+            var whlprt = doc.getElementById("whlprt").value;
             var oden = doc.getElementById("oden").value;
             var onum = doc.getElementById("onum").value;
             var prevCol = col - 1;
@@ -815,6 +818,7 @@ function checkMprN( ev ) {
             var instr2;
             var instr3;
             var nAns = num(ans);
+            //alert("checkMprN id: " + id + " col: " + col);
             if( col === 0 && ans === whlprt ||
                 col === 1 && ans === oden ||
                 col === 2 && ans === onum ||
@@ -827,10 +831,10 @@ function checkMprN( ev ) {
                 } else if( nextCol === 3 ) {
                     instr2 = "What is " + whlprt + " &times " + oden + " + " + onum;
                 }
-                nextBx = doc.getElementById("frcnum" + nextCol);
+                nextBx = doc.getElementById("n0_" + nextCol);
                 if( col === 3 ) {
                     instr2 = "Copy denominator: " + oden + " to third denominator";
-                    nextBx = doc.getElementById("frcden" + col);
+                    nextBx = doc.getElementById("d0_" + col);
                 }
                 doc.getElementById("instr2").innerHTML = instr2;
                 doc.getElementById("instr3").innerHTML = "";
@@ -839,9 +843,9 @@ function checkMprN( ev ) {
                 /* col === 4 && (!frcden4 || (!isNaN(frcden4) && ans === frcden4)) &&
                 !isNaN(frcnum3) && !isNaN(frcden3) &&
                 num(frcnum3)%nAns === 0 && num(frcden3)%nAns === 0 */
-                prevNum = doc.getElementById("frcnum" + prevCol).value;
-                prevDen = doc.getElementById("frcden" + prevCol).value;
-                thisDen = doc.getElementById("frcden" + col).value;
+                prevNum = doc.getElementById("n0_" + prevCol).value;
+                prevDen = doc.getElementById("d0_" + prevCol).value;
+                thisDen = doc.getElementById("d0_" + col).value;
                 if( (thisDen && isNaN(thisDen)) || isNaN(prevNum) || isNaN(prevDen) ) {
                     alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prevDen + ", " + thisDen);
                 } else if( thisDen && ans !== thisDen ) {
@@ -859,11 +863,11 @@ function checkMprN( ev ) {
                 } else {
                     ansBx.style.color = "#0033cc";
                     ansBx.style.borderColor = "#e9d398";
-                    nextBx = doc.getElementById("frcden" + col);
+                    nextBx = doc.getElementById("d0_" + col);
                     instr2 = "Copy numerator to denominator so the number you are dividing by is 1";
                     if( nextBx.value ) {
                         instr2 = "What is " + prevDen + " &divide " + ans;
-                        nextBx = doc.getElementById("frcnum" + nextCol);
+                        nextBx = doc.getElementById("n0_" + nextCol);
                     }
                     doc.getElementById("instr2").innerHTML = instr2;
                     doc.getElementById("instr3").innerHTML = "";
@@ -872,10 +876,10 @@ function checkMprN( ev ) {
             } else if( col > 3 && col%2 === 1 ) {
                 /* col === 5 && frcnum3 && frcnum4 && !isNaN(frcnum3) && !isNaN(frcnum4) &&
                 num(frcnum3)/num(frcnum4) === nAns ) { */
-                var prevNum = doc.getElementById("frcnum" + prevCol).value;
+                var prevNum = doc.getElementById("n0_" + prevCol).value;
                 var prev2col = col - 2;
-                var prev2Num = doc.getElementById("frcnum" + prev2col).value;
-                prevDen = doc.getElementById("frcden" + prevCol).value;
+                var prev2Num = doc.getElementById("n0_" + prev2col).value;
+                prevDen = doc.getElementById("d0_" + prevCol).value;
                 if( !prevNum || !prev2Num || isNaN(prevNum) || isNaN(prev2Num) ) {
                     alert("Fix one or all of the following previous bad entries first: " + prevNum + ", " + prev2Num);
                 } else if( num(prev2Num)/num(prevNum) !== nAns ) {
@@ -887,21 +891,21 @@ function checkMprN( ev ) {
                 } else {
                     ansBx.style.color = "#0033cc";
                     ansBx.style.borderColor = "#e9d398"; 
-                    var p = "frcden" + col;
+                    var p = "d0_" + col;
                     nextBx = doc.getElementById(p);
                     //doc.getElementById("statusBox" + x).innerHTML ="nextBx: " + p + " value: " + nextBx.value;
                     //x = (x + 1)%nSbxs;
                     var thisDen = nextBx.value;
-                    var prev2Den = doc.getElementById("frcden" + prev2col).value;
+                    var prev2Den = doc.getElementById("d0_" + prev2col).value;
                     instr2 = "What is " + prev2Den + " &divide " + prevDen;
                     instr3 = "";
                     if( thisDen ) {
                         var nextcol = col + 1;
-                        nextBx = doc.getElementById("frcden" + nextcol);
+                        nextBx = doc.getElementById("d0_" + nextcol);
                         nextBx.type = "text";
                         instr2 = "Is there a factor that divides both " + thisDen + " and " + ans + "?";
                         instr3 = " If so enter it, otherwise click 'Done'";
-                        var othrBx = doc.getElementById("frcnum" + nextcol);
+                        var othrBx = doc.getElementById("n0_" + nextcol);
                         othrBx.type = "text";
                         var par = othrBx.parentNode;
                         par.style.borderBottom = "2px solid #005511";
@@ -910,11 +914,11 @@ function checkMprN( ev ) {
                         doc.getElementById("e" + nextcol).innerHTML = "=";
                         doc.getElementById("o" + nextcol).innerHTML ="&divide";
                         nextcol = nextcol + 1;
-                        othrBx = doc.getElementById("frcnum" + nextcol);
+                        othrBx = doc.getElementById("n0_" + nextcol);
                         othrBx.type = "text"; 
                         var par = othrBx.parentNode;
                         par.style.borderBottom = "2px solid #005511";
-                        othrBx = doc.getElementById("frcden" + nextcol);
+                        othrBx = doc.getElementById("d0_" + nextcol);
                         othrBx.type = "text";  
                     }
                     doc.getElementById("instr2").innerHTML = instr2;
@@ -961,35 +965,35 @@ function checkMprD( ev ) {
                 ansBx.style.color = "#0033cc";
                 ansBx.style.borderColor = "#e9d398"; 
                 if( id === "d0_1") {
-                    var whl = doc.getElementById("n0_1").value;
+                    var whl = doc.getElementById("whlprt").value;
                     doc.getElementById("instr2").innerHTML = "Copy whole part of mixed number: " + whl + " to first box";
                     doc.getElementById("instr3").innerHTML = "";
-                    nextBx = doc.getElementById("frcnum0");
+                    nextBx = doc.getElementById("n0_0");
                 } else {
-                    var thisNum = doc.getElementById("frcnum3").value;
+                    var thisNum = doc.getElementById("n0_3").value;
                     doc.getElementById("instr2").innerHTML = "Is there a factor that divides both " + thisNum + " and " + ans + "?";
                     doc.getElementById("instr3").innerHTML = " If so, enter it. If not click 'Done'";
-                    nextBx = doc.getElementById("frcnum4");
+                    nextBx = doc.getElementById("n0_4");
                 }
             } else if( col%2 === 0 && col > 3 ) { // used to be col === 4
                 //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = 5 block";
                 //x = (x + 1)%nSbxs;
                 var lastcol = col - 1;
-                var prevN = doc.getElementById("frcnum" + lastcol).value;
-                var prevD = doc.getElementById("frcden" + lastcol).value;
+                var prevN = doc.getElementById("n0_" + lastcol).value;
+                var prevD = doc.getElementById("d0_" + lastcol).value;
                 if( prevN && prevD && !isNaN(prevN) && !isNaN(prevD)) {
                     var nVal = num(prevN);
                     var dVal = num(prevD);
                     var aVal = num(ans);
-                    var thisN = doc.getElementById("frcnum" + col).value;
+                    var thisN = doc.getElementById("n0_" + col).value;
                     if( nVal%aVal === 0 && dVal%aVal === 0 && 
                                 (!thisN || !isNaN(thisN) && ans === thisN ) ) {
                         ansBx.style.color = "#0033cc";
                         ansBx.style.borderColor = "#e9d398"; 
-                        nextBx = doc.getElementById("frcnum" + col);
+                        nextBx = doc.getElementById("n0_" + col);
                         var instr2 = "Copy denominator to numerator so the number you are dividing by is 1"; 
                         if( thisN ) {
-                            nextBx = doc.getElementById("frcnum" + nextcol);
+                            nextBx = doc.getElementById("n0_" + nextcol);
                             instr2 = "What is " + prevN+ " &divide " + thisN;
                         }
                         doc.getElementById("instr2").innerHTML = instr2;
@@ -1014,9 +1018,9 @@ function checkMprD( ev ) {
                 var prev2col = col - 2;
                 var prevcol = col - 1;
                 
-                var prev2D = doc.getElementById("frcden" + prev2col).value;
-                var prevD = doc.getElementById("frcden" + prevcol).value;
-                var thisNid = "frcnum" + col;
+                var prev2D = doc.getElementById("d0_" + prev2col).value;
+                var prevD = doc.getElementById("d0_" + prevcol).value;
+                var thisNid = "n0_" + col;
                 var thisNum = doc.getElementById(thisNid);
                 var currN = thisNum.value;
                 var currNisnum = !isNaN(currN);
@@ -1042,14 +1046,14 @@ function checkMprD( ev ) {
                         doc.getElementById("e" + nextcol).innerHTML = "=";
                         doc.getElementById("o" + nextcol).innerHTML ="&divide";
                         nextcol = nextcol + 1;
-                        var othrBx = doc.getElementById("frcnum" + nextcol);
+                        var othrBx = doc.getElementById("n0_" + nextcol);
                         othrBx.type = "text"; 
                         var par = othrBx.parentNode;
                         par.style.borderBottom = "2px solid #005511";
-                        othrBx = doc.getElementById("frcden" + nextcol);
+                        othrBx = doc.getElementById("d0_" + nextcol);
                         othrBx.type = "text";  
                     } else {
-                        var nextId = "frcnum" + nextcol;
+                        var nextId = "n0_" + nextcol;
                         nextBx = doc.getElementById(nextId);
                         nextBx.type = "text";
                         doc.getElementById("instr2").innerHTML = "Is there a factor that divides both " + currN + " and " + ans + "?";
@@ -1058,18 +1062,18 @@ function checkMprD( ev ) {
                         //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = " + col + " nextBx id: " + nextBx.id + " =? " + nextId;
                         //x = (x + 1)%nSbxs;
                         par.style.borderBottom = "2px solid #005511";
-                        var othrBx = doc.getElementById("frcden" + nextcol);
+                        var othrBx = doc.getElementById("d0_" + nextcol);
                         othrBx.type = "text"; 
                         doc.getElementById("e" + nextcol).innerHTML = "=";
                         doc.getElementById("o" + nextcol).innerHTML ="&divide";
                         nextcol = nextcol + 1;
                         //doc.getElementById("statusBox" + x).innerHTML = "checkMprD col = " + col + " after e/o, nextcol: " + nextcol;
                         //x = (x + 1)%nSbxs;
-                        othrBx = doc.getElementById("frcnum" + nextcol);
+                        othrBx = doc.getElementById("n0_" + nextcol);
                         othrBx.type = "text"; 
                         var par = othrBx.parentNode;
                         par.style.borderBottom = "2px solid #005511";
-                        othrBx = doc.getElementById("frcden" + nextcol);
+                        othrBx = doc.getElementById("d0_" + nextcol);
                         othrBx.type = "text"; 
                     }
                 } else {
@@ -1760,7 +1764,7 @@ function pusharo( ev ) {
     
     var indcatr = doc.getElementById("indcatr").value;
     //alert("key pressed. indcatr: " + indcatr);
-    if( num(indcatr) < 3 ) {
+    if( num(indcatr) < 4 ) {
         var id = doc.activeElement.id;
         var len = id.length;
         var typ = id.substring(0,1);

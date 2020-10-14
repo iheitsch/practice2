@@ -1148,7 +1148,7 @@ function setPaper() {
     finalIns1.style.top = topPos + "px";
     finalIns1.style.width = imgWid + "px";
     frame.insertBefore(graphP, frame.childNodes[0]);
-    graphP.src = 'Images/allwhite.png';
+    graphP.src = 'images/allwhite.png';
     graphP.id = "graphPaper";
 
     //var ansBx = doc.getElementsByClassName("onewide");
@@ -1754,7 +1754,7 @@ function check( ev ) { // checks original factorization
                             img.style.width = imgWid + "px";
                             frame.style.width = imgWid + "px";
                             frame.insertBefore(img, frame.childNodes[0]);
-                            img.src = 'Images/factors.png'; // "url('Images/factors.png')";
+                            img.src = 'images/factors.png'; // "url('Images/factors.png')";
                             doc.getElementById("instr1").style.color = "#3961a2";
                             doc.getElementById("instr2").style.color = "#3961a2";
                             whatHints = 'FactorsHints2.html';

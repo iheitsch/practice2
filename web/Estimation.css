@@ -39,6 +39,7 @@ td {
 .blankhdr{
     color: #ffa925;
 }
+/* --can't specify min-width of a td -- */
 .firstbox{
     min-width: 12em;
 }
