@@ -554,7 +554,7 @@
         <td></td>
         <td></td>
         <td></td>
-        <th colspan="2"><button type="button" onclick="checkAll()" id="chkBx">Done</button></th>
+        <th colspan="3"><button type="button" onclick="checkAll()" id="chkBx">Next</button></th>
 </tr>
 <tr>
 <th colspan="10" id="back">
@@ -569,7 +569,7 @@
 </table>
 
 <table id="statusTable">
-<% for( int i = 0, j = 1; i < 30; i += 2, j += 2 ) {
+<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
     String whatId = "statusBox" + i; 
     String whatId2 = "statusBox" + j; %>
     <tr>

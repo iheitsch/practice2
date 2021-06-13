@@ -73,7 +73,7 @@ function checkAll() {
 		instrBx.setAttribute("style", errstyles);
 		instrBx.innerHTML.innerHTML = pNumS + " / " + pDenS + " is not reduced. Enter a factor that evenly divides both " + pNumS + " and " + pDenS;
 		var col = i - 6;
-		var bxId = "d0_" + col;
+		var bxId = "d0_" + col; // not necessarily where you want to go if user hits done prematurely fixit
 		//alert("bxId: " + bxId);
 		doc.getElementById(bxId).focus();
 	}
@@ -201,7 +201,7 @@ function checkA( ev ) {
 					nextBx.onkeyup = checkFact;
 					nextBx.focus();
 					instrBx.setAttribute("style", goodstyles);
-					instrBx.innerHTML = 'if reduced, click "Done", else enter a common factor of numerator and denominator';
+					instrBx.innerHTML = 'if reduced, click "Next", else enter a common factor of numerator and denominator';
 					//alert("is numerator red?"); 
 				} else {
 					//id = ansBx.id;
@@ -324,7 +324,7 @@ function checkDiv( ev ) {
 				nBx.type = "text;"
 				nBx.onkeyup = checkN;
 				
-				instr2 = 'if reduced, click "Done", else enter a common factor of numerator and denominator'; 
+				instr2 = 'if reduced, click "Next", else enter a common factor of numerator and denominator'; 
 			}
 			instrBx.setAttribute("style", goodstyles);
 			instrBx.innerHTML = instr2;
@@ -444,19 +444,29 @@ function checkD( ev ) {
 				otherFactIsThisDen = true;
 			}
 		}
-		var otherProd = otherOrig*otherFactN; 
-		var dividend = mat.floor(otherProd/orig);
-		var modresult = dividend%nans;
-		var	isFactOfOtherProd = modresult === 0;
-		doc.getElementById("statusBox" + x).innerHTML = "dividend: " + dividend;
-		x = (x + 1)%nSbxs;
-		doc.getElementById("statusBox" + x).innerHTML = "modresult: " + modresult;
-        x = (x + 1)%nSbxs;
+		// this lets invalid factors pass fixit
+		// it's the other beginning denominator
+		// it's a factor of the other denominator that is not
+		// included in the orig denominator
+		// problem was when you multiply by other denominator late in the game and need
+		// to multiply current denominator by 1 to not make it any bigger
+		// so let 1 be a valid entry no matter what?
+		// 1 is ok provided orig denominator is bigger than other product or bigger than beginning orig denominator times other denominator
+		// need to allow whatever factor it takes to make them equal after blowing it up
+		// won't let you skip problem you can't solve fixit
+		var otherProd = otherOrig*otherFactN;
+		var biggrThanOtherProd = orig >= otherProd &&  orig%otherProd === 0;
+		var ok1 = nans === 1 && biggrThanOtherProd;
+		var isFactOfOtherProd = (otherProd)%(orig*nans) === 0;
+		//var dividend = mat.floor(otherProd/orig);
+		//var modresult = dividend%nans;
+		//var	isFactOfOtherProd = modresult === 0;
 		var lcm = num(doc.getElementById("lcm").value);
 		var instrBx = doc.getElementById("instr2");
 		var isOtherDen = nans === target;
-		var isFactOfLCM = (lcm/orig)%nans === 0;
+		var isFactOfLCM = (lcm)%(orig*nans) === 0;
 		//alert("x: " + x);
+		/*
 		doc.getElementById("statusBox" + x).innerHTML = "origcol: " + origcol + " col: " + col;
 		x = (x + 1)%nSbxs;
 		doc.getElementById("statusBox" + x).innerHTML = "otherCol: " + otherCol + " otherFactCol: " + otherFactCol;
@@ -465,11 +475,15 @@ function checkD( ev ) {
 		x = (x + 1)%nSbxs;
 		doc.getElementById("statusBox" + x).innerHTML = "otherOrig: " + otherOrig + " otherFact: " + otherFactN;
 		x = (x + 1)%nSbxs;
-		doc.getElementById("statusBox" + x).innerHTML = "isOtherDen: " + isOtherDen + " isFactOfOtherProd: " + isFactOfOtherProd;
+		doc.getElementById("statusBox" + x).innerHTML = "isOtherDen: " + isOtherDen + " isFactOfLCM: " + isFactOfLCM;
 		x = (x + 1)%nSbxs;
-		doc.getElementById("statusBox" + x).innerHTML = "isFactOfLCM: " + isFactOfLCM;
+		
+		//doc.getElementById("statusBox" + x).innerHTML = "biggrThanOtherProd: " + biggrThanOtherProd + " ok1: " + ok1;
+		//x = (x + 1)%nSbxs;
+		doc.getElementById("statusBox" + x).innerHTML = "isFactOfOtherProd: " + isFactOfOtherProd + " ok1: " + ok1;
 		x = (x + 1)%nSbxs;
-		if( isFactOfLCM || isOtherDen || isFactOfOtherProd ) { // finding lcm or cross multiplying
+		*/
+		if( isFactOfLCM || isOtherDen || isFactOfOtherProd || ok1 ) { //}|| isFactOfOtherProd ) { // finding lcm or cross multiplying
 			instrBx.setAttribute("style", goodstyles);
 			instrBx.innerHTML = "Copy Denominator: " + ans + " to numerator, so you're multiplying by 1";
 			var nextBx = doc.getElementById("n0_" + col);
@@ -479,7 +493,7 @@ function checkD( ev ) {
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
 			instrBx.setAttribute("style", errstyles);
-			instrBx.innerHTML = ans + " is not the other denominator ( " + target + " ) and is not a factor of lcm ( " + lcm + " )";
+			instrBx.innerHTML = ans + " is not the other denominator ( " + target + " ) and is not a factor of lcm ( " + lcm + " ) that is not already included in denominator " + orig;
 		}
 	}
 }
@@ -513,7 +527,9 @@ function copynum() {
 	nmr.onkeyup = checkA;
 	//alert("set nmr: " + bxId + " onkeyup to checkA");
 	strtBx.focus();
-	doc.getElementById("instr2").innerHTML = "Copy " + den0 + " to new denominator";
+	var instrBx = doc.getElementById("instr2");
+	instrBx.setAttribute("style", goodstyles);
+	instrBx.innerHTML = "Copy " + den0 + " to new denominator";
 }
 function multfacts() {
 	var doc = document;
@@ -603,7 +619,9 @@ function multfacts() {
 	td = nmr.parentNode;
 	td.setAttribute("style", styles);
 	newDen.focus();
-	doc.getElementById("instr2").innerHTML = "What is a factor you can multiply " + den0 + " by so that both denominators are equal?";
+	var instrBx = doc.getElementById("instr2");
+	instrBx.setAttribute("style", goodstyles);
+	instrBx.innerHTML = "What is a factor you can multiply " + den0 + " by so that both denominators are equal?";
 }
 function createRadioElement(label, name, checked, value, fun ) {
     var radioHtml = '<label id="' + value + '" > ' + label + '</label> ';
@@ -624,6 +642,7 @@ window.onload = function() {
 	var indcatr = Number(doc.getElementById("indcatr").value);
 	var isPlusOrMinus = indcatr < 2;
 	if( isPlusOrMinus ) {
+		// what happens to these objects when instr2 is overwritten? Do they float around somewhere taking up space? fixit
 		var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()" );
 		var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()" );
 		var instr2div = doc.getElementById("instr2");

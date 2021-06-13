@@ -58,7 +58,7 @@ function startAgain() {
     }
 
     if( allgood ) {
-        alert("all good");
+        //alert("all good");
         var whatForm = doc.getElementById('th-id2');
         //whatForm.method = "get";
         whatForm.submit();
