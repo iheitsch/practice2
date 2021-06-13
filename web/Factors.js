@@ -84,6 +84,7 @@ var completedSet = false;
 // 
 // inputs can be edited or they cannot be dragged. need to create something that
 // looks like an input but is not fixit
+
 //   
 // add a note somewhere: computer doesn't judge. It will tell you if you have an
 // incorrect answer, but don't take it personally, it's a machine, it doesn't 
@@ -222,23 +223,38 @@ function checkTorF( ev ) {
     var doc = document;
 
     if( ansBtn.id === "True" ) {
-	if( !isTrue ) {
-            //alert("Correct. Press 'Enter' to Continue.");
-	//} else {
-            alert("No. Press 'Enter' to Continue.");
+    	var tLbl = doc.getElementById("Tlbl");
+		if( isTrue ) {
+            //alert("Correct. Press 'Enter' to Continue.");     
+            //styles = "color: #0c2a5a;"
+            //tLbl.setAttribute("style", styles);
+            //tLbl.style.color = "#0c2a5a";
+            askQuestions();
+		} else {
+			//styles = "color: red;"
+			//tLbl.setAttribute("style", styles);
+            //alert("No. Press 'Enter' to Continue.");
+            tLbl.style.color = "red";
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
-	}
+		}
     } else {
-	if( isTrue ) {
-            //alert("Correct. Press 'Enter' to Continue.");
-	//} else {
-            alert("No. Press 'Enter' to Continue.");
+        var fLbl = doc.getElementById("Flbl");
+		if( isTrue ) {
+            //styles = "color: red;"
+			//fLbl.setAttribute("style", styles);
+			fLbl.style.color = "red";
+            //alert("No. Press 'Enter' to Continue.");
             var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
-	}
+		} else {
+        	//alert("Correct. Press 'Enter' to Continue.");
+        	//styles = "color: #0c2a5a;"
+            //fLbl.setAttribute("style", styles);
+            //fLbl.style.color = "#0c2a5a";
+            askQuestions();
+		}
     }
-    askQuestions();
 }
 function rmTorF() {
     var doc = document;
@@ -307,6 +323,7 @@ function askTorF( s1, s2 ) {
     bTop = 1;
     var tLbl = doc.createElement("label");
     tLbl.innerHTML = "True";
+    tLbl.setAttribute("id","Tlbl");
     styles = "color: #0c2a5a;"
 	    + "margin: 0px;"
 	    + "position: absolute;"
@@ -331,6 +348,7 @@ function askTorF( s1, s2 ) {
     bLeft = bLeft + 2*bWid;
     var fLbl = doc.createElement("label");
     fLbl.innerHTML = "False";
+    fLbl.setAttribute("id","Flbl"); 
     styles = "color: #0c2a5a;"
 	    + "margin: 0px;"
 	    + "position: absolute;"
@@ -1535,17 +1553,17 @@ function checkBackM( ev ) { // check multiplication entered in arrays
             } */
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
-            alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: " + gprod + " Press 'Enter' to continue.");
             //alert("Entered: " + answer + ", should be: gprod" + gprod + " DoingMults: " + doingMults + ". Press 'Enter' to continue.");
         } else if( srcid === "fans" ) { 
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
-            alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: " + gprod + ". Press 'Enter' to continue.");
             //alert("Entered: " + answer + ", should be gprod: " + gprod + " gans: " + gans + " srcid: " + srcid + " boxesdraged: " + boxesdragged + ". Press 'Enter' to continue.");
         } else {    
             var allBoxes = greatgparent.childNodes[0].childNodes;
             redBoxes(allBoxes);
-            alert("Entered: " + answer + ", should be: " + gans + ". Press 'Enter' to continue.");
+            //alert("Entered: " + answer + ", should be: " + gans + ". Press 'Enter' to continue.");
             //alert("Entered: " + answer + ", should be: gand" + gans + " gprod: " + gprod + " scrid: " + srcid + ". Press 'Enter' to continue.");
         }   
     }
@@ -1718,6 +1736,7 @@ function check( ev ) { // checks original factorization
                         nextIn.focus();
                         doc.getElementById("instr1").innerHTML = 
                                 "What is " + whatOp + " divided by " + answer + "? (Enter)";
+                        doc.getElementById("instr2").style.color = "#d2edf9";
                     } else {
                         //alert("you're done now you can skip the one");
                         col = col + 3;
@@ -1729,6 +1748,7 @@ function check( ev ) { // checks original factorization
                             var nextVal = nextOp.value;
                             doc.getElementById("instr1").innerHTML = 
                                 "What prime number evenly divides " + nextVal + "? (Enter)";
+                            doc.getElementById("instr2").style.color = "#d2edf9";
                             var nextTd = nextOp.parentNode;
                             nextTd.style.borderLeftColor = "#0c2a5a";
                             nextTd.style.borderBottomColor = "#0c2a5a";
@@ -1848,14 +1868,18 @@ function check( ev ) { // checks original factorization
                         }
                     }
                 } else {
-                    ansBx.style.color = "red";    
-                    doc.getElementById("instr1").innerHTML = answer + " is not prime.";
+                    ansBx.style.color = "red";
+                    var instrBx = doc.getElementById("instr2");
+                    instrBx.style.color = "red";
+                    instrBx.innerHTML = answer + " is not prime.";
                     var errs = num(doc.getElementById("errs").value);
                     doc.getElementById("errs").value = errs + 1;
                 }
             } else {
-                ansBx.style.color = "red";   
-                doc.getElementById("instr1").innerHTML = answer + " does not divide " + whatOp + " evenly.";
+                ansBx.style.color = "red";
+                var instrBx = doc.getElementById("instr2");
+                instrBx.style.color = "red";
+                instrBx.innerHTML = answer + " does not divide " + whatOp + " evenly.";
             }
         } else {
             var prevRow = row - 1;
@@ -1872,6 +1896,7 @@ function check( ev ) { // checks original factorization
                 col = prevCol;
                 doc.getElementById("instr1").innerHTML = 
                     "What prime number evenly divides " + answer + "? (Enter)";
+                doc.getElementById("instr2").style.color = "#d2edf9";
                 var nextIn = doc.getElementById( "g" + row + "_" + col );
                 if( nextIn && !(!nextOp && answer === 1)) {
                     //doc.getElementById("statusBox" + x).innerHTML = "foc line 615";
@@ -1883,7 +1908,9 @@ function check( ev ) { // checks original factorization
                 }
             } else {
                 ansBx.style.color = "red";
-                doc.getElementById("instr1").innerHTML = prevOp + " divided by " + prevPrime + " is not " + answer + ".";
+                var instrBx = doc.getElementById("instr2");
+                instrBx.style.color  = "red";
+                instrBx.innerHTML = prevOp + " divided by " + prevPrime + " is not " + answer + ".";
                 var errs = num(doc.getElementById("errs").value);
                 doc.getElementById("errs").value = errs + 1;
             }
