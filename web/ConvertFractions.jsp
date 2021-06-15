@@ -21,7 +21,8 @@
     
     String instrs = "blank";
     String instr2 = "blank";
-    String instr3 = "";//Click 'done' when finished";
+    String instr3 = "blank";
+    String instr4 = "blank";
     final int MAXROWS = 4;
     final int MAXCOLS = 3;
     final int MAXDEN = 25;
@@ -301,6 +302,7 @@
 <div class="d3"><%=instrs%></div>
 <div id="instr2" class="d4"><%=instr2%></div>
 <div id="instr3" class="d4"><%=instr3%></div>
+<div id="instr4" class="d4"><%=instr4%></div>
 <div class="d1">
 <table>
 <%  if( indcatr < 2 && ( simplifyCk || commonDenomCk ) ) {
