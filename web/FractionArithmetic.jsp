@@ -546,15 +546,8 @@
     <%  } %> 
 
 <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <th colspan="3"><button type="button" onclick="checkAll()" id="chkBx">Next</button></th>
+        <th colspan="8"><button type="button" onclick="skip()" id="chkBx">Skip</button></th>
+        <th colspan="1"><button type="button" onclick="checkAll()" id="chkBx">Done</button></th>
 </tr>
 <tr>
 <th colspan="10" id="back">

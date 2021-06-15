@@ -8,6 +8,9 @@ body{
     background-color: #336600;
     /* background-color: #fff5e6; */
 }
+a{
+	color: #b3cf34;
+}
 caption{
     /* color: #cca300; */
     color:  #ffe066; /* #b38f00; /* #a38b47 */

@@ -67,10 +67,6 @@ function erase( ev ) {
     //ev.preventDefault(); // this locks everything up so no input box anywhere works
     return false;
 }
-function skip() {
-     document.getElementById("errs").value = 1;
-     startAgain(); 
-}
 function check() {
     var indcatr = Number(document.getElementById("indcatr").value);
     if( indcatr < 1 ) {

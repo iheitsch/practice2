@@ -1,6 +1,10 @@
 /**
  * 
  */
+ function skip() {
+     document.getElementById("errs").value = 1;
+     startAgain(); 
+}
 function reduce(  num, den ) {
     //alert("is " +  num + "/" + den + " reduced?");
     var ntwos = 0;
