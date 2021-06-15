@@ -480,13 +480,22 @@
                     <td class="num">
                     <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="n0_1" class="nput">  
                     </td>
-                    <td class="num">+</td>
+                </tr>
+                <tr><th colspan="3">
+                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="d0_1">
+                </th></tr>
+            </table>
+        </td>
+        <td class="sym">+</td>
+        <td>
+            <table>
+                <tr>
                     <td class="num">
                     <input onkeyup="checkMprN( event )" onkeydown="erase( event )" id="n0_2" class="nput">  
                     </td>
                 </tr>
-                <tr><th colspan="5">
-                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="d0_1">
+                <tr><th colspan="1">
+                    <input onkeyup="checkMprD( event )" onkeydown="erase( event )" id="d0_2">
                 </th></tr>
             </table>
         </td>
@@ -548,9 +557,7 @@
 </tr>
 <tr>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <th colspan="2"><button type="button" onclick="skip()" id="chkBx">Skip</button></th>
         <td></td>
         <th colspan="2"><button type="button" onclick="check()" id="chkBx">Done</button></th>
 </tr>
