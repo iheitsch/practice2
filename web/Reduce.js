@@ -1,7 +1,20 @@
 /**
  * 
  */
- function skip() {
+ function createRadioElement(label, name, checked, value, fun ) {
+    var radioHtml = '<label id="' + value + '" > ' + label + '</label> ';
+	radioHtml += '<input type="radio" name="' + name + '" ';
+    if ( checked ) {
+        radioHtml += ' checked="checked" ';
+    }
+	radioHtml += ' onclick="' + fun + '" ';
+    radioHtml += '/>';
+	
+    var radioFragment = document.createElement('span');
+    radioFragment.innerHTML = radioHtml;
+    return radioFragment;
+}
+function skip() {
      document.getElementById("errs").value = 1;
      startAgain(); 
 }

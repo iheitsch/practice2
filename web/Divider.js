@@ -711,7 +711,7 @@ function divide(immFeedBkCk, col, qtDig) {
         upDateErrCount();
         setDivFocus();
         return;
-    } else if (dvdnd >= divisor && ans === 0) {
+    } else if (dvdnd >= divisor && ans === 0) { // this message is coming up when user types 1 (is not one, turns red and user hits enter - is there a way to disable enter? fixit
         doc.getElementById("msg").innerHTML = divisor + " goes into " + dvdnd + " at least once";
         upDateErrCount();
         setDivFocus();

@@ -17,7 +17,7 @@
 <body>
 <form id="th-id2">
 <% 
-    int possbl = 4;
+    int possbl = 5;
     
     String instrs = "blank";
     String instr2 = "blank";
@@ -58,6 +58,7 @@
     int n2fact;
     int n3fact;
     int n5fact;
+    String strDec = "3.75";
     
     boolean simplifyCk = false;
     String isSimplify = "";
@@ -65,11 +66,17 @@
     boolean commonDenomCk = false;
     String isCommonDenom = "";
     
-    boolean fracToMxCk = true;
-    String isFracToMx = "checked";
+    boolean fracToMxCk = false;
+    String isFracToMx = "";
     
     boolean mxToFracCk = false;
     String isMxToFrac = "";
+    
+    boolean decToFracCk = true;
+    String isDecToFrac = "checked";
+    
+    boolean fracToDecCk = false;
+    String isFracToDec = "";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -85,6 +92,10 @@
         isFracToMx = "";
         mxToFracCk = false;
         isMxToFrac = "";
+        decToFracCk = false;
+        isDecToFrac = "";
+        fracToDecCk = false;
+        isFracToDec = "";
     }
     for( int i = 0; i < len; ++i ) {
         //System.out.println("checks[" + i + "]: " + checks[i]);
@@ -100,6 +111,12 @@
         } else if( checks[i].compareTo("mxToFrac") == 0 ) {
             mxToFracCk = true;
             isMxToFrac = "checked";
+        } else if( checks[i].compareTo("decToFrac") == 0 ) {
+            decToFracCk = true;
+            isDecToFrac = "checked";
+        } else if( checks[i].compareTo("fracToDec") == 0 ) {
+            fracToDecCk = true;
+            isFracToDec = "checked";
         }
     }
     
@@ -131,7 +148,7 @@
               numtwos = ntwos - 1;
             }
             n2fact = (int)(StrictMath.pow(2,numtwos));
-            System.out.println("den: " + den + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+            //System.out.println("den: " + den + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
             max3 = Double.valueOf((den[0]/n2fact+1)*(1 - Math.random()));
             numthrees = (int)(Math.log(max3)/Math.log(3));
             numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
@@ -146,7 +163,7 @@
             ncols = (int)(acttwos + actthrees + actfives);
             instr2 = "Is there a number (besides 1) that evenly divides both " + num[0] + " and " + den[0] + "?";
             instr3 = "If so, enter it. Otherwise, click 'Done'";
-        } else if( indcatr == 1 && commonDenomCk ) {
+        } else if( indcatr == 1 && commonDenomCk ) { // this one hangs up in infinite loop fixit? might be undefined errBx's in .js file
             running = true;
             instrs = "Use arrows to put these fractions in order, lowest at the top.";
             showArros = true;
@@ -294,6 +311,28 @@
 
             ncols = (int)(acttwos + actthrees + actfives);
             instr2 = "Copy the denominator of the fractional part of the mixed number: " + den[0];
+        } else if( indcatr == 4 && decToFracCk ) {
+            running = true;
+            boolean gtOne = 10*Math.random() > 7;
+            double whlPart = 0;
+            if( gtOne ) {
+            	whlPart = 10*Math.random();
+            }
+        	double decimal = whlPart + Math.random();
+        	double mxDigits = 5.0;
+        	int ndigits = 1 + (int)(mxDigits*Math.random());
+        	double multiplier = StrictMath.pow(10,(double)ndigits);
+        	int intversion = (int)(multiplier*decimal);
+        	System.out.println("ndigits: " + ndigits + " intversion: " + intversion + " decimal: " + decimal);
+        	decimal = ((double)intversion)/multiplier;
+        	strDec = String.valueOf(decimal);
+        	int trailZeros = (int)((mxDigits-(int)ndigits)*Math.random());
+        	for( int i = 0; i < trailZeros; ++i ) {
+        		strDec = strDec + "0";
+        	}
+        	instrs = "Convert this Decimal to a Fraction.";
+        	instr2 = "Is the decimal greater than or equal to 1 or equal to 0? ";
+        	ncols = 12;
         }
     }
 %>
@@ -310,7 +349,7 @@
             String nclass = "n" + i; 
             String nid = "n" + i + "_0";
             String did = "d" + i + "_0"; %>
-        <tr>
+    <tr>
 <%          if( showArros ) { 
                 String upArroId = "u" + i; 
                 String dnArroId = "d" + i; %>
@@ -345,7 +384,7 @@
                 did = "d" + i + "_" + k; 
                 String oid = "o" + i + "_" + k; 
                 String eid = "e" + i + "_" + k; %>
-    <td id="<%=oid%>" class="sym"><%=op%></td>
+    	<td id="<%=oid%>" class="sym"><%=op%></td>
         <td>
             <table>
                 <tr><td class="<%=ntd%>">
@@ -445,7 +484,7 @@
     <tr>
         <th colspan="2"></th><th colspan="1" class="bar"></th>
     </tr>
-        <tr>
+    <tr>
         <td>
         </td>
         <td>
@@ -546,16 +585,76 @@
                 </td></tr>
             </table>
         </td>
-    
+
 <%          itype = "hidden";
             ntd = "";
             equalSgn = "";
             op = "";
-        }
-    } else {
-    }%> 
-</tr>
+        } %>
+    </tr>  
+<% 	} else if( indcatr == 4 && decToFracCk ) { 
+		String itype = "hidden"; %>
+	<tr>
+	    <td>
+	    	<input disabled="true" value="<%=strDec%>" id="onum">  
+	    </td>
+	    <td id="e0_1" class="sym"></td>
+	    <td>
+	        <input type="<%=itype%>" onkeyup="checkDWhl( event )" onkeydown="erase( event )" id="n0_1" class="whole nput">
+	    </td>
+	    <td>
+	        <table>
+	            <tr><td>
+	                <input type="<%=itype%>" onkeyup="checkDFrcN( event )" onkeydown="erase( event )" id="n0_2" class="nput">  
+	            </td></tr>
+	            <tr><td>
+	                <input type="<%=itype%>" onkeyup="checkDFrcD( event )" onkeydown="erase( event )" id="d0_2">
+	            </td></tr>
+	        </table>
+	    </td>
+	    <td id="e0_3" class="sym"></td>
+	    <td>
+	        <input type="<%=itype%>" onkeyup="checkDWhl( event )" onkeydown="erase( event )" id="n0_3" class="whole nput">
+	    </td>
+	    <td>
+	        <table>
+	            <tr><td>
+	                <input type="<%=itype%>" onkeyup="checkDFrcN( event )" onkeydown="erase( event )" id="n0_4" class="nput">  
+	            </td></tr>
+	            <tr><td>
+	                <input type="<%=itype%>" onkeyup="checkDFrcD( event )" onkeydown="erase( event )" id="d0_4">
+	            </td></tr>
+	        </table>
+	    </td>
+<% 		for( int i = 5; i < ncols; i = i + 2 ) { 
+			String jtype = "hidden";
+			String wid = "n0_" + i; 
+			int j = i + 1;
+			String nid = "n0_" + j;
+			String did = "d0_" + j; 
+			String eid = "e0_" + i; %>
+			<td id="<%=eid%>" class="sym"></td>
+		    <td>
+		        <input type="<%=itype%>" onkeyup="checkDWhl( event )" onkeydown="erase( event )" id="<%=wid%>" class="whole nput">
+		    </td>
+		    <td>
+		        <table>
+		            <tr><td>
+		                <input type="<%=jtype%>" onkeyup="checkDFrcN( event )" onkeydown="erase( event )" id="<%=nid%>" class="nput">  
+		            </td></tr>
+		            <tr><td>
+		                <input type="<%=jtype%>" onkeyup="checkDFrcD( event )" onkeydown="erase( event )" id="<%=did%>">
+		            </td></tr>
+		        </table>
+		    </td>
+<% 		} %>
+	</tr>
+
+<%  } else {
+    } %> 
+
 <tr>
+        <td></td>
         <td></td>
         <th colspan="2"><button type="button" onclick="skip()" id="chkBx">Skip</button></th>
         <td></td>
@@ -671,6 +770,20 @@
                    <%=isMxToFrac%> onclick="zeroCounts()">
             <label>Mixed Number to Fraction</label>
         </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="decToFrac" name="selected" 
+                   <%=isDecToFrac%> onclick="zeroCounts()">
+            <label>Decimal to Fraction</label>
+        </td>
+</tr>
+<tr>
+<% 
+        //<td><input type="checkbox" value="fracToDec" name="selected" 
+          //         <%=isFracToDec fixit onclick="zeroCounts()">
+            //<label>Fraction to Decimal</label>
+        //</td>
+        %>
 </tr>
 </table>
 </div>

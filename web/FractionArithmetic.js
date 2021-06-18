@@ -201,7 +201,7 @@ function checkA( ev ) {
 					nextBx.onkeyup = checkFact;
 					nextBx.focus();
 					instrBx.setAttribute("style", goodstyles);
-					instrBx.innerHTML = 'if reduced, click "Next", else enter a common factor of numerator and denominator';
+					instrBx.innerHTML = 'If reduced, click "Done", else enter a common factor of numerator and denominator';
 					//alert("is numerator red?"); 
 				} else {
 					//id = ansBx.id;
@@ -324,7 +324,7 @@ function checkDiv( ev ) {
 				nBx.type = "text;"
 				nBx.onkeyup = checkN;
 				
-				instr2 = 'if reduced, click "Next", else enter a common factor of numerator and denominator'; 
+				instr2 = 'If reduced, click "Done", else enter a common factor of numerator and denominator'; 
 			}
 			instrBx.setAttribute("style", goodstyles);
 			instrBx.innerHTML = instr2;
@@ -623,19 +623,7 @@ function multfacts() {
 	instrBx.setAttribute("style", goodstyles);
 	instrBx.innerHTML = "What is a factor you can multiply " + den0 + " by so that both denominators are equal?";
 }
-function createRadioElement(label, name, checked, value, fun ) {
-    var radioHtml = '<label id="' + value + '" > ' + label + '</label> ';
-	radioHtml += '<input type="radio" name="' + name + '" ';
-    if ( checked ) {
-        radioHtml += ' checked="checked" ';
-    }
-	radioHtml += ' onclick="' + fun + '" ';
-    radioHtml += '/>';
-	
-    var radioFragment = document.createElement('span');
-    radioFragment.innerHTML = radioHtml;
-    return radioFragment;
-}
+
 window.onload = function() {
 	var doc = document;
 
