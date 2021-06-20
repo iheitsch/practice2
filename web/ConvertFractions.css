@@ -132,3 +132,13 @@ td{
     /* position: absolute;
     right: 20%; */
 }
+#skpBx{
+    border-top-color: #f0e6c3;
+    border-left-color: #f0e6c3;
+    background-color: #e9d398;
+    color: #331a00;
+    border-bottom-color:#b38f00;
+    border-right-color: #b38f00; /* #937520; */
+    /* position: absolute;
+    right: 20%; */
+}

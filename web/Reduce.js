@@ -1,6 +1,7 @@
 /**
  * 
  */
+ // make it put the labels in the right color fixit
  function createRadioElement(label, name, checked, value, fun ) {
     var radioHtml = '<label id="' + value + '" > ' + label + '</label> ';
 	radioHtml += '<input type="radio" name="' + name + '" ';
@@ -16,6 +17,7 @@
 }
 function skip() {
      document.getElementById("errs").value = 1;
+     allgood = true;
      startAgain(); 
 }
 function reduce(  num, den ) {
