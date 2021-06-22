@@ -854,12 +854,10 @@
         </td>
 </tr>
 <tr>
-<% 
-        //<td><input type="checkbox" value="fracToDec" name="selected" 
-          //         <%=isFracToDec fixit onclick="zeroCounts()">
-            //<label>Fraction to Decimal</label>
-        //</td>
-        %>
+        <td><input type="checkbox" value="fracToDec" name="selected" 
+                   <%=isFracToDec%> onclick="zeroCounts()">
+            <label>Fraction to Decimal</label>
+        </td>
 </tr>
 </table>
 </div>
