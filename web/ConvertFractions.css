@@ -30,18 +30,19 @@ label{
     color: #005511;
 }
 table{
-    margin: 0;
-    border: 0;
-    padding: 0;
-    border-collapse: collapse;
+
+    /* border: 0; removed for testing*/
+    /* margin: 0;
+    border: 1px black;
+    padding: 0; */
+    border-collapse: collapse; /* removed for testing */
 }
 td{
-    margin: 0;
-    border: 0;
-    /* text-align: center; */
-    /* align-items: center; */
-    /* padding: 1px; */
-    border-collapse: collapse;
+
+    /* border: 0; removed for testing*/
+    border: 1px black;
+    /*  margin: 0; */
+    /* border-collapse: collapse; removed for testing */
 }
 .arrow {
   border: solid #005511;

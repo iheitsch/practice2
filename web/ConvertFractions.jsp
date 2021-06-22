@@ -18,7 +18,7 @@
 <form id="th-id2">
 <% 
 	// make it so the skip and Done boxes don't skip around and don't force the table to leave weird blank spaces fixit
-    int possbl = 5;
+    int possbl = 6;
     
     String instrs = "blank";
     String instr2 = "blank";
@@ -60,6 +60,8 @@
     int n3fact;
     int n5fact;
     String strDec = "3.75";
+    int ndigs = 1;
+    int maxdigs = 4;
     
     boolean simplifyCk = false;
     String isSimplify = "";
@@ -73,11 +75,11 @@
     boolean mxToFracCk = false;
     String isMxToFrac = "";
     
-    boolean decToFracCk = true;
-    String isDecToFrac = "checked";
+    boolean decToFracCk = false;
+    String isDecToFrac = "";
     
-    boolean fracToDecCk = false;
-    String isFracToDec = "";
+    boolean fracToDecCk = true;
+    String isFracToDec = "checked";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -335,6 +337,45 @@
         	instrs = "Convert this Decimal to a Fraction.";
         	instr2 = "Is the decimal greater than or equal to 1 or equal to 0? ";
         	ncols = 12;
+        } else if( indcatr == 5 && fracToDecCk ) {
+            running = true;
+            ntwos = ntwos - 1;
+            nthrees = nthrees - 1;
+            nfives = nfives - 1;
+            twogen = (int)(gran*ntwos*Math.random());
+            acttwos = twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+            d2fact = (int)(StrictMath.pow(2,acttwos));
+            threegen = (int)(gran*nthrees*Math.random());
+            actthrees = threegen > 2*0.7*gran? 2 : threegen > 0.7*gran? 1 : 0;
+            d3fact = (int)(StrictMath.pow(3,actthrees));
+            fivegen = (int)(gran*nfives*Math.random());
+            actfives = fivegen > 0.7*gran? 1 : 0; // make fives more likely
+            d5fact = (int)(StrictMath.pow(5,actfives));
+            num[0] = d2fact*d3fact*d5fact;
+
+            max2 = Double.valueOf((num[0]+1)*(1 - Math.random()));
+            numtwos = (int)(Math.log(max2)/Math.log(2));
+            if( numtwos < 0 ) {
+              numtwos = 0;
+            } else if( numtwos > ntwos - 1 ) {
+              numtwos = ntwos - 1;
+            }
+            n2fact = (int)(StrictMath.pow(2,numtwos));
+            //System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+            max3 = Double.valueOf((num[0]/n2fact+1)*(1 - Math.random()));
+            numthrees = (int)(Math.log(max3)/Math.log(3));
+            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
+            //numthrees = (Double.valueOf((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+            n3fact = (int)(StrictMath.pow(3,numthrees));
+            max5 = Double.valueOf((num[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
+            numfives = (int)(Math.log(max5)/Math.log(5));
+            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
+            n5fact = (int)(StrictMath.pow(5,numfives));
+            den[0] = n2fact*n3fact*n5fact;
+
+            ncols = (int)(acttwos + actthrees + actfives);
+            ndigs = 1 + (int)(maxdigs*Math.random());
+            instrs = "Convert this Fraction to a Decimal.";
         }
     }
 %>
@@ -718,6 +759,98 @@
         </td>
 	</tr>
 
+<%  } else if( indcatr == 5 && fracToDecCk ){ 
+			int barLen = ndigs + 3; %>
+    <tr>
+    <td>
+        <table>
+            <tr><td class="num">
+                <input disabled="true" value="<%=num[0]%>" id="onum">  
+            </td></tr>
+            <tr><td>
+                <input disabled="true" value="<%=den[0]%>" id="oden">
+            </td></tr>
+        </table>
+    </td>
+    <td class="sym">=</td>
+    <td>
+        <input onkeyup="checkWhl( event )" onkeydown="erase( event )" id="n0_1" class="whole">
+    </td>
+    <td>.</td>
+<% 		for( int i = 0; i < ndigs; ++i ) {
+			int j = i + 2; 
+			String nid = "n0_" + j; %>
+	<td>
+                <input onkeyup="checkDig( event )" onkeydown="erase( event )" id="<%=nid%>" class="whole">  
+    </td>
+<%		} %>
+</tr>
+<tr>
+    <th colspan="1"></th><th colspan="<%=barLen%>" class="bar"></th>
+</tr>
+<tr>
+    <td>
+        <input onkeyup="checkDen( event )" onkeydown="erase( event )" id="d0_0">
+    </td>
+    <td class="sym">
+        )
+    </td>
+    <td>
+        <input onkeyup="checkNum( event )" onkeydown="erase( event )" id="d0_1">
+    </td>
+</tr>
+<% 		for( int i = 0; i < ndigs; ++i ) { 
+			int r = 1 + i; 
+			int c = 1 + i; 
+			String nid = "n" + r + "_" + c;
+			String did = "d" + r + "_" + c;
+			String cid = "c" + r + "_" + c; %>
+ <tr>
+    <td>
+    </td>
+    <td>
+    </td>
+<% 			for( int j = 0; j < i; ++j ) { %>
+	<td></td>
+<%			}
+			if( i > 0 ) { %>
+				<td></td>
+<%			} %>				
+    <td>
+        <input onkeyup="checkProd( event )" onkeydown="erase( event )" id="<%=nid%>" >
+    </td>
+</tr>
+<tr>
+	<td></td>
+<% 			for( int j = 0; j < i; ++j ) { %>
+	<td></td>
+<%			} 
+			if( i == 0 ) { %>
+	<th colspan="1"></th><th colspan="3" class="bar"></th>
+<%			} else { %>
+    <th colspan="2"></th><th colspan="2" class="bar"></th>
+<%			} %>
+</tr>
+<tr>
+    <td></td>
+    <td></td>
+<%			if( i > 0 ) { %>
+    <td></td>
+<%			} %>
+<% 			for( int j = 0; j < i; ++j ) { %>
+	<td></td>
+<%			} %>
+    <td>
+        <input onkeyup="checkDiff( event )" onkeydown="erase( event )" id="<%=did%>">
+    </td>
+<%			if( i == 0 ) { %>
+	<td></td>
+<%			} %>
+    <td>
+        <input onkeyup="checkCary( event )" onkeydown="erase( event )" id="<%=cid%>">
+    </td>
+</tr>
+<%		} %>
 <%  } else {
     } %> 
 
