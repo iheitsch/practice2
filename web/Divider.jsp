@@ -13,6 +13,9 @@
 <script src="Multiplier.js"></script>
 <script src="Subtractor.js"></script>
 <script src="Divider.js"></script>
+<script type="text/javascript">
+window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
+</script>
 </head>
 <body>
    
@@ -28,18 +31,18 @@
     final boolean cmdebug = false;
     final boolean lastboxdebug = false;
     
-    boolean immFeedBkCk = true;
+    boolean immFeedBkCk = false;
     
     boolean remaindersCk = false;
     boolean exDpCk = false;
     boolean recDpCk = false;
-    boolean rndOffCk = false;
-    String isImmFeedBk = "checked";
+    boolean rndOffCk = true;
+    String isImmFeedBk = "";
     String isEstRequired = "";
     String isRemainders = "";
     String isExDp = "";
     String isRecDp = "";
-    String isRndOff = "";
+    String isRndOff = "checked";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
@@ -579,7 +582,7 @@
         quotDp = 2;
         quotDp = 2;
         /* dbfxt */
-        //System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
+        System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         // find worst case Dp and Digs, find width of problem and adjust up or down
         int quotWidth = SZ2_MX + 2;
         dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
@@ -606,14 +609,14 @@
                 quotDigs = 1 + (int)Math.log10(quotient);
             }
             dvdDigs = (int)Math.log10(dividnd) + 1;
-            //System.out.println("divisor = " + divisor + " dividend = " + dividnd + " quotient = " + quotient + " quotDigs = " + quotDigs + " quotDp = " + quotDp);
+            System.out.println("line 609 divisor = " + divisor + " dividend = " + dividnd + " quotient = " + quotient + " quotDigs = " + quotDigs + " quotDp = " + quotDp);
             
             tmplong = dividnd/(long)Math.pow(10, dvdDigs-1);
             // add as many dividend digits as needed to form a number that the
             // divisor goes into at least once
             if( firstPass ) {
                 spacesb4quot = dvsrDigs + 1;
-                //System.out.println("line 542 dividend = " + tmplong + " divisor = " + divisor);
+                System.out.println("line 616 dividend = " + tmplong + " divisor = " + divisor);
                 for( int idx = dvdDigs-1; tmplong < divisor; --idx ) {
                     if( idx > 0 ) {
                         tmplong = tmplong*10 + (dividnd % (long)Math.pow(10, idx))/(long)Math.pow(10, idx-1);
@@ -625,12 +628,12 @@
                 }
                 origSpaces = spacesb4quot;
             }
-            //System.out.println("before adjustments spacesb4quot = " + spacesb4quot);
+            System.out.println("before adjustments spacesb4quot = " + spacesb4quot);
             dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
             if( dvdDp > dvdDigs ) {
                 spacesb4quot += (dvdDp - dvdDigs);
             }
-            //System.out.println("after adding leading dividend zeros spacesb4quot = " + spacesb4quot);
+            System.out.println("after adding leading dividend zeros spacesb4quot = " + spacesb4quot);
             // back off leading zeros
             whatsBigger = quotDigs;
             if( quotDp > quotDigs ) {
@@ -638,9 +641,9 @@
                 spacesb4quot -= leadzeros;
                 whatsBigger = quotDp;
             }
-            //System.out.println("after subtracting leading quotient zeros spacesb4quot = " + spacesb4quot);
+            System.out.println("after subtracting leading quotient zeros spacesb4quot = " + spacesb4quot);
             quotWidth = spacesb4quot + whatsBigger;
-            //System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
+            System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
             firstPass = false;
         }
         boolean sigDig = Math.random() > 0.5;
@@ -689,7 +692,7 @@
             header = header + "s";
         }
         header = "Round to " + n + header;
-    }  else {
+    }  else { // not round off check
         // remove trailing zeros after the decimal point
         int tmpint = quotDp - 1;
         for( int i = 0; i < tmpint; i++ ) {       
@@ -967,7 +970,7 @@
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-        //System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+        System.out.println("line 970 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
         int WCoperand1 = (int)(tmplong - divisor); 
 
         actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -980,7 +983,7 @@
         //        (int)Math.log10(WCoperand1) + 1: 1;
         wcDig[nsubs][1] = WCoperand1 > 0? 
                 (int)Math.log10(WCoperand1) + 2: 2;
-        //System.out.println("whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
+        System.out.println("line 983 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
         if( operand[nsubs][1] < 0 ) {
             //System.out.println("tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
             break;
@@ -988,7 +991,7 @@
 
         int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
-        //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+        System.out.println("line 991 nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
         cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
@@ -1021,7 +1024,7 @@
         boolean breakout = false;
         while( tmplong < divisor ) {
             if( whatquotDig < 1 ) {
-                //System.out.println("no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                System.out.println("line 1024 no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
                 breakout = true;
                 break;
             }
@@ -1032,8 +1035,8 @@
         if( breakout ) {
             break;
         }
-        //System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-        //System.out.println("spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+        System.out.println("line 1035 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+        System.out.println("line 1036 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -1198,15 +1201,16 @@
 
 <%      } %>
         </tr>
-<%  } %>
-<tr>
-<%  if( recDpCk ) { %>
+<%  }
+
+	if( recDpCk ) { %>
     <tr><th class="th-class4" colspan="<%=bbspan%>"></th>
         <th class="th-class4" colspan="<%=cbspan%>" id="overbar">
         </th>
         <th class="th-class4" colspan="<%=dbspan%>"></th>
     </tr>
 <%  } %>
+	<tr>
 <%  int mcol = dvsrDigs - 2;
     String vid = "cm" + mcol + "_0"; 
     String cid = "hcm" + mcol + "_0"; 
@@ -1424,8 +1428,9 @@
         <th id="<%=barName%>" class="th-id1" colspan="<%=cspan[sbx]%>"></th>
         <th class="th-id1" colspan="<%=dspan[sbx]%>"></th>
     </tr>
+
 <%  if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
-        <tr>
+	    <tr>
         <td class="s2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] - idx - 2;
@@ -1463,9 +1468,7 @@
 <%          } 
 
          } %>
-        </tr>
 <%  } else { %>
-    
         <td class="s2"></td>
 <%      // these are fake to fill space
         String filler = "boca" + rdx;

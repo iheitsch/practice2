@@ -1445,7 +1445,7 @@ function subtract(col, sbx) {
             var lastFilledBx = null;
             for (var i = lastqcol; i >= 0; i--) {
                 var quotBx = doc.getElementById("qt" + i);
-                if ( quotBx && quotBx.value === "") {
+                if ( lastFilledBx && quotBx && quotBx.value === "") { // need to make sure you have found at least one filled box
                     var ten2i = Mat.pow(10, i);
                     var discard = origdividend % ten2i;
                     var qdigI = (origdividend % Mat.pow(10, i + 1) - discard) / ten2i;
