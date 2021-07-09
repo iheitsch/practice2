@@ -2,13 +2,14 @@
  * 
  */
  // make it put the labels in the right color fixit
- function createRadioElement(label, name, checked, value, fun ) {
+ function createRadioElement(label, name, checked, value, fun, btnId ) {
     var radioHtml = '<label id="' + value + '" > ' + label + '</label> ';
 	radioHtml += '<input type="radio" name="' + name + '" ';
     if ( checked ) {
         radioHtml += ' checked="checked" ';
     }
 	radioHtml += ' onclick="' + fun + '" ';
+	radioHtml += 'id="' + btnId + '" ';
     radioHtml += '/>';
 	
     var radioFragment = document.createElement('span');

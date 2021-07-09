@@ -261,8 +261,8 @@ function checkM( ev ) {
 				ansBx.blur();
 				instr2 = "Are both denominators the same?";
 				instrBx.innerHTML = instr2;
-				var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()" );
-				var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()" );
+				var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
+				var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
 				instrBx.appendChild(truBtn);
 				instrBx.appendChild(flsBtn);
 				doc.getElementById("startHere").value = nextBx.id;
@@ -631,8 +631,8 @@ window.onload = function() {
 	var isPlusOrMinus = indcatr < 2;
 	if( isPlusOrMinus ) {
 		// what happens to these objects when instr2 is overwritten? Do they float around somewhere taking up space? fixit
-		var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()" );
-		var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()" );
+		var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
+		var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
 		var instr2div = doc.getElementById("instr2");
 		instr2div.appendChild(truBtn);
 		instr2div.appendChild(flsBtn);
