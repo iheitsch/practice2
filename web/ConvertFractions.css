@@ -9,7 +9,11 @@ and open the template in the editor.
 */
 /* color scheme ancient Arab illustrated manuscript: beige background, 
 gold, bright blue, green, pink highlights */
+article, aside, figure, footer, header, hgroup, menu,
+nav, section{ display: block }
 body{
+	margin: 0 auto;
+	overflow-y: auto;
     background-color: #fff9ea;
     /* background-color: #fff5e6; */
 }
@@ -37,12 +41,16 @@ table{
     padding: 0; */
     border-collapse: collapse; /* removed for testing */
 }
-td{
+td {
 
     /* border: 0; removed for testing*/
     border: 1px black;
     /*  margin: 0; */
     /* border-collapse: collapse; removed for testing */
+}
+th {
+    background-color: yellow; /* #f9f7e9; */
+    border: 2px solid pink; /* #f9f7e9; */
 }
 .arrow {
   border: solid #005511;
@@ -72,6 +80,45 @@ td{
 .down {
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
+}
+.a1 {
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
+  color: black; 
+  text-align: center;
+  border: 1px solid black;
+  font: inherit;
+  height: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+/* decimal point */
+.dp{
+    width: 0.7em;
+    height: 1em;
+    text-align: center;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: #F5F8FF;
+}
+/* visible incorrect decimal point */
+.ep{
+    width: 0.7em;
+    height: 1em;
+    text-align: center;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: red;
+}
+/* visible correct decimal point */
+.fp{
+    width: 0.7em;
+    height: 1em;
+    text-align: center;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: black;
 }
 .d1{
     position: fixed;
@@ -110,6 +157,35 @@ td{
 
 .num{
     border-bottom: 2px solid #005511;
+}
+/* table cell with space, carry, or decimal point */
+.t2 {
+  text-align: center;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  background-color: #f9f7e9;
+  padding: 0px;
+  height: 1.5em;
+}
+/* table cell with operand or answer digit */
+.t1{
+  text-align: center;
+  margin-left: 0px;
+  margin-right: 0px;
+  background-color: #f9f7e9;
+  padding: 0px;
+  height: 0px;
+  min-height: 1.5em;
+}
+.th1{
+    background-color: orange; /* #f9f7e9; */
+    border: 2px solid green; /* #f9f7e9; */
+}
+.th2{
+    border:2px solid black;
+    background-color: #451f15;
+    color: white;
 }
 .title{
     color: #b38f00;
