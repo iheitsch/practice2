@@ -428,7 +428,7 @@
             int fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
             System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
-            quotdigits = (int)(0.5 + StrictMath.pow(10,quotDigs-1)*dividnd/divisor);
+            quotdigits = (int)(StrictMath.pow(10,quotDigs-1)*dividnd/divisor);
             int diff = 0;
             for( int i = 0; i < quotDigs; ++i ) {   	
             	int ten2powm1 = (int)StrictMath.pow(10,i);
@@ -514,8 +514,8 @@
                 //System.out.println("line 991 nsubs: " + nsubs + " spacesb4quot: " + spacesb4quot + " quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
                 spacesb4Op[nsubs][1] = dvsrDigs + 1 + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
-                cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
-                bspan[nsubs] = 2*(spacesb4Op[nsubs][0]) + 1 + spacesb4Dvsr;
+                cspan[nsubs] = 2*(wcDig[nsubs][0] + 1);
+                bspan[nsubs] = 2*(spacesb4Op[nsubs][0] + spacesb4Dvsr);
                 dspan[nsubs] = 1 + 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
                 if( whatquotDig == 0 ) {
                     break; // don't need to generate tmpint nsubs or the next loop, you're 
