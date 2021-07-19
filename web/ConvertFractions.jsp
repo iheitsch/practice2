@@ -15,6 +15,7 @@
 </head>
 <body>
 <form id="th-id2">
+
 <% 
 	// make it so the skip and Done boxes don't skip around and don't force the table to leave weird blank spaces fixit
 	// copied from divider.jsp for fracToDec
@@ -51,6 +52,9 @@
 	int onumWidth = 7;
 	int [][] operand = new int[quotDigs][maxOps];
 	int quotdigits = 0;
+	int whlquotdigs = 0;
+	int fracquotdigs = 0;
+	int expQuotDp = 0;
 	
     int possbl = 6;
     
@@ -383,7 +387,7 @@
             actthrees = threegen > 2*0.7*gran? 2 : threegen > 0.7*gran? 1 : 0;
             d3fact = (int)(StrictMath.pow(3,actthrees));
             fivegen = (int)(gran*nfives*Math.random());
-            actfives = fivegen > 0.7*gran? 1 : 0; // make fives more likely
+            actfives = fivegen > 0.7*gran? 1 : 0; // make fives more likely 
             d5fact = (int)(StrictMath.pow(5,actfives));
             num[0] = d2fact*d3fact*d5fact;
 
@@ -415,7 +419,7 @@
             divisor = den[0];
             dvdDigs = (int)Math.log10(dividnd) + 1;
             dvsrDigs = (int)Math.log10(divisor) + 1;
-            int whlquotdigs = (int)Math.log10(dividnd/divisor) + 1;
+            whlquotdigs = (int)Math.log10(dividnd/divisor) + 1;
             // if there are only 2s and fives in the denominator, the decimal is exact and and
             // quot digits can be calculated
             // reduce the denominator
@@ -425,18 +429,20 @@
             int calcquotdigs = redtwos > redfives ? redtwos : redfives;
             // if there are other numbers in the denominator, cut size off at 5 and round off
             needsXtraDig = redthrees > 0;
-            int fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
+            fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
+            //expQuotDp = fracquotdigs;
             System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
-            quotdigits = (int)(StrictMath.pow(10,quotDigs-1)*dividnd/divisor);
+            quotdigits = (int)(StrictMath.pow(10,fracquotdigs+1)*dividnd/divisor);
+			int qtdgts = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);           
             int diff = 0;
             for( int i = 0; i < quotDigs; ++i ) {   	
             	int ten2powm1 = (int)StrictMath.pow(10,i);
             	int ten2pow = 10*ten2powm1;
-            	int throway = quotdigits%ten2pow;         	
+            	int throway = qtdgts%ten2pow;         	
             	qt[i] = throway/ten2powm1;
             	System.out.println("quotdigits: " + quotdigits + " qt[" + i + "]: " + qt[i]);
-            	quotdigits = quotdigits - throway;
+            	qtdgts = qtdgts - throway;
             	diff += 1;
             }
             int dvddigits = dividnd;
@@ -451,8 +457,9 @@
             
             int offset = 0;
             int partDigs = dvdDigs - 1;
-            int throwway = dividnd%(int)StrictMath.pow(10,partDigs);
-            int dvdpart =( dividnd - throwway)/(int)StrictMath.pow(10,partDigs);
+            int ten2pow = (int)StrictMath.pow(10,partDigs);
+            int throwway = dividnd%ten2pow;
+            int dvdpart =( dividnd - throwway)/ten2pow;
             
             System.out.println("dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart);
             while( divisor > dvdpart ) {
@@ -475,16 +482,17 @@
             }
             
             int whatquotDig = quotDigs-1; // there may be more quotient digits than subtractions
-            System.out.println("line 479 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig);
+            System.out.println("line 479 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
             while( whatquotDig >= 0 && qt[whatquotDig] == 0 ) {
                 //System.out.println("line 330 qt[" + whatquotDig + "] = " + qt[whatquotDig]);
                 whatquotDig -= 1;
             }
             int worstCaseQdig = 9;
             long tmplong = (long)dividnd;
+            int totalwidth = spacesb4quot + quotDigs;
             while( whatquotDig >= 0 ) {
-                if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
-                    System.out.println("line 483 nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
+            	if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
+                    System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
                     break;
                 }
                 operand[nsubs][0] = qt[whatquotDig]*divisor;
@@ -505,25 +513,26 @@
                 //        (int)Math.log10(WCoperand1) + 2: 2;
                 System.out.println("line 502 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
                 if( operand[nsubs][1] < 0 ) {
-                    //System.out.println("tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
+                    System.out.println("uh oh tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
                     break;
                 }
 
-                int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
-                spacesb4Op[nsubs][0] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - mostPossProdDig;
+                //int mostPossProdDig = (int)Math.log10(WCoperand0) + 1;
+                spacesb4Op[nsubs][0] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][0];
                 //System.out.println("line 991 nsubs: " + nsubs + " spacesb4quot: " + spacesb4quot + " quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
-                spacesb4Op[nsubs][1] = dvsrDigs + 1 + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
+                spacesb4Op[nsubs][1] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1];
                 cspan[nsubs] = 2*(wcDig[nsubs][0] + 1);
                 bspan[nsubs] = 2*(spacesb4Op[nsubs][0] + spacesb4Dvsr);
                 dspan[nsubs] = 1 + 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
-                if( whatquotDig == 0 ) {
-                    break; // don't need to generate tmpint nsubs or the next loop, you're 
-                }          // done
+                //if( whatquotDig == 0 ) {
+                //    break; // don't need to generate tmpint nsubs or the next loop, you're 
+                //}          // done // not done, you need to generate bringdowns
                 boolean restAreZero = false;
                 if( operand[nsubs][1] == 0 ) {            // if difference is zero
                     restAreZero = true;                     // check if there is 
                     for( int idx = whatquotDig-1-diff; idx >= 0; --idx ) { // anything but zeros left
+                    	System.out.println("difference was 0. checking rest of dividend dd[" + idx + "]: " + dd[idx]);
                         if( dd[idx] != 0 ) {
                             restAreZero = false;
                             break; // rest are not zero, stop checking
@@ -531,6 +540,7 @@
                     }
                 }
                 if( restAreZero ) {  
+                	System.out.println("rest are zero, breaking out of loop");
                     break; // all checked to be zero, break out of outer loop
                 }
 
@@ -544,36 +554,41 @@
                 //numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
                 //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
                 boolean breakout = false;
-                while( tmplong < divisor ) {
+                int divdig = 0;
+                whatquotDig = whatquotDig - 1;
+                while( tmplong < divisor ) { // keep appending dividend digits until operand is big enough for dividsor to go into
                 	int inc = 0;
-                    if( whatquotDig < 1 + diff ) {
-                        System.out.println("line 546 no more quote digits actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                    if( whatquotDig < diff ) {
+                        System.out.println("line 546 no more dividend digits actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
                         //breakout = true;
                         //break;
                     } else {
-                    	inc = dd[whatquotDig-1-diff];
+                    	divdig = whatquotDig-diff;
+                    	inc = dd[divdig];
+                    	whatquotDig = whatquotDig - 1;
                     }
-                    System.out.println("line 552 divisor: " + divisor + " tmplong: " + tmplong);
+                    System.out.println("line 559 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
                     tmplong = 10*tmplong + inc;
-                    whatquotDig = whatquotDig - 1;
+                    
                     actBringDn[nsubs] += 1;
                 }
                 if( breakout ) {
                     break;
                 }
-                System.out.println("line 560 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
-                System.out.println("line 561 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-                System.out.println("line 562 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
-                nsubs = nsubs + 1;
-                
-                 
+                System.out.println("line 568 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
+                System.out.println("line 569 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                System.out.println("line 570 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+                totalwidth = spacesb4Op[nsubs][1] + wcDig[nsubs][1] + actBringDn[nsubs];
+                nsubs = nsubs + 1;                 
             } 
         }
         int dvdMsd = dvdDigs - 1;
         startHere = "dd" + dvdMsd + "_0";
     }
 %>
-
+<table>
+<tr>
+<td>
 
 <div id="instrs" class="d3"><%=instrs%></div>
 <div id="instr2" class="d4"><%=instr2%></div>
@@ -970,35 +985,39 @@
         </th>
         <td class="sym">=</td>
 <%  for( int idx = 0; idx < SZ2_MX - dvsrDigs; idx++ ) {  
-        int col = spacesb4quot + quotDigs - 1 - idx;
+        int col = spacesb4quot + quotDigs - idx - 1;
+        if( needsXtraDig ) {
+        	col = col + 1;
+        }
         String tid = "td" + col;
         String tic = "tc" + col;
         String xid = "xt" + col;
         
-		if( spacesb4quot - 1 <= idx && idx < spacesb4quot + quotDigs ) {  
+        if( idx == spacesb4quot + whlquotdigs ) { %>
+            <td class="t2" id="<%=tic%>" name="notthestartdig">.</td>
+<% 		} else if( spacesb4quot - 1 <= idx && idx < spacesb4quot + quotDigs ) {  
             int jdx = idx - spacesb4quot; %>
             <td class="t2" id="<%=tic%>" name="notthestartdig">
-                <span name="quotDp" onclick="chooseDivThis( event, <%=jdx%>, 'quotDp' )" class="dp" >_</span>
+                <span name="quotDp" class="dp" >_</span>
             </td>
 <%      } else { %>
             <td class="t2" id="<%=tic%>" name="notthestartdig">_</td>
 <%      }
-		
+		String qid = "qt" + col;
         if( idx < spacesb4quot || spacesb4quot + quotDigs < idx ) { %>
                 <td class="t1" id="<%=tid%>" name="notthestartdig"></td>
+
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
-            String qid = "qt" + col; %>
+             %>
             <td class="t1"  id="<%=tid%>" name="quotTd" >
                 <input type="<%=lbtype%>" id="<%=qid%>" class="a1" size="1"
                     name="quotdigs"
-                    onkeyup="divide(false, <%=col%>, <%=qt[col]%> )"
                     onkeydown="erase( event )" >
             </td>
 <%      } else if( needsXtraDig && idx == spacesb4quot + quotDigs ) { %>
 			<td class="t1" id="<%=tid%>" name="notthestartdig">
 				<input type="<%=lbtype%>" class="a1" size="1"
-    				id="<%=xid%>" name="quotdigs"
-    			onkeyup="checkRoundOff( event )"
+    				id="<%=qid%>" name="quotdigs"
     			onkeydown="erase( event )" >
 			</td>
 <%      } else { %>
@@ -1029,7 +1048,7 @@
             String vclass = visible[col]? "t1" : "t3";
             String did = "dd" + col + "_0"; %>
             <td class="<%=vclass%>" >
-            <input id="<%=did%>" class="a1" name="dvddigs" onkeyup="checkdd(event )" onkeydown="erase( event )" ></td>
+            <input id="<%=did%>" class="a1" name="dvddigs" onkeyup="checkdd(event )" onkeydown="erase( event )" >
             </td>
 <%      } else { %>
             <td class="t1" ></td>
@@ -1134,31 +1153,29 @@
 <% 	} 
 }%> 
 </table>
-<table>
-<tr>
-        <th colspan="4"><button type="button" onclick="skip()" id="skpBx">Skip</button></th>
-        <td></td>
-        <th colspan="4"><button type="button" onclick="check()" id="chkBx">Done</button></th>
-</tr>
-<tr>
-<th colspan="13" id="back">
-	<div>
-	      <a href="/" class="ndx">Home</a>
-	</div>
-	<div>
-	      <a href="index.html" class="ndx">Back to Practice Index</a>
-	</div>
-</th>
-</tr>
-</table>
-<table id="statusTable">
-<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
-    String whatId = "statusBox" + i; 
-    String whatId2 = "statusBox" + j; %>
-    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
-<% } %>
-</table>
 </div>
+<div>
+        <span><button type="button" onclick="skip()" id="skpBx">Skip</button>
+        
+        <button type="button" onclick="check()" id="chkBx">Done</button></span>
+</div>
+<div>
+	    <a href="/" class="ndx">Home</a>
+</div>
+<div>
+	    <a href="index.html" class="ndx">Back to Practice Index</a>
+</div>
+<div>
+	<table>
+	<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
+	    String whatId = "statusBox" + i; 
+	    String whatId2 = "statusBox" + j; %>
+	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
+	<% } %>
+	</table>
+</div>
+</td>
+<td>
 <%  String numAttmptdV = "0";
     String numWoErr = "0";
     String consWoErr = "0";
@@ -1189,9 +1206,7 @@
         strtTime = tmp.toString();
     } 
 %>
-<input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
-<input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
-<input type="hidden" id="startWhere" name="startHere" value="<%=startHere%>" class="shortbox">
+
 
 <div class="d5">
 <table >
@@ -1273,9 +1288,15 @@
 </tr>
 </table>
 </div>
+</td>
+</tr>
 
 
 
+</table>
+<input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
+<input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
+<input type="hidden" id="startWhere" name="startHere" value="<%=startHere%>" class="shortbox">
 <input type="hidden" id="indcatr" value="<%=indcatr%>">
 <input type="hidden" id="quotient" value="<%=quotdigits%>">
 </form>
