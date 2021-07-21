@@ -12,8 +12,8 @@ gold, bright blue, green, pink highlights */
 article, aside, figure, footer, header, hgroup, menu,
 nav, section{ display: block }
 body{
-	margin: 0 auto;
-	overflow-y: auto;
+	margin: 0;
+	overflow-y: scroll;
     background-color: #fff9ea;
     /* background-color: #fff5e6; */
 }
@@ -49,8 +49,8 @@ td {
     /* border-collapse: collapse; removed for testing */
 }
 th {
-    background-color: yellow; /* #f9f7e9; */
-    border: 2px solid pink; /* #f9f7e9; */
+    background-color: #f9f7e9;
+    border: 2px solid #f9f7e9;
 }
 .arrow {
   border: solid #005511;
@@ -121,7 +121,7 @@ th {
     color: black;
 }
 .d1{
-    position: fixed;
+    /* position: fixed; */
     top: 15%;
     left: 1%;
 }
@@ -138,9 +138,9 @@ th {
 	color: #fff9ea;
 	/*
     color: #b38f00;
-    */
+    
     padding-left: 2%;
-    width: 70%;
+    width: 70%; */
 }
 .d5{
     position: fixed;
@@ -164,7 +164,8 @@ th {
   margin-left: 0px;
   margin-right: 0px;
   margin-top: 0px;
-  background-color: #f9f7e9;
+  color: #fff9ea;
+  background-color: #fff9ea;
   padding: 0px;
   height: 1.5em;
 }
@@ -173,22 +174,27 @@ th {
   text-align: center;
   margin-left: 0px;
   margin-right: 0px;
-  background-color: #f9f7e9;
+  background-color: #fff9ea;
   padding: 0px;
   height: 0px;
   min-height: 1.5em;
 }
 .th1{
-    background-color: orange; /* #f9f7e9; */
-    border: 2px solid green; /* #f9f7e9; */
+    background-color: #f9f7e9;
+    border: 2px solid #f9f7e9;
 }
 .th2{
-    border:2px solid black;
-    background-color: #451f15;
+    border: 1px solid #fff9ea; /*  black; */
+    background-color: #fff9ea; /* #451f15; */
     color: white;
 }
+.th3{
+    border: none;
+    background-color: #005511;
+}
 .title{
-    color: #b38f00;
+    color: #e9d398; /* #b38f00; */
+    background-color: #005511;
     text-align: left;
 }
 .whole{
@@ -208,6 +214,13 @@ th {
     border-right-color: #b38f00; /* #937520; */
     /* position: absolute;
     right: 20%; */
+}
+#isDp{
+	color: #0033cc;
+}
+#leftparen{
+	color: #005511;
+	font-weight: bold;
 }
 #skpBx{
     border-top-color: #f0e6c3;

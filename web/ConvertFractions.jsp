@@ -413,7 +413,7 @@
 
             ncols = (int)(acttwos + actthrees + actfives);
             instrs = "Convert this Fraction to a Decimal.";
-            instr2 = "Copy numerator to the space under the division sign";
+            instr2 = "Copy numerator to the spaces under the division sign";
             
             dividnd = num[0];
             divisor = den[0];
@@ -970,7 +970,7 @@
 
 <%  } else if( indcatr == 5 && fracToDecCk ) { 
 			int barLen = ndigs + 3;
-			boolean lastboxdebug = true;
+			boolean lastboxdebug = false;
 			String lbtype = lastboxdebug? "text" : "hidden";%>
 	<tr>
     	<th colspan="<%=onumWidth%>" >
@@ -984,24 +984,26 @@
             </table>
         </th>
         <td class="sym">=</td>
-<%  for( int idx = 0; idx < SZ2_MX - dvsrDigs; idx++ ) {  
+<%  for( int idx = 0; idx < SZ2_MX - dvsrDigs - onumWidth/3 + spacesb4quot; idx++ ) {  
         int col = spacesb4quot + quotDigs - idx - 1;
         if( needsXtraDig ) {
         	col = col + 1;
         }
         String tid = "td" + col;
-        String tic = "tc" + col;
+        String tic = "isDp";
         String xid = "xt" + col;
         
         if( idx == spacesb4quot + whlquotdigs ) { %>
-            <td class="t2" id="<%=tic%>" name="notthestartdig">.</td>
+            <td class="t2" id="<%=tic%>" name="notthestartdig" onclick="showDp( event )"></td>
 <% 		} else if( spacesb4quot - 1 <= idx && idx < spacesb4quot + quotDigs ) {  
             int jdx = idx - spacesb4quot; %>
-            <td class="t2" id="<%=tic%>" name="notthestartdig">
+            <td class="t2" name="notthestartdig">
                 <span name="quotDp" class="dp" >_</span>
             </td>
 <%      } else { %>
-            <td class="t2" id="<%=tic%>" name="notthestartdig">_</td>
+            <td class="t2" name="notthestartdig">
+				<span class="dp" >_</span>
+			</td>
 <%      }
 		String qid = "qt" + col;
         if( idx < spacesb4quot || spacesb4quot + quotDigs < idx ) { %>
@@ -1028,20 +1030,22 @@
     } %>
 </tr>
 <tr><th class="th1" colspan="<%=bqspan%>"></th>
-    <th class="th2" colspan="<%=cqspan%>"></th>
+    <th class="th3" colspan="<%=cqspan%>"></th>
     <th class="th1" colspan="<%=dqspan%>"></th>
 </tr>
 <tr>
     <td class="t2"></td>
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+<%  for( int idx = 0; idx <= SZ2_MX - onumWidth/4; idx++ ) { 
 		if( idx < spacesb4Dvsr ) { %>
-			<td class="t1">_</td>
+			<td class="t1">
+				<span class="dp" >_</span>
+			</td>
 <% 		} else if( spacesb4Dvsr <= idx && idx < spacesb4Dvsr + dvsrDigs ) { 
             int col = spacesb4Dvsr + dvsrDigs - 1 - idx; 
             String dsid = "ds_" + col; %>
             <td class="t1" ><input id="<%=dsid%>" class="a1" name="dvsrdigs" onkeyup="checkds( event )" onkeydown="erase( event )" ></td>
 <%      } else if( idx == spacesb4Dvsr + dvsrDigs ) { %>
-            <td class="t1" >)</td>
+            <td class="t1" id="leftparen">)</td>
 <%      } else if( idx <= spacesb4Dvsr + dvsrDigs + dvdDigs ) { 
             int col = spacesb4Dvsr + dvsrDigs +  dvdDigs - idx;
             //System.out.println("dividend col = " + col); 
@@ -1079,7 +1083,7 @@
                 <span name="dvdDp" class="dp" >_</span>
             </td>
 <%      } else { %>
-            <td class="t2"></td>
+            <td class="t2">_</td>
 <%      }
 
     } %>
@@ -1090,14 +1094,13 @@
 
     <tr class="oprand">
         <td class="t2"></td>
-    <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+    <%  for( int idx = 0; idx <= SZ2_MX - onumWidth/4; idx++ ) { 
             if( idx < spacesb4Op[sbx][0] + spacesb4Dvsr ) { %>
                 <td class="t1"></td>
 <%          } else if ( idx == spacesb4Op[sbx][0] + spacesb4Dvsr ){ 
                 String minusName="minus" + sbx; %>
-                <td class="t3" id="<%=minusName%>" > - </td>
+                <td class="t3" id="<%=minusName%>" ></td>
     <%      } else if( idx <= spacesb4Op[sbx][0] + wcDig[sbx][0] + spacesb4Dvsr ) {  
-    			// +1 is a fudge factor. I don't know why it's needed
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + spacesb4Dvsr - idx;
                 String name = "op" + sbx + "_0";
                 String whattype = lbtype;
@@ -1110,7 +1113,7 @@
  <%         } else { %>
                 <td class="t1"></td>
 <%          } %>
-            <td class="t2"></td>
+            <td class="t2">_</td>
 <%      }
         String barName = "cspan" + sbx; %>
     </tr>
@@ -1120,7 +1123,7 @@
     </tr>
     <tr class="oprand">
         <td class="t2"></td>
-<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+<%      for( int idx = 0; idx <= SZ2_MX - onumWidth/3 + spacesb4quot; idx++ ) { 
             String whattype = lbtype; 
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1] + spacesb4Dvsr - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;
