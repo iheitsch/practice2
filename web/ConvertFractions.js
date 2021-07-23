@@ -2548,10 +2548,13 @@ function divide( ev ) {
                 var bdLength = bringDownDigits.length;
                 var j = 0;
                 for( var i = 0; i < bdLength; ++i ) {
-                    var bdValue = bringDownDigits[bdLength-1-i].value;
+                	nextBx = bringDownDigits[bdLength-1-i];
+                    var bdValue = nextBx.value;
                     if( bdValue ) { // don't count it unless it's filled in 
                         remainder += Num(bdValue)*Mat.pow(10,j);
                         ++j;
+                    } else {
+                    	break;
                     }
                 }
                 for( var i = 0; i < lastRowLength; ++i ) {
@@ -3136,7 +3139,7 @@ function checkRoundOff( ev ) {
         //x = x + 1;
     }
 }
-function checkRpt( ev ) {
+function checkImmed( ev ) {
 	ev = ev || window.event;
     var ansBx = ev.target;
     var doc = document;
@@ -3145,69 +3148,25 @@ function checkRpt( ev ) {
     var strtpt = id.indexOf("t") + 1;
     var nchars = id.length - strtpt;
     var col = Num(id.substr(strtpt, nchars));
-    var ans = ansBx.value;
-    var rpt = true;
-    for( var i = col+1; i < 3; ++i ) {
-    	qbx = doc.getElementById("qt" + i);
-    	qval = qbx.value;
-    	doc.getElementById("statusBox" + x).innerHTML = "q[" + i + "]: " + qval;
-    	x = (x + 1)%nSbxs;
-    	if( qval !== ans ) {
-    		rpt = false;
-    	}
-    }
+    var ans = Num(ansBx.value);
     var whatRow = rowNo;
-    var threeRowsBack = whatRow - 3;
-    var diffdigs = doc.getElementsByName("op" + whatRow + "_1");
-    var diff = "";
-    var j = 0;
-    while( diffdigs[j] ) {
-        doc.getElementById("statusBox" + x).innerHTML = "diff: " + diff + " diffdigs[" + j + "]: " + diffdigs[j].value;
-    	x = (x + 1)%nSbxs;
-    	diff = diff + diffdigs[j].value;
-    	++j;
+    
+    var dvdStr = "";
+    var dvddgts = doc.getElementsByName("op" + whatRow + "_1");
+    len = dvddgts.length;
+    for( var i = 0; i < len; ++i ) {
+    	dvdStr += dvddgts[i].value;
     }
-    var bddigs = doc.getElementsByName("bd" + whatRow);
-    j = 0;
-    while( bddigs[j] ) {
-    	diff = diff + bddigs[j].value;
-    	++j;
-    }   
-    var proddigs = doc.getElementsByName("op" + whatRow + "_0");
-    var prod = "";
-    j = 0;
-    while( proddigs[j] ) {
-    	prod = prod + proddigs[j].value;
-    	++j;
+    var dvddgts = doc.getElementsByName("bd" + whatRow);
+    len = dvddgts.length;
+    for( var i = 0; i < len; ++i ) {
+    	dvdStr += dvddgts[i].value;
     }
-    var prevDiff = diff;
-    var prevProd = prod;
-    for( var i = whatRow - 1; i > threeRowsBack; --i ) {
-    	var diffdigs = doc.getElementsByName("op" + i + "_1");
-    	diff = "";
-    	j = 0;
-    	while( diffdigs[j] ) {
-    		diff = diff + diffdigs[j].value;
-    		++j;
-    	}
-    	bddigs = doc.getElementsByName("bd" + whatRow);
-    	j = 0;
-    	while( bddigs[j] ) {
-    		diff = diff + bddigs[j].value;
-    		++j;
-    	}
-    	proddigs = doc.getElementsByName("op" + whatRow + "_0");
-    	prod = "";
-    	j = 0;
-    	while( proddigs[j] ) {
-    		prod = prod + proddigs[j].value;
-    		++j;
-    	}
-    	if( prevDiff !== diff || prevProd !== prod ) {
-    		rpt = false;
-    	}
-    }
-    if( rpt ) {
+    var dividnd = Num(dvdStr);
+    var divisor = Num(doc.getElementById("oden").value);
+    var expAns = Math.floor(dividnd/divisor);
+
+    if( ans === expAns ) {
     	var instr2 = "Click on last quotient digit to cross it off";
     	//doc.getElementById("qt1").style.color = "#ff1ac6";
     	markGood( ansBx, instr2, "", null );
@@ -3313,7 +3272,7 @@ function bringdown(sbx) {
         }
         if( nextBx.id === "qt0" && newdvd%divisor > 0 ) {
         	nextBx.onclick = roundOff;
-        	nextBx.onkeyup = checkRpt;
+        	nextBx.onkeyup = checkImmed;
         } else {
         	rowNo++;
 		}

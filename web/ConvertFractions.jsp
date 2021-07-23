@@ -74,6 +74,7 @@
     int ntwos = 6; // one more than actual max
     int nthrees = 4;
     int nfives = 3;
+    int nsevns = 2;
     String whatOp = "&divide";
     boolean isDivide = true;
     final double EXP = 2.4; //4.4;
@@ -97,6 +98,7 @@
     int n2fact;
     int n3fact;
     int n5fact;
+    int n7fact;
     String strDec = "3.75";
     int ndigs = 1;
     int maxdigs = 4;
@@ -391,7 +393,501 @@
             d5fact = (int)(StrictMath.pow(5,actfives));
             num[0] = d2fact*d3fact*d5fact;
 
-            max2 = Double.valueOf((num[0]+1)*(1 - Math.random()));
+            int ntypes = 4;
+            double whatsFrst = 24*Math.random(); // 24 = ntypes! = 4!
+            int prevFact = 1;
+            double [] maxf = new double[ntypes];
+            int [] numf = new int[ntypes];
+            int [] nf = new int[ntypes];
+            int [] nfact = new int[ntypes];
+            double [] pfact = new double[ntypes];
+            int twodx = 0;
+            int threedx = 1;
+            int fivedx = 2;
+            int sevndx = 4;
+            int j = 0;
+            if( whatsFrst < 6 ) {
+            	twodx = j;
+            	++j;
+            	if( whatsFrst < 2 ) {
+            		threedx = j;
+            		++j;
+            		if( whatsFrst < 1 ) {
+	            		fivedx = j;
+	            		++j;
+	            		sevndx = j;
+            		} else {
+            			sevndx = j;
+            			++j;
+            			fivedx = j;
+            		}
+            	} else if( whatsFrst < 4 ) {
+            		whatsFrst = whatsFrst - 2;
+            		fivedx = j;
+            		++j;
+            		if( whatsFrst < 1 ) {
+            			threedx = j;
+	            		++j;
+	            		sevndx = j;
+            		} else {
+            			sevndx = j;
+            			++j;
+            			threedx = j;
+            		}
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		sevndx = j;
+            		++j;
+            		if( whatsFrst < 1 ) {
+            			threedx = j;
+	            		++j;
+	            		fivedx = j;
+            		} else {
+            			fivedx = j;
+            			++j;
+            			threedx = j;
+            		}
+            	}
+            } else if( whatsFrst < 12 ) {
+            	whatsFrst = whatsFrst - 6;
+            	threedx = j;
+        		++j;
+            	if( whatsFrst < 2 ) {
+            		twodx = j;
+                	++j;
+                	if( whatsFrst < 1 ) {
+                		fivedx = j;
+	            		++j;
+	            		sevndx = j;
+                	} else {
+                		sevndx = j;
+                		++j;
+                		fivedx = j;
+                	}
+            	} else if( whatsFrst < 4 ) {
+                	whatsFrst = whatsFrst - 2;
+                	fivedx = j;
+            		++j;
+            		if( whatsFrst < 1 ) {
+            			twodx = j;
+	                	++j;
+	                	sevndx = j;
+					} else {
+						sevndx = j;
+						++j;
+						twodx = j;
+	                }
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		sevndx = j;
+					++j;
+					if( whatsFrst < 1 ) {
+						twodx = j;
+	                	++j;
+	                	fivedx = j;
+					} else {
+						fivedx = j;
+						++j;
+						twodx = j;
+	                }
+            	}
+            } else if( whatsFrst < 18 ) {
+            	whatsFrst = whatsFrst - 12;
+            	fivedx = j;
+        		++j;
+            	if( whatsFrst < 2 ) {
+            		twodx = j;
+                	++j;
+                	if( whatsFrst < 1 ) {
+                		threedx = j;
+	            		++j;
+	            		sevndx = j;
+                	} else {
+                		sevndx = j;
+                		++j;
+                		threedx = j;
+                	}
+            	} else if( whatsFrst < 4 ) {
+            		whatsFrst = whatsFrst - 2;
+            		threedx = j;
+            		++j;
+            		if( whatsFrst < 1 ) {
+            			twodx = j;
+	                	++j;
+	                	sevndx = j;
+            		} else {
+            			sevndx = j;
+            			++j;
+            			twodx = j;
+            		}
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		sevndx = j;
+        			++j;
+        			if( whatsFrst < 1 ) {
+        				twodx = j;
+	                	++j;
+	                	threedx = j;
+            		} else {
+            			threedx = j;
+            			++j;
+            			twodx = j;
+            		}
+            	}
+            } else {
+            	whatsFrst = whatsFrst - 18;
+            	sevndx = j;
+    			++j;
+    			if( whatsFrst < 2 ) {
+    				twodx = j;
+                	++j;
+                	if( whatsFrst < 1 ) {
+                		threedx = j;
+	            		++j;
+	            		fivedx = j;
+                	} else {
+                		fivedx = j;
+                		++j;
+                		threedx = j;
+                	}
+            	} else if( whatsFrst < 4 ) {
+            		whatsFrst = whatsFrst - 2;
+            		threedx = j;
+            		++j;
+            		if( whatsFrst < 1 ) {
+            			twodx = j;
+	                	++j;
+	                	fivedx = j;
+            		} else {
+            			fivedx = j;
+            			++j;
+            			twodx = j;
+            		}
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		fivedx = j;
+        			++j;
+        			if( whatsFrst < 1 ) {
+        				twodx = j;
+	                	++j;
+	                	threedx = j;
+            		} else {
+            			threedx = j;
+            			++j;
+            			twodx = j;
+            		}
+            	}
+            }
+            System.out.println("twodx - sevndx: " + twodx + ", " + threedx + ", " + fivedx + ", " + sevndx);
+            nf[twodx] = ntwos;
+        	pfact[twodx] = 2;
+        	nf[threedx] = nthrees;
+        	pfact[threedx] = 3;
+        	nf[fivedx] = nfives;
+        	pfact[fivedx] = 5;
+        	nf[sevndx] = nsevns;
+        	pfact[sevndx] = 7;
+        	/*
+            if( whatsFrst < 2 ) {          	
+            	nf[j] = ntwos;
+            	pfact[j] = 2;
+            	++j;
+            	if( (int)whatsFrst%2 == 0 ) {
+                	nf[j] = nthrees;
+                	pfact[j] = 3;
+                	++j;
+                	nf[j] = nfives;
+                	pfact[j] = 5;
+            	} else {
+                	nf[j] = nfives;
+                	pfact[j] = 5;
+                	++j;
+                	nf[j] = nthrees;
+                	pfact[j] = 3;
+            	}
+            } else if( whatsFrst < 4 ) {
+            	nf[j] = nthrees;
+            	pfact[j] = 3;
+            	++j;
+            	if( (int)whatsFrst%2 == 0 ) {
+                	nf[j] = ntwos;
+                	pfact[j] = 2;
+                	++j;
+                	nf[j] = nfives;
+                	pfact[j] = 5;
+            	} else {
+                	nf[j] = nfives;
+                	pfact[j] = 5;
+                	++j;
+                	nf[j] = ntwos;
+                	pfact[j] = 2;
+            	}
+            } else {
+            	nf[j] = nfives;
+            	pfact[j] = 5;
+            	++j;
+            	if( (int)whatsFrst%2 == 0 ) {
+                	nf[j] = ntwos;
+                	pfact[j] = 2;
+                	++j;
+                	nf[j] = nthrees;
+                	pfact[j] = 3;
+            	} else {
+                	nf[j] = nthrees;
+                	pfact[j] = 3;
+                	++j;
+                	nf[j] = ntwos;
+                	pfact[j] = 2;
+            	}
+            } */
+            for( int i = 0; i < ntypes; ++i ) {
+            	maxf[i] = Double.valueOf((num[0]/prevFact+1)*(1 - Math.random()));
+            	numf[i] = (int)(Math.log(maxf[i])/Math.log(pfact[i]));
+            	numf[i] = numf[i] < 0? 0 : numf[i] > nf[i] - 1? nf[i] - 1: numf[i];
+            	nfact[i] = (int)(StrictMath.pow(pfact[i],numf[i]));
+            	prevFact *= nfact[i];
+            }
+            n2fact = nfact[twodx];
+        	numtwos = numf[twodx];
+        	n3fact = nfact[threedx];
+        	numthrees = numf[threedx];
+        	numfives = n5fact = nfact[fivedx];
+        	numfives = numf[fivedx];
+        	n7fact = nfact[sevndx];
+        	//numf[sevndx];
+        	/*
+            j = 0;
+            if( whatsFrst < 6 ) {
+            	n2fact = nfact[j];
+            	numtwos = numf[j];
+            	++j;
+            	if( whatsFrst < 2 ) {
+            		n3fact = nfact[j];
+            		numthrees = numf[j];
+            		++j;
+            		if( whatsFrst < 1 ) {
+	            		n5fact = nfact[j];
+	            		numfives = numf[j];
+	            		++j;
+	            		n7fact = nfact[j];
+            		} else {
+            			n7fact = nfact[j];
+            			++j;
+            			n5fact = nfact[j];
+	            		numfives = numf[j];
+            		}
+            	} else if( whatsFrst < 4 ) {
+            		whatsFrst = whatsFrst - 2;
+            		n5fact = nfact[j];
+            		numfives = numf[j];
+            		++j;
+            		if( whatsFrst < 1 ) {
+	            		n3fact = nfact[j];
+	            		numthrees = numf[j];
+	            		++j;
+	            		n7fact = nfact[j];
+            		} else {
+            			n7fact = nfact[j];
+            			++j;
+            			n3fact = nfact[j];
+	            		numthrees = numf[j];
+            		}
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		n7fact = nfact[j];
+            		++j;
+            		if( whatsFrst < 1 ) {
+	            		n3fact = nfact[j];
+	            		numthrees = numf[j];
+	            		++j;
+	            		n5fact = nfact[j];
+	            		numfives = numf[j];
+            		} else {
+            			n5fact = nfact[j];
+                		numfives = numf[j];
+            			++j;
+            			n3fact = nfact[j];
+	            		numthrees = numf[j];
+            		}
+            	}
+            } else if( whatsFrst < 12 ) {
+            	whatsFrst = whatsFrst - 6;
+            	n3fact = nfact[j];
+        		numthrees = numf[j];
+        		++j;
+            	if( whatsFrst < 2 ) {
+            		n2fact = nfact[j];
+                	numtwos = numf[j];
+                	++j;
+                	if( whatsFrst < 1 ) {
+	                	n5fact = nfact[j];
+	            		numfives = numf[j];
+	            		++j;
+	            		n7fact = nfact[j];
+                	} else {
+                		n7fact = nfact[j];
+                		++j;
+                		n5fact = nfact[j];
+	            		numfives = numf[j];
+                	}
+            	} else if( whatsFrst < 4 ) {
+                	whatsFrst = whatsFrst - 2;
+            		n5fact = nfact[j];
+            		numfives = numf[j];
+            		++j;
+            		if( whatsFrst < 1 ) {
+	            		n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                	++j;
+	                	n7fact = nfact[j];
+					} else {
+						n7fact = nfact[j];
+						++j;
+						n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                }
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		n7fact = nfact[j];
+					++j;
+					if( whatsFrst < 1 ) {
+	            		n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                	++j;
+	                	n5fact = nfact[j];
+	            		numfives = numf[j];
+					} else {
+						n5fact = nfact[j];
+	            		numfives = numf[j];
+						++j;
+						n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                }
+            	}
+            } else if( whatsFrst < 18 ) {
+            	whatsFrst = whatsFrst - 12;
+            	n5fact = nfact[j];
+        		numfives = numf[j];
+        		++j;
+            	if( whatsFrst < 2 ) {
+            		n2fact = nfact[j];
+                	numtwos = numf[j];
+                	++j;
+                	if( whatsFrst < 1 ) {
+	                	n3fact = nfact[j];
+	            		numthrees = numf[j];
+	            		++j;
+	            		n7fact = nfact[j];
+                	} else {
+                		n7fact = nfact[j];
+                		++j;
+                		n3fact = nfact[j];
+	            		numthrees = numf[j];
+                	}
+            	} else if( whatsFrst < 4 ) {
+            		whatsFrst = whatsFrst - 2;
+            		n3fact = nfact[j];
+            		numthrees = numf[j];
+            		++j;
+            		if( whatsFrst < 1 ) {
+	            		n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                	++j;
+	                	n7fact = nfact[j];
+            		} else {
+            			n7fact = nfact[j];
+            			++j;
+            			n2fact = nfact[j];
+	                	numtwos = numf[j];
+            		}
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		n7fact = nfact[j];
+        			++j;
+        			if( whatsFrst < 1 ) {
+	            		n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                	++j;
+	                	n3fact = nfact[j];
+	            		numthrees = numf[j];
+            		} else {
+            			n3fact = nfact[j];
+                		numthrees = numf[j];
+            			++j;
+            			n2fact = nfact[j];
+	                	numtwos = numf[j];
+            		}
+            	}
+            } else {
+            	whatsFrst = whatsFrst - 18;
+            	n7fact = nfact[j];
+    			++j;
+    			if( whatsFrst < 2 ) {
+            		n2fact = nfact[j];
+                	numtwos = numf[j];
+                	++j;
+                	if( whatsFrst < 1 ) {
+	                	n3fact = nfact[j];
+	            		numthrees = numf[j];
+	            		++j;
+	            		n5fact = nfact[j];
+	            		numfives = numf[j];
+                	} else {
+                		n5fact = nfact[j];
+	            		numfives = numf[j];
+                		++j;
+                		n3fact = nfact[j];
+	            		numthrees = numf[j];
+                	}
+            	} else if( whatsFrst < 4 ) {
+            		whatsFrst = whatsFrst - 2;
+            		n3fact = nfact[j];
+            		numthrees = numf[j];
+            		++j;
+            		if( whatsFrst < 1 ) {
+	            		n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                	++j;
+	                	n5fact = nfact[j];
+	            		numfives = numf[j];
+            		} else {
+            			n5fact = nfact[j];
+	            		numfives = numf[j];
+            			++j;
+            			n2fact = nfact[j];
+	                	numtwos = numf[j];
+            		}
+            	} else {
+            		whatsFrst = whatsFrst - 4;
+            		n5fact = nfact[j];
+            		numfives = numf[j];
+        			++j;
+        			if( whatsFrst < 1 ) {
+	            		n2fact = nfact[j];
+	                	numtwos = numf[j];
+	                	++j;
+	                	n3fact = nfact[j];
+	            		numthrees = numf[j];
+            		} else {
+            			n3fact = nfact[j];
+                		numthrees = numf[j];
+            			++j;
+            			n2fact = nfact[j];
+	                	numtwos = numf[j];
+            		}
+            	}
+            } */
+            /*
+            max3 = Double.valueOf((num[0]+1)*(1 - Math.random()));
+            numthrees = (int)(Math.log(max3)/Math.log(3));
+            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
+            //numthrees = (Double.valueOf((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
+            n3fact = (int)(StrictMath.pow(3,numthrees));
+            max5 = Double.valueOf((num[0]/n3fact+1)*(1 - Math.random()));
+            numfives = (int)(Math.log(max5)/Math.log(5));
+            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
+            n5fact = (int)(StrictMath.pow(5,numfives));         
+            max2 = Double.valueOf((num[0]/(n3fact*n5fact)+1)*(1 - Math.random()));
             numtwos = (int)(Math.log(max2)/Math.log(2));
             if( numtwos < 0 ) {
               numtwos = 0;
@@ -399,17 +895,8 @@
               numtwos = ntwos - 1;
             }
             n2fact = (int)(StrictMath.pow(2,numtwos));
-            //System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
-            max3 = Double.valueOf((num[0]/n2fact+1)*(1 - Math.random()));
-            numthrees = (int)(Math.log(max3)/Math.log(3));
-            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-            //numthrees = (Double.valueOf((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-            n3fact = (int)(StrictMath.pow(3,numthrees));
-            max5 = Double.valueOf((num[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
-            numfives = (int)(Math.log(max5)/Math.log(5));
-            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
-            n5fact = (int)(StrictMath.pow(5,numfives));
-            den[0] = n2fact*n3fact*n5fact;
+			*/
+            den[0] = n2fact*n3fact*n5fact*n7fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
             instrs = "Convert this Fraction to a Decimal.";
@@ -428,7 +915,7 @@
   			int redfives = numfives > actfives ? numfives - actfives : 0;
             int calcquotdigs = redtwos > redfives ? redtwos : redfives;
             // if there are other numbers in the denominator, cut size off at 5 and round off
-            needsXtraDig = redthrees > 0;
+            needsXtraDig = redthrees > 0 || n7fact > 0;
             fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
             //expQuotDp = fracquotdigs;
