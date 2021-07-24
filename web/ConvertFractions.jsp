@@ -587,59 +587,6 @@
         	pfact[fivedx] = 5;
         	nf[sevndx] = nsevns;
         	pfact[sevndx] = 7;
-        	/*
-            if( whatsFrst < 2 ) {          	
-            	nf[j] = ntwos;
-            	pfact[j] = 2;
-            	++j;
-            	if( (int)whatsFrst%2 == 0 ) {
-                	nf[j] = nthrees;
-                	pfact[j] = 3;
-                	++j;
-                	nf[j] = nfives;
-                	pfact[j] = 5;
-            	} else {
-                	nf[j] = nfives;
-                	pfact[j] = 5;
-                	++j;
-                	nf[j] = nthrees;
-                	pfact[j] = 3;
-            	}
-            } else if( whatsFrst < 4 ) {
-            	nf[j] = nthrees;
-            	pfact[j] = 3;
-            	++j;
-            	if( (int)whatsFrst%2 == 0 ) {
-                	nf[j] = ntwos;
-                	pfact[j] = 2;
-                	++j;
-                	nf[j] = nfives;
-                	pfact[j] = 5;
-            	} else {
-                	nf[j] = nfives;
-                	pfact[j] = 5;
-                	++j;
-                	nf[j] = ntwos;
-                	pfact[j] = 2;
-            	}
-            } else {
-            	nf[j] = nfives;
-            	pfact[j] = 5;
-            	++j;
-            	if( (int)whatsFrst%2 == 0 ) {
-                	nf[j] = ntwos;
-                	pfact[j] = 2;
-                	++j;
-                	nf[j] = nthrees;
-                	pfact[j] = 3;
-            	} else {
-                	nf[j] = nthrees;
-                	pfact[j] = 3;
-                	++j;
-                	nf[j] = ntwos;
-                	pfact[j] = 2;
-            	}
-            } */
             for( int i = 0; i < ntypes; ++i ) {
             	maxf[i] = Double.valueOf((num[0]/prevFact+1)*(1 - Math.random()));
             	numf[i] = (int)(Math.log(maxf[i])/Math.log(pfact[i]));
@@ -655,228 +602,6 @@
         	numfives = numf[fivedx];
         	n7fact = nfact[sevndx];
         	//numf[sevndx];
-        	/*
-            j = 0;
-            if( whatsFrst < 6 ) {
-            	n2fact = nfact[j];
-            	numtwos = numf[j];
-            	++j;
-            	if( whatsFrst < 2 ) {
-            		n3fact = nfact[j];
-            		numthrees = numf[j];
-            		++j;
-            		if( whatsFrst < 1 ) {
-	            		n5fact = nfact[j];
-	            		numfives = numf[j];
-	            		++j;
-	            		n7fact = nfact[j];
-            		} else {
-            			n7fact = nfact[j];
-            			++j;
-            			n5fact = nfact[j];
-	            		numfives = numf[j];
-            		}
-            	} else if( whatsFrst < 4 ) {
-            		whatsFrst = whatsFrst - 2;
-            		n5fact = nfact[j];
-            		numfives = numf[j];
-            		++j;
-            		if( whatsFrst < 1 ) {
-	            		n3fact = nfact[j];
-	            		numthrees = numf[j];
-	            		++j;
-	            		n7fact = nfact[j];
-            		} else {
-            			n7fact = nfact[j];
-            			++j;
-            			n3fact = nfact[j];
-	            		numthrees = numf[j];
-            		}
-            	} else {
-            		whatsFrst = whatsFrst - 4;
-            		n7fact = nfact[j];
-            		++j;
-            		if( whatsFrst < 1 ) {
-	            		n3fact = nfact[j];
-	            		numthrees = numf[j];
-	            		++j;
-	            		n5fact = nfact[j];
-	            		numfives = numf[j];
-            		} else {
-            			n5fact = nfact[j];
-                		numfives = numf[j];
-            			++j;
-            			n3fact = nfact[j];
-	            		numthrees = numf[j];
-            		}
-            	}
-            } else if( whatsFrst < 12 ) {
-            	whatsFrst = whatsFrst - 6;
-            	n3fact = nfact[j];
-        		numthrees = numf[j];
-        		++j;
-            	if( whatsFrst < 2 ) {
-            		n2fact = nfact[j];
-                	numtwos = numf[j];
-                	++j;
-                	if( whatsFrst < 1 ) {
-	                	n5fact = nfact[j];
-	            		numfives = numf[j];
-	            		++j;
-	            		n7fact = nfact[j];
-                	} else {
-                		n7fact = nfact[j];
-                		++j;
-                		n5fact = nfact[j];
-	            		numfives = numf[j];
-                	}
-            	} else if( whatsFrst < 4 ) {
-                	whatsFrst = whatsFrst - 2;
-            		n5fact = nfact[j];
-            		numfives = numf[j];
-            		++j;
-            		if( whatsFrst < 1 ) {
-	            		n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                	++j;
-	                	n7fact = nfact[j];
-					} else {
-						n7fact = nfact[j];
-						++j;
-						n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                }
-            	} else {
-            		whatsFrst = whatsFrst - 4;
-            		n7fact = nfact[j];
-					++j;
-					if( whatsFrst < 1 ) {
-	            		n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                	++j;
-	                	n5fact = nfact[j];
-	            		numfives = numf[j];
-					} else {
-						n5fact = nfact[j];
-	            		numfives = numf[j];
-						++j;
-						n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                }
-            	}
-            } else if( whatsFrst < 18 ) {
-            	whatsFrst = whatsFrst - 12;
-            	n5fact = nfact[j];
-        		numfives = numf[j];
-        		++j;
-            	if( whatsFrst < 2 ) {
-            		n2fact = nfact[j];
-                	numtwos = numf[j];
-                	++j;
-                	if( whatsFrst < 1 ) {
-	                	n3fact = nfact[j];
-	            		numthrees = numf[j];
-	            		++j;
-	            		n7fact = nfact[j];
-                	} else {
-                		n7fact = nfact[j];
-                		++j;
-                		n3fact = nfact[j];
-	            		numthrees = numf[j];
-                	}
-            	} else if( whatsFrst < 4 ) {
-            		whatsFrst = whatsFrst - 2;
-            		n3fact = nfact[j];
-            		numthrees = numf[j];
-            		++j;
-            		if( whatsFrst < 1 ) {
-	            		n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                	++j;
-	                	n7fact = nfact[j];
-            		} else {
-            			n7fact = nfact[j];
-            			++j;
-            			n2fact = nfact[j];
-	                	numtwos = numf[j];
-            		}
-            	} else {
-            		whatsFrst = whatsFrst - 4;
-            		n7fact = nfact[j];
-        			++j;
-        			if( whatsFrst < 1 ) {
-	            		n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                	++j;
-	                	n3fact = nfact[j];
-	            		numthrees = numf[j];
-            		} else {
-            			n3fact = nfact[j];
-                		numthrees = numf[j];
-            			++j;
-            			n2fact = nfact[j];
-	                	numtwos = numf[j];
-            		}
-            	}
-            } else {
-            	whatsFrst = whatsFrst - 18;
-            	n7fact = nfact[j];
-    			++j;
-    			if( whatsFrst < 2 ) {
-            		n2fact = nfact[j];
-                	numtwos = numf[j];
-                	++j;
-                	if( whatsFrst < 1 ) {
-	                	n3fact = nfact[j];
-	            		numthrees = numf[j];
-	            		++j;
-	            		n5fact = nfact[j];
-	            		numfives = numf[j];
-                	} else {
-                		n5fact = nfact[j];
-	            		numfives = numf[j];
-                		++j;
-                		n3fact = nfact[j];
-	            		numthrees = numf[j];
-                	}
-            	} else if( whatsFrst < 4 ) {
-            		whatsFrst = whatsFrst - 2;
-            		n3fact = nfact[j];
-            		numthrees = numf[j];
-            		++j;
-            		if( whatsFrst < 1 ) {
-	            		n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                	++j;
-	                	n5fact = nfact[j];
-	            		numfives = numf[j];
-            		} else {
-            			n5fact = nfact[j];
-	            		numfives = numf[j];
-            			++j;
-            			n2fact = nfact[j];
-	                	numtwos = numf[j];
-            		}
-            	} else {
-            		whatsFrst = whatsFrst - 4;
-            		n5fact = nfact[j];
-            		numfives = numf[j];
-        			++j;
-        			if( whatsFrst < 1 ) {
-	            		n2fact = nfact[j];
-	                	numtwos = numf[j];
-	                	++j;
-	                	n3fact = nfact[j];
-	            		numthrees = numf[j];
-            		} else {
-            			n3fact = nfact[j];
-                		numthrees = numf[j];
-            			++j;
-            			n2fact = nfact[j];
-	                	numtwos = numf[j];
-            		}
-            	}
-            } */
             /*
             max3 = Double.valueOf((num[0]+1)*(1 - Math.random()));
             numthrees = (int)(Math.log(max3)/Math.log(3));
@@ -915,12 +640,13 @@
   			int redfives = numfives > actfives ? numfives - actfives : 0;
             int calcquotdigs = redtwos > redfives ? redtwos : redfives;
             // if there are other numbers in the denominator, cut size off at 5 and round off
-            needsXtraDig = redthrees > 0 || n7fact > 0;
+            needsXtraDig = redthrees > 0 || n7fact > 1;
+            System.out.println("line644 redthrees: " + redthrees + " n7fact: " + n7fact + " numthrees: " + numthrees + " actthrees: " + actthrees);
             fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
             //expQuotDp = fracquotdigs;
             System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
-            quotdigits = (int)(StrictMath.pow(10,fracquotdigs+1)*dividnd/divisor);
+            quotdigits = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);
 			int qtdgts = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);           
             int diff = 0;
             for( int i = 0; i < quotDigs; ++i ) {   	
@@ -964,16 +690,13 @@
             cqspan = 2*(quotDigs + offset) + 1;
             dqspan = 1 + 2*(SZ2_MX + 1) - bqspan - cqspan;
             
-            for( int i = 0; i < quotDigs; ++i ) {
+            /* for( int i = 0; i < quotDigs; ++i ) {
             	spacesb4Op[i][0] = spacesb4quot + i;
-            }
+            } */
             
             int whatquotDig = quotDigs-1; // there may be more quotient digits than subtractions
-            System.out.println("line 479 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
-            while( whatquotDig >= 0 && qt[whatquotDig] == 0 ) {
-                //System.out.println("line 330 qt[" + whatquotDig + "] = " + qt[whatquotDig]);
-                whatquotDig -= 1;
-            }
+            System.out.println("line 698 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
+            
             int worstCaseQdig = 9;
             long tmplong = (long)dividnd;
             int totalwidth = spacesb4quot + quotDigs;
@@ -982,10 +705,14 @@
                     System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
                     break;
                 }
+            	while( whatquotDig >= 0 && qt[whatquotDig] == 0 ) {
+                    System.out.println("line 709 qt[" + whatquotDig + "] = " + qt[whatquotDig]);
+                    whatquotDig -= 1;
+                }
                 operand[nsubs][0] = qt[whatquotDig]*divisor;
                 int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
                 operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-                System.out.println("line 489 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+                System.out.println("line 714 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
                 int WCoperand1 = (int)(tmplong - divisor); 
 
                 actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -998,7 +725,7 @@
                         (int)Math.log10(WCoperand1) + 1: 1;
                 //wcDig[nsubs][1] = WCoperand1 > 0? 
                 //        (int)Math.log10(WCoperand1) + 2: 2;
-                System.out.println("line 502 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
+                System.out.println("line 727 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
                 if( operand[nsubs][1] < 0 ) {
                     System.out.println("uh oh tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
                     break;
@@ -1031,33 +758,37 @@
                     break; // all checked to be zero, break out of outer loop
                 }
 
+                boolean breakout = false;
                 // bring down as many new digits as needed to get something divisor
                 // will go into
-                tmplong = operand[nsubs][1];
-                actBringDn[nsubs] = 0;
-                numBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
-				// how did this ever work? numBringDn in Divider makes every box for the rest of the row a bringdown box,
-						// but here it's coming up with negative numbers
-                //numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
-                //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
-                boolean breakout = false;
-                int divdig = 0;
-                whatquotDig = whatquotDig - 1;
-                while( tmplong < divisor ) { // keep appending dividend digits until operand is big enough for dividsor to go into
-                	int inc = 0;
-                    if( whatquotDig < diff ) {
-                        System.out.println("line 546 no more dividend digits actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-                        //breakout = true;
-                        //break;
-                    } else {
-                    	divdig = whatquotDig-diff;
-                    	inc = dd[divdig];
-                    	whatquotDig = whatquotDig - 1;
-                    }
-                    System.out.println("line 559 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
-                    tmplong = 10*tmplong + inc;
-                    
-                    actBringDn[nsubs] += 1;
+                //if( !needsXtraDig || nsubs < quotDigs - 1 ) {
+                if( !needsXtraDig || whatquotDig > 0 ) {
+	                tmplong = operand[nsubs][1];
+	                actBringDn[nsubs] = 0;
+	                numBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+					// how did this ever work? numBringDn in Divider makes every box for the rest of the row a bringdown box,
+							// but here it's coming up with negative numbers
+	                //numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+	                //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
+	                
+	                int divdig = 0;
+	                whatquotDig = whatquotDig - 1;
+	                while( tmplong < divisor ) { // keep appending dividend digits until operand is big enough for dividsor to go into
+	                	int inc = 0;
+	                    if( whatquotDig < diff ) {
+	                        System.out.println("line 546 no more dividend digits actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+	                        //breakout = true;
+	                        //break;
+	                    } else {
+	                    	divdig = whatquotDig-diff;
+	                    	inc = dd[divdig];
+	                    	whatquotDig = whatquotDig - 1;
+	                    }
+	                    System.out.println("line 559 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
+	                    tmplong = 10*tmplong + inc;
+	                    
+	                    actBringDn[nsubs] += 1;
+	                }
                 }
                 if( breakout ) {
                     break;
@@ -1473,9 +1204,9 @@
         <td class="sym">=</td>
 <%  for( int idx = 0; idx < SZ2_MX - dvsrDigs - onumWidth/3 + spacesb4quot; idx++ ) {  
         int col = spacesb4quot + quotDigs - idx - 1;
-        if( needsXtraDig ) {
+        /* if( needsXtraDig ) {
         	col = col + 1;
-        }
+        } */
         String tid = "td" + col;
         String tic = "isDp";
         String xid = "xt" + col;
@@ -1503,7 +1234,7 @@
                     name="quotdigs"
                     onkeydown="erase( event )" >
             </td>
-<%      } else if( needsXtraDig && idx == spacesb4quot + quotDigs ) { %>
+<%      } else if( needsXtraDig && idx == spacesb4quot + quotDigs - 1 ) { %>
 			<td class="t1" id="<%=tid%>" name="notthestartdig">
 				<input type="<%=lbtype%>" class="a1" size="1"
     				id="<%=qid%>" name="quotdigs"
@@ -1575,7 +1306,7 @@
 
     } %>
 </tr>
-<%  
+<%  //int modsubs = needsXtraDig? nsubs + 1 : nsubs;
     for( sbx = 0; sbx <= nsubs; ++sbx ) {
     int rdx = sbx + 1; %>
 
