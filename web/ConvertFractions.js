@@ -2523,8 +2523,8 @@ function divide( ev ) {
         if (ans === 0) {
             ansBx.style.color = "black"; // it's already been checked
             //if (doc.getElementById("Round Off").checked) {
-            doc.getElementById("statusBox" + x).innerHTML = "divide " + ansBx.id + ".onclick = roundOff";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "divide " + ansBx.id + ".onclick = roundOff";
+            //x = (x + 1)%nSbxs;
             ansBx.onclick = roundOff;
             ansBx.onkeyup = checkRoundOff;
             // find the last opX_1 in the page
@@ -2708,8 +2708,6 @@ function subtract(col, sbx) {
     var Num = Number;
     var ansBxs = doc.getElementsByName("op" + sbx + "_1");
     var bxNo = ansBxs.length - 1 - col;
-    //doc.getElementById("statusBox" + x ).innerHTML = "col: " + col + " sbx: " + sbx + " ansBxs.length: " + ansBxs.length + " bxNo: " + bxNo;
-    //x = (x + 1)%nSbxs;
     var ans = Num(ansBxs[bxNo].value);
     var whatprodboxes = "op" + sbx + "_0";
     var prodBxs = doc.getElementsByName(whatprodboxes);
@@ -2717,18 +2715,12 @@ function subtract(col, sbx) {
     var dvdidx = 0;
     var prodidx = prodBxs.length - 1 - col;
     var prodBx = prodBxs[prodidx];
-    var dvdBx;
-    var borCol = col;
     var prevRow = 0;
     var subBxsLength = 0;
 
-    if (sbx === 0) {
-        
+    if (sbx === 0) {       
         subBxs = doc.getElementsByName("dvddigs");
-        subBxsLength = subBxs.length;
-        //var quotDigs = doc.getElementById("quotDigs").value;
-        
-        
+        subBxsLength = subBxs.length;       
         var quotdigs = doc.getElementsByName("quotdigs"); // actual digits
         var quotdigsLength = quotdigs.length;
         dvdidx = subBxsLength - quotdigsLength - col;
@@ -2739,67 +2731,26 @@ function subtract(col, sbx) {
         }
         dvdBx = subBxs[dvdidx];
 
-        borCol = borCol + quotdigsLength - 1;
         var qx = 0;
         while( Num(quotdigs[qx].value) === 0 && qx < quotdigsLength ) {
-            borCol -= 1;
             qx += 1;
         }
     } else {
         prevRow = sbx - 1;
-        var whatboca = 'boca' + sbx;
-        var bocaLength = doc.getElementsByName(whatboca).length;
         subBxs = doc.getElementsByName("op" + prevRow + "_1");
         subBxsLength = subBxs.length;
         var bdBxs = doc.getElementsByName("bd" + prevRow);
-        //doc.getElementById("statusBox" + x).innerHTML = "col = " + col +   " borCol = " + borCol;
-        //x = x + 1;
-        borCol = borCol + bocaLength / 2;
-        //doc.getElementById("statusBox" + x).innerHTML = "whatboca = " + whatboca + " bocaLength/2 =  " + (bocaLength/2)  + " borCol = " + borCol;
-        //x = x + 1;
-        borCol = borCol - subBxsLength;
-        //doc.getElementById("statusBox" + x).innerHTML = "subBxsLength = " + subBxsLength + " borCol = " + borCol;
-        //x = x + 1;
-        //borCol = borCol - Num(doc.getElementById("bringdown" + prevRow).value);
         var prevBringDownDigs = gBringDownDigs[prevRow];
-        borCol = borCol - prevBringDownDigs;
-        //doc.getElementById("statusBox" + x).innerHTML = "bdBxs.length = " + prevBringDownDigs + " borCol = " + borCol;
-        //x = x + 1;
-        borCol = borCol + 1;
-        //doc.getElementById("statusBox" + x).innerHTML = "plus 1 borCol = " + borCol;
-        //x = x + 1;
-
         var inc = prevBringDownDigs - 1;
         dvdidx = inc - col;
-        //doc.getElementById("statusBox" + x).innerHTML = " inc = " + inc + " col = " + col + " dididx = " + dvdidx;
-        //x = x + 1;
         if (col > inc) {
-            //var calcDig = Num(doc.getElementById("calcDig" + prevRow + "_1").value) + 1;
             dvdidx = dvdidx + subBxsLength;
-            //doc.getElementById("statusBox" + x).innerHTML = "inc = " + inc + " col = " + col + " calcDig = " + calcDig + " dvdidx = " + dvdidx;
-            //x = x + 1;
             dvdBx = subBxs[dvdidx];
         } else {
             dvdBx = bdBxs[dvdidx];
         }
-        //doc.getElementById("statusBox" + x).innerHTML = "dvdidx = " + dvdidx;
-        //x = x + 1;
     }
     var diff = gDiff; // Num(doc.getElementById("operand" + sbx + "_1").value);
-    var whatBorBx = "bo" + borCol + "_" + sbx;
-    //doc.getElementById("statusBox" + x).innerHTML = "993 whatBorBx = " + whatBorBx;
-    //x = x + 1;
-    var borBx = null;
-    borBx = doc.getElementById(whatBorBx);
-    //var hiddenBorBx = null;
-    //hiddenBorBx = doc.getElementById("hbo" + borCol + "_" + sbx);
-    var whatCarry = "ca" + borCol + "_" + sbx;
-    var caBx = null;
-    caBx = doc.getElementById(whatCarry);
-    //var hiddenCaBx = null;
-    //hiddenCaBx = doc.getElementById("hca" + borCol + "_" + sbx);
-    //doc.getElementById("statusBox" + x).innerHTML = "sbx = " + sbx + " col = " + col + " whatBorBx = " + whatBorBx + " whatCarry = " + whatCarry;
-    //x = x + 1;
     var Mat = Math;
     var ten2col = Mat.pow(10, col);
     var discard = diff % ten2col;
@@ -2808,28 +2759,12 @@ function subtract(col, sbx) {
     var expAns = (mainpart - discard) / ten2col;
     var lastDig = diff > 0 ? Mat.floor(Mat.log10(diff)) : 0;
     var isLastSub = (col === lastDig);
-    //doc.getElementById("statusBox" + x).innerHTML = "diff " + diff + " lastDig = " + lastDig + " col = " + col + " isLastSub = " + isLastSub;
-    //x = x + 1;
     if (ans === expAns) {
         ansBxs[bxNo].style.color = "black";
-        var showBrowsChkd = false;
-        if (borBx) {
-            borBx.style.color = "black";
-            if (!showBrowsChkd) {
-                borBx.type = "hidden";
-                dvdBx.style.removeProperty("text-decoration");
-            }
-        }
-
         prodBx.style.color = "black";
-        //doc.getElementById("msg").innerHTML = "";
 		var nextBx;
+		
         if (isLastSub) {
-            // hide the "Click on a digit to borrow from it" message
-            var displayBorrow = doc.getElementById("dispBo");
-            if( displayBorrow ) {
-                displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
-            }
             var divisor = Num(doc.getElementById("oden").value);
             var quotDigs = doc.getElementsByName("quotdigs").length;
             var lastqcol = quotDigs - 1;
@@ -2843,7 +2778,6 @@ function subtract(col, sbx) {
                 } else {
                 	lastqcol = 0;
                 }
-                //doc.getElementById("statusBox" + x).innerHTML = "qid: " + qid + " qidx: " + qidx + " qlen: " + qlen + " nchars: " + nchars + " lastqcol: " + lastqcol;
                 var qtBx = doc.getElementById("qt" + lastqcol);
                 if( !qtBx ) {
                 	alert("qt " + lastqcol + " does not exist");
@@ -2880,16 +2814,9 @@ function subtract(col, sbx) {
                 for (var i = 0; i < dvdlen; ++i) {
                     dvddigs[i].style.color = red;
                 }
-
-                var bddigs = doc.getElementsByName("bd" + prevRow);
-                var bddigsLength = bddigs.length;
-                for (var i = 0; i < bddigsLength; ++i) {
-                    bddigs[i].style.color = red;
-                }
-                //setDivFocus();
                 return;
-            }
-            
+			} // end diff >= divisor
+			var whole = gDividend%divisor === 0;
             var restAreZero = true;
             var origdividend = Num(doc.getElementById("onum").value);
             // start with the most significant digit of quotient, find where
@@ -2918,42 +2845,31 @@ function subtract(col, sbx) {
                 }
             }
             lastFilledBx.style.color = "black";
-            //doc.getElementById("statusBox" + x).innerHTML = "isLastSub restAreZero = " + restAreZero + " lastqcol = " + lastqcol + " whatbox = " + whatbox;
-            //doc.getElementById("statusBox" + x).innerHTML = "isLastSub lastqcol = " + lastqcol + " whatbox = " + whatbox;
-            //x = (x + 1)%nSbxs;
-			var instr2 = 'If quotient is exact, click "Done", otherwise click on the last quotient digit to cross it off';
+			var instr2;
+			
             if( lastqcol === 0 ) { // done calculating this quotient
-                // if there is a remainder
-                var dispR = doc.getElementById("dispR");
-                // if (Num(doc.getElementById("operand" + sbx + "_1").value) !== 0 && dispR ) {
-                if( diff !== 0 && dispR ) {
-                    dispR.style.color = "black";
-                    nextbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
-                } else { // nextbox is a bringdown box
-                    instr2 = 'Click "Done" if the remainder is 0';
-                    if( doc.getElementById("isDp").innerHTML !== "." ) {
-	    				instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
-                    }
-                    nextBx = doc.getElementsByName("bd" + rowNo)[0];
-                    if( nextBx ) {
-                    	nextBx.type = "text";
-                    }
-                    markGood(ansBxs[bxNo], instr2, "", nextBx);
-                }
-            } else if (ans === 0 && restAreZero) {// nextbox is quotient box
+				 // nextbox is a bringdown box
+                 instr2 = 'Click "Done" if the remainder is 0';
+                 var whole = origdividend%divisor === 0;
+                 var dpShown = doc.getElementById("isDp").innerHTML;
+                 //doc.getElementById("statusBox" + x).innerHTML = "dpshown: " + dpShown + " origdividend:" + origdividend + " dividor: " + divisor + " whole: " + whole + " ans: " + ans;
+                 //x = (x + 1)%nSbxs;
+                 if( dpShown !== "." && !whole && ans === 0 ) {
+	    			instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
+                 } else {
+                 	instr2 = 'If quotient is exact, click "Done", otherwise click on the last quotient digit to cross it off';
+                 }
+                 nextBx = doc.getElementsByName("bd" + rowNo)[0]; // this should be null
+            } else if (ans === 0 && restAreZero) { // nextbox is quotient box
+            	instr2 = "How many times does " + divisor + " go into 0?";
                 nextBx = nextQuotBox;
-                rowNo++;
-                doc.getElementById("statusBox" + x).innerHTML = "nextBx: " + nextBx.id + " rowNo: " + rowNo;
-                x = (x + 1)%nSbxs;
             } else { // nextbox is bringdown box
                 nextBx = doc.getElementsByName("bd" + rowNo)[0];
-                doc.getElementById("statusBox" + x).innerHTML = "bd rowNo: " + rowNo;
-            	x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "bd rowNo: " + rowNo;
+            	//x = (x + 1)%nSbxs;
             	instr2 = 'Copy the next dividend digit or type "0" if there are no more digits';
             }
             var prevQtDg = doc.getElementById("qt" + lastqcol);
-            doc.getElementById("statusBox" + x).innerHTML = "subtract qt[" + lastqcol + "].onclick = roundOff";
-           	x = (x + 1)%nSbxs;
             prevQtDg.onclick = roundOff;
             prevQtDg.onkeyup = checkRoundOff;
         } else { // not last subtraction, nextbox is another subtraction box
@@ -2962,38 +2878,22 @@ function subtract(col, sbx) {
         }
         if( nextBx ) {
         	nextBx.type = "text";
-        } else {
+        } /* else {
         	var instr2 = "Click on last quotient digit to cross it off";
         	if( ans === 0 ) {
-	    		if( doc.getElementById("isDp").innerHTML !== "." ) {
+	    		if( doc.getElementById("isDp").innerHTML !== "." && !whole) {
 	    			instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
-	    		} else {
-	    			instr2 = 'Click "Done"';
+	    		//} else {
+	    		//	instr2 = 'Click "Done" no nextbox, no dp necessary';
 	    		}
 	    	}
-        }
-        markGood(ansBxs[bxNo], instr2, "", nextBx);
-        
+        } */
+        markGood(ansBxs[bxNo], instr2, "", nextBx);    
     } else {
-        // show borrows  or carries in case of error
-        var caValue = 0;
-        //doc.getElementById("statusBox" + x).innerHTML = "caBx = " + caBx;
-        //x = x + 1;
-        if (caBx !== null) {
-            caValue = gCarries[borCol][sbx];
-            //doc.getElementById("statusBox" + x).innerHTML = "caValue[" + borCol + "][" + sbx + "] = " + caValue;
-            //x = x + 1;
-            if (caValue === 1) {
-                caBx.style.height = "1em";
-                caBx.type = "text";
-                caBx.style.color = "red";
-                caBx.value = caValue;
-            }
-        }
         prodBx.style.color = red;
         markErr("not " + ans, ansBxs[bxNo]);
     }
-}
+} // end subtract
 function roundOff( ev ) {
     ev = ev || window.event;
     var evTarg = ev.target;
@@ -3017,8 +2917,8 @@ function roundOff( ev ) {
             if( whatQuotBx.isEqualNode(evTarg ) ) {
                 //var dispRnd = doc.getElementById("dispRnd");
                 //var clickedPlace = whatCol;
-                doc.getElementById("statusBox" + x).innerHTML = "quotLength: " + quotLength + " i: " + i + " clickedPlace: " + whatCol;
-                x = (x + 1)%nSbxs;
+                //doc.getElementById("statusBox" + x).innerHTML = "quotLength: " + quotLength + " i: " + i + " clickedPlace: " + whatCol;
+                //x = (x + 1)%nSbxs;
                 if( whatCol === 0 ) {
                     startnow = true;
                     //doc.getElementById("msg").innerHTML = "";
@@ -3104,11 +3004,10 @@ function checkRoundOff( ev ) {
     var nchars = idlen - strtpos;
     var col = Num((id.substr(strtpos, nchars)));
     var quotient = Num(doc.getElementById("quotient").value);
-    var Mat = Math;
-    var quotDp = 5; 
+    var Mat = Math; 
     var roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,col-1))/Mat.pow(10,col));
-	doc.getElementById("statusBox" + x).innerHTML = "quotient: " + quotient + " roundedQuot: " + roundedQuot + " col: " + col;
-	x = (x + 1)%nSbxs;
+	//doc.getElementById("statusBox" + x).innerHTML = "quotient: " + quotient + " roundedQuot: " + roundedQuot + " col: " + col;
+	//x = (x + 1)%nSbxs;
 	
     //var header = doc.getElementById("instr2");                   
     //var significant = header.innerHTML;
@@ -3124,8 +3023,8 @@ function checkRoundOff( ev ) {
         var j = nSigDig - 1;
         while( j >= col ) {
             roundedQuot = 10*roundedQuot;
-            document.getElementById("statusBox" + x).innerHTML = "j = " + j + " roundedQuot = " + roundedQuot;
-            x = (x + 1)%nSbxs;
+            //document.getElementById("statusBox" + x).innerHTML = "j = " + j + " roundedQuot = " + roundedQuot;
+            //x = (x + 1)%nSbxs;
             j = j - 1;
         }
     }
@@ -3203,10 +3102,12 @@ function showDp( ev ) {
     var where = ev.target;
     var doc = document;
     var isDp = doc.getElementById("isDp");
+    var prevInstr = doc.getElementById("instr2").innerHTML;
     if( where === isDp ) {
 		isDp.innerHTML = ".";
-		// not unless there is nothing left to do fixit
-		//doc.getElementById("instr2").innerHTML = 'Click "Done"';
+		if( prevInstr === "Click where decimal point should go, just above and to the right of last dividend digit" ) {  
+			doc.getElementById("instr2").innerHTML = 'Click "Done"';
+		}
 	}
 }
 function bringdown(sbx) {
