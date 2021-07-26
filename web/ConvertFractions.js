@@ -109,7 +109,160 @@ function checkF2D() {
 	allgood = true;
 	var num = Number;
 	var doc = document;
-	alert("checkF2D");
+	var dvsrStr = doc.getElementById("oden").value;
+	var dvsrBxs = doc.getElementsByName("dvsrdigs");
+	var dvsrlen = dvsrBxs.length;
+	var red = "#ff1ac6";
+	for( var i = 0; i < dvsrlen; ++i ) {
+		if( dvsrBxs[i].value !== dvsrStr.substr(i, 1) ) {
+			allgood = false;
+			dvsrBxs[i].style.color = red;
+			break;
+		}
+	}
+	var dvdndStr = doc.getElementById("onum").value;	
+	var dvdndBxs = doc.getElementsByName("dvddigs");
+	var dvdlen = dvdndBxs.length;
+	var dvdndEntrd = "";	
+	var dividend = 0;
+	var bigEnough = false;
+	var divisor = num(dvsrStr);
+	var whatDvdDig = 0;
+	for( var i = 0; i < dvdlen; ++i ) {
+		if( dvdndBxs[i].value !== dvdndStr.substr(i, 1) ) {
+			allgood = false;
+			dvdndBxs[i].style.color = red;
+			break;
+		}
+		dvdndEntrd += dvdndBxs[i].value;
+		if( !bigEnough ) {
+			dividend = num( dvdndEntrd );
+			if( dividend >= divisor ) {
+				bigEnough = true;
+				whatDvdDig = i + 1;
+			}
+		}
+		doc.getElementById("statusBox" + x).innerHTML = "dividend: " + dividend + " divisor: " + divisor + " bigEnough: " + bigEnough + " i: " + i + " whatDvdDig: " + whatDvdDig;
+		x = (x + 1)%nSbxs;
+	}
+	var quotBxs = doc.getElementsByName("quotdigs");
+	var quotlen = quotBxs.length;
+	var quotEntrd = "";
+	var whole = num( dvdndEntrd )%divisor === 0;
+	var isDp = doc.getElementById("isDp");
+	if( !whole && isDp.innerHTML !== "." ) {
+		isDp.style.color = red;
+		isDp.innerHTML = ".";
+		allgood = false;
+	}
+	var newprod = 0;
+	var leastsigdig = num(quotBxs[quotlen-1].value); // catches exact decimals like 2.5 and assumes it's rounded up
+	var roundedup = quotlen > 5 && leastsigdig >= 5;
+	var diffEntrd = "";
+	var l = 0;
+	doc.getElementById("statusBox" + x).innerHTML = "leastsigdig: " + leastsigdig + " roundedup: " + roundedup;
+	x = (x + 1)%nSbxs;
+	for( var i = 0; i < quotlen; ++i ) {		
+		var quotDig = num(quotBxs[i].value);
+		if( roundedup && i === quotlen - 2 ) {
+			quotDig -= 1; // this won't work for 9.99999 does it ever come up in Divider? fixit
+		}
+		if( quotDig !== Math.floor(dividend/divisor) ) {
+			allgood = false;
+			quotBxs[i].style.color = red;
+			doc.getElementById("statusBox" + x).innerHTML = "quoDig[" + i + "]: " + quotDig + " dividend: " + dividend + " divisor: " + divisor;
+			x = (x + 1)%nSbxs;
+			break;
+		}
+		quotEntrd += quotBxs[i].value;
+		doc.getElementById("statusBox" + x).innerHTML = "quoDig[" + i + "]: " + quotDig + " quotEntrd: " + quotEntrd;
+		x = (x + 1)%nSbxs;
+		
+		if( dividend >= divisor ) {
+			var newprod = quotDig*divisor;
+			var prodStr = newprod.toString();
+			var prodBxs = doc.getElementsByName("op" + i + "_0");
+			var prodlen = prodBxs.length;
+			var k = 0;
+			for( var j = 0; j < prodlen; ++j, ++k ) {
+				if( prodBxs[j].value ) {
+					if( prodBxs[j].value != prodStr.substr(k,1) ) {
+						allgood = false;
+						prodBxs[j].style.color = red;
+						doc.getElementById("statusBox" + x).innerHTML = "prodBxs[" + j + "]: " + prodBxs[j].value + " k: " + k;
+						x = (x + 1)%nSbxs;
+						break;
+					}
+				} else {
+					k -= 1;
+				}
+			}
+			var diff = dividend - newprod;
+			var diffStr = diff.toString();
+			var diffBxs = doc.getElementsByName("op" + i + "_1");
+			var difflen = diffBxs.length;
+			var k = 0;
+			for( var j = 0; j < difflen; ++j, ++k ) {
+				if( diffBxs[j].value ) {
+					if( diffBxs[j].value != diffStr.substr(k,1) ) {
+						allgood = false;
+						diffBxs[j].style.color = red;
+						doc.getElementById("statusBox" + x).innerHTML = "diffBxs[" + j + "]: " + diffBxs[j].value + " k: " + k;
+						x = (x + 1)%nSbxs;
+						break;
+					} else {
+						diffEntrd += diffBxs[j].value;
+					}
+				} else {
+					k -= 1;
+				}
+			}
+		}
+		
+		var bdBxs = doc.getElementsByName("bd" + i);
+		if( bdBxs[l] && bdBxs[l].value ) {
+			doc.getElementById("statusBox" + x).innerHTML = "bdBxs[" + l + "]: " + bdBxs[l].value + " dvdndEntrd[" + whatDvdDig + "]: " + dvdndEntrd[whatDvdDig];
+			x = (x + 1)%nSbxs;
+			if( dvdndEntrd[whatDvdDig] ) {
+				if( bdBxs[l].value !== dvdndEntrd[whatDvdDig]  ) {
+					allgood = false;
+					bdBxs[l].style.color = red;
+					break;
+				}
+			} else if( bdBxs[l].value !== "0"  ) {
+				doc.getElementById("statusBox" + x).innerHTML = "bdBxs[" + l + "]: " + bdBxs[l].value  + " not zero??";
+				x = (x + 1)%nSbxs;
+				allgood = false;
+				bdBxs[l].style.color = red;
+				break;
+			}
+			if( bdBxs[l].value ) {
+				diffEntrd += bdBxs[l].value;
+			} else {
+				diffEntrd += "0";
+			}
+			whatDvdDig += 1;
+			l += 1;
+		} else {
+			break;
+		}
+		dividend = num( diffEntrd );
+		doc.getElementById("statusBox" + x).innerHTML = "diffEntrd: " + diffEntrd + " dividend: " + dividend;
+		x = (x + 1)%nSbxs;
+		if( dividend >= divisor ) {
+			l = 0;
+			diffEntrd = "";
+		}
+	}
+
+	//if( quotStr !== quotEntrd ) {
+	//	allgood = false;
+	//	quotBxs.style.color = red;
+	//} // this may be superfluous
+	// check decimal point fixit
+	if( allgood ) {
+		startAgain();
+	}
 }
 function checkD2F() {
 	//very similar to checkMx. Can I combine?
@@ -2848,25 +3001,20 @@ function subtract(col, sbx) {
 			var instr2;
 			
             if( lastqcol === 0 ) { // done calculating this quotient
-				 // nextbox is a bringdown box
-                 instr2 = 'Click "Done" if the remainder is 0';
+				 // nextbox is null
                  var whole = origdividend%divisor === 0;
                  var dpShown = doc.getElementById("isDp").innerHTML;
-                 //doc.getElementById("statusBox" + x).innerHTML = "dpshown: " + dpShown + " origdividend:" + origdividend + " dividor: " + divisor + " whole: " + whole + " ans: " + ans;
-                 //x = (x + 1)%nSbxs;
                  if( dpShown !== "." && !whole && ans === 0 ) {
 	    			instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
                  } else {
                  	instr2 = 'If quotient is exact, click "Done", otherwise click on the last quotient digit to cross it off';
                  }
-                 nextBx = doc.getElementsByName("bd" + rowNo)[0]; // this should be null
+                 nextBx = null
             } else if (ans === 0 && restAreZero) { // nextbox is quotient box
             	instr2 = "How many times does " + divisor + " go into 0?";
                 nextBx = nextQuotBox;
             } else { // nextbox is bringdown box
                 nextBx = doc.getElementsByName("bd" + rowNo)[0];
-                //doc.getElementById("statusBox" + x).innerHTML = "bd rowNo: " + rowNo;
-            	//x = (x + 1)%nSbxs;
             	instr2 = 'Copy the next dividend digit or type "0" if there are no more digits';
             }
             var prevQtDg = doc.getElementById("qt" + lastqcol);
@@ -2878,16 +3026,7 @@ function subtract(col, sbx) {
         }
         if( nextBx ) {
         	nextBx.type = "text";
-        } /* else {
-        	var instr2 = "Click on last quotient digit to cross it off";
-        	if( ans === 0 ) {
-	    		if( doc.getElementById("isDp").innerHTML !== "." && !whole) {
-	    			instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
-	    		//} else {
-	    		//	instr2 = 'Click "Done" no nextbox, no dp necessary';
-	    		}
-	    	}
-        } */
+        }
         markGood(ansBxs[bxNo], instr2, "", nextBx);    
     } else {
         prodBx.style.color = red;
@@ -2908,17 +3047,12 @@ function roundOff( ev ) {
     var divisor = Num(doc.getElementById("oden").value);
     var dividend = Num(doc.getElementById("onum").value);
     var willBzeros = divisor > dividend;
-    //var doc.getElementById("msg") = doc.getElementById("msg");
     for( var i = 0; i < quotLength; ++i ) {
         var whatCol = quotLength - 1 - i;
         var whatQuotBx = quotdigs[i];
 
         if( !crossrest ) {
             if( whatQuotBx.isEqualNode(evTarg ) ) {
-                //var dispRnd = doc.getElementById("dispRnd");
-                //var clickedPlace = whatCol;
-                //doc.getElementById("statusBox" + x).innerHTML = "quotLength: " + quotLength + " i: " + i + " clickedPlace: " + whatCol;
-                //x = (x + 1)%nSbxs;
                 if( whatCol === 0 ) {
                     startnow = true;
                     //doc.getElementById("msg").innerHTML = "";
@@ -2928,11 +3062,8 @@ function roundOff( ev ) {
                     // even if this is a significant digits problem, not a 
                     // decimal places problem, this digit will never be changed 
                     // to zero
-                    if( nSigDig < quotDp - 1 ) {
-                        
+                    if( nSigDig < quotDp - 1 ) {                        
                         crossrest = true;
-                        //doc.getElementById("statusBox" + x).innerHTML = "nSigDig = " + nSigDig +" quotDp = " + quotDp;
-                        //x = x + 1;
                     }
                     var all = doc.getElementById("th-id2");
                     var length = all.length;
