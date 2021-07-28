@@ -84,10 +84,8 @@ th {
 .a1 {
   width: 1.1em;
   min-width: 1.1em;
-  max-width: 1.1em;
-  color: black; 
+  max-width: 1.1em; 
   text-align: center;
-  border: 1px solid black;
   font: inherit;
   height: 1em;
   margin-left: 0px;

@@ -367,7 +367,7 @@
         	int ndigits = 1 + (int)(mxDigits*Math.random());
         	double multiplier = StrictMath.pow(10,(double)ndigits);
         	int intversion = (int)(multiplier*decimal);
-        	System.out.println("ndigits: " + ndigits + " intversion: " + intversion + " decimal: " + decimal);
+        	//System.out.println("ndigits: " + ndigits + " intversion: " + intversion + " decimal: " + decimal);
         	decimal = ((double)intversion)/multiplier;
         	strDec = String.valueOf(decimal);
         	int trailZeros = (int)((mxDigits-(int)ndigits)*Math.random());
@@ -578,7 +578,7 @@
             		}
             	}
             }
-            System.out.println("twodx - sevndx: " + twodx + ", " + threedx + ", " + fivedx + ", " + sevndx);
+            //System.out.println("twodx - sevndx: " + twodx + ", " + threedx + ", " + fivedx + ", " + sevndx);
             nf[twodx] = ntwos;
         	pfact[twodx] = 2;
         	nf[threedx] = nthrees;
@@ -641,11 +641,11 @@
             int calcquotdigs = redtwos > redfives ? redtwos : redfives;
             // if there are other numbers in the denominator, cut size off at 5 and round off
             needsXtraDig = redthrees > 0 || n7fact > 1;
-            System.out.println("line644 redthrees: " + redthrees + " n7fact: " + n7fact + " numthrees: " + numthrees + " actthrees: " + actthrees);
+            //System.out.println("line644 redthrees: " + redthrees + " n7fact: " + n7fact + " numthrees: " + numthrees + " actthrees: " + actthrees);
             fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
             //expQuotDp = fracquotdigs;
-            System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
+            //System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
             quotdigits = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);
 			int qtdgts = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);           
             int diff = 0;
@@ -654,7 +654,7 @@
             	int ten2pow = 10*ten2powm1;
             	int throway = qtdgts%ten2pow;         	
             	qt[i] = throway/ten2powm1;
-            	System.out.println("quotdigits: " + quotdigits + " qt[" + i + "]: " + qt[i]);
+            	//System.out.println("quotdigits: " + quotdigits + " qt[" + i + "]: " + qt[i]);
             	qtdgts = qtdgts - throway;
             	diff += 1;
             }
@@ -664,7 +664,7 @@
             	int ten2pow = 10*ten2powm1;
             	int throway = dvddigits%ten2pow;         	
             	dd[i] = throway/ten2powm1;
-            	System.out.println("dvddigits: " + dvddigits + " dd[" + i + "]: " + dd[i]);
+            	//System.out.println("dvddigits: " + dvddigits + " dd[" + i + "]: " + dd[i]);
             	dvddigits = dvddigits - throway;
             }
             
@@ -674,13 +674,13 @@
             int throwway = dividnd%ten2pow;
             int dvdpart =( dividnd - throwway)/ten2pow;
             
-            System.out.println("dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart);
+            //System.out.println("dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart);
             while( divisor > dvdpart ) {
             	offset += 1;
             	partDigs = partDigs - 1;
             	throwway = dividnd%(int)StrictMath.pow(10,partDigs);
             	dvdpart =( dividnd - throwway)/(int)StrictMath.pow(10,partDigs);
-                System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset);
+                //System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset);
             }
             
             spacesb4quot = offset;
@@ -695,24 +695,24 @@
             } */
             
             int whatquotDig = quotDigs-1; // there may be more quotient digits than subtractions
-            System.out.println("line 698 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
+            //System.out.println("line 698 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
             
             int worstCaseQdig = 9;
             long tmplong = (long)dividnd;
             int totalwidth = spacesb4quot + quotDigs;
             while( whatquotDig >= 0 ) {
             	if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
-                    System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
+                    //System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
                     break;
                 }
             	while( whatquotDig >= 0 && qt[whatquotDig] == 0 ) {
-                    System.out.println("line 709 qt[" + whatquotDig + "] = " + qt[whatquotDig]);
+                    //System.out.println("line 709 qt[" + whatquotDig + "] = " + qt[whatquotDig]);
                     whatquotDig -= 1;
                 }
                 operand[nsubs][0] = qt[whatquotDig]*divisor;
                 int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
                 operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-                System.out.println("line 714 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+                //System.out.println("line 714 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
                 int WCoperand1 = (int)(tmplong - divisor); 
 
                 actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -725,9 +725,9 @@
                         (int)Math.log10(WCoperand1) + 1: 1;
                 //wcDig[nsubs][1] = WCoperand1 > 0? 
                 //        (int)Math.log10(WCoperand1) + 2: 2;
-                System.out.println("line 727 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
+                //System.out.println("line 727 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
                 if( operand[nsubs][1] < 0 ) {
-                    System.out.println("uh oh tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
+                    //System.out.println("uh oh tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
                     break;
                 }
 
@@ -746,7 +746,7 @@
                 if( operand[nsubs][1] == 0 ) {            // if difference is zero
                     restAreZero = true;                     // check if there is 
                     for( int idx = whatquotDig-1-diff; idx >= 0; --idx ) { // anything but zeros left
-                    	System.out.println("difference was 0. checking rest of dividend dd[" + idx + "]: " + dd[idx]);
+                    	//System.out.println("difference was 0. checking rest of dividend dd[" + idx + "]: " + dd[idx]);
                         if( dd[idx] != 0 ) {
                             restAreZero = false;
                             break; // rest are not zero, stop checking
@@ -754,7 +754,7 @@
                     }
                 }
                 if( restAreZero ) {  
-                	System.out.println("rest are zero, breaking out of loop");
+                	//System.out.println("rest are zero, breaking out of loop");
                     break; // all checked to be zero, break out of outer loop
                 }
 
@@ -776,7 +776,7 @@
 	                while( tmplong < divisor ) { // keep appending dividend digits until operand is big enough for dividsor to go into
 	                	int inc = 0;
 	                    if( whatquotDig < diff ) {
-	                        System.out.println("line 546 no more dividend digits actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+	                        //System.out.println("line 546 no more dividend digits actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
 	                        //breakout = true;
 	                        //break;
 	                    } else {
@@ -784,7 +784,7 @@
 	                    	inc = dd[divdig];
 	                    	whatquotDig = whatquotDig - 1;
 	                    }
-	                    System.out.println("line 559 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
+	                    //System.out.println("line 559 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
 	                    tmplong = 10*tmplong + inc;
 	                    
 	                    actBringDn[nsubs] += 1;
@@ -793,9 +793,9 @@
                 if( breakout ) {
                     break;
                 }
-                System.out.println("line 568 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
-                System.out.println("line 569 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-                System.out.println("line 570 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+                //System.out.println("line 568 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
+                //System.out.println("line 569 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                //System.out.println("line 570 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
                 totalwidth = spacesb4Op[nsubs][1] + wcDig[nsubs][1] + actBringDn[nsubs];
                 nsubs = nsubs + 1;                 
             } 
@@ -1351,7 +1351,7 @@
 <%          } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] + spacesb4Dvsr ) { 
                 String name = "op" + sbx + "_1";  
                 String oid = "op" + ocol + "_" + rdx; 
-                System.out.println("difference spacesb4op[" + sbx +"]: " + spacesb4Op[sbx][1] + " wcDig: " + wcDig[sbx][1] + " idx: " + idx + " col = " + col);
+                //System.out.println("difference spacesb4op[" + sbx +"]: " + spacesb4Op[sbx][1] + " wcDig: " + wcDig[sbx][1] + " idx: " + idx + " col = " + col);
                 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" id="<%=oid%>" class="a1" size="1" 
@@ -1388,7 +1388,7 @@
 </div>
 <div>
 	<table>
-	<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
