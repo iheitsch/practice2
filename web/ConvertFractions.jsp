@@ -598,7 +598,7 @@
         	numtwos = numf[twodx];
         	n3fact = nfact[threedx];
         	numthrees = numf[threedx];
-        	numfives = n5fact = nfact[fivedx];
+        	n5fact = nfact[fivedx];
         	numfives = numf[fivedx];
         	n7fact = nfact[sevndx];
         	//numf[sevndx];
@@ -645,7 +645,7 @@
             fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
             //expQuotDp = fracquotdigs;
-            //System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
+            System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
             quotdigits = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);
 			int qtdgts = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);           
             int diff = 0;
@@ -698,7 +698,7 @@
             //System.out.println("line 698 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
             
             int worstCaseQdig = 9;
-            long tmplong = (long)dividnd;
+            long tmplong = (long)dvdpart;
             int totalwidth = spacesb4quot + quotDigs;
             while( whatquotDig >= 0 ) {
             	if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
@@ -727,13 +727,13 @@
                 //        (int)Math.log10(WCoperand1) + 2: 2;
                 //System.out.println("line 727 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
                 if( operand[nsubs][1] < 0 ) {
-                    //System.out.println("uh oh tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
+                    System.out.println("uh oh tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
                     break;
                 }
 
                 //int mostPossProdDig = (int)Math.log10(WCoperand0) + 1;
                 spacesb4Op[nsubs][0] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][0];
-                //System.out.println("line 991 nsubs: " + nsubs + " spacesb4quot: " + spacesb4quot + " quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+                //System.out.println("line 991 nsubs: " + nsubs + " spacesb4quot: " + spacesb4quot + " quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
                 spacesb4Op[nsubs][1] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1];
                 cspan[nsubs] = 2*(wcDig[nsubs][0] + 1);

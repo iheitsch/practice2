@@ -105,9 +105,11 @@ function check() {
     }
     return false;
 }
-function checkF2D() {
+function checkF2D() { // if numbers get erased somehow, even if they're 0, this function hangs fixit. if you 
+// write the number back in, it gives an error fixit. if you miss the decimal point, it's hard to see what's wrong fixit
 	allgood = true;
 	var num = Number;
+	var Mat = Math;
 	var doc = document;
 	var dvsrStr = doc.getElementById("oden").value;
 	var dvsrBxs = doc.getElementsByName("dvsrdigs");
@@ -146,13 +148,11 @@ function checkF2D() {
 				whatDvdDig = i + 1;
 			}
 		}
-		//doc.getElementById("statusBox" + x).innerHTML = "dividend: " + dividend + " divisor: " + divisor + " bigEnough: " + bigEnough + " i: " + i + " whatDvdDig: " + whatDvdDig;
-		//x = (x + 1)%nSbxs;
 	}
 	var quotBxs = doc.getElementsByName("quotdigs");
 	var quotlen = quotBxs.length;
-	var quotEntrd = "";
-	var whole = num( dvdndEntrd )%divisor === 0;
+	var nDvdEntrd = num( dvdndEntrd );
+	var whole = nDvdEntrd%divisor === 0;
 	var isDp = doc.getElementById("isDp");
 	if( !whole && isDp.innerHTML !== "." ) {
 		isDp.style.color = red;
@@ -161,35 +161,38 @@ function checkF2D() {
 		isDp.innerHTML = ".";
 		allgood = false;
 	}
-	var newprod = 0;
-	var leastsigdig = num(quotBxs[quotlen-1].value); // catches exact decimals like 2.5 and assumes it's rounded up
-	var roundedup = quotlen > 5 && leastsigdig >= 5;
-	var diffEntrd = "";
-	var l = 0;
-	//doc.getElementById("statusBox" + x).innerHTML = "leastsigdig: " + leastsigdig + " roundedup: " + roundedup;
+	
+	var expnt = 4;
+
+	var roundquot = Mat.floor(0.5 + nDvdEntrd*Mat.pow(10,expnt)/divisor);
+	//doc.getElementById("statusBox" + x).innerHTML = "expnt: " + expnt + " roundquot: " + roundquot;
 	//x = (x + 1)%nSbxs;
-	for( var i = 0; i < quotlen; ++i ) {		
+	var m = 0;
+	var expnt2 = Mat.floor(Mat.log10(roundquot));
+	for( var i = 0; i < quotlen && i <= expnt2; ++i ) {		
 		var quotDig = num(quotBxs[i].value);
-		if( roundedup && i === quotlen - 2 ) {
-			quotDig -= 1; // this won't work for 9.99999 does it ever come up in Divider? fixit
-		}
-		if( quotDig !== Math.floor(dividend/divisor) ) {
+		var ten2pow = Mat.pow(10,expnt2 - i);
+		var calcquotDig = Mat.floor(roundquot/ten2pow);
+		roundquot = roundquot - ten2pow*calcquotDig;
+		//doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " quotlen: " + quotlen + " quotDig: " + quotDig + " calcquotDig: " + calcquotDig;
+		//x = (x + 1)%nSbxs;
+		if( quotDig !== calcquotDig) {
 			allgood = false;
 			quotBxs[i].style.color = red;
 			var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
-			//doc.getElementById("statusBox" + x).innerHTML = "quoDig[" + i + "]: " + quotDig + " dividend: " + dividend + " divisor: " + divisor;
-			//x = (x + 1)%nSbxs;
 			break;
 		}
-		quotEntrd += quotBxs[i].value;
-		//doc.getElementById("statusBox" + x).innerHTML = "quoDig[" + i + "]: " + quotDig + " quotEntrd: " + quotEntrd;
-		//x = (x + 1)%nSbxs;
-		
+	}
+	var newprod = 0;
+	var diffEntrd = "";
+	var l = 0;
+	for( var i = 0; i < quotlen; ++i ) {			
+		var quotDig = Math.floor(dividend/divisor);
 		if( dividend >= divisor ) {
 			var newprod = quotDig*divisor;
 			var prodStr = newprod.toString();
-			var prodBxs = doc.getElementsByName("op" + i + "_0");
+			var prodBxs = doc.getElementsByName("op" + m + "_0");
 			var prodlen = prodBxs.length;
 			var k = 0;
 			for( var j = 0; j < prodlen; ++j, ++k ) {
@@ -199,8 +202,6 @@ function checkF2D() {
 						prodBxs[j].style.color = red;
 						var errs = Number(doc.getElementById("errs").value);
             			doc.getElementById("errs").value = errs + 1;
-						//doc.getElementById("statusBox" + x).innerHTML = "prodBxs[" + j + "]: " + prodBxs[j].value + " k: " + k;
-						//x = (x + 1)%nSbxs;
 						break;
 					}
 				} else {
@@ -209,7 +210,7 @@ function checkF2D() {
 			}
 			var diff = dividend - newprod;
 			var diffStr = diff.toString();
-			var diffBxs = doc.getElementsByName("op" + i + "_1");
+			var diffBxs = doc.getElementsByName("op" + m + "_1");
 			var difflen = diffBxs.length;
 			var k = 0;
 			for( var j = 0; j < difflen; ++j, ++k ) {
@@ -219,8 +220,6 @@ function checkF2D() {
 						diffBxs[j].style.color = red;
 						var errs = Number(doc.getElementById("errs").value);
            				doc.getElementById("errs").value = errs + 1;
-						//doc.getElementById("statusBox" + x).innerHTML = "diffBxs[" + j + "]: " + diffBxs[j].value + " k: " + k;
-						//x = (x + 1)%nSbxs;
 						break;
 					} else {
 						diffEntrd += diffBxs[j].value;
@@ -229,12 +228,12 @@ function checkF2D() {
 					k -= 1;
 				}
 			}
+			//doc.getElementById("statusBox" + x).innerHTML = "m: " + m + " j: " + j + " difflen: " + difflen + " diffEntrd: " + diffEntrd;
+			//x = (x + 1)%nSbxs;
 		}
 		
-		var bdBxs = doc.getElementsByName("bd" + i);
-		if( bdBxs[l] && bdBxs[l].value ) {
-			//doc.getElementById("statusBox" + x).innerHTML = "bdBxs[" + l + "]: " + bdBxs[l].value + " dvdndEntrd[" + whatDvdDig + "]: " + dvdndEntrd[whatDvdDig];
-			//x = (x + 1)%nSbxs;
+		var bdBxs = doc.getElementsByName("bd" + m);
+		if( bdBxs[l] ) {
 			if( dvdndEntrd[whatDvdDig] ) {
 				if( bdBxs[l].value !== dvdndEntrd[whatDvdDig]  ) {
 					allgood = false;
@@ -243,9 +242,7 @@ function checkF2D() {
             		doc.getElementById("errs").value = errs + 1;
 					break;
 				}
-			} else if( bdBxs[l].value !== "0"  ) {
-				//doc.getElementById("statusBox" + x).innerHTML = "bdBxs[" + l + "]: " + bdBxs[l].value  + " not zero??";
-				//x = (x + 1)%nSbxs;
+			} else if( bdBxs[l].value && bdBxs[l].value !== "0"  ) {
 				allgood = false;
 				bdBxs[l].style.color = red;
 				var errs = Number(doc.getElementById("errs").value);
@@ -256,18 +253,19 @@ function checkF2D() {
 				diffEntrd += bdBxs[l].value;
 			} else {
 				diffEntrd += "0";
-			}
+			}			
 			whatDvdDig += 1;
 			l += 1;
+			//doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " diffEntrd: " + diffEntrd + " divisor: " + divisor;
+			//x = (x + 1)%nSbxs;
 		} else {
 			break;
 		}
 		dividend = num( diffEntrd );
-		//doc.getElementById("statusBox" + x).innerHTML = "diffEntrd: " + diffEntrd + " dividend: " + dividend;
-		//x = (x + 1)%nSbxs;
 		if( dividend >= divisor ) {
 			l = 0;
 			diffEntrd = "";
+			m += 1;
 		}
 	}
 
@@ -2435,20 +2433,12 @@ function divide( ev ) {
     
     var mcarry = 0;
     var i = 0;
-    var carryRow = quotDigs - 1 - col;
     var Mat = Math;
     for (; i < dvsrdigslength; i++) {
         var dbx = dvsrdigslength - 1 - i;
         var addProd = Num(dvsrdigs[dbx].value) * ans + mcarry;
         mcarry = Mat.floor(addProd / 10);
         var mDig = addProd % 10;
-        if( dbx > 0 && i < dvsrdigslength - 1 ) {
-            //var whatMcarry = doc.getElementById("hcm" + i + "_" + carryRow);
-            var whatMcarry = doc.getElementById("cm" + i + "_" + carryRow);
-            if( whatMcarry ) {
-                gMcarries[i][carryRow] = mcarry;
-            }
-        }
         prod += Mat.pow(10, i) * mDig;
         //doc.getElementById("statusBox" + x).innerHTML = "ans : " + ans + " dbx: " + dbx + " mcarry: " + mcarry + " addProd: " + addProd + " mDig: " + mDig;
         //x = (x+1)%nSbxs;
@@ -2510,62 +2500,14 @@ function divide( ev ) {
             throwway = dividnd%Mat.pow(10,partDigs);
             dvdpart =( dividnd - throwway)/Mat.pow(10,partDigs);
         }
-            
-        //doc.getElementById("statusBox" + x).innerHTML = "dvdBxs.length = " + dvdBxs.length + " quotDigs = " + quotDigs + " i = " + i;
-        //x = (x + 1)%nSbxs;
+
         while (i >= 0) {
             dvdDigVal = Num(dvdBxs[i].value);
             var ten2pow = Mat.pow(10, pow);
             dvdnd += ten2pow * dvdDigVal;
-            //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + ", pow = " + pow + ", i = " + i + ", dvdnd = " + dvdnd;
-            //x = (x + 1)%nSbxs;
-            // if there was a borrow, decrement dvdDigVal
-            if (pow > 0) {
-                caCol = pow + quotDigs - 2 - leadzeros;
-                //whatCarry = "hca" + caCol + "_" + whatRow;
-                whatCarry = "ca" + caCol + "_" + whatRow;
-                //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + ", pow = " + pow + ", checking whatCarry = " + whatCarry;
-                //x = x + 1;
-                caBx = doc.getElementById(whatCarry);
-                borCol = caCol + 1;
-                //whatBorBx = "hbo" + borCol + "_" + whatRow;
-                whatBorBx = "bo" + borCol + "_" + whatRow;
-                borBx = doc.getElementById(whatBorBx);
-                if (borBx && caBx) {
-                    //if (Num(caBx.value) === 1) {
-                    if( gCarries[caCol][whatRow] === 1 ) {
-                        --dvdDigVal;
-                        // store the new borrowed value
-                        //borBx.value = dvdDigVal;
-                        gBorrows[borCol][whatRow] = dvdDigVal;
-                        //doc.getElementById("statusBox" + x).innerHTML = "storing new value: " + dvdDigVal + " at " + whatBorBx;
-                        //x = x + 1;
-                    } else {
-                        //borBx.value = "-2";
-                        gBorrows[borCol][whatRow] = -2;
-                    }
-                }
-            }
             discard = prod % ten2pow;
             mainpart = prod % Mat.pow(10, pow + 1);
             prodDigVal = (mainpart - discard) / ten2pow;
-            //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + " pow = " + pow + " dvdDigVal = " + dvdDigVal + " prodDigVal = " + prodDigVal;
-            //x = (x + 1)%nSbxs;
-            caCol = pow + quotDigs - 1 - leadzeros;
-            //whatCarry = "hca" + caCol + "_" + whatRow;
-            whatCarry = "ca" + caCol + "_" + whatRow;
-            caBx = doc.getElementById(whatCarry);
-            if (caBx) {
-                if (dvdDigVal < prodDigVal) { // this digit has a carry
-                    //caBx.value = 1;
-                    gCarries[caCol][whatRow] = 1;
-                    //doc.getElementById("statusBox" + x).innerHTML = "storing carry at " + whatCarry;
-                    //x = x + 1;
-                } else {
-                    //caBx.value = 0;
-                    gCarries[caCol][whatRow] = 0;
-                }
-            }
             --i;
             ++pow;
         }
@@ -2582,18 +2524,12 @@ function divide( ev ) {
         var bringdown = gBringDownDigs[prevRow];
 
         var maxp = dvdBxs.length + bringdown;
-        //doc.getElementById("statusBox" + x).innerHTML = "whatDvdBxs = " + whatDvdBxs + " dvdBxs.length = " + dvdBxs.length + " whatRow = " + whatRow + ", pow = " + pow + " maxp = "  + maxp + " bringdown = " + bringdown + " prevRow = " + prevRow;
-        //x = (x + 1)%nSbxs;
         while (pow < maxp) {
             if (pow < bringdown) {
                 dvdDigVal = Num(bdBxs[bringdown - 1 - pow].value);
-                //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + "bringdown = " + bringdown + " dvdDigVal = " + dvdDigVal;
-                //x = (x + 1)%nSbxs;
             } else {
                 var dvdidx = maxp - 1 - pow;
                 var whatDvdBx = dvdBxs[dvdidx];
-                //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " dvdidx = " + dvdidx + " whatDvdBx = " + whatDvdBx;
-                //x = (x + 1)%nSbxs;
                 if (whatDvdBx !== null) {
                     dvdDigVal = Num(whatDvdBx.value);
                 }
@@ -2601,65 +2537,10 @@ function divide( ev ) {
 
             var ten2pow = Mat.pow(10, pow);
             dvdnd += ten2pow * dvdDigVal;
-            //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " dvdDigVal = " + dvdDigVal + " dividend = " + dvdnd;
-            //x = (x + 1)%nSbxs;
-            // if there was a borrow, decrement dvdDigVal
-            if (pow > 0) {
-                caCol = pow + doc.getElementsByName('boca' + whatRow).length / 2 - dvdBxs.length - bringdown;
-                //whatCarry = "hca" + caCol + "_" + whatRow;
-                whatCarry = "ca" + caCol + "_" + whatRow;
-                caBx = doc.getElementById(whatCarry);
-                //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + " pow = " + pow + ", checking whatCarry = " + whatCarry;
-                //x = x + 1
-                borCol = caCol + 1;
-                //whatBorBx = "hbo" + borCol + "_" + whatRow;
-                whatBorBx = "bo" + borCol + "_" + whatRow;
-                borBx = doc.getElementById(whatBorBx);
-                if (borBx && caBx) {
-                    if( gCarries[caCol][whatRow] === 1 ) {
-                        --dvdDigVal;
-                        // store the new borrowed value
-                        //borBx.value = dvdDigVal;
-                        gBorrows[borCol][whatRow] = dvdDigVal;
-                        //doc.getElementById("statusBox" + x).innerHTML = " pow = " + pow + " storing new value: " + dvdDigVal + " at " + whatBorBx;
-                        //x = x + 1;
-                    } else {
-                        //borBx.value = "-2";
-                        gBorrows[borCol][whatRow] = -2;
-                    }
-                }
-            }
+
             discard = prod % ten2pow;
             mainpart = prod % Mat.pow(10, pow + 1);
             prodDigVal = (mainpart - discard) / ten2pow;
-            //doc.getElementById("statusBox" + x).innerHTML = "mainpart = " + mainpart + " discard = " + discard + " prodDigVal = " + prodDigVal;
-            //x = x + 1;
-            caCol = pow + 1;
-            //doc.getElementById("statusBox" + x).innerHTML = " pow = " + pow + " caCol = " + caCol;
-            //x = x + 1;
-            caCol += doc.getElementsByName("boca" + whatRow).length / 2;
-            //doc.getElementById("statusBox" + x).innerHTML = "plus boca length/2 caCol = " + caCol;
-            //x = x + 1;
-            caCol -= dvdBxs.length;
-            //doc.getElementById("statusBox" + x).innerHTML = "minus DvdBxs.length caCol = " + caCol;
-            //x = x + 1;
-            caCol -= bringdown;
-            //doc.getElementById("statusBox" + x).innerHTML = "minus bringdown caCol = " + caCol;
-            //x = x + 1;
-            //whatCarry = "hca" + caCol + "_" + whatRow;
-            whatCarry = "ca" + caCol + "_" + whatRow;
-            caBx = doc.getElementById(whatCarry);
-            //doc.getElementById("statusBox" + x).innerHTML = "whatCarry " + whatCarry + " caBx = " + caBx;
-            //x = x + 1;
-            if (caBx) {
-                if (dvdDigVal < prodDigVal) {// this digit has a carry
-                    gCarries[caCol][whatRow] = 1;
-                    //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " storing carry at " + whatCarry;
-                    //x = x + 1;
-                } else {
-                    gCarries[caCol][whatRow] = 0;
-                }
-            }
             ++pow;
         }
     } // is all this necessary? fixit
@@ -2685,90 +2566,84 @@ function divide( ev ) {
         bddigs = doc.getElementsByName("bd" + prevRow);
         bddigsLength = bddigs.length;
     }
-    var stop = dvddigs.length;
-    if (whatRow === 0) {
-        stop = stop + 1 - quotDigs;
-    }
-    var time2increment = true;
+
     var instr2 = "";
     var nextBx;
-    if (time2increment) {
-        if (ans === 0) {
-            ansBx.style.color = black; // it's already been checked
-            ansBx.onclick = roundOff;
-            ansBx.onkeyup = checkRoundOff;
-            // find the last opX_1 in the page
-            var nextrow = doc.getElementsByName("op" + 0 + "_1");
-            var lastrow = null;
-            var lastRowNum = 0;
-            for (var j = 1; ; ++j) {
-                var lastrow = nextrow;
-                nextrow = doc.getElementsByName("op" + j + "_1");
-                lastRowNum = j;
-                if (nextrow.length === 0) {
+    if (ans === 0) {
+        ansBx.style.color = black; // it's already been checked
+        ansBx.onclick = roundOff;
+        ansBx.onkeyup = checkRoundOff;
+        // find the last opX_1 in the page
+        var nextrow = doc.getElementsByName("op" + 0 + "_1");
+        var lastrow = null;
+        var lastRowNum = 0;
+        for (var j = 1; ; ++j) {
+            var lastrow = nextrow;
+            nextrow = doc.getElementsByName("op" + j + "_1");
+            lastRowNum = j;
+            if (nextrow.length === 0) {
+                break;
+            }
+        }
+        var lastRowLength = lastrow.length;
+        var lastRowValue = lastrow[lastRowLength - 1].value;
+        var remainder = Num.MAX_SAFE_INTEGER;
+        var bdNum = lastRowNum - 1;
+        var bringDownDigits = doc.getElementsByName("bd" + bdNum);
+        if( lastRowValue ) {
+            remainder = 0;               
+            var bdLength = bringDownDigits.length;
+            var j = 0;
+            for( var i = 0; i < bdLength; ++i ) {
+                nextBx = bringDownDigits[bdLength-1-i];
+                var bdValue = nextBx.value;
+                if( bdValue ) { // don't count it unless it's filled in 
+                    remainder += Num(bdValue)*Mat.pow(10,j);
+                    ++j;
+                } else {
                     break;
                 }
             }
-            var lastRowLength = lastrow.length;
-            var lastRowValue = lastrow[lastRowLength - 1].value;
-            var remainder = Num.MAX_SAFE_INTEGER;
-            var bdNum = lastRowNum - 1;
-            //doc.getElementById("statusBox" + x).innerHTML = "bdNum: " + bdNum;
-            var bringDownDigits = doc.getElementsByName("bd" + bdNum);
-            if( lastRowValue ) {
-                remainder = 0;               
-                var bdLength = bringDownDigits.length;
-                var j = 0;
-                for( var i = 0; i < bdLength; ++i ) {
-                	nextBx = bringDownDigits[bdLength-1-i];
-                    var bdValue = nextBx.value;
-                    if( bdValue ) { // don't count it unless it's filled in 
-                        remainder += Num(bdValue)*Mat.pow(10,j);
-                        ++j;
-                    } else {
-                    	break;
-                    }
-                }
-                for( var i = 0; i < lastRowLength; ++i ) {
-                    remainder += Num(lastrow[lastRowLength-1-i].value)*Mat.pow(10,j);
-                    ++j;
-                }
+            for( var i = 0; i < lastRowLength; ++i ) {
+                remainder += Num(lastrow[lastRowLength-1-i].value)*Mat.pow(10,j);
+                ++j;
             }
-			if ((restQAreZero && remainder === 0) || whatRow === 0) { 
-                ansBx.style.color = black;
-            } else {
-            	var j = 0;
-            	nextBx = bddigs[j];
-            	rowNo = whatRow - 1;
-            	while( nextBx.value ) {
-            		++j;
-            		nextBx = bddigs[j];
-            	}
-            }
-            if( nextBx ) {
-            	nextBx.type = "text";
-            	instr2 = 'Copy the next dividend digit or type "0" if there are no more digits';
-            } else {
-            	alert("no nextBx; should be a bringdown, lastRowNum: " + lastRowNum + ", lastRowLength: " + lastRowLength);
-            }
-        } else { // start multiplying
-            ansBx.style.color = "#b53f25";
-            // clear out any previous guesses
-            var name = 'op' + whatRow + '_0';
-            var visibleMrow = doc.getElementsByName(name);
-            for (var i = 0; i < visibleMrow.length; i++) {
-                visibleMrow[i].value = "";
-            }
-            name = 'op' + whatRow + '_1';
-            var Drow = doc.getElementsByName(name);
-            for (var i = 0; i < Drow.length; i++) {
-                Drow[i].value = "";
-            }
-			var lastprodop = visibleMrow.length-1;
-			nextBx = visibleMrow[lastprodop];
-			nextBx.type = "text";
-			instr2 = "What is " + ansTxt + " times " + divisor;
         }
+		if ((restQAreZero && remainder === 0) || whatRow === 0) { 
+            ansBx.style.color = black;
+        } else {
+            var j = 0;
+            nextBx = bddigs[j];
+            rowNo = whatRow - 1;
+            while( nextBx.value ) {
+            	++j;
+            	nextBx = bddigs[j];
+            }
+        }
+        if( nextBx ) {
+            instr2 = 'Copy the next dividend digit or type "0" if there are no more digits';
+        } else {
+            alert("no nextBx; should be a bringdown, lastRowNum: " + lastRowNum + ", lastRowLength: " + lastRowLength);
+        }
+    } else { // start multiplying
+        ansBx.style.color = "#b53f25";
+        // clear out any previous guesses
+        var name = 'op' + whatRow + '_0';
+        var visibleMrow = doc.getElementsByName(name);
+        for (var i = 0; i < visibleMrow.length; i++) {
+            visibleMrow[i].value = "";
+        }
+        name = 'op' + whatRow + '_1';
+        var Drow = doc.getElementsByName(name);
+        for (var i = 0; i < Drow.length; i++) {
+            Drow[i].value = "";
+        }
+		var lastprodop = visibleMrow.length-1;
+		nextBx = visibleMrow[lastprodop];
+		instr2 = "What is " + ansTxt + " times " + divisor;
+    }
+    if( nextBx ) {
+        nextBx.type = "text";
     }
     markGood(ansBx, instr2, "", nextBx);
 }
