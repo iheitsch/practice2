@@ -392,6 +392,14 @@
             actfives = fivegen > 0.7*gran? 1 : 0; // make fives more likely 
             d5fact = (int)(StrictMath.pow(5,actfives));
             num[0] = d2fact*d3fact*d5fact;
+                        
+            /* acttwos = 4;
+            d2fact = (int)(StrictMath.pow(2,acttwos));
+            actthrees = 2;
+            d3fact = (int)(StrictMath.pow(3,actthrees));
+            actfives = 1;
+            d5fact = (int)(StrictMath.pow(5,actfives)); */
+            num[0] = d2fact*d3fact*d5fact;
 
             int ntypes = 4;
             double whatsFrst = 24*Math.random(); // 24 = ntypes! = 4!
@@ -602,26 +610,15 @@
         	numfives = numf[fivedx];
         	n7fact = nfact[sevndx];
         	//numf[sevndx];
-            /*
-            max3 = Double.valueOf((num[0]+1)*(1 - Math.random()));
-            numthrees = (int)(Math.log(max3)/Math.log(3));
-            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-            //numthrees = (Double.valueOf((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-            n3fact = (int)(StrictMath.pow(3,numthrees));
-            max5 = Double.valueOf((num[0]/n3fact+1)*(1 - Math.random()));
-            numfives = (int)(Math.log(max5)/Math.log(5));
-            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
-            n5fact = (int)(StrictMath.pow(5,numfives));         
-            max2 = Double.valueOf((num[0]/(n3fact*n5fact)+1)*(1 - Math.random()));
-            numtwos = (int)(Math.log(max2)/Math.log(2));
-            if( numtwos < 0 ) {
-              numtwos = 0;
-            } else if( numtwos > ntwos - 1 ) {
-              numtwos = ntwos - 1;
-            }
-            n2fact = (int)(StrictMath.pow(2,numtwos));
-			*/
-            den[0] = n2fact*n3fact*n5fact*n7fact;
+        	/* n2fact = 1;
+        	numtwos = 0;
+        	n3fact = 1;
+        	numthrees = 0;
+        	n5fact = 5;
+        	numfives = 1;
+        	n7fact = 7; */
+ 
+            den[0] = n2fact*n3fact*n5fact*n7fact; // prevfact? fixit
 
             ncols = (int)(acttwos + actthrees + actfives);
             instrs = "Convert this Fraction to a Decimal.";
