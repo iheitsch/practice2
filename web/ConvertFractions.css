@@ -59,8 +59,7 @@ th {
   padding: 3px;
 }
 .bar{
-    border-color: pink;
-    border-width: 2px;
+    border: none;
     background-color: #005511;
 }
 .right {
@@ -151,6 +150,7 @@ th {
 .sym{
     text-align: center;
     color: #005511;
+    font-weight: bold;
 }
 
 .num{
@@ -166,6 +166,7 @@ th {
   background-color: #fff9ea;
   padding: 0px;
   height: 1.5em;
+  font-weight: bold;
 }
 /* table cell with operand or answer digit */
 .t1{

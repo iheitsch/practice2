@@ -2729,7 +2729,7 @@ function multiply( col, whatRow ) {
 	var isLastMult = ( col === calcDig );
     var red = "#ff1ac6";
     var black = "#0033cc";
-    if (ans === expAns) {
+    if( ans === expAns ) {
     	var prodops = doc.getElementsByName("op" + whatRow + "_0");
 		var lastprodop = prodops.length-1;
 		var nxtBxNo = bxNo - 1;
@@ -2818,7 +2818,8 @@ function multiply( col, whatRow ) {
     } else {
         qBx.style.color = red;
         dvsrdigs[whatDvsrDg].style.color = red;
-        markErr("mult digit " + ans + " not expected answer " + expAns, ansBxs[bxNo]);
+        var instr3 = "Should be " + expAns + ", not " + ans;
+        markErr(instr3, ansBxs[bxNo] );
     }
 } // end multiply
 function subtract(col, sbx) { // describe error in errBx, don't show column red fixit
@@ -3046,7 +3047,8 @@ function subtract(col, sbx) { // describe error in errBx, don't show column red 
         var styles = "color: #ff1ac6;";
         prodBx.setAttribute("style", styles);
         dvdBx.setAttribute("style", styles);
-        markErr("not " + ans, ansBxs[bxNo]);
+        var instr3 = "Should be " + expAns + ", not " + ans;
+        markErr(instr3, ansBxs[bxNo]);
     }
 } // end subtract
 function roundOff( ev ) {
@@ -3209,6 +3211,7 @@ function showDp( ev ) {
     var prevInstr = doc.getElementById("instr2").innerHTML;
     if( where === isDp ) {
 		isDp.innerHTML = ".";
+		isDp.color = "#0033cc";
 		if( prevInstr === "Click where decimal point should go, just above and to the right of last dividend digit" ) {  
 			doc.getElementById("instr2").innerHTML = 'Click "Done"';
 		}
@@ -3298,61 +3301,27 @@ function bringdown(sbx) {
         //doc.getElementById("msg").innerHTML = "not " + ans;
         markErr("Should be " + expAns + " not " + ans, ansBxs[bxNo]);
     }
-    //setDivFocus();
 }
-function promptForQuot() {
- 	var doc = document
- 	var num = Number;
- 	// check first
- 	if( partdvd < num(doc.getElementById("oden").value) ) {
- 	 	doc.getElementById("T").style.color = "#ff1ac6";
- 	 	var errs = Number(doc.getElementById("errs").value);
-    	doc.getElementById("errs").value = errs + 1;
- 	} else {
- 		// then set nextBx and instr2
- 		/* var instr3Bx = doc.getElementById("instr3");
-		instr3Bx.removeChild(instr3Bx.firstChild);
-		instr3Bx.removeChild(instr3Bx.firstChild); */
- 		var divisor = num(doc.getElementById("oden").value);
- 		instr2 = "How many times does " + divisor + " go into " + partdvd + "?";
- 		var bxId = doc.getElementsByName("quotdigs")[0].id;
- 		var nextBx = doc.getElementById(bxId);
- 		nextBx.type = "text";
-       	markGood( null, instr2, "", nextBx );
- 	}
- }
-function getMorDgts() {
-	var num = Number;
+function nix( ev ) {
+	ev = ev || window.event;
+    var ansBx = ev.target;
+    var ans = ansBx.value;
+	
     var doc = document;
- 	// check first
- 	if( partdvd >= num( doc.getElementById("oden").value) ) {
- 		doc.getElementById("F").style.color = "#ff1ac6";
- 		var errs = Number(doc.getElementById("errs").value);
-    	doc.getElementById("errs").value = errs + 1;
- 	} else {
- 		// then get more digits
- 		partdvd = partdvd*10 + num(doc.getElementById("dd" + nxtD + "_0").value);
- 		nxtD = nxtD - 1;
- 		doc.getElementById("fBtn").checked = false;
- 		var divisor = num(doc.getElementById("oden").value);
- 		instr2 = "Does " + divisor + " go into " + partdvd + "?";
- 		doc.getElementById("instr2").innerHTML = instr2;
- 		// don't want to erase the TorF buttons
-       	//markGood( ansBx, instr2, "", null );
-       	var errBx = doc.getElementById("instr4");
-		errBx.style.color = "#fff9ea";
-		var black = "#0033cc";
-		doc.getElementById("T").style.color = black;
- 	}
+    if( ans && ans !== "0" ) {
+	    var divisor = doc.getElementById("oden").value;
+	    var instr3 = divisor + " does not go into " + partdvd;
+	    markErr( instr3, ansBx );
+    }
 }
 function checkdd( ev ) {
     ev = ev || window.event;
+    var ansBx = ev.target;
 
     var num = Number;
     var doc = document;
     var mat = Math;
-
-    var ansBx = ev.target;
+  
     var ans = ansBx.value;
     if( !isNaN( ans ) ) {
         // dd2_0, dd1_0, dd0_0
@@ -3405,7 +3374,6 @@ function checkds( ev ) {
         var ten2pow = mat.pow(10,wutDgt);
         var throway = divisor%ten2pow
         var mostdgt = divisor%mat.pow(10,wutDgt+1);
-        //alert("wutDgt: " + wutDgt + " frstdig: " + frstdig + " mostdgt: " + mostdgt + " throway: " + throway);
         if( wutDgt === 0 && num(ans) === frstdig ||
         	wutDgt > 0 && num(ans) === (mostdgt - throway)/ten2pow ) {
         	var nextcol = wutDgt - 1;
@@ -3413,9 +3381,6 @@ function checkds( ev ) {
         	var	instr2 = "Enter next most significant digit of divisor";
         	var instr3 = "";
         	if( nextcol < 0 ) {
-        		/* var qtlen = doc.getElementsByName("quotdigs").length;
-        		nextcol = qtlen - 1;
-        		nextBx = "qt" + nextcol; */
         		var nextBx = doc.getElementsByClassName("potinpt")[0];
         		nextBx.type = "text";
         		var dvdlen = doc.getElementsByName("dvddigs").length;
@@ -3433,12 +3398,6 @@ function checkds( ev ) {
         		instr2 = "How many times does " + divisor + " go into " + partdvd + "?";
         		instr3 = "If " + divisor + " is greater than " + partdvd + ", use arrow keys to move input box right";
         		markGood( ansBx, instr2, instr3, nextBx );
-        		/* var truBtn = createRadioElement("Yes", "TorF", false, "T", "promptForQuot()", "tBtn" );
-				var flsBtn = createRadioElement("No","TorF", false, "F", "getMorDgts()", "fBtn" );
-				var instr3div = doc.getElementById("instr3");		
-				instr3div.prepend(flsBtn);
-				instr3div.prepend(truBtn);
-				quotdigs = qtlen; */
 				return;
         	}
         	markGood( ansBx, instr2, instr3, nextBx );

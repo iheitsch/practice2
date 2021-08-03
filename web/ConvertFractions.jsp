@@ -1238,6 +1238,7 @@
         if( idx < spacesb4quot || spacesb4quot + quotDigs < idx ) { %>
                 <td class="t1" id="<%=tid%>" name="notthestartdig">
                 <input type="<%=lbtype%>" class="a1 potinpt" size="1"
+                	onkeyup="nix( event )""
                     onkeydown="erase( event )" >
                 </td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
