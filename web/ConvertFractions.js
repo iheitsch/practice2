@@ -107,6 +107,7 @@ function check() {
 }
 function checkF2D() { // if numbers get erased somehow, even if they're 0, this function hangs fixit. if you 
 // write the number back in, it gives an error fixit. if you miss the decimal point, it's hard to see what's wrong fixit
+	// if user clicks 'done' before all quot digits are in place, it shows counts an error, but no explanation what's wrong fixit
 	allgood = true;
 	var num = Number;
 	var Mat = Math;
@@ -1358,7 +1359,7 @@ function checkMprD( ev ) {
                 var whlBx = doc.getElementById("n0_" + wcol);
                 var whl = whlBx.value;
                 if( fakecol === frstdcol ) {
-                	var instr2 = "Copy whole part of mixed number: " + whl + " to first box";
+                	var instr2 = "Copy whole part of mixed number: " + whl + " to first box (Enter)";
                     nextcol = col - 1;
                     var nextBx = doc.getElementById("n0_" + nextcol);
                     markGood( ansBx, instr2, "", nextBx );	
@@ -1798,7 +1799,7 @@ function checkNum( ev ) {
         var onum = doc.getElementById("onum").value;
         if( ans.localeCompare(onum) === 0 ) {
             var oden = doc.getElementById("oden").value;
-            var instr2 = "Copy the denominator: '" + oden + "' to the box to the left of the 'divide by' sign";
+            var instr2 = "Copy the denominator: '" + oden + "' to the box to the left of the 'divide by' sign (Enter)";
             markGood( ansBx, instr2, "", doc.getElementById("d0_0") );
         } else {
         	markErr(ans + " is not " + onum, ansBx );
@@ -1986,9 +1987,9 @@ function pusharo( ev ) {
     var doc = document;
     var num = Number;
     
-    var indcatr = doc.getElementById("indcatr").value;
+    var indcatr = num(doc.getElementById("indcatr").value);
     //alert("key pressed. indcatr: " + indcatr);
-    if( num(indcatr) < 4 ) {
+    if( indcatr < 4 ) {
         var id = doc.activeElement.id;
         var len = id.length;
         var typ = id.substring(0,1);
@@ -2034,12 +2035,10 @@ function pusharo( ev ) {
                 }
             }
         } else if( x === 39 ) {
-            var id = doc.activeElement.id;
-            
             var nextCol = col + 1;
             var whereTo = typ + row + "_" + nextCol;
-            //alert("we are here: " + id + ", going right to " + whereTo);
             var nextBx = doc.getElementById(whereTo);
+            //alert("we are here: " + id + ", going right to " + whereTo);
             if( nextBx ) {
                 nextBx.focus();
             } 
@@ -2075,6 +2074,41 @@ function pusharo( ev ) {
             } 
         } else {
             //alert("not going anywhere");
+        }
+    } else if( indcatr === 5 ) {
+    	if( x === 39 ) {
+            var currBx = doc.activeElement;
+            var potinpts = doc.getElementsByClassName("potinpt");
+            var len = potinpts.length;
+            var nextBx;
+            for( var i = 0; i < len; ++i ) {
+            	if( potinpts[i].isEqualNode( currBx ) ) {
+            		nextBx = potinpts[i+1];
+            		break;
+            	}
+            }
+            if( nextBx ) {
+                nextBx.focus();
+                nextBx.type = "text";
+                if( currBx ) {
+                	currBx.type = "hidden";
+                }
+            }
+            var divisor = num(doc.getElementById("oden").value);
+            partdvd = partdvd*10 + num(doc.getElementById("dd" + nxtD + "_0").value);
+	 		nxtD = nxtD - 1;
+	 		var divisor = num(doc.getElementById("oden").value);
+	 		instr2 = "How many times does " + divisor + " go into " + partdvd + "?";
+        		instr3 = "If " + divisor + " is greater than " + partdvd + ", use arrow keys to move input box right";       	
+        	markGood( null, instr2, instr3, nextBx ); 
+        	if( partdvd >= divisor ) {
+        		var quotDigs = doc.getElementsByName("quotdigs");
+				var qlen = quotDigs.length;
+				for( var i = 0; i < qlen; ++i ) {
+					quotDigs[i].onkeyup = divide;
+					doc.removeEventListener('keydown', pusharo);
+				}
+			}       
         }
     }
 }
@@ -2398,6 +2432,10 @@ function putWhlBox() {
 function divide( ev ) {
  	ev = ev || window.event;
 	var ansBx = ev.target;
+	var x = ev.keyCode;
+	if( 36 < x && x < 41 ) {
+		return;
+	}
     var doc = document;
     var Num = Number;
     var id = ansBx.id;
@@ -2783,7 +2821,7 @@ function multiply( col, whatRow ) {
         markErr("mult digit " + ans + " not expected answer " + expAns, ansBxs[bxNo]);
     }
 } // end multiply
-function subtract(col, sbx) {
+function subtract(col, sbx) { // describe error in errBx, don't show column red fixit
     var doc = document;
     var Num = Number;
     var ansBxs = doc.getElementsByName("op" + sbx + "_1");
@@ -2822,7 +2860,11 @@ function subtract(col, sbx) {
     	dvddigs = doc.getElementsByName("op" + prevRow + "_1");
     	dvdlen = dvddigs.length;
     	for( dvdused = 0; dvdused < dvdlen; ++dvdused ) {
-			dvdStr += dvddigs[dvdused].value;
+    		var nxtDig = dvddigs[dvdused].value;
+    		if( !nxtDig ) {
+    			nxtDig = "0";
+    		}
+			dvdStr += nxtDig;
 			dvdNum = Num(dvdStr);
 			if( dvdNum >= divisor ) {
 				break;
@@ -2836,7 +2878,11 @@ function subtract(col, sbx) {
 	    if( dvdNum < divisor ) {
 	        dvdused -= 1;
 	        for( bdused = 0; bdused < bdlen; ++bdused ) {
-		        dvdStr += bddigs[bdused].value;
+	        	var nxtDig = bddigs[bdused].value;
+	    		if( !nxtDig ) {
+	    			nxtDig = "0";
+	    		}
+		        dvdStr += nxtDig;
 		        dvdNum = Num(dvdStr);
 				if( dvdNum >= divisor ) {
 					break;
@@ -3264,9 +3310,9 @@ function promptForQuot() {
     	doc.getElementById("errs").value = errs + 1;
  	} else {
  		// then set nextBx and instr2
- 		var instr3Bx = doc.getElementById("instr3");
+ 		/* var instr3Bx = doc.getElementById("instr3");
 		instr3Bx.removeChild(instr3Bx.firstChild);
-		instr3Bx.removeChild(instr3Bx.firstChild);
+		instr3Bx.removeChild(instr3Bx.firstChild); */
  		var divisor = num(doc.getElementById("oden").value);
  		instr2 = "How many times does " + divisor + " go into " + partdvd + "?";
  		var bxId = doc.getElementsByName("quotdigs")[0].id;
@@ -3367,21 +3413,32 @@ function checkds( ev ) {
         	var	instr2 = "Enter next most significant digit of divisor";
         	var instr3 = "";
         	if( nextcol < 0 ) {
-        		var qtlen = doc.getElementsByName("quotdigs").length;
+        		/* var qtlen = doc.getElementsByName("quotdigs").length;
         		nextcol = qtlen - 1;
-        		nextBx = "qt" + nextcol;
+        		nextBx = "qt" + nextcol; */
+        		var nextBx = doc.getElementsByClassName("potinpt")[0];
+        		nextBx.type = "text";
         		var dvdlen = doc.getElementsByName("dvddigs").length;
         		var msd = dvdlen - 1;
         		partdvd = num(doc.getElementById("dd" + msd + "_0").value);
         		nxtD = msd - 1;
-        		instr2 = "Does " + divisor + " go into " + partdvd + "?";
-        		markGood( ansBx, instr2, "", null );
-        		var truBtn = createRadioElement("Yes", "TorF", false, "T", "promptForQuot()", "tBtn" );
+        		if( partdvd >= divisor ) {
+	        		var quotDigs = doc.getElementsByName("quotdigs");
+					var qlen = quotDigs.length;
+					for( var i = 0; i < qlen; ++i ) {
+						quotDigs[i].onkeyup = divide;
+						doc.removeEventListener('keydown', pusharo);
+					}
+				}
+        		instr2 = "How many times does " + divisor + " go into " + partdvd + "?";
+        		instr3 = "If " + divisor + " is greater than " + partdvd + ", use arrow keys to move input box right";
+        		markGood( ansBx, instr2, instr3, nextBx );
+        		/* var truBtn = createRadioElement("Yes", "TorF", false, "T", "promptForQuot()", "tBtn" );
 				var flsBtn = createRadioElement("No","TorF", false, "F", "getMorDgts()", "fBtn" );
 				var instr3div = doc.getElementById("instr3");		
 				instr3div.prepend(flsBtn);
 				instr3div.prepend(truBtn);
-				quotdigs = qtlen;
+				quotdigs = qtlen; */
 				return;
         	}
         	markGood( ansBx, instr2, instr3, nextBx );
@@ -3395,6 +3452,7 @@ function checkds( ev ) {
 window.onload = function(){
     var doc = document;
     var startWhere = doc.getElementById("startHere").value;
+    //alert("startWhere: " + startWhere);
     var strtBx = doc.getElementById(startWhere);
 	var indcatr = Number(doc.getElementById("indcatr").value);
 	var isDecToFrac = indcatr === 4;
@@ -3405,14 +3463,6 @@ window.onload = function(){
 		var instr3div = doc.getElementById("instr3");		
 		instr3div.prepend(flsBtn);
 		instr3div.prepend(truBtn);
-	}
-	var isFracToDec = indcatr === 5;
-	if( isFracToDec ) {
-		var quotDigs = doc.getElementsByName("quotdigs");
-		var qlen = quotDigs.length;
-		for( var i = 0; i < qlen; ++i ) {
-			quotDigs[i].onkeyup = divide;
-		}
 	}
     doc.addEventListener('keydown', pusharo);
     doc.getElementById("instr2").style.color = "#b38f00";

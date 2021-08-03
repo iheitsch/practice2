@@ -103,8 +103,8 @@
     int ndigs = 1;
     int maxdigs = 4;
     
-    boolean simplifyCk = false;
-    String isSimplify = "";
+    boolean simplifyCk = true;
+    String isSimplify = "checked";
 
     boolean commonDenomCk = false;
     String isCommonDenom = "";
@@ -118,8 +118,8 @@
     boolean decToFracCk = false;
     String isDecToFrac = "";
     
-    boolean fracToDecCk = true;
-    String isFracToDec = "checked";
+    boolean fracToDecCk = false;
+    String isFracToDec = "";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -166,9 +166,11 @@
     boolean running = false;
     int indcatr = 0;
     String startHere = "d0_1";
+    String instr3color = "fff9ea";
     
     while( !running ) {
         indcatr = (int)(StrictMath.random()*possbl);
+        //System.out.println("before ifs startHere: " + startHere);
         if( indcatr == 0 && simplifyCk ) {
             running = true;
             instrs = "Simplify this Fraction.";
@@ -204,14 +206,18 @@
             num[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
-            instr2 = "Is there a number (besides 1) that evenly divides both " + num[0] + " and " + den[0] + "?";
-            instr3 = "If so, enter it. Otherwise, click 'Done'";
+            instr2 = "Enter a number (besides 1) that evenly divides both " + num[0] + " and " + den[0];
+            instr3 = "If there is none, click 'Done'";
+            instr3color = "#b38f00";
+            //System.out.println("inside if startHere: " + startHere);
         } else if( indcatr == 1 && commonDenomCk ) { // this one hangs up in infinite loop fixit? might be undefined errBx's in .js file
             running = true;
-            instrs = "Use arrows to put these fractions in order, lowest at the top.";
+            instrs = "Use arrows on left to put these fractions in order, lowest at the top.";
             showArros = true;
             nrows = 2 + 2; //(int)(StrictMath.random()*(MAXROWS-1));
-            int maxcols = 0;
+            int maxtwos = 0;
+            int maxthrees = 0;
+            int maxfives = 0;
             ntwos = ntwos - 1;
             nthrees = nthrees - 1;
             nfives = nfives - 1;
@@ -227,15 +233,22 @@
                 den[i] = twofact*threefact*fivefact;
                 num[i] = (Double.valueOf((den[i])*(1 - Math.pow(Math.random(),EXP)))).intValue();
                 ncols = (int)(acttwos + actthrees + actfives);
-                if( ncols > maxcols ) {
-                    maxcols = ncols;
+                if( acttwos > maxtwos ) {
+                    maxtwos = acttwos;
+                }
+                if( actthrees > maxthrees ) {
+                    maxthrees = actthrees;
+                }
+                if( actfives > maxfives ) {
+                    maxfives = actfives;
                 }
                 if( i > 0 && num[i] != 0 && num[0] != 0 &&
                         den[i] != den[0] && den[i]%den[0] == 0 ) {
                     x = i;
                 }
             }
-            ncols = maxcols;
+            ncols = maxtwos + maxthrees + maxfives;
+            // need to find lcm of all 4, ncols is #prime factors in lcm
             whatOp = "&times";
             isDivide = false;
             if( x < 0 ) {
@@ -299,7 +312,7 @@
             den[0] = n2fact*n3fact*n5fact;
 
             ncols = (int)(acttwos + actthrees + actfives);
-            instr2 = "Copy the numerator: '" + num[0] + "' to the box under the 'divide by' sign";
+            instr2 = "Copy the numerator: '" + num[0] + "' to the box under the 'divide by' sign (Enter)";
            //startHere = "d1_1";
         } else if( indcatr == 3 && mxToFracCk ) {
             running = true;
@@ -354,7 +367,7 @@
 
             startHere = "d0_3"; 
             ncols = (int)(acttwos + actthrees + actfives);
-            instr2 = "Copy the denominator of the fractional part of the mixed number: " + den[0];
+            instr2 = "Copy the denominator of the fractional part of the mixed number: " + den[0] + " (Enter)";
         } else if( indcatr == 4 && decToFracCk ) {
             running = true;
             boolean gtOne = 10*Math.random() > 6;
@@ -398,8 +411,8 @@
             actthrees = 2;
             d3fact = (int)(StrictMath.pow(3,actthrees));
             actfives = 1;
-            d5fact = (int)(StrictMath.pow(5,actfives)); */
-            num[0] = d2fact*d3fact*d5fact;
+            d5fact = (int)(StrictMath.pow(5,actfives));
+            num[0] = d2fact*d3fact*d5fact; */
 
             int ntypes = 4;
             double whatsFrst = 24*Math.random(); // 24 = ntypes! = 4!
@@ -610,8 +623,8 @@
         	numfives = numf[fivedx];
         	n7fact = nfact[sevndx];
         	//numf[sevndx];
-        	/* n2fact = 1;
-        	numtwos = 0;
+        	/* n2fact = 8;
+        	numtwos = 3;
         	n3fact = 1;
         	numthrees = 0;
         	n5fact = 5;
@@ -796,10 +809,11 @@
                 totalwidth = spacesb4Op[nsubs][1] + wcDig[nsubs][1] + actBringDn[nsubs];
                 nsubs = nsubs + 1;                 
             } 
-        }
-        int dvdMsd = dvdDigs - 1;
-        startHere = "dd" + dvdMsd + "_0";
+            int dvdMsd = dvdDigs - 1;
+            startHere = "dd" + dvdMsd + "_0";
+        }        
     }
+    //System.out.println("after ifs startHere: " + startHere);
 %>
 <table>
 <tr>
@@ -807,7 +821,7 @@
 
 <div id="instrs" class="d3"><%=instrs%></div>
 <div id="instr2" class="d4"><%=instr2%></div>
-<div id="instr3" class="d4"><%=instr3%></div>
+<div id="instr3" class="d4" style="color:<%=instr3color%>"><%=instr3%></div>
 <div id="instr4" class="d4"><%=instr4%></div>
 <div class="d1">
 <table>
@@ -1222,26 +1236,29 @@
 <%      }
 		String qid = "qt" + col;
         if( idx < spacesb4quot || spacesb4quot + quotDigs < idx ) { %>
-                <td class="t1" id="<%=tid%>" name="notthestartdig"></td>
-
+                <td class="t1" id="<%=tid%>" name="notthestartdig">
+                <input type="<%=lbtype%>" class="a1 potinpt" size="1"
+                    onkeydown="erase( event )" >
+                </td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
              %>
             <td class="t1"  id="<%=tid%>" name="quotTd" >
-                <input type="<%=lbtype%>" id="<%=qid%>" class="a1" size="1"
+                <input type="<%=lbtype%>" id="<%=qid%>" class="a1 potinpt" size="1"
                     name="quotdigs"
                     onkeydown="erase( event )" >
             </td>
 <%      } else if( needsXtraDig && idx == spacesb4quot + quotDigs - 1 ) { %>
 			<td class="t1" id="<%=tid%>" name="notthestartdig">
-				<input type="<%=lbtype%>" class="a1" size="1"
+				<input type="<%=lbtype%>" class="a1 potinpt" size="1"
     				id="<%=qid%>" name="quotdigs"
     			onkeydown="erase( event )" >
 			</td>
 <%      } else { %>
-            <td class="t1" id="<%=tid%>" name="notthestartdig"></td>
+            <td class="t1" id="<%=tid%>" name="notthestartdig">
+            <input type="<%=lbtype%>" class="a1 potinpt" size="1"
+                    onkeydown="erase( event )" >
+            </td>
 <%      }
-
-
     } %>
 </tr>
 <tr><th class="th1" colspan="<%=bqspan%>"></th>
