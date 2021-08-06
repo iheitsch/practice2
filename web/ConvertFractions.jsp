@@ -27,7 +27,7 @@
 	int dvdDigs = SZ2_MX;
 	int quotDigs = SZ2_MX;
 	int dvsrDigs = SZ2_MX;
-	boolean needsXtraDig = true;
+	boolean needsXtraDig = false;
 	int spacesb4quot = 5;
 	int spacesb4Dvsr = 0;
 	/* are all these necessary? */
@@ -103,8 +103,8 @@
     int ndigs = 1;
     int maxdigs = 4;
     
-    boolean simplifyCk = true;
-    String isSimplify = "checked";
+    boolean simplifyCk = false;
+    String isSimplify = "";
 
     boolean commonDenomCk = false;
     String isCommonDenom = "";
@@ -118,8 +118,8 @@
     boolean decToFracCk = false;
     String isDecToFrac = "";
     
-    boolean fracToDecCk = false;
-    String isFracToDec = "";
+    boolean fracToDecCk = true;
+    String isFracToDec = "checked";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -639,34 +639,77 @@
             
             dividnd = num[0];
             divisor = den[0];
+            dividnd = (int)(720*Math.random());
+            divisor = (int)(720*Math.random());
+            
             dvdDigs = (int)Math.log10(dividnd) + 1;
             dvsrDigs = (int)Math.log10(divisor) + 1;
+            num[0] = dividnd; // tmp fixit
+            den[0] = divisor;
             whlquotdigs = (int)Math.log10(dividnd/divisor) + 1;
+            if( whlquotdigs < 0 ) {
+            	whlquotdigs = 0;
+            }
+             
             // if there are only 2s and fives in the denominator, the decimal is exact and and
             // quot digits can be calculated
             // reduce the denominator
+            /* temp fixit
   			int redtwos = numtwos > acttwos ? numtwos - acttwos : 0;
   			int redthrees = numthrees > actthrees ? numthrees - actthrees : 0;
-  			int redfives = numfives > actfives ? numfives - actfives : 0;
-            int calcquotdigs = redtwos > redfives ? redtwos : redfives;
+  			int redfives = numfives > actfives ? numfives - actfives : 0;  */
+  			int [] primes =    { 2,  3,  5,  7, 11, 13, 17, 19, 23, 29, 
+  								31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
+  								73, 79, 83, 89, 91, 97 
+  			};
+  			int [] reds = new int[primes.length];
+  			int tmpdvsr = divisor;
+  			for( int i = 0; i < primes.length; ++i ) {
+				int tmpdvd = dividnd;				
+  				while( tmpdvd%primes[i] == 0 && tmpdvsr%primes[i] == 0 ) {
+  					System.out.println("dvd: " + tmpdvd + " dvsr: " + tmpdvsr + " primes[" + i + "]: " + primes[i]);
+  					tmpdvd /= primes[i];
+  					tmpdvsr /= primes[i];  					
+  				}
+  				reds[i] = 0;
+  				
+  				while( tmpdvsr%primes[i] == 0 ) {
+  					reds[i] += 1;
+  					System.out.println("dvsr: " + tmpdvsr + " primes[" + i + "]: " + primes[i] + " reds[" + i + "]: " + reds[i]);
+  					tmpdvsr /= primes[i];
+  					if( !needsXtraDig && i != 0 && i != 2 ) {
+  						needsXtraDig = true;
+  					}
+  				}
+  			}
+  			int calcquotdigs = reds[0] > reds[2]? reds[0] : reds[2];
+            /* int calcquotdigs = redtwos > redfives ? redtwos : redfives;
             // if there are other numbers in the denominator, cut size off at 5 and round off
-            needsXtraDig = redthrees > 0 || n7fact > 1;
+            needsXtraDig = redthrees > 0 || n7fact > 1; */
             //System.out.println("line644 redthrees: " + redthrees + " n7fact: " + n7fact + " numthrees: " + numthrees + " actthrees: " + actthrees);
-            fracquotdigs = needsXtraDig ? 5 : calcquotdigs;
+            fracquotdigs = needsXtraDig || tmpdvsr > 1 ? 5 : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
             //expQuotDp = fracquotdigs;
             System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
             quotdigits = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);
-			int qtdgts = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);           
+			int qtdgts = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor); 
+			if( dividnd < divisor && dvsrDigs + dvdDigs + 1 < SZ2_MX ) {            
+	            dividnd *= 10;
+	            dvdDigs += 1;
+	            System.out.println("dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs + " divisor: " + divisor + " dividnd: " + dividnd);
+            }
+            if( dividnd < divisor ) {
+            	running = false;
+            }
             int diff = 0;
             for( int i = 0; i < quotDigs; ++i ) {   	
             	int ten2powm1 = (int)StrictMath.pow(10,i);
             	int ten2pow = 10*ten2powm1;
             	int throway = qtdgts%ten2pow;         	
             	qt[i] = throway/ten2powm1;
-            	//System.out.println("quotdigits: " + quotdigits + " qt[" + i + "]: " + qt[i]);
+            	System.out.println("quotdigits: " + quotdigits + " qt[" + i + "]: " + qt[i]);
             	qtdgts = qtdgts - throway;
-            	diff += 1;
+            	//diff += 1;
             }
             int dvddigits = dividnd;
             for( int i = 0; i < dvdDigs; ++i ) {   	
@@ -674,7 +717,7 @@
             	int ten2pow = 10*ten2powm1;
             	int throway = dvddigits%ten2pow;         	
             	dd[i] = throway/ten2powm1;
-            	//System.out.println("dvddigits: " + dvddigits + " dd[" + i + "]: " + dd[i]);
+            	System.out.println("dvddigits: " + dvddigits + " dd[" + i + "]: " + dd[i]);
             	dvddigits = dvddigits - throway;
             }
             
@@ -688,11 +731,15 @@
             while( divisor > dvdpart ) {
             	offset += 1;
             	partDigs = partDigs - 1;
+            	if( partDigs < 0 ) {
+            		running = false;
+            		break;
+            	}
             	throwway = dividnd%(int)StrictMath.pow(10,partDigs);
             	dvdpart =( dividnd - throwway)/(int)StrictMath.pow(10,partDigs);
-                //System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset);
+                System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset);
             }
-            
+            diff = offset;
             spacesb4quot = offset;
             //onumWidth = 2*dvsrDigs + 1;
             spacesb4Dvsr = onumWidth/2 - dvsrDigs;
@@ -705,7 +752,7 @@
             } */
             
             int whatquotDig = quotDigs-1; // there may be more quotient digits than subtractions
-            //System.out.println("line 698 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
+            System.out.println("line 750 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
             
             int worstCaseQdig = 9;
             long tmplong = (long)dvdpart;
@@ -719,10 +766,15 @@
                     //System.out.println("line 709 qt[" + whatquotDig + "] = " + qt[whatquotDig]);
                     whatquotDig -= 1;
                 }
+            	if( whatquotDig < 0 || whatquotDig >= quotDigs ) {
+            		running = false;
+            		System.out.println("whatquotDig: " + whatquotDig + " out of bounds 0 - " + quotDigs);
+            		break;
+            	}
                 operand[nsubs][0] = qt[whatquotDig]*divisor;
                 int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
                 operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-                //System.out.println("line 714 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+                System.out.println("line 771 nsubs = " + nsubs + " qt[" + whatquotDig + "]: " + qt[whatquotDig] + " last dividend: " + tmplong + " product: " + operand[nsubs][0] + " diference: " + operand[nsubs][1] );
                 int WCoperand1 = (int)(tmplong - divisor); 
 
                 actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -743,7 +795,7 @@
 
                 //int mostPossProdDig = (int)Math.log10(WCoperand0) + 1;
                 spacesb4Op[nsubs][0] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][0];
-                //System.out.println("line 991 nsubs: " + nsubs + " spacesb4quot: " + spacesb4quot + " quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+                System.out.println("line 795 dvsrDigs: " + dvsrDigs + " + spacesb4quot: " + spacesb4quot + " + quotDigs: " + quotDigs + " - whatQuotDig = " + whatquotDig + " - wcDig: " + wcDig[nsubs][0] + " = spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
                 spacesb4Op[nsubs][1] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1];
                 cspan[nsubs] = 2*(wcDig[nsubs][0] + 1);
@@ -753,10 +805,10 @@
                 //    break; // don't need to generate tmpint nsubs or the next loop, you're 
                 //}          // done // not done, you need to generate bringdowns
                 boolean restAreZero = false;
-                if( operand[nsubs][1] == 0 ) {            // if difference is zero
+                if( operand[nsubs][1] == 0 ) {            // if diference is zero
                     restAreZero = true;                     // check if there is 
                     for( int idx = whatquotDig-1-diff; idx >= 0; --idx ) { // anything but zeros left
-                    	//System.out.println("difference was 0. checking rest of dividend dd[" + idx + "]: " + dd[idx]);
+                    	//System.out.println("diference was 0. checking rest of dividend dd[" + idx + "]: " + dd[idx]);
                         if( dd[idx] != 0 ) {
                             restAreZero = false;
                             break; // rest are not zero, stop checking
@@ -782,36 +834,31 @@
 	                //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
 	                
 	                int divdig = 0;
-	                whatquotDig = whatquotDig - 1;
 	                while( tmplong < divisor ) { // keep appending dividend digits until operand is big enough for dividsor to go into
 	                	int inc = 0;
-	                    if( whatquotDig < diff ) {
-	                        //System.out.println("line 546 no more dividend digits actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-	                        //breakout = true;
-	                        //break;
-	                    } else {
-	                    	divdig = whatquotDig-diff;
+	                    divdig = dvdDigs - quotDigs + whatquotDig - 1 - diff;
+	                	if( divdig >= 0 ) {
 	                    	inc = dd[divdig];
-	                    	whatquotDig = whatquotDig - 1;
-	                    }
-	                    //System.out.println("line 559 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
-	                    tmplong = 10*tmplong + inc;
-	                    
+	                	}
+	                    whatquotDig = whatquotDig - 1;
+	                    System.out.println("line 843 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
+	                    tmplong = 10*tmplong + inc;       
 	                    actBringDn[nsubs] += 1;
 	                }
                 }
                 if( breakout ) {
                     break;
                 }
-                //System.out.println("line 568 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
-                //System.out.println("line 569 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-                //System.out.println("line 570 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+                System.out.println("line 852 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
+                System.out.println("line 853 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                System.out.println("line 854 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
                 totalwidth = spacesb4Op[nsubs][1] + wcDig[nsubs][1] + actBringDn[nsubs];
                 nsubs = nsubs + 1;                 
-            } 
+            }
+            
             int dvdMsd = dvdDigs - 1;
             startHere = "dd" + dvdMsd + "_0";
-        }        
+        }  // end indcatr == 5 && fracToDecCk      
     }
     //System.out.println("after ifs startHere: " + startHere);
 %>
@@ -1199,7 +1246,7 @@
 
 <%  } else if( indcatr == 5 && fracToDecCk ) { 
 			int barLen = ndigs + 3;
-			boolean lastboxdebug = false;
+			boolean lastboxdebug = true;
 			String lbtype = lastboxdebug? "text" : "hidden";%>
 	<tr>
     	<th colspan="<%=onumWidth%>" >
@@ -1246,12 +1293,14 @@
             <td class="t1"  id="<%=tid%>" name="quotTd" >
                 <input type="<%=lbtype%>" id="<%=qid%>" class="a1 potinpt" size="1"
                     name="quotdigs"
+                    style="background-color: LightGreen"
                     onkeydown="erase( event )" >
             </td>
 <%      } else if( needsXtraDig && idx == spacesb4quot + quotDigs - 1 ) { %>
 			<td class="t1" id="<%=tid%>" name="notthestartdig">
 				<input type="<%=lbtype%>" class="a1 potinpt" size="1"
     				id="<%=qid%>" name="quotdigs"
+    			style="background-color: pink"
     			onkeydown="erase( event )" >
 			</td>
 <%      } else { %>
@@ -1403,7 +1452,7 @@
 </div>
 <div>
 	<table>
-	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
