@@ -27,7 +27,8 @@
 	int dvdDigs = SZ2_MX;
 	int quotDigs = SZ2_MX;
 	int dvsrDigs = SZ2_MX;
-	boolean needsXtraDig = false;
+	boolean needsXtraDig = true;
+	boolean inExact = false;
 	int spacesb4quot = 5;
 	int spacesb4Dvsr = 0;
 	/* are all these necessary? */
@@ -37,7 +38,9 @@
     boolean [] visible = new boolean[SZ2_MX];
     int [] cspan = new int[quotDigs];
     int [] bspan = new int[quotDigs];
-    int [] dspan = new int[quotDigs];      
+    int [] dspan = new int[quotDigs]; 
+    // too many bringdowns fixit
+    // too many subs fixit
     int [] numBringDn = new int[quotDigs];
     int [] actBringDn = new int[quotDigs];
     int bqspan = SZ2_MX;
@@ -639,6 +642,9 @@
             
             dividnd = num[0];
             divisor = den[0];
+            dividnd = 385; //(int)(720*Math.random());
+            divisor = 448; //(int)(720*Math.random());
+            
             dividnd = (int)(720*Math.random());
             divisor = (int)(720*Math.random());
             
@@ -677,17 +683,18 @@
   					reds[i] += 1;
   					System.out.println("dvsr: " + tmpdvsr + " primes[" + i + "]: " + primes[i] + " reds[" + i + "]: " + reds[i]);
   					tmpdvsr /= primes[i];
-  					if( !needsXtraDig && i != 0 && i != 2 ) {
-  						needsXtraDig = true;
+  					if( !inExact && i != 0 && i != 2 ) {
+  						inExact = true;
   					}
   				}
   			}
   			int calcquotdigs = reds[0] > reds[2]? reds[0] : reds[2];
             /* int calcquotdigs = redtwos > redfives ? redtwos : redfives;
             // if there are other numbers in the denominator, cut size off at 5 and round off
-            needsXtraDig = redthrees > 0 || n7fact > 1; */
+            inExact = redthrees > 0 || n7fact > 1; */
             //System.out.println("line644 redthrees: " + redthrees + " n7fact: " + n7fact + " numthrees: " + numthrees + " actthrees: " + actthrees);
-            fracquotdigs = needsXtraDig || tmpdvsr > 1 ? 5 : calcquotdigs;
+            int inExacDigs = 5;
+            fracquotdigs = inExact || tmpdvsr > 1 || calcquotdigs > inExacDigs? inExacDigs : calcquotdigs;
             quotDigs = whlquotdigs + fracquotdigs;
             //expQuotDp = fracquotdigs;
             System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
@@ -701,7 +708,20 @@
             if( dividnd < divisor ) {
             	running = false;
             }
-            int diff = 0;
+            
+            long tmplong = quotdigits;
+            for( int idx = 0; idx < quotDigs; ++idx ) {
+                qt[idx] = (int)(tmplong % 10);
+                tmplong = tmplong / 10;
+                
+                if( idx > 0 ) {
+                    if( qt[idx] < 9 || qt[0] < 5 ) {
+                        needsXtraDig = false;
+                    }
+                }
+                //System.out.println("rndOffCk = " + rndOffCk + " idx = " + idx + " nSigDig = " + nSigDig + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
+            }
+            /*
             for( int i = 0; i < quotDigs; ++i ) {   	
             	int ten2powm1 = (int)StrictMath.pow(10,i);
             	int ten2pow = 10*ten2powm1;
@@ -710,7 +730,7 @@
             	System.out.println("quotdigits: " + quotdigits + " qt[" + i + "]: " + qt[i]);
             	qtdgts = qtdgts - throway;
             	//diff += 1;
-            }
+            } */
             int dvddigits = dividnd;
             for( int i = 0; i < dvdDigs; ++i ) {   	
             	int ten2powm1 = (int)StrictMath.pow(10,i);
@@ -739,10 +759,14 @@
             	dvdpart =( dividnd - throwway)/(int)StrictMath.pow(10,partDigs);
                 System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset);
             }
-            diff = offset;
+            int diff = offset;
             spacesb4quot = offset;
             //onumWidth = 2*dvsrDigs + 1;
             spacesb4Dvsr = onumWidth/2 - dvsrDigs;
+            if( spacesb4Dvsr < 0 ) {
+            	spacesb4Dvsr = 0;
+            	onumWidth = 2*dvsrDigs + 1;
+            }
             bqspan = onumWidth;
             cqspan = 2*(quotDigs + offset) + 1;
             dqspan = 1 + 2*(SZ2_MX + 1) - bqspan - cqspan;
@@ -755,7 +779,7 @@
             System.out.println("line 750 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
             
             int worstCaseQdig = 9;
-            long tmplong = (long)dvdpart;
+            tmplong = (long)dvdpart;
             int totalwidth = spacesb4quot + quotDigs;
             while( whatquotDig >= 0 ) {
             	if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
@@ -775,7 +799,8 @@
                 int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
                 operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
                 System.out.println("line 771 nsubs = " + nsubs + " qt[" + whatquotDig + "]: " + qt[whatquotDig] + " last dividend: " + tmplong + " product: " + operand[nsubs][0] + " diference: " + operand[nsubs][1] );
-                int WCoperand1 = (int)(tmplong - divisor); 
+                int WCoperand1 = (int)(tmplong - divisor);
+                System.out.println("line 801 WCoperand0: " + WCoperand0 + " WCoperand1: " + WCoperand1);
 
                 actDig[nsubs][0] = operand[nsubs][0] > 0? 
                         (int)Math.log10(operand[nsubs][0]) + 1: 1;
@@ -824,10 +849,10 @@
                 // bring down as many new digits as needed to get something divisor
                 // will go into
                 //if( !needsXtraDig || nsubs < quotDigs - 1 ) {
-                if( !needsXtraDig || whatquotDig > 0 ) {
+                if( !inExact || whatquotDig > 0 ) {
 	                tmplong = operand[nsubs][1];
 	                actBringDn[nsubs] = 0;
-	                numBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+	                numBringDn[nsubs] = 2*SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
 					// how did this ever work? numBringDn in Divider makes every box for the rest of the row a bringdown box,
 							// but here it's coming up with negative numbers
 	                //numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
@@ -1260,7 +1285,7 @@
             </table>
         </th>
         <td class="sym">=</td>
-<%  for( int idx = 0; idx < SZ2_MX - dvsrDigs - onumWidth/3 + spacesb4quot; idx++ ) {  
+<%  for( int idx = 0; idx < SZ2_MX - dvsrDigs + spacesb4quot; idx++ ) {  
         int col = spacesb4quot + quotDigs - idx - 1;
         /* if( needsXtraDig ) {
         	col = col + 1;
@@ -1270,7 +1295,7 @@
         String xid = "xt" + col;
         
         if( idx == spacesb4quot + whlquotdigs ) { %>
-            <td class="t2" id="<%=tic%>" name="notthestartdig" onclick="showDp( event )"></td>
+            <td class="t2" id="<%=tic%>" name="<%=col%>" onclick="showDp( event )"></td>
 <% 		} else if( spacesb4quot - 1 <= idx && idx < spacesb4quot + quotDigs ) {  
             int jdx = idx - spacesb4quot; %>
             <td class="t2" name="notthestartdig">
@@ -1282,7 +1307,14 @@
 			</td>
 <%      }
 		String qid = "qt" + col;
-        if( idx < spacesb4quot || spacesb4quot + quotDigs < idx ) { %>
+        if( needsXtraDig && idx == spacesb4quot - 1 ) { %>
+        <td class="t1" id="<%=tid%>" name="notthestartdig">
+            <input type="<%=lbtype%>" class="a1 potinpt" size="1"
+                id="<%=xid%>"
+                style="background-color: pink"
+    			onkeydown="erase( event )" >
+        </td>
+<%      } else if( idx < spacesb4quot || spacesb4quot + quotDigs < idx ) { %>
                 <td class="t1" id="<%=tid%>" name="notthestartdig">
                 <input type="<%=lbtype%>" class="a1 potinpt" size="1"
                 	onkeyup="nix( event )""
@@ -1296,13 +1328,6 @@
                     style="background-color: LightGreen"
                     onkeydown="erase( event )" >
             </td>
-<%      } else if( needsXtraDig && idx == spacesb4quot + quotDigs - 1 ) { %>
-			<td class="t1" id="<%=tid%>" name="notthestartdig">
-				<input type="<%=lbtype%>" class="a1 potinpt" size="1"
-    				id="<%=qid%>" name="quotdigs"
-    			style="background-color: pink"
-    			onkeydown="erase( event )" >
-			</td>
 <%      } else { %>
             <td class="t1" id="<%=tid%>" name="notthestartdig">
             <input type="<%=lbtype%>" class="a1 potinpt" size="1"
@@ -1317,7 +1342,7 @@
 </tr>
 <tr>
     <td class="t2"></td>
-<%  for( int idx = 0; idx <= SZ2_MX - onumWidth/4; idx++ ) { 
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
 		if( idx < spacesb4Dvsr ) { %>
 			<td class="t1">
 				<span class="dp" >_</span>
@@ -1370,13 +1395,12 @@
 
     } %>
 </tr>
-<%  //int modsubs = needsXtraDig? nsubs + 1 : nsubs;
-    for( sbx = 0; sbx <= nsubs; ++sbx ) {
-    int rdx = sbx + 1; %>
+<%  for( sbx = 0; sbx <= nsubs; ++sbx ) {
+    	int rdx = sbx + 1; %>
 
     <tr class="oprand">
         <td class="t2"></td>
-    <%  for( int idx = 0; idx <= SZ2_MX - onumWidth/4; idx++ ) { 
+    <%  for( int idx = 0; idx <= SZ2_MX + spacesb4quot; idx++ ) { 
             if( idx < spacesb4Op[sbx][0] + spacesb4Dvsr ) { %>
                 <td class="t1"></td>
 <%          } else if ( idx == spacesb4Op[sbx][0] + spacesb4Dvsr ){ 
@@ -1386,7 +1410,7 @@
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + spacesb4Dvsr - idx;
                 String name = "op" + sbx + "_0";
                 String whattype = lbtype;
-                //System.out.println(" product spacesb4op[" + sbx +"]: " + spacesb4Op[sbx][0] + " wcDig: " + wcDig[sbx][0] + " idx: " + idx + " col = " + col);
+                System.out.println(" product spacesb4op[" + sbx +"]: " + spacesb4Op[sbx][0] + " wcDig: " + wcDig[sbx][0] + " idx: " + idx + " col = " + col);
                 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
@@ -1405,7 +1429,7 @@
     </tr>
     <tr class="oprand">
         <td class="t2"></td>
-<%      for( int idx = 0; idx <= SZ2_MX - onumWidth/3 + spacesb4quot; idx++ ) { 
+<%      for( int idx = 0; idx <= SZ2_MX + spacesb4quot; idx++ ) { 
             String whattype = lbtype; 
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1] + spacesb4Dvsr - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;

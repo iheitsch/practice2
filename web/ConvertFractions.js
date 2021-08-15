@@ -156,11 +156,6 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 	}
 	if( !bigEnough ) {
 		whatDvdDig = dvdlen;
-		/* while( !bigEnough ) {
-			dividend *= 10;
-			bigEnough = dividend >= divisor;
-			whatDvdDig += 1;
-		} */
 	}
 	var quotBxs = doc.getElementsByName("quotdigs");
 	var quotlen = quotBxs.length;
@@ -177,11 +172,11 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 		x = (x + 1)%nSbxs;
 	}
 	
-	var expnt = 4;
+	var expnt = 4; // always round to 4 decimal places
 
 	var roundquot = Mat.floor(0.5 + nDvdEntrd*Mat.pow(10,expnt)/divisor);
-	//doc.getElementById("statusBox" + x).innerHTML = "expnt: " + expnt + " roundquot: " + roundquot;
-	//x = (x + 1)%nSbxs;
+	doc.getElementById("statusBox" + x).innerHTML = "expnt: " + expnt + " roundquot: " + roundquot;
+	x = (x + 1)%nSbxs;
 	var m = 0;
 	var expnt2 = Mat.floor(Mat.log10(roundquot));
 	for( var i = 0; i < quotlen && i <= expnt2; ++i ) {		
@@ -2132,6 +2127,10 @@ function pusharo( ev ) {
 					quotDigs[i].onkeyup = divide;
 					doc.removeEventListener('keydown', pusharo);
 				}
+				var xtraDig = doc.getElementById("xt" + quotDigs);
+				if( xtraDig ) {
+					xtraDig.onkeyup=checkRoundOff;
+				}
 			}       
         }
     }
@@ -2550,8 +2549,8 @@ function divide( ev ) {
             throwway = dividnd%Mat.pow(10,partDigs);
             dvdpart =( dividnd - throwway)/Mat.pow(10,partDigs);
         }
-		doc.getElementById("statusBox" + x).innerHTML = "in divide dvdpart: " + dvdpart + " divisor: " + divisor + " partDigs: " + partDigs + " i: " + i;
-		x = (x + 1)%nSbxs;
+		//doc.getElementById("statusBox" + x).innerHTML = "in divide dvdpart: " + dvdpart + " divisor: " + divisor + " partDigs: " + partDigs + " i: " + i;
+		//x = (x + 1)%nSbxs;
         while (i >= 0) {
         	var dvdStr;
         	if( dvdBxs[i] ) {
@@ -2568,8 +2567,8 @@ function divide( ev ) {
             }
             var ten2pow = Mat.pow(10, pow);
             dvdnd += ten2pow * dvdDigVal;
-            doc.getElementById("statusBox" + x).innerHTML = "in divide i: " + i + " ten2pow: " + ten2pow + " dvdnd: " + dvdnd;
-			x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "in divide i: " + i + " ten2pow: " + ten2pow + " dvdnd: " + dvdnd;
+			//x = (x + 1)%nSbxs;
             --i;
             ++pow;
         }
@@ -2840,7 +2839,9 @@ function multiply( col, whatRow ) {
 			nxtBxNo = lastprodop;
         }  
         qBx.style.color = black;
-        dvsrdigs[whatDvsrDg].style.color = black;         
+        dvsrdigs[whatDvsrDg].style.color = black;  
+        //doc.getElementById("statusBox" + x).innerHTML = "multiply nxtBxNo: " + nxtBxNo;
+        //x = (x + 1)%nSbxs;       
 		nextBx = prodops[nxtBxNo];
 		nextBx.type = "text";
         markGood( ansBxs[bxNo], instr2, "", nextBx );
@@ -2968,6 +2969,8 @@ function subtract(col, sbx) { // describe error in errBx, don't show column red 
             var quotdigs = doc.getElementsByName("quotdigs");
             var quotDigs = quotdigs.length;
             var lastqcol = quotDigs - 1;
+            //doc.getElementById("statusBox" + x).innerHTML = "isLastsub diff: " + diff + " divisor: " + divisor;
+            //x = (x + 1)%nSbxs;
             if (diff >= divisor) { // quotient digit was guessed too small, back up
                 if( nextQuotBox ) {
 	                var qid = nextQuotBox.id
@@ -3055,7 +3058,7 @@ function subtract(col, sbx) { // describe error in errBx, don't show column red 
                  if( dpShown !== "." && !whole && ans === 0 ) {
 	    			instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
                  } else {
-                 	instr2 = 'If quotient is exact, click "Done", otherwise click on the last quotient digit to cross it off';
+                 	instr2 = 'If remainder is zero, click "Done", otherwise click on the last quotient digit to cross it off';
                  }
                  nextBx = null
             } else if (ans === 0 && restAreZero) { // nextbox is quotient box
@@ -3090,7 +3093,7 @@ function subtract(col, sbx) { // describe error in errBx, don't show column red 
         markErr(instr3, ansBxs[bxNo]);
     }
 } // end subtract
-function roundOff( ev ) {
+function roundOff( ev ) { // this doesn't handle 1.09999 rounding to 1.1000 fixit
     ev = ev || window.event;
     var evTarg = ev.target;
     var doc = document;
@@ -3111,10 +3114,8 @@ function roundOff( ev ) {
         var whatQuotBx = quotdigs[i];
 		doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " whatCol: " + whatCol + " whatQuotBx: " + whatQuotBx.id + " crossrest: " + crossrest;
     	x = (x + 1)%nSbxs;
-        if( !crossrest ) {
+        //if( !crossrest ) {
             if( whatQuotBx.isEqualNode(evTarg ) ) {
-            	doc.getElementById("statusBox" + x).innerHTML = "in roundOff just crossed off col " + whatCol;
-            	x = (x + 1)%nSbxs;
                 if( whatCol === 0 ) {
                     startnow = true;
                     //doc.getElementById("msg").innerHTML = "";
@@ -3124,44 +3125,50 @@ function roundOff( ev ) {
                     // even if this is a significant digits problem, not a 
                     // decimal places problem, this digit will never be changed 
                     // to zero
-                    if( nSigDig < quotDp - 1 ) { 
+                    /* if( nSigDig < quotDp - 1 ) { 
                     	doc.getElementById("statusBox" + x).innerHTML = "nSigDig < quotDp - 1 crossrest: " + crossrest;
                 		x = (x + 1)%nSbxs;                      
                         crossrest = true;
-                    }
-                    var all = doc.getElementById("th-id2");
-                    var length = all.length;
-                    for( var j = 0; j < length; ++j ) { 
-                        if( all.elements[j].isEqualNode(evTarg) ) {  
-                            var nextbox = j - 1;
-                            // round off
-                            if( Num(evTarg.value) >= 5 ) {
-                                while( all.elements[nextbox].value === "9") {
-                                    --nextbox;                                       
-                                }
-                                // if rounding goes into new digit, either 0 or blank
-                                if( Number(all.elements[nextbox].value) === 0 ) {
-                                    // find out if it is new most dignificant digit of quotient
-                                    if( all.elements[nextbox].getAttribute("id").substring(0,2) === "xt" ) {
-                                        var newPlace = nSigDig + 1;
-                                        if( newPlace < quotDp - 1 ) {
-                                            quotdigs[quotLength - 1 - newPlace].style.setProperty("text-decoration", "line-through");
-                                        }
-                                        //doc.getElementById("statusBox" + x).innerHTML = "newPlace = " + newPlace +" quotDp = " + quotDp;
-                                        //x = x + 1;
-                                        doc.getElementById("nSigDig").value = newPlace;
-                                    }
-                                }
+                    } */
+                   	var instr2 = "Enter rounded value";
+                    var nextBx;
+                    j = 2;
+                    var roundingup = Num(evTarg.value >=5 );
+                    if( roundingup ) {
+                    	var red = "#ff1ac6"; 
+                    	nextBx = doc.getElementById("qt1");      
+                    	while( Num(nextBx.value) === 9 ) {
+                    		nextBx.style.color = red;
+                            nextBx = doc.getElementById("qt" + j);
+                            // if no more qt boxes, find out if there is a new most dignificant digit of quotient
+                            if( !nextBx ) {
+                            	nextBx = doc.getElementById("xt" + j);
+                                if( nextBx ) {
+                                	nextBx.type = "text";
+                                	nextBx.onkeyup = checkRoundOff;
+                                    // if rounding goes into new digit, either 0 or blank,
+                                    // cross off another least significant digit
+                                    //if( Num(nextBx.value) === 0 ) {
+	                                //	var newPlace = 1;
+	                                  //  quotdigs[quotLength - 1 - newPlace].style.setProperty("text-decoration", "line-through");
+	                                    //doc.getElementById("statusBox" + x).innerHTML = "newPlace = " + newPlace +" quotDp = " + quotDp;
+	                                    //x = x + 1;
+                                   	//}                           		
+                            	} else { //  there is no nextBx with xt instead of qt
+                            		alert("in roundOff j = " + j + "; there is no nextBx");
+                            	}  	
                             }
-                            //doc.getElementById("statusBox" + x).innerHTML = "evTarg = " + evTarg.getAttribute("id") + " j = " + j + " nextbox = " + nextbox;
-                            //x = x + 1;
-                            //whatbox = nextbox;
-                   			var instr2 = "Enter rounded value";
-                            nextBx = doc.getElementById("qt1");
-                            nextBx.style.color = "#ff1ac6";
-                            markGood(evTarg, instr2, "", nextBx);
+                            j = j + 1;
+                            //alert("nextBx: " + nextBx.id + " value: " + nextBx.value);
                         }
+                        nextBx.style.color = "#ff1ac6";                      
+                    } else {
+                    	instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
+                    	if( doc.getElementById("isDp").innerHTML === "." ) {
+                    		instr2 = 'Click "Done"';
+                    	}
                     }
+                    markGood(evTarg, instr2, "", nextBx);
                 } else {
                     var rndMsg = quotDp + " decimal places"; //dispRnd.innerHTML;
                     //var length = rndMsg.length;
@@ -3178,12 +3185,14 @@ function roundOff( ev ) {
               //  x = (x + 1)%nSbxs;
                 //crossrest = true;      
             }
-        }
+        //}
         if( startnow ) {
             whatQuotBx.onkeyup = checkRoundOff;
             var hasContent = whatQuotBx.value;
-            if( hasContent && crossrest ) {
+            if( hasContent ) {
                 whatQuotBx.style.setProperty("text-decoration", "line-through");
+                whatQuotBx.style.setProperty("text-decoration-color", "red");
+                whatQuotBx.style.setProperty("text-decoration-style", "double");
             }
         }
     }
@@ -3203,8 +3212,8 @@ function checkRoundOff( ev ) {
     var quotient = Num(doc.getElementById("quotient").value);
     var Mat = Math; 
     var roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,col-1))/Mat.pow(10,col));
-	//doc.getElementById("statusBox" + x).innerHTML = "quotient: " + quotient + " roundedQuot: " + roundedQuot + " col: " + col;
-	//x = (x + 1)%nSbxs;
+	doc.getElementById("statusBox" + x).innerHTML = "checkRoundOff quotient: " + quotient + " roundedQuot: " + roundedQuot + " col: " + col;
+	x = (x + 1)%nSbxs;
 	
     //var header = doc.getElementById("instr2");                   
     //var significant = header.innerHTML;
@@ -3220,15 +3229,15 @@ function checkRoundOff( ev ) {
         var j = nSigDig - 1;
         while( j >= col ) {
             roundedQuot = 10*roundedQuot;
-            //document.getElementById("statusBox" + x).innerHTML = "j = " + j + " roundedQuot = " + roundedQuot;
-            //x = (x + 1)%nSbxs;
+            document.getElementById("statusBox" + x).innerHTML = "j = " + j + " roundedQuot = " + roundedQuot;
+            x = (x + 1)%nSbxs;
             j = j - 1;
         }
     }
     var enteredQuot = 0;
-    //doc.getElementById("statusBox" + x).innerHTML = "quotDigs.length = " + qLength + " quotDigs[0] = " + quotDigs[0].value;
-    //x = x + 1;
+    
     var powOf10 = 1;
+    // what has been entered so far, MSD to col
     for( var i = col; i < qLength; ++i ) {
         var idx = qLength - 1 - i;
         enteredQuot = powOf10*Num(quotDigs[idx].value) + enteredQuot;
@@ -3236,12 +3245,30 @@ function checkRoundOff( ev ) {
         //doc.getElementById("statusBox" + x).innerHTML = "in checkROundOff idx = " + idx + " quotDig = " +  quotDigs[idx].value + " enteredQuot = " + enteredQuot;
         //x = x + 1;
     }
+    var xtraDig = doc.getElementById("xt" + qLength);
+    if( xtraDig ) {
+    	enteredQuot = powOf10*Num(xtraDig.value) + enteredQuot;
+    } 
+    doc.getElementById("statusBox" + x).innerHTML = "quotDigs.length: " + qLength + " enteredQuot: " + enteredQuot;
+    x = (x + 1)%nSbxs;
     if( roundedQuot === enteredQuot ) {
         var instr2 = 'Click "Done"';
         if( doc.getElementById("isDp").innerHTML !== "." ) {
     		instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
     	}
-        markGood(ansBx, instr2, "", null );
+    	nextCol = col - 1;
+    	var nextBx = doc.getElementById("qt" + nextCol);	
+    	if( nextBx ) { 
+    		var hasLineThrough = getComputedStyle(nextBx).getPropertyValue("text-decoration").indexOf("line-through") >= 0;
+	    	doc.getElementById("statusBox" + x).innerHTML = "hastextDec: " + hasLineThrough;
+	    	x = (x + 1)%nSbxs;
+    		if( !hasLineThrough ) {
+    			instr2 = "Enter rounded value";
+    		} else {
+    			nextBx = null;
+    		}
+    	}
+        markGood(ansBx, instr2, "", nextBx );
     } else {
         var entireNum = Mat.floor(quotient/Mat.pow(10,col-1));
         var instr4 = entireNum + " does not round to " + enteredQuot + ", should be " + roundedQuot;
