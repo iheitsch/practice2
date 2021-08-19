@@ -26,10 +26,12 @@
 	int dividnd;
 	int dvdDigs = SZ2_MX;
 	int quotDigs = SZ2_MX;
+	int actqdigs = SZ2_MX;
 	int dvsrDigs = SZ2_MX;
 	boolean needsXtraDig = true;
 	boolean inExact = false;
 	int spacesb4quot = 5;
+	int dpPos = -1;
 	int spacesb4Dvsr = 0;
 	/* are all these necessary? */
 	int [] qt = new int[SZ2_MX];
@@ -642,12 +644,13 @@
             
             dividnd = num[0];
             divisor = den[0];
-            dividnd = 385; //(int)(720*Math.random());
-            divisor = 448; //(int)(720*Math.random());
-            
+
+            dividnd = 403; //(int)(720*Math.random());
+            divisor = 440; //(int)(720*Math.random());
+
             dividnd = (int)(720*Math.random());
             divisor = (int)(720*Math.random());
-            
+
             dvdDigs = (int)Math.log10(dividnd) + 1;
             dvsrDigs = (int)Math.log10(divisor) + 1;
             num[0] = dividnd; // tmp fixit
@@ -700,17 +703,18 @@
             System.out.println("dividnd: " + dividnd + " divisor: " + divisor + " whlquotdigs: " + whlquotdigs + " calcquotdigs: " + calcquotdigs + " fracquotdigs: " + fracquotdigs + " quotdigs: " + quotDigs);
             quotdigits = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor);
 			int qtdgts = (int)(StrictMath.pow(10,fracquotdigs)*dividnd/divisor); 
-			if( dividnd < divisor && dvsrDigs + dvdDigs + 1 < SZ2_MX ) {            
+            /*			if( dividnd < divisor && dvsrDigs + dvdDigs + 1 < SZ2_MX ) {            
 	            dividnd *= 10;
 	            dvdDigs += 1;
 	            System.out.println("dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs + " divisor: " + divisor + " dividnd: " + dividnd);
             }
-            if( dividnd < divisor ) {
+ if( dividnd < divisor ) {
             	running = false;
-            }
+            } */
             
             long tmplong = quotdigits;
-            for( int idx = 0; idx < quotDigs; ++idx ) {
+            actqdigs = (int)Math.log10(quotdigits) + 1;
+            for( int idx = 0; idx < actqdigs; ++idx ) {
                 qt[idx] = (int)(tmplong % 10);
                 tmplong = tmplong / 10;
                 
@@ -719,7 +723,7 @@
                         needsXtraDig = false;
                     }
                 }
-                //System.out.println("rndOffCk = " + rndOffCk + " idx = " + idx + " nSigDig = " + nSigDig + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
+                System.out.println("idx = " + idx + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
             }
             /*
             for( int i = 0; i < quotDigs; ++i ) {   	
@@ -752,13 +756,19 @@
             	offset += 1;
             	partDigs = partDigs - 1;
             	if( partDigs < 0 ) {
-            		running = false;
-            		break;
+            		dvdpart *= 10;
+            		if( dpPos < 0 ) {
+            			dpPos = offset;
+            		}
+            	} else {
+	            	throwway = dividnd%(int)StrictMath.pow(10,partDigs);
+	            	dvdpart =( dividnd - throwway)/(int)StrictMath.pow(10,partDigs);
             	}
-            	throwway = dividnd%(int)StrictMath.pow(10,partDigs);
-            	dvdpart =( dividnd - throwway)/(int)StrictMath.pow(10,partDigs);
-                System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset);
+                System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset + " dpPos: " + dpPos);
             }
+            if( dpPos < 0 ) {
+            	dpPos = offset + partDigs + 1;
+    		}
             int diff = offset;
             spacesb4quot = offset;
             //onumWidth = 2*dvsrDigs + 1;
@@ -819,10 +829,10 @@
                 }
 
                 //int mostPossProdDig = (int)Math.log10(WCoperand0) + 1;
-                spacesb4Op[nsubs][0] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][0];
-                System.out.println("line 795 dvsrDigs: " + dvsrDigs + " + spacesb4quot: " + spacesb4quot + " + quotDigs: " + quotDigs + " - whatQuotDig = " + whatquotDig + " - wcDig: " + wcDig[nsubs][0] + " = spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+                spacesb4Op[nsubs][0] = dvsrDigs + spacesb4quot + actqdigs - whatquotDig - wcDig[nsubs][0];
+                System.out.println("line 795 dvsrDigs: " + dvsrDigs + " + spacesb4quot: " + spacesb4quot + " + actqdigs: " + actqdigs + " - whatQuotDig = " + whatquotDig + " - wcDig: " + wcDig[nsubs][0] + " = spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
-                spacesb4Op[nsubs][1] = dvsrDigs + spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1];
+                spacesb4Op[nsubs][1] = dvsrDigs + spacesb4quot + actqdigs - whatquotDig - wcDig[nsubs][1];
                 cspan[nsubs] = 2*(wcDig[nsubs][0] + 1);
                 bspan[nsubs] = 2*(spacesb4Op[nsubs][0] + spacesb4Dvsr);
                 dspan[nsubs] = 1 + 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
@@ -852,7 +862,7 @@
                 if( !inExact || whatquotDig > 0 ) {
 	                tmplong = operand[nsubs][1];
 	                actBringDn[nsubs] = 0;
-	                numBringDn[nsubs] = 2*SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+	                numBringDn[nsubs] = SZ2_MX - 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
 					// how did this ever work? numBringDn in Divider makes every box for the rest of the row a bringdown box,
 							// but here it's coming up with negative numbers
 	                //numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
@@ -1285,18 +1295,15 @@
             </table>
         </th>
         <td class="sym">=</td>
-<%  for( int idx = 0; idx < SZ2_MX - dvsrDigs + spacesb4quot; idx++ ) {  
-        int col = spacesb4quot + quotDigs - idx - 1;
-        /* if( needsXtraDig ) {
-        	col = col + 1;
-        } */
+<%  for( int idx = 0; idx < spacesb4quot + actqdigs; idx++ ) {  
+        int col = spacesb4quot + actqdigs - idx - 1;
         String tid = "td" + col;
-        String tic = "isDp";
+        //String tic = "isDp";
         String xid = "xt" + col;
         
-        if( idx == spacesb4quot + whlquotdigs ) { %>
-            <td class="t2" id="<%=tic%>" name="<%=col%>" onclick="showDp( event )"></td>
-<% 		} else if( spacesb4quot - 1 <= idx && idx < spacesb4quot + quotDigs ) {  
+        if( idx == dpPos ) { %>
+            <td class="t2" id="isDp" name="<%=col%>" onclick="showDp( event )"></td>
+<% 		} else if( spacesb4quot - 1 <= idx && idx < spacesb4quot + actqdigs ) {  
             int jdx = idx - spacesb4quot; %>
             <td class="t2" name="notthestartdig">
                 <span name="quotDp" class="dp" >_</span>
@@ -1314,13 +1321,13 @@
                 style="background-color: pink"
     			onkeydown="erase( event )" >
         </td>
-<%      } else if( idx < spacesb4quot || spacesb4quot + quotDigs < idx ) { %>
+<%      } else if( idx < spacesb4quot || spacesb4quot + actqdigs < idx ) { %>
                 <td class="t1" id="<%=tid%>" name="notthestartdig">
                 <input type="<%=lbtype%>" class="a1 potinpt" size="1"
                 	onkeyup="nix( event )""
                     onkeydown="erase( event )" >
                 </td>
-<%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
+<%      } else if( spacesb4quot <= idx && idx < spacesb4quot + actqdigs ) {
              %>
             <td class="t1"  id="<%=tid%>" name="quotTd" >
                 <input type="<%=lbtype%>" id="<%=qid%>" class="a1 potinpt" size="1"
