@@ -46,6 +46,8 @@ var gProd = 0;
 var gBringDownDigs = [ 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 
                        0, 0, 0, 0, 0 ];
+var calcDig;
+var gNextBx;
                        
 var nextQuotBox = document.getElementById("qt0");
 
@@ -119,8 +121,8 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 	for( var i = 0; i < dvsrlen; ++i ) {
 		if( dvsrBxs[i].value !== dvsrStr.substr(i, 1) ) {
 			allgood = false;
-			doc.getElementById("statusBox" + x).innerHTML = "dvsrBxs[" + i + "]: " +  dvsrBxs[i].value + " oden substr: " + dvsrStr.substr(i, 1);
-			x = (x + 1)%nSbxs;
+			//doc.getElementById("statusBox" + x).innerHTML = "dvsrBxs[" + i + "]: " +  dvsrBxs[i].value + " oden substr: " + dvsrStr.substr(i, 1);
+			//x = (x + 1)%nSbxs;
 			dvsrBxs[i].style.color = red;
 			var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
@@ -138,8 +140,8 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 	for( var i = 0; i < dvdlen; ++i ) {
 		if( dvdndBxs[i].value !== dvdndStr.substr(i, 1) ) {
 			allgood = false;
-			doc.getElementById("statusBox" + x).innerHTML = "dvdndBxs[" + i + "]: " +  dvdndBxs[i].value + " onum substr: " + dvdndStr.substr(i, 1);
-			x = (x + 1)%nSbxs;
+			//doc.getElementById("statusBox" + x).innerHTML = "dvdndBxs[" + i + "]: " +  dvdndBxs[i].value + " onum substr: " + dvdndStr.substr(i, 1);
+			//x = (x + 1)%nSbxs;
 			dvdndBxs[i].style.color = red;
 			var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
@@ -168,15 +170,15 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
         doc.getElementById("errs").value = errs + 1;
 		isDp.innerHTML = ".";
 		allgood = false;
-		doc.getElementById("statusBox" + x).innerHTML = "no Dp";
-		x = (x + 1)%nSbxs;
+		//doc.getElementById("statusBox" + x).innerHTML = "no Dp";
+		//x = (x + 1)%nSbxs;
 	}
 	
 	var expnt = 4; // always round to 4 decimal places
 
 	var roundquot = Mat.floor(0.5 + nDvdEntrd*Mat.pow(10,expnt)/divisor);
-	doc.getElementById("statusBox" + x).innerHTML = "expnt: " + expnt + " roundquot: " + roundquot;
-	x = (x + 1)%nSbxs;
+	//doc.getElementById("statusBox" + x).innerHTML = "expnt: " + expnt + " roundquot: " + roundquot;
+	//x = (x + 1)%nSbxs;
 	var m = 0;
 	var expnt2 = Mat.floor(Mat.log10(roundquot));
 	for( var i = 0; i < quotlen && i <= expnt2; ++i ) {		
@@ -188,8 +190,8 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 		//x = (x + 1)%nSbxs;
 		if( quotDig !== calcquotDig) {
 			allgood = false;
-			doc.getElementById("statusBox" + x).innerHTML = "quotDig[" + i + "]: " +  quotDig + " quotdig calc: " + calcquotDig;
-			x = (x + 1)%nSbxs;
+			//doc.getElementById("statusBox" + x).innerHTML = "quotDig[" + i + "]: " +  quotDig + " quotdig calc: " + calcquotDig;
+			//x = (x + 1)%nSbxs;
 			quotBxs[i].style.color = red;
 			var errs = Number(doc.getElementById("errs").value);
             doc.getElementById("errs").value = errs + 1;
@@ -211,8 +213,8 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 				if( prodBxs[j].value ) {
 					if( prodBxs[j].value != prodStr.substr(k,1) ) {
 						allgood = false;
-						doc.getElementById("statusBox" + x).innerHTML = " row " + i + " prodBxs[" + j + "]: " +  prodBxs[j].value + " prodStr.substr(" + k + "): " + prodStr.substr(k,1);
-						x = (x + 1)%nSbxs;
+						//doc.getElementById("statusBox" + x).innerHTML = " row " + i + " prodBxs[" + j + "]: " +  prodBxs[j].value + " prodStr.substr(" + k + "): " + prodStr.substr(k,1);
+						//x = (x + 1)%nSbxs;
 						prodBxs[j].style.color = red;
 						var errs = Number(doc.getElementById("errs").value);
             			doc.getElementById("errs").value = errs + 1;
@@ -231,8 +233,8 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 				if( diffBxs[j].value ) {
 					if( diffBxs[j].value != diffStr.substr(k,1) ) {
 						allgood = false;
-						doc.getElementById("statusBox" + x).innerHTML = " row " + i + " diffBxs[" + j + "]: " +  diffBxs[j].value + " diffStr.substr(" + k + "): " + diffStr.substr(k,1);
-						x = (x + 1)%nSbxs;
+						//doc.getElementById("statusBox" + x).innerHTML = " row " + i + " diffBxs[" + j + "]: " +  diffBxs[j].value + " diffStr.substr(" + k + "): " + diffStr.substr(k,1);
+						//x = (x + 1)%nSbxs;
 						diffBxs[j].style.color = red;
 						var errs = Number(doc.getElementById("errs").value);
            				doc.getElementById("errs").value = errs + 1;
@@ -253,8 +255,8 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 			if( dvdndEntrd[whatDvdDig] ) {
 				if( bdBxs[l].value !== dvdndEntrd[whatDvdDig]  ) {
 					allgood = false;
-					doc.getElementById("statusBox" + x).innerHTML = " row " + i + " bdBxs[" + l + "]: " +  bdBxs[l].value + " dvdndEntrd[" + whatDvdDig + "]: " + dvdndEntrd[whatDvdDig];
-					x = (x + 1)%nSbxs;
+					//doc.getElementById("statusBox" + x).innerHTML = " row " + i + " bdBxs[" + l + "]: " +  bdBxs[l].value + " dvdndEntrd[" + whatDvdDig + "]: " + dvdndEntrd[whatDvdDig];
+					//x = (x + 1)%nSbxs;
 					bdBxs[l].style.color = red;
 					var errs = Number(doc.getElementById("errs").value);
             		doc.getElementById("errs").value = errs + 1;
@@ -262,8 +264,8 @@ function checkF2D() { // if numbers get erased somehow, even if they're 0, this 
 				}
 			} else if( bdBxs[l].value && bdBxs[l].value !== "0"  ) {
 				allgood = false;
-				doc.getElementById("statusBox" + x).innerHTML = " row " + i + " bdBxs[" + l + "]: " +  bdBxs[l].value + " not 0";
-				x = (x + 1)%nSbxs;
+				//doc.getElementById("statusBox" + x).innerHTML = " row " + i + " bdBxs[" + l + "]: " +  bdBxs[l].value + " not 0";
+				//x = (x + 1)%nSbxs;
 				bdBxs[l].style.color = red;
 				var errs = Number(doc.getElementById("errs").value);
             	doc.getElementById("errs").value = errs + 1;
@@ -2002,7 +2004,7 @@ function zeroCounts() {
 }
 function pusharo( ev ) {
     ev = ev || window.event;
-    var x = ev.keyCode;
+    var y = ev.keyCode;
     var doc = document;
     var num = Number;
     
@@ -2015,7 +2017,7 @@ function pusharo( ev ) {
 
         var row = num(id.substring(1,2));
         var col = num(id.substring(3,len));
-        if( x === 37 ) {
+        if( y === 37 ) {
             var prevCol = col - 1;
             var whereTo = typ + row + "_" + prevCol;
             //alert("we are here: " + id + ", going left to " + whereTo);
@@ -2023,7 +2025,7 @@ function pusharo( ev ) {
             if( nextBx ) {
                 nextBx.focus();
             }        
-        } else if ( x === 38 ) {
+        } else if ( y === 38 ) {
             var id = doc.activeElement.id;
             
             var othr = 'n';
@@ -2053,7 +2055,7 @@ function pusharo( ev ) {
                     col = col - 2;
                 }
             }
-        } else if( x === 39 ) {
+        } else if( y === 39 ) {
             var nextCol = col + 1;
             var whereTo = typ + row + "_" + nextCol;
             var nextBx = doc.getElementById(whereTo);
@@ -2061,7 +2063,7 @@ function pusharo( ev ) {
             if( nextBx ) {
                 nextBx.focus();
             } 
-        } else if( x === 40 ) {
+        } else if( y === 40 ) {
             var id = doc.activeElement.id;
             
             var othr = 'd';
@@ -2095,7 +2097,7 @@ function pusharo( ev ) {
             //alert("not going anywhere");
         }
     } else if( indcatr === 5 ) {
-    	if( x === 39 ) {
+    	if( y === 39 ) {
             var currBx = doc.activeElement;
             var potinpts = doc.getElementsByClassName("potinpt");
             var len = potinpts.length;
@@ -2109,9 +2111,7 @@ function pusharo( ev ) {
             if( nextBx ) {
                 nextBx.focus();
                 nextBx.type = "text";
-                if( currBx ) {
-                	currBx.type = "hidden";
-                }
+                currBx.type = "hidden";
             }
             var divisor = num(doc.getElementById("oden").value);
             var lpartdvd;
@@ -2129,6 +2129,24 @@ function pusharo( ev ) {
         	markGood( null, instr2, instr3, nextBx ); 
         	if( lpartdvd >= divisor ) {
         		var quotDigs = doc.getElementsByName("quotdigs");
+        		var id = quotDigs[0].id;
+        		var strtpt = id.indexOf("t") + 1;
+        		var nchars = id.length - strtpt;
+        		var col = num(id.substr(strtpt, nchars));
+        		var dp = num(doc.getElementById("isDp").getAttribute("name"));
+        		var diff = dp - col;
+        		//doc.getElementById("statusBox" + x).innerHTML = "pusharo dp: " + dp + " col: " + col + " diff: " + diff;
+        		//x = (x + 1)%nSbxs;
+        		if( diff >= 0  ) {
+        			// back up and put leading zeroes
+        			for( var j = col + diff + 1; j > col; --j ) {
+        				//doc.getElementById("statusBox" + x).innerHTML = "pusharo xt" + j;
+        				//x = (x + 1)%nSbxs;
+        				var notq = doc.getElementById("xt" + j);
+        				notq.type = "text";
+        				notq.value = 0;
+        			}
+                }
 				var qlen = quotDigs.length;
 				for( var i = 0; i < qlen; ++i ) {
 					quotDigs[i].onkeyup = divide;
@@ -2389,7 +2407,8 @@ function markGood( aBx, ins2, ins3, nBx ) {
 	}
 	if( nBx ) {
 		nBx.focus();
-	} else {
+		gNextBx = nBx;
+	} else if( aBx ) {
 		aBx.blur();
 	}
 }
@@ -2513,6 +2532,8 @@ function divide( ev ) {
     prod += Mat.pow(10, i) * mcarry;
     var prodMxIdx = prod > 0 ? Mat.floor(Mat.log10(prod)) : 1;
     calcDig = prodMxIdx;
+    //doc.getElementById("statusBox" + x).innerHTML = "prod: " + prod + " calcDig: " + calcDig;
+    //x = (x + 1)%nSbxs;
     gProd = prod;
 
     var dvdnd = 0;
@@ -2767,8 +2788,10 @@ function multiply( col, whatRow ) {
     var ten2col = Mat.pow(10, col);
     var discard = prod % ten2col;
     var mainpart = prod % Mat.pow(10, col + 1);
-    var expAns = (mainpart - discard) / ten2col;
+    var expAns = (mainpart - discard) / ten2col;    
 	var isLastMult = ( col === calcDig );
+	//doc.getElementById("statusBox" + x).innerHTML = "col: " + col + " calcDig: " + calcDig + " isLastMult: " + isLastMult;
+    //x = (x + 1)%nSbxs;
     var red = "#ff1ac6";
     var black = "#0033cc";
     if( ans === expAns ) {
@@ -3048,7 +3071,12 @@ function subtract(col, sbx) { // describe error in errBx, don't show column red 
                  if( dp.innerHTML !== "." && !whole && ans === 0 && Num(dp.name) < 4 ) {
 	    			instr2 = "Click where decimal point should go, just above and to the right of last dividend digit";
                  } else {
-                 	instr2 = 'If there are 4 or less decimal places, click "Done",'
+                 	instr2 = 'If there are 4 or less decimal places, ';
+                 	if( dp.innerHTML !== "." ) {
+                 		instr2 += "click where decimal point should go";
+                 	} else {
+                 		instr2 += 'click "Done",';
+                 	}
                  	instr3 =  'otherwise click on the last quotient digit to cross it off';
                  }
                  nextBx = null
@@ -3230,12 +3258,22 @@ function showDp( ev ) {
     var where = ev.target;
     var doc = document;
     var isDp = doc.getElementById("isDp");
-    var prevInstr = doc.getElementById("instr2").innerHTML;
-    if( where === isDp ) {
-		isDp.innerHTML = ".";
-		isDp.color = "#0033cc";
+    
+    if( where.isEqualNode(isDp) ) {
+    	var potdps = doc.getElementsByClassName("quotDp");
+		var dplen = potdps.length;
+		for( var i = 0; i < dplen; ++i ) {
+			potdps[i].style.color = "#f5f8ff";
+		}
+		isDp.style.color = "#0033cc";
+		// how do I tell if it didn't leave offf somewhere else? fixit
+		var prevInstr = doc.getElementById("instr2").innerHTML;
 		if( prevInstr === "Click where decimal point should go, just above and to the right of last dividend digit" ) {  
-			doc.getElementById("instr2").innerHTML = 'Click "Done"';
+        	var divisor = doc.getElementById("oden").value;
+        	var lpartdvd = gpartdvd;
+        	instr2 = "How many times does " + divisor + " go into " + lpartdvd + "?";
+        	instr3 = "If " + divisor + " is greater than " + lpartdvd + ", use arrow keys to move input box right";
+        	markGood(null, instr2, instr3, gNextBx );
 		}
 	}
 }
@@ -3426,8 +3464,12 @@ function checkds( ev ) {
 						doc.removeEventListener('keydown', pusharo);
 					}
 				}
-        		instr2 = "How many times does " + divisor + " go into " + lpartdvd + "?";
-        		instr3 = "If " + divisor + " is greater than " + lpartdvd + ", use arrow keys to move input box right";
+				var potdps = doc.getElementsByClassName("quotDp");
+				var dplen = potdps.length;
+				for( var i = 0; i < dplen; ++i ) {
+					potdps[i].style.color = "grey";
+				}
+        		instr2 ="Click where decimal point should go, just above and to the right of last dividend digit";
         		markGood( ansBx, instr2, instr3, nextBx );
 				return;
         	}

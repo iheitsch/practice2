@@ -645,12 +645,12 @@
             dividnd = num[0];
             divisor = den[0];
 
-            dividnd = 403; //(int)(720*Math.random());
-            divisor = 440; //(int)(720*Math.random());
+
+            dividnd = 40; //(int)(720*Math.random());
+            divisor = 377; //(int)(720*Math.random());
 
             dividnd = (int)(720*Math.random());
             divisor = (int)(720*Math.random());
-
             dvdDigs = (int)Math.log10(dividnd) + 1;
             dvsrDigs = (int)Math.log10(divisor) + 1;
             num[0] = dividnd; // tmp fixit
@@ -1281,7 +1281,7 @@
 
 <%  } else if( indcatr == 5 && fracToDecCk ) { 
 			int barLen = ndigs + 3;
-			boolean lastboxdebug = true;
+			boolean lastboxdebug = false;
 			String lbtype = lastboxdebug? "text" : "hidden";%>
 	<tr>
     	<th colspan="<%=onumWidth%>" >
@@ -1302,15 +1302,17 @@
         String xid = "xt" + col;
         
         if( idx == dpPos ) { %>
-            <td class="t2" id="isDp" name="<%=col%>" onclick="showDp( event )"></td>
+            <td class="t2" >
+            <span id="isDp" name="<%=col%>" onclick="showDp( event )" class="quotDp ep" >.</span>
+            </td>
 <% 		} else if( spacesb4quot - 1 <= idx && idx < spacesb4quot + actqdigs ) {  
             int jdx = idx - spacesb4quot; %>
             <td class="t2" name="notthestartdig">
-                <span name="quotDp" class="dp" >_</span>
+                <span class="quotDp ep" >.</span>
             </td>
 <%      } else { %>
             <td class="t2" name="notthestartdig">
-				<span class="dp" >_</span>
+				<span class="quotDp ep" >.</span>
 			</td>
 <%      }
 		String qid = "qt" + col;
@@ -1318,12 +1320,12 @@
         <td class="t1" id="<%=tid%>" name="notthestartdig">
             <input type="<%=lbtype%>" class="a1 potinpt" size="1"
                 id="<%=xid%>"
-                style="background-color: pink"
     			onkeydown="erase( event )" >
         </td>
 <%      } else if( idx < spacesb4quot || spacesb4quot + actqdigs < idx ) { %>
                 <td class="t1" id="<%=tid%>" name="notthestartdig">
                 <input type="<%=lbtype%>" class="a1 potinpt" size="1"
+                	id="<%=xid%>"
                 	onkeyup="nix( event )""
                     onkeydown="erase( event )" >
                 </td>
@@ -1332,7 +1334,6 @@
             <td class="t1"  id="<%=tid%>" name="quotTd" >
                 <input type="<%=lbtype%>" id="<%=qid%>" class="a1 potinpt" size="1"
                     name="quotdigs"
-                    style="background-color: LightGreen"
                     onkeydown="erase( event )" >
             </td>
 <%      } else { %>

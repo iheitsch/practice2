@@ -99,14 +99,14 @@ th {
     margin-right: 0px;
     color: #F5F8FF;
 }
-/* visible incorrect decimal point */
+/* invisible potential decimal point */
 .ep{
     width: 0.7em;
     height: 1em;
     text-align: center;
     margin-left: 0px;
     margin-right: 0px;
-    color: red;
+    color: #fff9ea;
 }
 /* visible correct decimal point */
 .fp{
@@ -215,7 +215,7 @@ th {
     right: 20%; */
 }
 #isDp{
-	color: #0033cc;
+	/* color: #0033cc; */
 }
 #leftparen{
 	color: #005511;
