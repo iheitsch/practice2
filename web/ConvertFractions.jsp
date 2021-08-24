@@ -644,13 +644,13 @@
             
             dividnd = num[0];
             divisor = den[0];
-
-
-            dividnd = 322; //(int)(720*Math.random());
-            divisor = 534; //(int)(720*Math.random());
+            
+            dividnd = 616; //(int)(720*Math.random());
+            divisor = 77; //(int)(720*Math.random());
 
             dividnd = (int)(720*Math.random());
             divisor = (int)(720*Math.random());
+            
             dvdDigs = (int)Math.log10(dividnd) + 1;
             dvsrDigs = (int)Math.log10(divisor) + 1;
             num[0] = dividnd; // tmp fixit
@@ -676,7 +676,7 @@
   			for( int i = 0; i < primes.length; ++i ) {
 				int tmpdvd = dividnd;				
   				while( tmpdvd%primes[i] == 0 && tmpdvsr%primes[i] == 0 ) {
-  					System.out.println("dvd: " + tmpdvd + " dvsr: " + tmpdvsr + " primes[" + i + "]: " + primes[i]);
+  					//System.out.println("dvd: " + tmpdvd + " dvsr: " + tmpdvsr + " primes[" + i + "]: " + primes[i]);
   					tmpdvd /= primes[i];
   					tmpdvsr /= primes[i];  					
   				}
@@ -684,7 +684,7 @@
   				
   				while( tmpdvsr%primes[i] == 0 ) {
   					reds[i] += 1;
-  					System.out.println("dvsr: " + tmpdvsr + " primes[" + i + "]: " + primes[i] + " reds[" + i + "]: " + reds[i]);
+  					//System.out.println("dvsr: " + tmpdvsr + " primes[" + i + "]: " + primes[i] + " reds[" + i + "]: " + reds[i]);
   					tmpdvsr /= primes[i];
   					if( !inExact && i != 0 && i != 2 ) {
   						inExact = true;
@@ -723,7 +723,7 @@
                         needsXtraDig = false;
                     }
                 }
-                System.out.println("idx = " + idx + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
+                //System.out.println("idx = " + idx + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
             }
             /*
             for( int i = 0; i < quotDigs; ++i ) {   	
@@ -741,7 +741,7 @@
             	int ten2pow = 10*ten2powm1;
             	int throway = dvddigits%ten2pow;         	
             	dd[i] = throway/ten2powm1;
-            	System.out.println("dvddigits: " + dvddigits + " dd[" + i + "]: " + dd[i]);
+            	//System.out.println("dvddigits: " + dvddigits + " dd[" + i + "]: " + dd[i]);
             	dvddigits = dvddigits - throway;
             }
             
@@ -764,7 +764,7 @@
 	            	throwway = dividnd%(int)StrictMath.pow(10,partDigs);
 	            	dvdpart =( dividnd - throwway)/(int)StrictMath.pow(10,partDigs);
             	}
-                System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset + " dpPos: " + dpPos);
+                //System.out.println("line 461 dividnd: " + dividnd + " throwway: " + throwway + " dvdpart: " + dvdpart + " offset: " + offset + " dpPos: " + dpPos);
             }
             if( dpPos < 0 ) {
             	dpPos = offset + partDigs + 1;
@@ -786,7 +786,7 @@
             } */
             
             int whatquotDig = quotDigs-1; // there may be more quotient digits than subtractions
-            System.out.println("line 750 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
+            //System.out.println("line 750 quotDIgs: " + quotDigs + " whatquotDig: " + whatquotDig + " diff: " + diff);
             
             int worstCaseQdig = 9;
             tmplong = (long)dvdpart;
@@ -808,9 +808,9 @@
                 operand[nsubs][0] = qt[whatquotDig]*divisor;
                 int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
                 operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-                System.out.println("line 771 nsubs = " + nsubs + " qt[" + whatquotDig + "]: " + qt[whatquotDig] + " last dividend: " + tmplong + " product: " + operand[nsubs][0] + " diference: " + operand[nsubs][1] );
+                //System.out.println("line 771 nsubs = " + nsubs + " qt[" + whatquotDig + "]: " + qt[whatquotDig] + " last dividend: " + tmplong + " product: " + operand[nsubs][0] + " diference: " + operand[nsubs][1] );
                 int WCoperand1 = (int)(tmplong - divisor);
-                System.out.println("line 801 WCoperand0: " + WCoperand0 + " WCoperand1: " + WCoperand1);
+                //System.out.println("line 801 WCoperand0: " + WCoperand0 + " WCoperand1: " + WCoperand1);
 
                 actDig[nsubs][0] = operand[nsubs][0] > 0? 
                         (int)Math.log10(operand[nsubs][0]) + 1: 1;
@@ -876,7 +876,7 @@
 	                    	inc = dd[divdig];
 	                	}
 	                    whatquotDig = whatquotDig - 1;
-	                    System.out.println("line 843 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
+	                    //System.out.println("line 843 divisor: " + divisor + " tmplong: " + tmplong + " whatquotDig: " + whatquotDig + " divdig: " + divdig + " inc: " + inc);
 	                    tmplong = 10*tmplong + inc;       
 	                    actBringDn[nsubs] += 1;
 	                }
@@ -884,9 +884,9 @@
                 if( breakout ) {
                     break;
                 }
-                System.out.println("line 852 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
-                System.out.println("line 853 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-                System.out.println("line 854 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+                //System.out.println("line 852 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
+                //System.out.println("line 853 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                //System.out.println("line 854 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
                 totalwidth = spacesb4Op[nsubs][1] + wcDig[nsubs][1] + actBringDn[nsubs];
                 nsubs = nsubs + 1;                 
             }
@@ -1293,7 +1293,7 @@
 
 <%  } else if( indcatr == 5 && fracToDecCk ) { 
 			int barLen = ndigs + 3;
-			boolean lastboxdebug = true;
+			boolean lastboxdebug = false;
 			String lbtype = lastboxdebug? "text" : "hidden";%>
 	<tr>
     	<th colspan="<%=onumWidth%>" >
@@ -1430,7 +1430,7 @@
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + spacesb4Dvsr - idx;
                 String name = "op" + sbx + "_0";
                 String whattype = lbtype;
-                System.out.println(" product spacesb4op[" + sbx +"]: " + spacesb4Op[sbx][0] + " wcDig: " + wcDig[sbx][0] + " idx: " + idx + " col = " + col);
+                //System.out.println(" product spacesb4op[" + sbx +"]: " + spacesb4Op[sbx][0] + " wcDig: " + wcDig[sbx][0] + " idx: " + idx + " col = " + col);
                 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
@@ -1496,7 +1496,7 @@
 </div>
 <div>
 	<table>
-	<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>

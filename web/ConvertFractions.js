@@ -2144,18 +2144,21 @@ function pusharo( ev ) {
 	       	var strtpt = id.indexOf("t") + 1;
 	     	var nchars = id.length - strtpt;
 	       	var col = num(id.substr(strtpt, nchars));
-	      	var dp = num(doc.getElementById("isDp").getAttribute("name"));
-	       	var diff = dp + 1 - col;
-	   		//doc.getElementById("statusBox" + x).innerHTML = "pusharo dp: " + dp + " col: " + col + " diff: " + diff;
-    		//x = (x + 1)%nSbxs;
-	       	if( diff >= 0  ) {
-	        	// put leading zero
-	        	//doc.getElementById("statusBox" + x).innerHTML = "pusharo xt" + j;
-	       		//x = (x + 1)%nSbxs;
-	       		var notq = doc.getElementById("xt" + col);
-	       		notq.type = "text";
-				notq.value = 0;
-	       	}
+	       	var dpBx = doc.getElementById("isDp");
+	       	if( dpBx ) { // whole quotients will not have a decimal point
+		      	var dpcol = num(dpBx.getAttribute("name"));
+		       	var diff = dpcol + 1 - col;
+		   		//doc.getElementById("statusBox" + x).innerHTML = "pusharo dpcol: " + dpcol + " col: " + col + " diff: " + diff;
+	    		//x = (x + 1)%nSbxs;
+		       	if( diff >= 0  ) {
+		        	// put leading zero
+		        	//doc.getElementById("statusBox" + x).innerHTML = "pusharo xt" + j;
+		       		//x = (x + 1)%nSbxs;
+		       		var notq = doc.getElementById("xt" + col);
+		       		notq.type = "text";
+					notq.value = 0;
+		       	}
+		    }
 			gpartdvd = lpartdvd;   
         }
     }
@@ -3463,12 +3466,19 @@ function checkds( ev ) {
 						doc.removeEventListener('keydown', pusharo);
 					}
 				}
-				var potdps = doc.getElementsByClassName("quotDp");
-				var dplen = potdps.length;
-				for( var i = 0; i < dplen; ++i ) {
-					potdps[i].style.color = "grey";
-				}
-        		instr2 ="Click where decimal point should go, just above and to the right of last dividend digit";
+				if( doc.getElementById("isDp") ) {
+					var potdps = doc.getElementsByClassName("quotDp");
+					var dplen = potdps.length;
+					for( var i = 0; i < dplen; ++i ) {
+						potdps[i].style.color = "grey";
+					}
+	        		instr2 ="Click where decimal point should go, just above and to the right of last dividend digit";
+        		} else {
+        			var divisor = doc.getElementById("oden").value;
+		        	var lpartdvd = gpartdvd;
+		        	instr2 = "How many times does " + divisor + " go into " + lpartdvd + "?";
+		        	instr3 = "If " + divisor + " is greater than " + lpartdvd + ", use arrow keys to move input box right"; 
+        		}
         		markGood( ansBx, instr2, instr3, nextBx );
 				return;
         	}
