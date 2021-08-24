@@ -644,13 +644,14 @@
             
             dividnd = num[0];
             divisor = den[0];
+ 
 
-
-            dividnd = 40; //(int)(720*Math.random());
-            divisor = 377; //(int)(720*Math.random());
+            dividnd = 6; //(int)(720*Math.random());
+            divisor = 41; //(int)(720*Math.random());
 
             dividnd = (int)(720*Math.random());
             divisor = (int)(720*Math.random());
+
             dvdDigs = (int)Math.log10(dividnd) + 1;
             dvsrDigs = (int)Math.log10(divisor) + 1;
             num[0] = dividnd; // tmp fixit
@@ -830,7 +831,7 @@
 
                 //int mostPossProdDig = (int)Math.log10(WCoperand0) + 1;
                 spacesb4Op[nsubs][0] = dvsrDigs + spacesb4quot + actqdigs - whatquotDig - wcDig[nsubs][0];
-                System.out.println("line 795 dvsrDigs: " + dvsrDigs + " + spacesb4quot: " + spacesb4quot + " + actqdigs: " + actqdigs + " - whatQuotDig = " + whatquotDig + " - wcDig: " + wcDig[nsubs][0] + " = spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+                //System.out.println("line 795 dvsrDigs: " + dvsrDigs + " + spacesb4quot: " + spacesb4quot + " + actqdigs: " + actqdigs + " - whatQuotDig = " + whatquotDig + " - wcDig: " + wcDig[nsubs][0] + " = spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
                 spacesb4Op[nsubs][1] = dvsrDigs + spacesb4quot + actqdigs - whatquotDig - wcDig[nsubs][1];
                 cspan[nsubs] = 2*(wcDig[nsubs][0] + 1);
@@ -862,7 +863,7 @@
                 if( !inExact || whatquotDig > 0 ) {
 	                tmplong = operand[nsubs][1];
 	                actBringDn[nsubs] = 0;
-	                numBringDn[nsubs] = SZ2_MX - 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+	                numBringDn[nsubs] = onumWidth/2 - 1 + onumWidth%2 + spacesb4quot + actqdigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
 					// how did this ever work? numBringDn in Divider makes every box for the rest of the row a bringdown box,
 							// but here it's coming up with negative numbers
 	                //numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
@@ -1281,7 +1282,7 @@
 
 <%  } else if( indcatr == 5 && fracToDecCk ) { 
 			int barLen = ndigs + 3;
-			boolean lastboxdebug = false;
+			boolean lastboxdebug = true;
 			String lbtype = lastboxdebug? "text" : "hidden";%>
 	<tr>
     	<th colspan="<%=onumWidth%>" >

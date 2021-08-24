@@ -2127,26 +2127,9 @@ function pusharo( ev ) {
 	 		instr2 = "How many times does " + divisor + " go into " + lpartdvd + "?";
         	instr3 = "If " + divisor + " is greater than " + lpartdvd + ", use arrow keys to move input box right";       	
         	markGood( null, instr2, instr3, nextBx ); 
-        	if( lpartdvd >= divisor ) {
-        		var quotDigs = doc.getElementsByName("quotdigs");
-        		var id = quotDigs[0].id;
-        		var strtpt = id.indexOf("t") + 1;
-        		var nchars = id.length - strtpt;
-        		var col = num(id.substr(strtpt, nchars));
-        		var dp = num(doc.getElementById("isDp").getAttribute("name"));
-        		var diff = dp - col;
-        		//doc.getElementById("statusBox" + x).innerHTML = "pusharo dp: " + dp + " col: " + col + " diff: " + diff;
-        		//x = (x + 1)%nSbxs;
-        		if( diff >= 0  ) {
-        			// back up and put leading zeroes
-        			for( var j = col + diff + 1; j > col; --j ) {
-        				//doc.getElementById("statusBox" + x).innerHTML = "pusharo xt" + j;
-        				//x = (x + 1)%nSbxs;
-        				var notq = doc.getElementById("xt" + j);
-        				notq.type = "text";
-        				notq.value = 0;
-        			}
-                }
+        	var quotDigs = doc.getElementsByName("quotdigs");
+        	
+        	if( lpartdvd >= divisor ) {	
 				var qlen = quotDigs.length;
 				for( var i = 0; i < qlen; ++i ) {
 					quotDigs[i].onkeyup = divide;
@@ -2157,6 +2140,22 @@ function pusharo( ev ) {
 					xtraDig.onkeyup=checkRoundOff;
 				}
 			}
+			var id = currBx.id;
+	       	var strtpt = id.indexOf("t") + 1;
+	     	var nchars = id.length - strtpt;
+	       	var col = num(id.substr(strtpt, nchars));
+	      	var dp = num(doc.getElementById("isDp").getAttribute("name"));
+	       	var diff = dp + 1 - col;
+	   		//doc.getElementById("statusBox" + x).innerHTML = "pusharo dp: " + dp + " col: " + col + " diff: " + diff;
+    		//x = (x + 1)%nSbxs;
+	       	if( diff >= 0  ) {
+	        	// put leading zero
+	        	//doc.getElementById("statusBox" + x).innerHTML = "pusharo xt" + j;
+	       		//x = (x + 1)%nSbxs;
+	       		var notq = doc.getElementById("xt" + col);
+	       		notq.type = "text";
+				notq.value = 0;
+	       	}
 			gpartdvd = lpartdvd;   
         }
     }
