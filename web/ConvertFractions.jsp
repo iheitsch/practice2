@@ -644,14 +644,13 @@
             
             dividnd = num[0];
             divisor = den[0];
- 
 
-            dividnd = 6; //(int)(720*Math.random());
-            divisor = 41; //(int)(720*Math.random());
+
+            dividnd = 322; //(int)(720*Math.random());
+            divisor = 534; //(int)(720*Math.random());
 
             dividnd = (int)(720*Math.random());
             divisor = (int)(720*Math.random());
-
             dvdDigs = (int)Math.log10(dividnd) + 1;
             dvsrDigs = (int)Math.log10(divisor) + 1;
             num[0] = dividnd; // tmp fixit
@@ -860,7 +859,7 @@
                 // bring down as many new digits as needed to get something divisor
                 // will go into
                 //if( !needsXtraDig || nsubs < quotDigs - 1 ) {
-                if( !inExact || whatquotDig > 0 ) {
+                if( !inExact || whatquotDig >= 0 ) {
 	                tmplong = operand[nsubs][1];
 	                actBringDn[nsubs] = 0;
 	                numBringDn[nsubs] = onumWidth/2 - 1 + onumWidth%2 + spacesb4quot + actqdigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
@@ -891,6 +890,18 @@
                 totalwidth = spacesb4Op[nsubs][1] + wcDig[nsubs][1] + actBringDn[nsubs];
                 nsubs = nsubs + 1;                 
             }
+            /* this should not be necessary, fixes some things 701/412 90/359
+            doesn't fix others 293/72
+            and breaks 517/50
+            int xtraSubs = 0;
+            for( int k = 0; k < nsubs; ++k ) {
+            	if( actBringDn[k] > 0 ) {
+            		xtraSubs += actBringDn[k] - 1;
+            	}
+            	System.out.println("line 897 actBringDn[" + k + "]: " + actBringDn[k] + " xtraSubs: " + xtraSubs);
+            }
+            nsubs -= xtraSubs;
+            System.out.println("line 900 nsubs: " + nsubs); */
             
             int dvdMsd = dvdDigs - 1;
             startHere = "dd" + dvdMsd + "_0";
