@@ -49,7 +49,6 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
     String whatlvl = "";
     if(( tmp = request.getParameter("difflvl")) != null ) {
         immFeedBkCk = false;
-
         remaindersCk = false;
         exDpCk = false;
         recDpCk = false;
@@ -373,6 +372,11 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	        dvsrDigs = 2;
 	        dvsrDp = 1;
 	        dividnd = 3499965;
+	        
+	        divisor = 873;
+	        dvsrDigs = 3;
+	        dvsrDp = 3;
+	        dividnd = 2;
 	        /* dbfxt */
 	        double dquot = (double)dividnd / (double)divisor;
 	        quotient = (long)dquot;
@@ -384,9 +388,9 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	        }
 	
 	        /* dbfxt 
-	        quotDp = 2;
-	        /* dbfxt */
+	        quotDp = 2;	        
 	        quotDp = 5;
+	        /* dbfxt */
 	        System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
 	        // find worst case Dp and Digs, find width of problem and adjust up or down
 	        int quotWidth = SZ2_MX + 2;
@@ -401,6 +405,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	                if( quotWidth > SZ2_MX + 1 ) {
 	                    dquot = dquot / 10;
 	                    quotient = (long)dquot;
+	                    // shouldn't dividnd be divided by 10 also? fixit
 	                } else {
 	                    dquot = dquot * 10;
 	                    quotient = (long)dquot;
@@ -414,14 +419,14 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	                quotDigs = 1 + (int)Math.log10(quotient);
 	            }
 	            dvdDigs = (int)Math.log10(dividnd) + 1;
-	            System.out.println("line 609 divisor = " + divisor + " dividend = " + dividnd + " quotient = " + quotient + " quotDigs = " + quotDigs + " quotDp = " + quotDp);
+	            //System.out.println("line 609 divisor = " + divisor + " dividend = " + dividnd + " quotient = " + quotient + " quotDigs = " + quotDigs + " quotDp = " + quotDp);
 	            
 	            tmplong = dividnd/(long)Math.pow(10, dvdDigs-1);
 	            // add as many dividend digits as needed to form a number that the
 	            // divisor goes into at least once
 	            if( firstPass ) {
 	                spacesb4quot = dvsrDigs + 1;
-	                System.out.println("line 616 dividend = " + tmplong + " divisor = " + divisor);
+	                //System.out.println("line 616 dividend = " + tmplong + " divisor = " + divisor);
 	                for( int idx = dvdDigs-1; tmplong < divisor; --idx ) {
 	                    if( idx > 0 ) {
 	                        tmplong = tmplong*10 + (dividnd % (long)Math.pow(10, idx))/(long)Math.pow(10, idx-1);
@@ -432,12 +437,12 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	                }
 	                origSpaces = spacesb4quot;
 	            }
-	            System.out.println("before adjustments spacesb4quot = " + spacesb4quot);
+	            //System.out.println("before adjustments spacesb4quot = " + spacesb4quot);
 	            dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
 	            if( dvdDp > dvdDigs ) {
 	                spacesb4quot += (dvdDp - dvdDigs);
 	            }
-	            System.out.println("after adding leading dividend zeros spacesb4quot = " + spacesb4quot);
+	            //System.out.println("after adding leading dividend zeros spacesb4quot = " + spacesb4quot);
 	            // back off leading zeros
 	            whatsBigger = quotDigs;
 	            if( quotDp > quotDigs ) {
@@ -445,9 +450,9 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	                spacesb4quot -= leadzeros;
 	                whatsBigger = quotDp;
 	            }
-	            System.out.println("after subtracting leading quotient zeros spacesb4quot = " + spacesb4quot);
+	            //System.out.println("after subtracting leading quotient zeros spacesb4quot = " + spacesb4quot);
 	            quotWidth = spacesb4quot + whatsBigger;
-	            System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
+	            //System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
 	            firstPass = false;
 	        }
 	        boolean sigDig = Math.random() > 0.5;
@@ -667,6 +672,8 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
         tmplong = tmplong*10 + lastDig;
     }
     int nsubs = 0; // actual subtractions
+    System.out.println("immFeedBkCk: " + immFeedBkCk + " remaindersCk: " + remaindersCk + " exDpCk: " + exDpCk + " recDpCk: " + recDpCk + " rndOffCk: " + rndOffCk);
+    System.out.println("dividnd: " + dividnd + " dvdDp: " + dvdDp + " divisor: " + divisor + "dvsrDp: " + dvsrDp + " quotient: " + quotient + " quotDp: " + quotDp);
     while( whatquotDig >= 0 ) {
         if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
             //System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
@@ -675,7 +682,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-        System.out.println("line 970 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+        //System.out.println("line 970 nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
         int WCoperand1 = (int)(tmplong - divisor); 
 
         actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -688,7 +695,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
         //        (int)Math.log10(WCoperand1) + 1: 1;
         wcDig[nsubs][1] = WCoperand1 > 0? 
                 (int)Math.log10(WCoperand1) + 2: 2;
-        System.out.println("line 983 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
+        //System.out.println("line 983 whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
         if( operand[nsubs][1] < 0 ) {
             //System.out.println("tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
             break;
@@ -696,7 +703,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 
         int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
-        System.out.println("line 991 nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+        //System.out.println("line 991 nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
         cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
@@ -729,7 +736,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
         boolean breakout = false;
         while( tmplong < divisor ) {
             if( whatquotDig < 1 ) {
-                System.out.println("line 1024 no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                //System.out.println("line 1024 no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
                 breakout = true; // don't want to break, want to bring down zeroes if there are no more dividend digits fixit
                 break;
             }
@@ -740,9 +747,9 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
         if( breakout ) {
             break;
         }
-        System.out.println("line 1039 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
-        System.out.println("line 1040 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-        System.out.println("line 1041 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+        //System.out.println("line 1039 dvsrDigs: " + dvsrDigs + " dvdDigs: " + dvdDigs);
+        //System.out.println("line 1040 operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+        //System.out.println("line 1041 spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -998,7 +1005,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
                 if( col >= 0 && ncarries[0][col] != 0 ) { 
                     String bid = "bo" + ocol + "_0" ; 
                     if( ocol < 0 || ocol > SZ2_MX ) {
-                         System.out.println("bo ocol = " + ocol + "being reduced to 0");
+                         //System.out.println("bo ocol = " + ocol + "being reduced to 0");
                          ocol = 0;
                     } %>
                     <td class="s1">
@@ -1011,7 +1018,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
                 if( col >= 0 && ncarries[0][col] != 0 ) { 
                     String cid = "ca" + ccol + "_0"; 
                     if( ccol < 0 || ccol >= SZ2_MX ) {
-                         System.out.println("ca ocol = " + ocol + "being reduced to 0");
+                         //System.out.println("ca ocol = " + ocol + "being reduced to 0");
                          ocol = 0;
                     } %>
                     <td class="s2">
@@ -1142,7 +1149,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
                 String bid = "bo" + ocol + "_" + rdx;
                 //System.out.println("bid = " + bid);
                 if( ocol < 0 || ocol > SZ2_MX ) {
-                         System.out.println("bo col = " + col + "being reduced to 0");
+                         //System.out.println("bo col = " + col + "being reduced to 0");
                          col = 0;
                 } %>
                 <td class="s1">
