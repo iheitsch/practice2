@@ -4,7 +4,8 @@
  * and open the template in the editor.
  */
 
-//var x = 0;
+var x = 0;
+var nSbxs = 30;
 //var whatBoxBx = null;
 "use strict";
 var whatbox = -1;
@@ -491,7 +492,6 @@ function divide(immFeedBkCk, col, qtDig) {
         mcarry = Mat.floor(addProd / 10);
         var mDig = addProd % 10;
         if( dbx > 0 && i < dvsrdigslength - 1 ) {
-            //var whatMcarry = doc.getElementById("hcm" + i + "_" + carryRow);
             var whatMcarry = doc.getElementById("cm" + i + "_" + carryRow);
             if( whatMcarry ) {
                 gMcarries[i][carryRow] = mcarry;
@@ -519,7 +519,7 @@ function divide(immFeedBkCk, col, qtDig) {
         var discard = quotient % ten2i;
         var qdigI = (quotient % Mat.pow(10, i + 1) - discard) / ten2i;
         //doc.getElementById("statusBox" + x).innerHTML = "qDig[" + i + "] = " + qdigI;
-        //x = x + 1;
+        //x = (x + 1)%nSbxs;
         if (qdigI !== 0) {
             restQAreZero = false;
         }
@@ -537,14 +537,14 @@ function divide(immFeedBkCk, col, qtDig) {
     var whatBorBx = "";
     var borBx = null;
 
-    //var carries = new Array();
-    //var borrows = new Array();
     if (whatRow === 0) {
         var i = dvdBxs.length - qLength;
         var leadzeros = 0;
         // add leading zeros
         for (var msQdig = qLength - 1; msQdig > col; --msQdig) {
             var qBx = doc.getElementById("qt" + msQdig);
+            //doc.getElementById("statusBox" + x).innerHTML = "msQdig: " + msQdig + " qBx: " + qBx;
+        	//x = (x + 1)%nSbxs;
             if ( qBx && Num(qBx.value) === 0 ) {
                 ++i;
                 ++leadzeros;
@@ -554,37 +554,25 @@ function divide(immFeedBkCk, col, qtDig) {
                 break;
             }
         }
-        //doc.getElementById("statusBox" + x).innerHTML = "dvdBxs.length = " + dvdBxs.length + " quotDigs = " + quotDigs + " i = " + i;
-        //x = x + 1;
+        // i starts off at 1st dvdBx where dividnd is big enough for divisor to go in. msd is dvdBxs[0]
         while (i >= 0) {
             dvdDigVal = Num(dvdBxs[i].childNodes[0].nodeValue);
             var ten2pow = Mat.pow(10, pow);
             dvdnd += ten2pow * dvdDigVal;
-            //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + ", pow = " + pow + ", i = " + i + ", dvdnd = " + dvdnd;
-            //x = x + 1;
             // if there was a borrow, decrement dvdDigVal
             if (pow > 0) {
                 caCol = pow + quotDigs - 2 - leadzeros;
-                //whatCarry = "hca" + caCol + "_" + whatRow;
                 whatCarry = "ca" + caCol + "_" + whatRow;
-                //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + ", pow = " + pow + ", checking whatCarry = " + whatCarry;
-                //x = x + 1;
                 caBx = doc.getElementById(whatCarry);
                 borCol = caCol + 1;
-                //whatBorBx = "hbo" + borCol + "_" + whatRow;
                 whatBorBx = "bo" + borCol + "_" + whatRow;
                 borBx = doc.getElementById(whatBorBx);
                 if (borBx && caBx) {
-                    //if (Num(caBx.value) === 1) {
                     if( gCarries[caCol][whatRow] === 1 ) {
                         --dvdDigVal;
                         // store the new borrowed value
-                        //borBx.value = dvdDigVal;
                         gBorrows[borCol][whatRow] = dvdDigVal;
-                        //doc.getElementById("statusBox" + x).innerHTML = "storing new value: " + dvdDigVal + " at " + whatBorBx;
-                        //x = x + 1;
                     } else {
-                        //borBx.value = "-2";
                         gBorrows[borCol][whatRow] = -2;
                     }
                 }
@@ -592,27 +580,20 @@ function divide(immFeedBkCk, col, qtDig) {
             discard = prod % ten2pow;
             mainpart = prod % Mat.pow(10, pow + 1);
             prodDigVal = (mainpart - discard) / ten2pow;
-            //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + " pow = " + pow + " dvdDigVal = " + dvdDigVal + " prodDigVal = " + prodDigVal;
-            //x = x + 1;
             caCol = pow + quotDigs - 1 - leadzeros;
-            //whatCarry = "hca" + caCol + "_" + whatRow;
             whatCarry = "ca" + caCol + "_" + whatRow;
             caBx = doc.getElementById(whatCarry);
             if (caBx) {
                 if (dvdDigVal < prodDigVal) { // this digit has a carry
-                    //caBx.value = 1;
                     gCarries[caCol][whatRow] = 1;
-                    //doc.getElementById("statusBox" + x).innerHTML = "storing carry at " + whatCarry;
-                    //x = x + 1;
                 } else {
-                    //caBx.value = 0;
                     gCarries[caCol][whatRow] = 0;
                 }
             }
             --i;
             ++pow;
         }
-    } else {
+    } else { // whatrow !== 0
         var whatDvdBxs = "op" + prevRow + "_1";
         dvdBxs = doc.getElementsByName(whatDvdBxs);
         for (var i = 0; i < dvdBxs.length; ++i) {
@@ -625,18 +606,12 @@ function divide(immFeedBkCk, col, qtDig) {
         var bringdown = gBringDownDigs[prevRow];
 
         var maxp = dvdBxs.length + bringdown;
-        //doc.getElementById("statusBox" + x).innerHTML = "whatDvdBxs = " + whatDvdBxs + " dvdBxs.length = " + dvdBxs.length + " whatRow = " + whatRow + ", pow = " + pow + " maxp = "  + maxp + " bringdown = " + bringdown + " prevRow = " + prevRow;
-        //x = x + 1;
         while (pow < maxp) {
             if (pow < bringdown) {
                 dvdDigVal = Num(bdBxs[bringdown - 1 - pow].value);
-                //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + "bringdown = " + bringdown + " dvdDigVal = " + dvdDigVal;
-                //x = x + 1;
             } else {
                 var dvdidx = maxp - 1 - pow;
                 var whatDvdBx = dvdBxs[dvdidx];
-                //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " dvdidx = " + dvdidx + " whatDvdBx = " + whatDvdBx;
-                //x = x + 1;
                 if (whatDvdBx !== null) {
                     dvdDigVal = Num(whatDvdBx.value);
                 }
@@ -644,30 +619,20 @@ function divide(immFeedBkCk, col, qtDig) {
 
             var ten2pow = Mat.pow(10, pow);
             dvdnd += ten2pow * dvdDigVal;
-            //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " dvdDigVal = " + dvdDigVal + " dividend = " + dvdnd;
-            //x = x + 1;
             // if there was a borrow, decrement dvdDigVal
             if (pow > 0) {
                 caCol = pow + doc.getElementsByName('boca' + whatRow).length / 2 - dvdBxs.length - bringdown;
-                //whatCarry = "hca" + caCol + "_" + whatRow;
                 whatCarry = "ca" + caCol + "_" + whatRow;
                 caBx = doc.getElementById(whatCarry);
-                //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + " pow = " + pow + ", checking whatCarry = " + whatCarry;
-                //x = x + 1
                 borCol = caCol + 1;
-                //whatBorBx = "hbo" + borCol + "_" + whatRow;
                 whatBorBx = "bo" + borCol + "_" + whatRow;
                 borBx = doc.getElementById(whatBorBx);
                 if (borBx && caBx) {
                     if( gCarries[caCol][whatRow] === 1 ) {
                         --dvdDigVal;
                         // store the new borrowed value
-                        //borBx.value = dvdDigVal;
                         gBorrows[borCol][whatRow] = dvdDigVal;
-                        //doc.getElementById("statusBox" + x).innerHTML = " pow = " + pow + " storing new value: " + dvdDigVal + " at " + whatBorBx;
-                        //x = x + 1;
                     } else {
-                        //borBx.value = "-2";
                         gBorrows[borCol][whatRow] = -2;
                     }
                 }
@@ -675,30 +640,15 @@ function divide(immFeedBkCk, col, qtDig) {
             discard = prod % ten2pow;
             mainpart = prod % Mat.pow(10, pow + 1);
             prodDigVal = (mainpart - discard) / ten2pow;
-            //doc.getElementById("statusBox" + x).innerHTML = "mainpart = " + mainpart + " discard = " + discard + " prodDigVal = " + prodDigVal;
-            //x = x + 1;
             caCol = pow + 1;
-            //doc.getElementById("statusBox" + x).innerHTML = " pow = " + pow + " caCol = " + caCol;
-            //x = x + 1;
             caCol += doc.getElementsByName("boca" + whatRow).length / 2;
-            //doc.getElementById("statusBox" + x).innerHTML = "plus boca length/2 caCol = " + caCol;
-            //x = x + 1;
             caCol -= dvdBxs.length;
-            //doc.getElementById("statusBox" + x).innerHTML = "minus DvdBxs.length caCol = " + caCol;
-            //x = x + 1;
             caCol -= bringdown;
-            //doc.getElementById("statusBox" + x).innerHTML = "minus bringdown caCol = " + caCol;
-            //x = x + 1;
-            //whatCarry = "hca" + caCol + "_" + whatRow;
             whatCarry = "ca" + caCol + "_" + whatRow;
             caBx = doc.getElementById(whatCarry);
-            //doc.getElementById("statusBox" + x).innerHTML = "whatCarry " + whatCarry + " caBx = " + caBx;
-            //x = x + 1;
             if (caBx) {
                 if (dvdDigVal < prodDigVal) {// this digit has a carry
                     gCarries[caCol][whatRow] = 1;
-                    //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " storing carry at " + whatCarry;
-                    //x = x + 1;
                 } else {
                     gCarries[caCol][whatRow] = 0;
                 }
@@ -784,6 +734,8 @@ function divide(immFeedBkCk, col, qtDig) {
         if (ans === 0) {
             ansBx.style.color = "black"; // it's already been checked
             if (doc.getElementById("Round Off").checked) {
+            	//doc.getElementById("statusBox" + x).innerHTML = "divide " + ansBx.id + ".onclick = roundOff";
+            	//x = (x + 1)%nSbxs;
                 ansBx.onclick = roundOff;
                 ansBx.onkeyup = checkRoundOff;
             }
@@ -844,19 +796,20 @@ function divide(immFeedBkCk, col, qtDig) {
                     //x = x + 1;
                     var i = qLength - col;
                     nextbox += i;
-                    //doc.getElementById("statusBox" + x).innerHTML = "quotient digit nextbox = " + nextbox;
-                    //x = x + 1;
-
+                    //doc.getElementById("statusBox" + x).innerHTML = "restqarezero col: " + col + " quotient digit nextbox = " + nextbox;
+                    //x = (x + 1)%nSbxs;
                 } else {
                     var bdlength = doc.getElementsByName("bd" + whatRow).length;
                     var offTheTable = bdlength > 0 ? bdlength : 1;
                     //offTheTable = 0;
                     nextbox = lastBoxOfCurrRow + offTheTable;
+                    //doc.getElementById("statusBox" + x).innerHTML = "restqarezero col: " + col + " bd nextbox = " + nextbox + " lastBoxOfCurrRow: " + lastBoxOfCurrRow + " offTheTable: " + offTheTable;
+                    //x = (x + 1)%nSbxs;
                 }
             } else {
                 nextbox = lastBoxOfCurrRow;
-                //doc.getElementById("statusBox" + x).innerHTML = "last Box Of Current row nextbox = " + nextbox;
-                //x = x + 1;
+                //doc.getElementById("statusBox" + x).innerHTML = "!restQAreZero last Box Of Current row nextbox = " + nextbox;
+                //x = (x + 1)%nSbxs;
                 if (nextbox === 0) {
                     // skip multiplicative carries
                     nextbox = doc.getElementsByClassName("c2").length - 1;
@@ -871,7 +824,7 @@ function divide(immFeedBkCk, col, qtDig) {
                     // skip borrow and carry boxes for original dividend
                     nextbox += doc.getElementsByName("boca0").length;
                     //doc.getElementById("statusBox" + x).innerHTML =  "skip borrows and carries nextbox = " + nextbox;
-                    //x = x + 1;                
+                    //x = (x + 1)%nSbxs;                
                 }
                 nextbox += 1;
                 //doc.getElementById("statusBox" + x).innerHTML = "ans = 0, restQAreZero = false or col = 0, nextbox = " + nextbox;
@@ -930,7 +883,7 @@ function divide(immFeedBkCk, col, qtDig) {
             }
             nextbox = lastBoxOfCurrRow;
             //doc.getElementById("statusBox" + x).innerHTML = "ans != 0, lastBoxOfCurrentRow, nextbox = " + nextbox + " whatvisibleMrow = " + name + " visibleMrow.length = " + visibleMrow.length;
-            //x = x + 1;
+            //x = (x + 1)%nSbxs;
             if (nextbox === 0) {
                 // skip multiplicative carries
                 nextbox = doc.getElementsByClassName("c2").length - 1;
@@ -945,20 +898,19 @@ function divide(immFeedBkCk, col, qtDig) {
                 // skip borrow and carry boxes for original dividend
                 nextbox += doc.getElementsByName("boca" + whatRow).length;
                 //doc.getElementById("statusBox" + x).innerHTML = "skip qd, mc and borrows and carries nextbox = " + nextbox;
-                //x = x + 1;
+                //x = (x + 1)%nSbxs;
             } else {
                 while (doc.getElementById("th-id2").elements[nextbox].name.substring(0, 2) === 'bd') {
                     nextbox += 1;
-                    //doc.getElementById("statusBox" + x).innerHTML = "bringdown box nextbox = " + nextbox;
-                    //x = x + 1;
+                    //doc.getElementById("statusBox" + x).innerHTML = "skip bringdowns nextbox = " + nextbox;
+                    //x = (x + 1)%nSbxs;
                 }
                 nextbox -= 1;
             }
             // skip current product
-            //nextbox += prodMxIdx + 1;
             nextbox += visibleMrow.length;
             //doc.getElementById("statusBox" + x).innerHTML = "skip current prod nextbox = " + nextbox;
-            //x = x + 1;
+            //x = (x + 1)%nSbxs;
 
             lastBoxOfCurrRow = nextbox;
             //doc.getElementById("statusBox" + x).innerHTML = "ans != 0, nextbox = " + nextbox;
@@ -971,9 +923,8 @@ function divide(immFeedBkCk, col, qtDig) {
     if( Num(doc.getElementById("quotDp").value) - 2 ===  col ) {
         enableBar();
     }
-    //alert("done with divide");
     setDivFocus();
-}
+} // end divide
 
 function multiply( col, whatRow ) {
     var doc = document;
@@ -1491,6 +1442,8 @@ function subtract(col, sbx) {
             }
             if (doc.getElementById("Round Off").checked) {
                 var prevQtDg = doc.getElementById("qt" + lastqcol);
+                //doc.getElementById("statusBox" + x).innerHTML = "subtract qt[" + lastqcol + "].onclick = roundOff";
+                //x = (x + 1)%nSbxs;
                 prevQtDg.onclick = roundOff;
                 prevQtDg.onkeyup = checkRoundOff;
             }
@@ -1562,10 +1515,16 @@ function bringdown(sbx) {
             break;
         }
     }
+    //doc.getElementById("statusBox" + x).innerHTML = "first non-zero qt dvdcol: " + dvdcol;
+    //x = (x + 1)%nSbxs;
     dvdcol = dvdcol - 1;
     for (var idx = 0; idx < sbx; idx++) {
+    	//doc.getElementById("statusBox" + x).innerHTML = "previous bringdown gBringDownDigs[" + idx + "]: " + gBringDownDigs[idx];
+    	//x = (x + 1)%nSbxs;
         dvdcol -= gBringDownDigs[idx];
     }
+    //doc.getElementById("statusBox" + x).innerHTML = "thisRowsBdDigsVal: " + thisRowsBdDigsVal + " dvdcol: " + dvdcol;
+   	//x = (x + 1)%nSbxs;
     dvdcol -= thisRowsBdDigsVal;
     var whatDig = dvddigs.length - 1 - dvdcol;
     var dividend = Num(doc.getElementById("dividend").value);
@@ -1578,7 +1537,7 @@ function bringdown(sbx) {
             dvddigs[whatDig].style.color = "black";
         }
         doc.getElementById("msg").innerHTML = "";
-        var newval = thisRowsBdDigsVal + 1;;
+        var newval = thisRowsBdDigsVal + 1;
         gBringDownDigs[sbx] = newval;
         ++lastBoxOfCurrRow;
         var nextbox = nextQuotBox;
@@ -2150,10 +2109,6 @@ function roundOff( ev ) {
     ev = ev || window.event;
     var evTarg = ev.target;
     var doc = document;
-    //for (var j = 0; j < 30; j++) {
-        //doc.getElementById("statusBox" + j).innerHTML = "";
-    //}
-    //var x = 0;
     var Num = Number;
     var quotdigs = doc.getElementsByName("quotdigs");
     var quotLength = quotdigs.length;
@@ -2162,7 +2117,8 @@ function roundOff( ev ) {
     var nSigDig = Num(doc.getElementById("nSigDig").value);
     var quotDp = Number(doc.getElementById("quotDp").value);
     var willBzeros = nSigDig >= quotDp - 1;
-    //var doc.getElementById("msg") = doc.getElementById("msg");
+    //doc.getElementById("statusBox" + x).innerHTML = "starting roundOff evTarg: " + evTarg.id + " nSigDig: " + nSigDig + " quotDp: " + quotDp;
+    //x = (x + 1)%nSbxs;
     for( var i = 0; i < quotLength; ++i ) {
         var whatCol = quotLength - 1 - i;
         var whatQuotBx = quotdigs[i];
@@ -2180,8 +2136,7 @@ function roundOff( ev ) {
                     // even if this is a significant digits problem, not a 
                     // decimal places problem, this digit will never be changed 
                     // to zero
-                    if( nSigDig < quotDp - 1 ) {
-                        
+                    if( nSigDig < quotDp - 1 ) {                 
                         crossrest = true;
                         //doc.getElementById("statusBox" + x).innerHTML = "nSigDig = " + nSigDig +" quotDp = " + quotDp;
                         //x = x + 1;
@@ -2192,7 +2147,9 @@ function roundOff( ev ) {
                         if( all.elements[j].isEqualNode(evTarg) ) {  
                             var nextbox = j - 1;
                             if( Num(evTarg.value) >= 5 ) {
-                                while( all.elements[nextbox].value === "9") {
+                                while( all.elements[nextbox].value === "9") { 
+									all.elements[nextbox].style.color = "pink";
+									//alert("ok?");                    
                                     --nextbox;                                       
                                 }
                                 // if rounding goes into new digit, either 0 or blank
@@ -2201,18 +2158,21 @@ function roundOff( ev ) {
                                     if( all.elements[nextbox].getAttribute("id").substring(0,2) === "xt" ) {
                                         var newPlace = nSigDig + 1;
                                         if( newPlace < quotDp - 1 ) {
-                                            quotdigs[quotLength - 1 - newPlace].style.setProperty("text-decoration", "line-through");
-                                        }
-                                        //doc.getElementById("statusBox" + x).innerHTML = "newPlace = " + newPlace +" quotDp = " + quotDp;
-                                        //x = x + 1;
+                                        	var obj = quotdigs[quotLength - 1 - newPlace];
+                                        	obj.style.setProperty("text-decoration", "line-through");
+                							obj.style.setProperty("text-decoration-color", "red");
+               								obj.style.setProperty("text-decoration-style", "double");
+	                                        //doc.getElementById("statusBox" + x).innerHTML = "newPlace: " + newPlace + " quotDp: " + quotDp + " obj: " + obj.id + " all.elements[nextbox]: " + all.elements[nextbox].getAttribute("id");
+	                                        //x = (x + 1)%nSbxs;
+	                                    }
                                         doc.getElementById("nSigDig").value = newPlace;
                                     }
                                 }
                             }
-                            //doc.getElementById("statusBox" + x).innerHTML = "evTarg = " + evTarg.getAttribute("id") + " j = " + j + " nextbox = " + nextbox;
-                            //x = x + 1;
                             whatbox = nextbox;
-                        }
+                            //doc.getElementById("statusBox" + x).innerHTML = "evTarg = " + evTarg.getAttribute("id") + " j: " + j + " global variable whatbox: " + whatbox;
+                            //x = (x + 1)%nSbxs;
+                        } // end if all.elements[j].isEqualNode(evTarg)
                     }
                 } else {
                     var rndMsg = dispRnd.innerHTML;
@@ -2227,31 +2187,31 @@ function roundOff( ev ) {
             } else if( willBzeros && whatCol < quotDp  - 1 ) {
                 crossrest = true;
             }
-        }
+        } // end if !crossrest
         if( startnow ) {
             whatQuotBx.onkeyup = checkRoundOff;
             var hasContent = whatQuotBx.value;
             if( hasContent && crossrest ) {
                 whatQuotBx.style.setProperty("text-decoration", "line-through");
+                whatQuotBx.style.setProperty("text-decoration-color", "red");
+                whatQuotBx.style.setProperty("text-decoration-style", "double");
             }
         }
-    }
-    //doc.getElementById("statusBox" + x).innerHTML = "in roundOff about to setfocus nextbox = " + doc.getElementById("whatbox").value;
+        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " hidden input whatbox = " + doc.getElementById("whatbox").value + " global variable whatbox: " + whatbox;
+    	//x = (x + 1)%nSbxs;
+    } // end for( var i = 0; i < quotLength;
+    //doc.getElementById("statusBox" + x).innerHTML = "in roundOff about to setfocus hidden input whatbox " + whatbox;
+    //x = (x + 1)%nSbxs;
     setDivFocus();
 }
 function checkRoundOff( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
     var doc = document;
-    //for (var j = 0; j < 30; j++) {
-        //doc.getElementById("statusBox" + j).innerHTML = "";
-    //}
-    //var x = 0;
-    //doc.getElementById("statusBox" + x).innerHTML = "in checkRoundOff";
-    //x = x + 1;
     var Num = Number;
-    //var doc.getElementById("msg") = doc.getElementById("msg")
     var id = ansBx.getAttribute("id");
+    //doc.getElementById("statusBox" + x).innerHTML = "starting checkRoundOff ansBx: " + id;
+    //x = (x + 1)%nSbxs;
     var idlen = id.length;
     var col = Num((id.substring(2,idlen)));
     var quotient = Num(doc.getElementById("quotient").value);
@@ -2285,7 +2245,7 @@ function checkRoundOff( ev ) {
         enteredQuot = powOf10*Num(quotDigs[idx].value) + enteredQuot;
         powOf10 *= 10;
         //doc.getElementById("statusBox" + x).innerHTML = "in checkROundOff idx = " + idx + " quotDig = " +  quotDigs[idx].value + " enteredQuot = " + enteredQuot;
-        //x = x + 1;
+        //x = (x + 1)%nSbxs;
     }
     if( roundedQuot === enteredQuot ) {
         doc.getElementById("msg").innerHTML = "";
@@ -2297,6 +2257,10 @@ function checkRoundOff( ev ) {
         var quotDp = Num(doc.getElementById("quotDp").value);
         if( col > nSigDig ||  col >= quotDp ) {         
             nextbox = nextbox + 1;
+            //doc.getElementById("statusBox" + x).innerHTML = "in checkRoundOff col: " + col + " > nSigDig: " + nSigDig;
+            //x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = ">= quotDp: " + quotDp + " setfocus nextbox = " + whatbox;
+    		//x = (x + 1)%nSbxs;
         } else { // only one place to round
             if( dispRnd ) {
                 dispRnd.innerHTML = "";
@@ -2307,6 +2271,8 @@ function checkRoundOff( ev ) {
             for( var i = 0; i < length; ++i ) {
                 if( all.elements[i].isEqualNode(doc.getElementById("whatbox")) ) {
                     nextbox = i;
+                    //doc.getElementById("statusBox" + x).innerHTML = "in checkRoundOff one place to round about to setfocus hidden input whatbox = " + whatbox;
+    				//x = (x + 1)%nSbxs;
                 }
             }
         }
@@ -2323,18 +2289,18 @@ function checkRoundOff( ev ) {
 // set the default input focus
 function setDivFocus() {
     var x = document.getElementById("th-id2");
-    var i = whatbox;
-    var j = document.getElementById("whatbox");
-    var i =  whatbox < 0 ? Number(j.value) : whatbox;
+    var i = whatbox; // global variable
+    var j = document.getElementById("whatbox"); // hidden input
+    var i =  i < 0 ? Number(j.value) : i; // only use the hidden input if the global variable is negative
     if( !x.elements[i].isEqualNode(j) ) {
         x.elements[i].style.backgroundColor = "white";
         x.elements[i].style.color = "red";
         x.elements[i].type = "text";
         //x.elements[i].value="";
         x.elements[i].onkeydown = clearthis;
-        x.elements[i].focus(); // set focus to whatbox
+        x.elements[i].focus(); // set focus to elements[whatbox]
     } else {
-        x.elements[i].focus();
+        //x.elements[i].focus();
         x.elements[i].blur();
     }
 }
