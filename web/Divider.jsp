@@ -32,8 +32,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
     final boolean cmdebug = false;
     final boolean lastboxdebug = false;
     
-    boolean immFeedBkCk = false;
-    
+    boolean immFeedBkCk = false;    
     boolean remaindersCk = false;
     boolean exDpCk = false;
     boolean recDpCk = false;
@@ -276,8 +275,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	        //int maxQtDp = SZ2_MX + 1 - 2*dvsrDigs;
 	        int maxQtDp = SZ2_MX - 2*dvsrDigs;
 	        quotDp = 1 + (int)(maxQtDp*Math.random());
-	        //quotDp = 7; // dbfxt
-	        
+	        //quotDp = 7; // dbfxt        
 	    }
 	    
 	    dividnd = quotient*divisor;
@@ -345,7 +343,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	        dividnd = quotient*origDvsr*multiplier; // calculate without denominator it cancels algebraically but may have round off error
 	
 	        quotient = quotient*multiplier;
-	        int dvMaxDg = SZ2_MX - dvsrDigs;
+	        int dvMaxDg = SZ2_MX - dvsrDigs - 1;
 	        dvdDigs = (int)Math.log10(dividnd) + 1;
 	        while( dvdDigs < dvMaxDg ) {
 	            quotient = quotient*10;
@@ -365,8 +363,17 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	            dvsrDigs = dvsrDp;
 	        }
 	        int dvMaxDg = 1 + (int)((SZ2_MX - dvsrDigs)*Math.random());
-	        int dvMax = (int)(Math.pow(10, dvMaxDg)) - 2;
-	        dividnd = 2 + (int)(dvMax*Math.random());    
+	        dvdDp = dvsrDp + (int)(1 + (dvMaxDg - dvsrDp)*Math.random());
+	        long dvMax = (long)(Math.pow(10, dvMaxDg)) - 1;
+	        if( dvdDp == dvMaxDg ) {
+	        	dvMax /= 10;
+	        }
+	        dividnd = (int)(dvMax*Math.random());
+	        if( dividnd < Long.MAX_VALUE ) {
+	        	dividnd += 1;
+	        }
+	        System.out.println("dvMaxDg: " + dvMaxDg + " dvMax: " + dvMax + " dividnd: " + dividnd + " dvdDp: " + dvdDp);
+	        
 	        /* dbfxt 
 	        divisor = 35;
 	        dvsrDigs = 2;
@@ -376,25 +383,36 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	        divisor = 873;
 	        dvsrDigs = 3;
 	        dvsrDp = 3;
-	        dividnd = 2;
+	        dividnd = 2;	        
+	        divisor = 98;
+	        dvsrDigs = 2;
+	        dvsrDp = 3;
+	        dividnd = 99325174;
 	        /* dbfxt */
+
 	        double dquot = (double)dividnd / (double)divisor;
 	        quotient = (long)dquot;
 	        quotDigs = 1;
 	        quotDp = 1;
 	        if( quotient > 0 ) {
 	            quotDigs = 1 + (int)Math.log10(quotient);
-	            quotDp = 1 + (int)(1 + quotDigs*Math.random()); // don't allow it to be too big
+	            if( quotDigs > SZ2_MX - dvsrDigs - 2 ) {
+	            	quotDigs = SZ2_MX - dvsrDigs - 2;
+	            }         		
+	            //quotDp = 1 + (int)(1 + quotDigs*Math.random()); // don't allow it to be too big
 	        }
 	
 	        /* dbfxt 
-	        quotDp = 2;	        
+	        quotDp = 2;     
 	        quotDp = 5;
+	        quotDp = 8;
 	        /* dbfxt */
+	        
 	        System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
 	        // find worst case Dp and Digs, find width of problem and adjust up or down
 	        int quotWidth = SZ2_MX + 2;
-	        dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
+	        //dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
+	        quotDp = dvdDp - dvsrDp + 1;
 	        boolean firstPass = true;
 	        int origSpaces = 0;
 	        int whatsBigger = quotDigs;
@@ -454,7 +472,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	            quotWidth = spacesb4quot + whatsBigger;
 	            //System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
 	            firstPass = false;
-	        }
+	        } // end while( quotWidth > SZ2_MX + 1 || quotWidth < SZ2_MX + 1
 	        boolean sigDig = Math.random() > 0.5;
 	        /* dbfxt 
 	        sigDig = true;
@@ -468,6 +486,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	            /* dbfxt */
 	            header = " significant digit";
 	            nSigDig = quotDigs - 1 - n;
+	            System.out.println("significant digit n: " + n + " quotDigs: " + quotDigs + " nSigDig: " + nSigDig);
 	        } else {        
 	            n = (int)((quotDp-1)*Math.random());
 	            /* dbfxt           
@@ -475,6 +494,10 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	            /* dbfxt */
 	            header = " decimal place";
 	            nSigDig = quotDp - 2 - n;
+	            System.out.println("decimal n: " + n + " quotDp: " + quotDp + " nSigDig: " + nSigDig);
+	            if( nSigDig < 0 ) {
+	            	nSigDig = 0;
+	            }
 	        }
 	        quotDigs = whatsBigger;
 	        int nPlus1 = n + 1;
@@ -673,7 +696,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
     }
     int nsubs = 0; // actual subtractions
     System.out.println("immFeedBkCk: " + immFeedBkCk + " remaindersCk: " + remaindersCk + " exDpCk: " + exDpCk + " recDpCk: " + recDpCk + " rndOffCk: " + rndOffCk);
-    System.out.println("dividnd: " + dividnd + " dvdDp: " + dvdDp + " divisor: " + divisor + "dvsrDp: " + dvsrDp + " quotient: " + quotient + " quotDp: " + quotDp);
+    System.out.println("dividnd: " + dividnd + " dvdDp: " + dvdDp + " divisor: " + divisor + " dvsrDp: " + dvsrDp + " quotient: " + quotient + " quotDp: " + quotDp);
     while( whatquotDig >= 0 ) {
         if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
             //System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
