@@ -372,7 +372,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	        if( dividnd < Long.MAX_VALUE ) {
 	        	dividnd += 1;
 	        }
-	        System.out.println("dvMaxDg: " + dvMaxDg + " dvMax: " + dvMax + " dividnd: " + dividnd + " dvdDp: " + dvdDp);
+	        //System.out.println("dvMaxDg: " + dvMaxDg + " dvMax: " + dvMax + " dividnd: " + dividnd + " dvdDp: " + dvdDp);
 	        
 	        /* dbfxt 
 	        divisor = 35;
@@ -408,7 +408,7 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 	        quotDp = 8;
 	        /* dbfxt */
 	        
-	        System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
+	        System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " dvdDp: " + dvdDp + " quotient: " + quotient + " quotDigs: " + quotDigs + " quotDp = " + quotDp );
 	        // find worst case Dp and Digs, find width of problem and adjust up or down
 	        int quotWidth = SZ2_MX + 2;
 	        //dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
