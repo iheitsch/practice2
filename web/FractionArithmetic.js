@@ -163,11 +163,16 @@ function checkA( ev ) {
 			var num0 = num(doc.getElementById("n0_" + col0).value);
 			var num2 = num(doc.getElementById("n0_" + col2).value);
 			var instrBx = doc.getElementById("instr2");
+			var whatOp = doc.getElementById("o0_1").innerHTML;
+			var isAdd = whatOp === "+";
 			// is this a denominator? if so check equal to previous 2
 			if( nord.localeCompare("d") === 0 ) {
-				if( nans === prev2 ) {
+				if( nans === prev2 ) {				
 					
 					var instr2 = "Add the two numerators: " + num0 + " + " + num2;
+					if( whatOp === "-" ) {
+						instr2 = "Subtract numerator " + num0 + whatOp + num2; 
+					}
 					if( !isBlank1 || !isBlank3 ) { // should be doing checkM fixit
 						instr2 = "What is " + num0 + " + " + num2; // fixit
 					}
@@ -185,9 +190,10 @@ function checkA( ev ) {
 					instrBx.setAttribute("style", errstyles);
 					instrBx.innerHTML = "Denominator needs to equal the previous 2 denominators: " + prev2;
 				}
-			// is this a numerator? if so, check addition
+			// is this a numerator? if so, check addition or subtraction
 			} else if( nord.localeCompare("n") === 0 ) {
-				if( nans === num0 + num2 ) {
+				if( isAdd && nans === num0 + num2 ||
+					!isAdd && nans === num0 - num2 ) {
 					var nextCol = col + 1;
 					var nextOp = doc.getElementById("o0_" + nextCol);
 					nextOp.innerHTML = "&divide"; 
@@ -210,7 +216,7 @@ function checkA( ev ) {
 		            var errs = Number(doc.getElementById("errs").value);
 			        doc.getElementById("errs").value = errs + 1;
 					instrBx.setAttribute("style", errstyles);
-					instrBx.innerHTML = "Numerator should be " + num0 + " + " + num2;
+					instrBx.innerHTML = "Numerator should be " + num0 + whatOp + num2;
 				}
 			} else {
 				alert("what kind of numerator or denominator is: " + nord);
@@ -237,37 +243,59 @@ function checkM( ev ) {
         var pos = id.indexOf("_");
         var col = num(id.substr(pos+1, len));
 		var nord = id.substr(0,1);
+		//alert("checkM col: " + col + " nord: " + nord + " ans: " + ans);
 		var col0 = col - 4;
 		var col1 = col - 3;
 		var num0 = num(doc.getElementById(nord + "0_"+ col0).value);
 		var num1 = num(doc.getElementById(nord + "0_"+ col1).value);
 		var instrBx = doc.getElementById("instr2");
+		
 		if( nans === num0*num1 ) {
+			instrBx.setAttribute("style", goodstyles);
+			var isNumerator = nord.localeCompare("n") === 0;
+			var instr2;
+			var nextBx;
 			var notnord = "n";
-			if( nord.localeCompare("n") === 0 ) {
-				col = col + 2;
-				notnord = "d";
+			var isPlusOrMinus = num(doc.getElementById("indcatr").value) < 2;
+			if( isPlusOrMinus ) {
+				if( isNumerator ) {
+					notnord = "d";			
+					col = col + 2;
+					if( col%4 === 0 ) {
+						ansBx.blur();
+						instr2 = "Are both denominators the same?";
+						instrBx.innerHTML = instr2;
+						var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
+						var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
+						instrBx.appendChild(truBtn);
+						instrBx.appendChild(flsBtn);
+						nextBx = doc.getElementById(notnord + "0_" + col);
+						doc.getElementById("startHere").value = nextBx.id;
+						return;
+					}
+				}
+				col0 = col - 4;
+				col1 = col - 3;
 			}
-			col0 = col - 4;
-			col1 = col - 3;
-			//alert("notnord, col0, col1: " + notnord + ", " + col0 + ", " + col1);
 			var nextop0 = num(doc.getElementById(notnord + "0_" + col0).value);
 			var nextop1 = num(doc.getElementById(notnord + "0_" + col1).value);
-			var instr2 = "What is " + nextop0 + " times " + nextop1;
-			
-			var nextBx = doc.getElementById(notnord + "0_" + col);
-			instrBx.setAttribute("style", goodstyles);
-			if( nord.localeCompare("n") === 0 && col%4 === 0 ) {
-				ansBx.blur();
-				instr2 = "Are both denominators the same?";
-				instrBx.innerHTML = instr2;
-				var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
-				var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
-				instrBx.appendChild(truBtn);
-				instrBx.appendChild(flsBtn);
-				doc.getElementById("startHere").value = nextBx.id;
-				return;
-			}
+			instr2 = "What is " + nextop0 + " times " + nextop1;
+			if( isNumerator && !isPlusOrMinus ) { 
+				notnord = "d";			
+				instr2 = 'If reduced, click "Done", else enter a common factor of numerator and denominator';
+				col = col + 1;
+				var nextOp = doc.getElementById("o0_" + col);
+				nextOp.innerHTML = "&divide"; 
+				nextOp.setAttribute("name", "divide");
+				col = col + 1;
+				nextBx = doc.getElementById("n0_" + col);
+				nextBx.setAttribute("type", "text");
+				nextBx.onkeyup = checkN;
+				nextBx = doc.getElementById("d0_" + col);
+				nextBx.setAttribute("type", "text");
+				nextBx.onkeyup = checkFact;
+			}		
+			nextBx = doc.getElementById(notnord + "0_" + col);
 			instrBx.innerHTML = instr2;	
 			nextBx.focus();
 		} else {
@@ -367,8 +395,11 @@ function checkN( ev ) {
 		} else {
 			var nextCol = col + 1;
 			whatDen = "d0_" + nextCol;
-			var nextDen = num(doc.getElementById(whatDen).value);
-			var instr2 = "What is a factor you can multiply " + nextDen + " by so that both denomitors are equal?";
+			var isPlusOrMinus = num(doc.getElementById("indcatr").value) < 2;
+			if( isPlusOrMinus ) {
+				var nextDen = num(doc.getElementById(whatDen).value);
+				var instr2 = "What is a factor you can multiply " + nextDen + " by so that both denomitors are equal?";
+			}
 			nextCol = col + 2;
 			prevCol = col - 1;
 			var op = doc.getElementById("o0_" + prevCol).getAttribute("name");
@@ -590,8 +621,8 @@ function multfacts() {
 	col = col + 1; // col5	
 	bxId = "o0_" + col;
 	whatBx = doc.getElementById(bxId);
-	whatBx.innerHTML = "+";
-	whatBx.setAttribute("name", "plus");
+	var whatOp = doc.getElementById("o0_1").innerHTML;
+	whatBx.innerHTML = whatOp;
 	col = col + 1; // col6
 	bxId = "d0_" + col;
 	dnm = doc.getElementById(bxId);
@@ -636,5 +667,11 @@ window.onload = function() {
 		var instr2div = doc.getElementById("instr2");
 		instr2div.appendChild(truBtn);
 		instr2div.appendChild(flsBtn);
+	} else {
+		var startWhere = doc.getElementById("startHere").value;
+		var strtBx = doc.getElementById(startWhere);
+		strtBx.focus();
+		doc.getElementById("n0_4").onkeyup = checkM;
+		doc.getElementById("d0_4").onkeyup = checkM;
 	}
 }

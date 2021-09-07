@@ -49,6 +49,19 @@ function reduce(  num, den ) {
         //return true;
     return {n:num, d:den}; 
 }
+function zeroCounts() {
+    var doc = document;
+
+    //alert("zerocounts");
+    doc.getElementById("numAttmptd").value = 0;
+    doc.getElementById("errs").value = 0;
+    doc.getElementById("numWoErr").value = 0;
+    doc.getElementById("consWoErr").value = 0;
+    doc.getElementById("strtTime").value = Number(Date.now());
+    doc.getElementById("corrPerHr").value = 0;
+    doc.getElementById('th-id2').submit();
+    return false;
+}
 function startAgain() {
     var doc = document;
     var Num = Number;

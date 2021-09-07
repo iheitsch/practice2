@@ -1989,19 +1989,7 @@ function checkM( ev ) {
     }
 }
 
-function zeroCounts() {
-    var doc = document;
 
-    //alert("zerocounts");
-    doc.getElementById("numAttmptd").value = 0;
-    doc.getElementById("errs").value = 0;
-    doc.getElementById("numWoErr").value = 0;
-    doc.getElementById("consWoErr").value = 0;
-    doc.getElementById("strtTime").value = Number(Date.now());
-    doc.getElementById("corrPerHr").value = 0;
-    doc.getElementById('th-id2').submit();
-    return false;
-}
 function pusharo( ev ) {
     ev = ev || window.event;
     var y = ev.keyCode;
