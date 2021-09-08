@@ -60,14 +60,14 @@
     int n3fact = 1;
     int n5fact = 1;
     
-    boolean addCk = false;
-    String isAdd = "";
+    boolean addCk = true;
+    String isAdd = "checked";
 
-    boolean subCk = false;
-    String isCommonDenom = "";
+    boolean subCk = true;
+    String isCommonDenom = "checked";
     
-    boolean mulCk = true;
-    String isMul = "checked";
+    boolean mulCk = false;
+    String isMul = "";
     
     boolean divCk = false;
     String isDiv = "";
@@ -191,7 +191,7 @@
 	            if( n2fact < 1 ) {
 	            	n2fact = 1;
 	            }
-	            System.out.println("den: " + den + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+	            System.out.println("add den: " + den[i] + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
 	            max3 = Double.valueOf((den[0]/n2fact+1)*(1 - Math.random()));
 	            numthrees = (int)(Math.log(max3)/Math.log(3));
 	            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
@@ -244,7 +244,7 @@
             }
             ncols = tot0diff > tot1diff? tot0diff : tot1diff;
             ncols += 8; // fixit 1;
-            instr2 = "Are both denominators the same?";
+            instr2 = "Are both denominators the same? (Y/N)";
             //instr3 = "If so, copy " + den[0] + ", otherwise click after one of the fractions to insert a multiplying factor.";
         } else if( indcatr == 1 && subCk ) { // infinite loops fixit
             running = true;
@@ -304,7 +304,7 @@
 	            if( n2fact < 1 ) {
 	            	n2fact = 1;
 	            }
-	            System.out.println("den: " + den + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
+	            System.out.println("subtract den: " + den[i] + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
 	            max3 = Double.valueOf((den[0]/n2fact+1)*(1 - Math.random()));
 	            numthrees = (int)(Math.log(max3)/Math.log(3));
 	            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
@@ -322,7 +322,12 @@
 	            }
 
 	            num[i] = n2fact*n3fact*n5fact;
-	            boolean toobig = i > 0 && (double)num[1]/(double)den[1] > (double)num[0]/(double)den[0];
+	            double frstfrc = (double)num[0]/(double)den[0];
+	            if( frstfrc <= 0 ) {
+	            	running = false;
+	            	continue genNumbers;
+	            }
+	            boolean toobig = i > 0 && (double)num[1]/(double)den[1] > frstfrc;
 	            while( toobig ) {
 	            	int whichfact = (int)(3*Math.random());
 	            	if( whichfact == 0 && num[1]%2 == 0 ) {
@@ -332,7 +337,11 @@
 	            	} else if( whichfact == 1 && num[1]%5 == 0 ) {
 	            		num[1] = num[1]/5;
 	            	}
-	            	toobig = (double)num[1]/(double)den[1] > (double)num[0]/(double)den[0];
+	            	toobig = (double)num[1]/(double)den[1] > frstfrc;
+	            	if( toobig && num[1] == 1 ) {
+	            		running = false;
+	            		continue genNumbers;
+	            	}
 	            }
 	            //ncols = (int)(acttwos + actthrees + actfives);
             }
@@ -369,8 +378,9 @@
             }
             ncols = tot0diff > tot1diff? tot0diff : tot1diff;
             ncols += 8; // fixit 1;
-            instr2 = "Are both denominators the same?";
+            instr2 = "Are both denominators the same? (Y/N)";
         } else if( indcatr == 2 && mulCk ) {
+        	// allow for cancellation fixit
             running = true;
             instrs = "Multiply these Fractions.";
             whatOp = "&times";

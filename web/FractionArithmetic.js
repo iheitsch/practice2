@@ -263,12 +263,20 @@ function checkM( ev ) {
 					col = col + 2;
 					if( col%4 === 0 ) {
 						ansBx.blur();
-						instr2 = "Are both denominators the same?";
+						instr2 = "Are both denominators the same? (Y/N)";
 						instrBx.innerHTML = instr2;
-						var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
-						var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
-						instrBx.appendChild(truBtn);
-						instrBx.appendChild(flsBtn);
+						var yesNoBx = document.createElement("input");
+						yesNoBx.setAttribute("type", "text");
+						yesNoBx.setAttribute("id", "yesNoBx");
+						
+						yesNoBx.onkeyup = checkYesNo;
+						//yesNoBx.onkeydown = erase;
+						instrBx.append( yesNoBx );
+						yesNoBx.focus();
+						//var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
+						//var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
+						//instrBx.appendChild(truBtn);
+						//instrBx.appendChild(flsBtn);
 						nextBx = doc.getElementById(notnord + "0_" + col);
 						doc.getElementById("startHere").value = nextBx.id;
 						return;
@@ -528,133 +536,134 @@ function checkD( ev ) {
 		}
 	}
 }
-function copynum() {
-	var doc = document;
-	var num = Number;
-	var startWhere = doc.getElementById("startHere").value;
-	var unPos = startWhere.indexOf("_");
-	var len = startWhere.length;
-	var col = num(startWhere.substr(unPos+1, len-1));
-	var col0 = col - 4;
-	var col2 = col - 2;
-	var den0 = num(doc.getElementById("d0_" + col0).value);
-	var den2 = num(doc.getElementById("d0_" + col2).value);
-	//alert("startWhere, col02, den02: " + startWhere + ", " + col0 + ", " + col2 + ", " + den0 + ", " + den2);
-	if( den0 !== den2 ) {
-		var errs = Number(doc.getElementById("errs").value);
-        doc.getElementById("errs").value = errs + 1;
-		doc.getElementById("T").style.color = "red";
-		return;
-	}
-	
-	doc.getElementById("F").style.color = paleDirt;
-    var strtBx = doc.getElementById(startWhere);
-	strtBx.onkeyup = checkA;
-	var unPos = startWhere.indexOf("_");
-	var len = startWhere.length;
-	var col = num(startWhere.substr(unPos+1, len-1));
-	var bxId = "n0_" + col;
-	var nmr = doc.getElementById(bxId);
-	nmr.onkeyup = checkA;
-	//alert("set nmr: " + bxId + " onkeyup to checkA");
-	strtBx.focus();
-	var instrBx = doc.getElementById("instr2");
-	instrBx.setAttribute("style", goodstyles);
-	instrBx.innerHTML = "Copy " + den0 + " to new denominator";
+function checkYesNo( ev ) {
+	ev = ev || window.event;
+    if( ev.which === 89 || ev.which === 121 ||
+    	ev.keyCode === 121 || ev.keyCode === 89) {
+		// yes, so copy denominator    		
+		var doc = document;
+		var num = Number;
+		var startWhere = doc.getElementById("startHere").value;
+		var unPos = startWhere.indexOf("_");
+		var len = startWhere.length;
+		var col = num(startWhere.substr(unPos+1, len-1));
+		var col0 = col - 4;
+		var col2 = col - 2;
+		var den0 = num(doc.getElementById("d0_" + col0).value);
+		var den2 = num(doc.getElementById("d0_" + col2).value);
+		if( den0 !== den2 ) {
+			var errs = Number(doc.getElementById("errs").value);
+		    doc.getElementById("errs").value = errs + 1;
+			doc.getElementById("yesNoBx").style.color = "red";
+			return;
+		}		
+		doc.getElementById("yesNoBx").style.color = paleDirt;
+		var strtBx = doc.getElementById(startWhere);
+		strtBx.onkeyup = checkA;
+		var unPos = startWhere.indexOf("_");
+		var len = startWhere.length;
+		var col = num(startWhere.substr(unPos+1, len-1));
+		var bxId = "n0_" + col;
+		var nmr = doc.getElementById(bxId);
+		nmr.onkeyup = checkA;
+		strtBx.focus();
+		var instrBx = doc.getElementById("instr2");
+		instrBx.setAttribute("style", goodstyles);
+		instrBx.innerHTML = "Copy " + den0 + " to new denominator";
+	} else if( ev.which === 78 || ev.which === 110 ||
+    			ev.keyCode === 110 || ev.keyCode === 78 ) {	
+    	// no, so multiply numerators and denominators by factors so denominators are equal
+    	var doc = document;
+		var num = Number;
+		var startWhere = doc.getElementById("startHere").value;
+		var unPos = startWhere.indexOf("_");
+		var len = startWhere.length;
+		var col = num(startWhere.substr(unPos+1, len-1)) - 2;
+		var bxId = "d0_" + col;
+		var den2 = doc.getElementById(bxId).value;
+		col = col - 2;
+		bxId = "d0_" + col;
+		var den0 = doc.getElementById(bxId).value;			
+		if( den0 === den2 ) {
+			var errs = num(doc.getElementById("errs").value);
+		    doc.getElementById("errs").value = errs + 1;
+			doc.getElementById("yesNoBx").style.color = "red";
+			return;
+		}
+		doc.getElementById("yesNoBx").style.color = paleDirt;
+		var styles = "border-bottom: 2px solid " + paleDirt;
+		bxId = "o0_" + col;
+		var whatBx = doc.getElementById(bxId);
+		whatBx.innerHTML = "&times";
+		whatBx.setAttribute("name", "times");
+		col = col + 1; // col1
+		bxId = "d0_" + col;
+		var newDen = doc.getElementById(bxId);
+		newDen.setAttribute("type", "text");
+		bxId = "n0_" + col;
+		var nmr = doc.getElementById(bxId);
+		nmr.setAttribute("type", "text");
+		var td = nmr.parentNode;
+		td.setAttribute("style", styles);
+		col = col + 1; // col2
+		bxId = "o0_" + col;
+		whatBx = doc.getElementById(bxId);
+		whatBx.innerHTML = "&times";
+		whatBx.setAttribute("name", "times");
+		col = col + 1; // col3
+		bxId = "d0_" + col;
+		var dnm = doc.getElementById(bxId);
+		dnm.setAttribute("type", "text");
+		bxId = "n0_" + col;
+		nmr = doc.getElementById(bxId);
+		nmr.setAttribute("type", "text");
+		td = nmr.parentNode;
+		td.setAttribute("style", styles);
+		col = col + 1; // col4
+		bxId = "d0_" + col;
+		dnm = doc.getElementById(bxId);
+		dnm.onkeyup = checkA;
+		bxId = "n0_" + col;
+		nmr = doc.getElementById(bxId);
+		nmr.onkeyup = checkA;
+		col = col + 1; // col5	
+		bxId = "o0_" + col;
+		whatBx = doc.getElementById(bxId);
+		var whatOp = doc.getElementById("o0_1").innerHTML;
+		whatBx.innerHTML = whatOp;
+		col = col + 1; // col6
+		bxId = "d0_" + col;
+		dnm = doc.getElementById(bxId);
+		dnm.setAttribute("type", "text");
+		dnm.onkeyup = checkA;
+		bxId = "n0_" + col;
+		nmr = doc.getElementById(bxId);
+		nmr.setAttribute("type", "text");
+		nmr.onkeyup = checkA;
+		td = nmr.parentNode;
+		td.setAttribute("style", styles);
+		col = col + 1; // col7
+		bxId = "e0_" + col;
+		doc.getElementById(bxId).innerHTML = "=";
+		col = col + 1; // col8
+		bxId = "d0_" + col;
+		doc.getElementById(bxId).setAttribute("type", "text");
+		dnm.onkeyup = checkA;
+		bxId = "n0_" + col;
+		nmr = doc.getElementById(bxId);
+		nmr.setAttribute("type", "text");
+		nmr.onkeyup = checkA;
+		td = nmr.parentNode;
+		td.setAttribute("style", styles);
+		newDen.focus();
+		var instrBx = doc.getElementById("instr2");
+		instrBx.setAttribute("style", goodstyles);
+		instrBx.innerHTML = "What is a factor you can multiply " + den0 + " by so that both denominators are equal?";
+    } else {
+    	yesNoBx = document.getElementById("yesNoBx");
+    	yesNoBx.style.color = "red";
+    }
 }
-function multfacts() {
-	var doc = document;
-	var num = Number;
-	var startWhere = doc.getElementById("startHere").value;
-	var unPos = startWhere.indexOf("_");
-	var len = startWhere.length;
-	var col = num(startWhere.substr(unPos+1, len-1)) - 2;
-	var bxId = "d0_" + col;
-	//alert("StartWhere, unPos, len, col, bxId: " + startWhere + ", " + unPos + ", " + len + ", " + col + ", " + bxId);
-	var den2 = doc.getElementById(bxId).value;
-	col = col - 2;
-	bxId = "d0_" + col;
-	var den0 = doc.getElementById(bxId).value;
-	
-	if( den0 === den2 ) {
-		var errs = num(doc.getElementById("errs").value);
-        doc.getElementById("errs").value = errs + 1;
-		doc.getElementById("F").style.color = "red";
-		return;
-	}
-	doc.getElementById("T").style.color = paleDirt;
-	var styles = "border-bottom: 2px solid " + paleDirt;
-	bxId = "o0_" + col;
-	var whatBx = doc.getElementById(bxId);
-	whatBx.innerHTML = "&times";
-	whatBx.setAttribute("name", "times");
-	col = col + 1; // col1
-	bxId = "d0_" + col;
-	var newDen = doc.getElementById(bxId);
-	newDen.setAttribute("type", "text");
-	bxId = "n0_" + col;
-	var nmr = doc.getElementById(bxId);
-	nmr.setAttribute("type", "text");
-	var td = nmr.parentNode;
-    td.setAttribute("style", styles);
-	col = col + 1; // col2
-	bxId = "o0_" + col;
-	whatBx = doc.getElementById(bxId);
-	whatBx.innerHTML = "&times";
-	whatBx.setAttribute("name", "times");
-	col = col + 1; // col3
-	bxId = "d0_" + col;
-	var dnm = doc.getElementById(bxId);
-	dnm.setAttribute("type", "text");
-	bxId = "n0_" + col;
-	nmr = doc.getElementById(bxId);
-	nmr.setAttribute("type", "text");
-	td = nmr.parentNode;
-	td.setAttribute("style", styles);
-	col = col + 1; // col4
-	bxId = "d0_" + col;
-	dnm = doc.getElementById(bxId);
-	dnm.onkeyup = checkA;
-	bxId = "n0_" + col;
-	nmr = doc.getElementById(bxId);
-	nmr.onkeyup = checkA;
-	col = col + 1; // col5	
-	bxId = "o0_" + col;
-	whatBx = doc.getElementById(bxId);
-	var whatOp = doc.getElementById("o0_1").innerHTML;
-	whatBx.innerHTML = whatOp;
-	col = col + 1; // col6
-	bxId = "d0_" + col;
-	dnm = doc.getElementById(bxId);
-	dnm.setAttribute("type", "text");
-	dnm.onkeyup = checkA;
-	//alert("bxId: " + bxId + " should  have onkeyup function checkA");
-	bxId = "n0_" + col;
-	nmr = doc.getElementById(bxId);
-	nmr.setAttribute("type", "text");
-	nmr.onkeyup = checkA;
-	//alert("bxId: " + bxId + " should  have onkeyup function checkA");
-	td = nmr.parentNode;
-	td.setAttribute("style", styles);
-	col = col + 1; // col7
-	bxId = "e0_" + col;
-	doc.getElementById(bxId).innerHTML = "=";
-	col = col + 1; // col8
-	bxId = "d0_" + col;
-	doc.getElementById(bxId).setAttribute("type", "text");
-	dnm.onkeyup = checkA;
-	bxId = "n0_" + col;
-	nmr = doc.getElementById(bxId);
-	nmr.setAttribute("type", "text");
-	nmr.onkeyup = checkA;
-	td = nmr.parentNode;
-	td.setAttribute("style", styles);
-	newDen.focus();
-	var instrBx = doc.getElementById("instr2");
-	instrBx.setAttribute("style", goodstyles);
-	instrBx.innerHTML = "What is a factor you can multiply " + den0 + " by so that both denominators are equal?";
-}
-
 window.onload = function() {
 	var doc = document;
 
@@ -662,11 +671,19 @@ window.onload = function() {
 	var isPlusOrMinus = indcatr < 2;
 	if( isPlusOrMinus ) {
 		// what happens to these objects when instr2 is overwritten? Do they float around somewhere taking up space? fixit
-		var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
-		var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
+		//var truBtn = createRadioElement("Yes", "TorF", false, "T", "copynum()", "tBtn" );
+		//var flsBtn = createRadioElement("No","TorF", false, "F", "multfacts()", "fBtn" );
 		var instr2div = doc.getElementById("instr2");
-		instr2div.appendChild(truBtn);
-		instr2div.appendChild(flsBtn);
+		//instr2div.appendChild(truBtn);
+		//instr2div.appendChild(flsBtn);
+		var yesNoBx = document.createElement("input");
+		yesNoBx.setAttribute("type", "text");
+		yesNoBx.setAttribute("id", "yesNoBx");
+		
+		yesNoBx.onkeyup = checkYesNo;
+		//yesNoBx.onkeydown = erase;
+		instr2div.append( yesNoBx );
+		yesNoBx.focus();
 	} else {
 		var startWhere = doc.getElementById("startHere").value;
 		var strtBx = doc.getElementById(startWhere);

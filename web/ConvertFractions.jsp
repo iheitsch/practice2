@@ -120,11 +120,11 @@
     boolean mxToFracCk = false;
     String isMxToFrac = "";
     
-    boolean decToFracCk = false;
-    String isDecToFrac = "";
+    boolean decToFracCk = true;
+    String isDecToFrac = "checked";
     
-    boolean fracToDecCk = true;
-    String isFracToDec = "checked";
+    boolean fracToDecCk = false;
+    String isFracToDec = "";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -393,7 +393,7 @@
         		strDec = strDec + "0";
         	}
         	instrs = "Convert this Decimal to a Fraction.";
-        	instr2 = "Is the decimal greater than or equal to 1 or equal to 0? ";
+        	instr2 = "Is the decimal " + decimal + " greater than or equal to 1 or equal to 0? (Y/N) ";
         	ncols = 12;
         } else if( indcatr == 5 && fracToDecCk ) {
             running = true;
@@ -864,7 +864,7 @@
 	                actBringDn[nsubs] = 0;
 	                numBringDn[nsubs] = onumWidth/2 - 1 + onumWidth%2 + spacesb4quot + actqdigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
 					// how did this ever work? numBringDn in Divider makes every box for the rest of the row a bringdown box,
-							// but here it's coming up with negative numbers
+					// but here it's coming up with negative numbers
 	                //numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
 	                //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
 	                

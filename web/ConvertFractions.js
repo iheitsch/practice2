@@ -26,8 +26,8 @@
  *
  * 7.0 also fixit
  *
- * the whole point of converting decimal to fraction is so that you can cancel numerators or denominators
- * which means you want an improper fraction, not a mixed number fixit
+ * easier to multiply by a power of 10 than 125. simplify after converting decimal to fraction
+ * to improper fraction fixit
  *
  * Mixed Number to fraction: need to be able to put final answer without filling in all the boxes fixit
  * 
@@ -70,8 +70,7 @@ function erase( ev ) {
     var bluechars = restchars - 3 - secondcom;
     var blueval = num(rest.substr(firstblue, bluechars));
             
-    if( redval === 255 && greenval === 26 && blueval === 198 ) {
-    
+    if( redval === 255 && greenval === 26 && blueval === 198 ) { 
     	//alert("erasing");
         ansBx.style.color = "#0033cc";
         var errBx = document.getElementById("instr4");
@@ -2414,60 +2413,71 @@ function markErr( msg, aBx ) {
 	var errs = Number(doc.getElementById("errs").value);
     doc.getElementById("errs").value = errs + 1;
 }
-function promptForNum() {
-	var doc = document;
-	var num = Number;
-	var onum = num(doc.getElementById("onum").value);
-	if( onum >= 1 || onum === 0 ) {
-		var errs = num(doc.getElementById("errs").value);
-		errs += 1;
-        doc.getElementById("errs").value = errs;
-        var red = "#ff1ac6";
-		doc.getElementById("F").style.color = red;
-		return;
-	}
-	var dBx = doc.getElementById("n0_1");
-	dBx.type = "text";
-	var styles = "border-bottom: 2px solid #005511";
-	var td = dBx.parentNode;
-	td.setAttribute("style", styles);
-	dBx.focus();
-	doc.getElementById("d0_1").type = "text";
-	doc.getElementById("e0_0").innerHTML = "=";
-	doc.getElementById("instr2").innerHTML = "Copy the part to the right of the decimal point to numerator,";
-	var instr3Bx = doc.getElementById("instr3");
-	instr3Bx.removeChild(instr3Bx.firstChild);
-	instr3Bx.removeChild(instr3Bx.firstChild);
-	instr3Bx.innerHTML = "ignoring leading and trailing zeros";	
-	instr3Bx.style.color = "#b38f00";
-}
-
-function putWhlBox() {
-	var doc = document;
-	var num = Number;
-	var onum = num(doc.getElementById("onum").value);
-	if( onum < 1 && onum !== 0) {
-		var errs = num(doc.getElementById("errs").value);
-		errs += 1;
-        doc.getElementById("errs").value = errs;
-        var red = "#ff1ac6";
-		doc.getElementById("T").style.color = red;
-		return;
-	}
-	var whlBx = doc.getElementById("n0_0");
-	whlBx.type = "text";
-	whlBx.focus();
-	var dBx = doc.getElementById("n0_1");
-	dBx.type = "text";
-	var styles = "border-bottom: 2px solid #005511";
-	var td = dBx.parentNode;
-	td.setAttribute("style", styles);
-	doc.getElementById("d0_1").type = "text";
-	doc.getElementById("e0_0").innerHTML = "=";
-	doc.getElementById("instr2").innerHTML = "Copy the part to the left of decimal point";
-	var instr3Bx = doc.getElementById("instr3");
-	instr3Bx.removeChild(instr3Bx.firstChild);
-	instr3Bx.removeChild(instr3Bx.firstChild);	
+function checkYesNo( ev ) {
+	ev = ev || window.event;
+    if( ev.which === 89 || ev.which === 121 ||
+    	ev.keyCode === 121 || ev.keyCode === 89) {
+	    // yes, so put a box for whole part
+	    //alert("answered yes");
+	    var doc = document;
+		var num = Number;
+		var onum = num(doc.getElementById("onum").value);
+		if( onum < 1 && onum !== 0) {
+			var errs = num(doc.getElementById("errs").value);
+			errs += 1;
+	        doc.getElementById("errs").value = errs;
+	        var red = "#ff1ac6";
+			doc.getElementById("yesNoBx").style.color = red;
+			//alert("in putWhlBox, error");
+			return;
+		}
+		var whlBx = doc.getElementById("n0_0");
+		whlBx.type = "text";
+		whlBx.focus();
+		var dBx = doc.getElementById("n0_1");
+		dBx.type = "text";
+		var styles = "border-bottom: 2px solid #005511";
+		var td = dBx.parentNode;
+		td.setAttribute("style", styles);
+		doc.getElementById("d0_1").type = "text";
+		doc.getElementById("e0_0").innerHTML = "=";
+		doc.getElementById("instr2").innerHTML = "Copy the part to the left of decimal point";
+		var instr3Bx = doc.getElementById("instr3");
+		instr3Bx.removeChild(instr3Bx.lastChild);
+		instr3Bx.style.color ="#fff9ea";
+	 } else if( ev.which === 78 || ev.which === 110 ||
+    			ev.keyCode === 110 || ev.keyCode === 78 ) {	
+	    // no, so prompt for numerator
+	    //alert("answered no");
+	    var doc = document;
+		var num = Number;
+		var onum = num(doc.getElementById("onum").value);
+		if( onum >= 1 || onum === 0 ) {
+			var errs = num(doc.getElementById("errs").value);
+			errs += 1;
+	        doc.getElementById("errs").value = errs;
+	        var red = "#ff1ac6";
+			doc.getElementById("yesNoBx").style.color = red;
+			//alert("in promptForNum, error");
+			return;
+		}
+		var dBx = doc.getElementById("n0_1");
+		dBx.type = "text";
+		var styles = "border-bottom: 2px solid #005511";
+		var td = dBx.parentNode;
+		td.setAttribute("style", styles);
+		dBx.focus();
+		doc.getElementById("d0_1").type = "text";
+		doc.getElementById("e0_0").innerHTML = "=";
+		doc.getElementById("instr2").innerHTML = "Copy the part to the right of the decimal point to numerator,";
+		var instr3Bx = doc.getElementById("instr3");
+		instr3Bx.removeChild(instr3Bx.lastChild);
+		instr3Bx.innerHTML = "ignoring leading and trailing zeros";	
+		instr3Bx.style.color = "#b38f00";
+	} else {
+		var red = "#ff1ac6";
+		document.getElementById("yesNoBx").style.color = red;
+	}	
 }
 function divide( ev ) {
  	ev = ev || window.event;
@@ -3487,11 +3497,18 @@ window.onload = function(){
 	var isDecToFrac = indcatr === 4;
 	if( isDecToFrac ) {
 		// what happens to these objects when instr2 is overwritten? Do they float around somewhere taking up space? fixit
-		var truBtn = createRadioElement("Yes", "TorF", false, "T", "putWhlBox()", "tBtn" );
-		var flsBtn = createRadioElement("No","TorF", false, "F", "promptForNum()", "fBtn" );
-		var instr3div = doc.getElementById("instr3");		
-		instr3div.prepend(flsBtn);
-		instr3div.prepend(truBtn);
+		//var truBtn = createRadioElement("Yes", "TorF", false, "T", "putWhlBox()", "tBtn" );
+		//var flsBtn = createRadioElement("No","TorF", false, "F", "promptForNum()", "fBtn" );
+		var instr2div = doc.getElementById("instr2");		
+		//instr3div.prepend(flsBtn);
+		//instr3div.prepend(truBtn);
+		var yesNoBx = document.createElement("input");
+		yesNoBx.type = "text";
+		yesNoBx.setAttribute("id", "yesNoBx");
+		//yesNoBx.onkeydown = erase;
+		yesNoBx.onkeyup = checkYesNo;
+		instr2div.append( yesNoBx );
+		yesNoBx.focus();
 	}
     doc.addEventListener('keydown', pusharo);
     doc.getElementById("instr2").style.color = "#b38f00";
