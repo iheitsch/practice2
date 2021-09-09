@@ -63,14 +63,14 @@
     boolean addCk = true;
     String isAdd = "checked";
 
-    boolean subCk = true;
-    String isCommonDenom = "checked";
+    boolean subCk = false;
+    String isCommonDenom = "";
     
     boolean mulCk = false;
     String isMul = "";
     
-    boolean divCk = false;
-    String isDiv = "";
+    boolean divCk = true;
+    String isDiv = "checked";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -245,6 +245,7 @@
             ncols = tot0diff > tot1diff? tot0diff : tot1diff;
             ncols += 8; // fixit 1;
             instr2 = "Are both denominators the same? (Y/N)";
+            startHere = "d0_4";
             //instr3 = "If so, copy " + den[0] + ", otherwise click after one of the fractions to insert a multiplying factor.";
         } else if( indcatr == 1 && subCk ) { // infinite loops fixit
             running = true;
@@ -258,27 +259,6 @@
             		actthrees[1] = actthrees[0];
             		actfives[1] = actfives[0];
             	} else {
-            		/*
-            		int bigsel = (int)(gran*5*Math.random());
-            		
-            		switch(bigsel) {
-            			case 0:
-            				whatBig = 11;
-            				break;
-            			case 1:
-            				whatBig = 13;
-            				break;
-            			case 2:
-            				whatBig = 17;
-            				break;
-            			case 3:
-            				whatBig = 19;
-            				break;
-            			case 4: 
-            				whatBig = 23;
-            				break;
-            		}
-            		int biggen = (int)(gran*2*Math.random()); */
             		actbigs[i] = 0; //biggen > gran? 1 : 0;
             		fivegen = (int)(gran*(nfives-actbigs[i])*Math.random());
 		            actfives[i] = fivegen > 2*gran? 2 : fivegen > gran? 1 : 0;
@@ -290,9 +270,7 @@
 	            d2fact = (int)(StrictMath.pow(2,acttwos[i]));
 	            d3fact = (int)(StrictMath.pow(3,actthrees[i]));
 	            d5fact = (int)(StrictMath.pow(5,actfives[i]));
-	            //int dbigfact = (int)(StrictMath.pow(whatBig,actbigs[i]));
 	            den[i] = d2fact*d3fact*d5fact; //*dbigfact;
-	
 	            max2 = Double.valueOf((den[0]+1)*(1 - Math.random()));
 	            numtwos = (int)(Math.log(max2)/Math.log(2));
 	            if( numtwos < 0 ) {
@@ -308,7 +286,6 @@
 	            max3 = Double.valueOf((den[0]/n2fact+1)*(1 - Math.random()));
 	            numthrees = (int)(Math.log(max3)/Math.log(3));
 	            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-	            //numthrees = (Double.valueOf((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
 	            n3fact = (int)(StrictMath.pow(3,numthrees));
 	            if( n3fact < 1 ) {
 	            	n3fact = 1;
@@ -343,7 +320,6 @@
 	            		continue genNumbers;
 	            	}
 	            }
-	            //ncols = (int)(acttwos + actthrees + actfives);
             }
             // how many factor columns required to convert den[0] and den[1] to same denominator
             int twodiff = 0;
@@ -379,6 +355,7 @@
             ncols = tot0diff > tot1diff? tot0diff : tot1diff;
             ncols += 8; // fixit 1;
             instr2 = "Are both denominators the same? (Y/N)";
+            startHere = "d0_4";
         } else if( indcatr == 2 && mulCk ) {
         	// allow for cancellation fixit
             running = true;
@@ -410,43 +387,6 @@
 	            System.out.println("actfives: " + actfives[i] + " d5fact: " + d5fact);
 	            num[i] = d2fact*d3fact*d5fact;
 	            System.out.println("leaveWhatOut: " + leaveWhatOut + " twogen: " + twogen + " threegen: " + threegen + " fivegen: " + fivegen + " den[" + i + "]: " + den[i]);            		            
-
-	           
-	            /*max2 = Double.valueOf((den[i]+1)*(1 - Math.random()));
-	            numtwos = (int)(Math.log(max2)/Math.log(2));
-	            if( numtwos < 0 ) {
-	              numtwos = 0;
-	            } else if( numtwos > ntwos - 1 ) {
-	              numtwos = ntwos - 1;
-	            } /
-	            numtwos = ntwos - acttwos[i];
-	            if( numtwos > 0 ) {
-	            	n2fact = (int)(StrictMath.pow(2,numtwos));
-	            } else {
-	            	n2fact = 1;
-	            }
-	            //System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
-	            max3 = Double.valueOf((num[0]/n2fact+1)*(1 - Math.random()));
-	            numthrees = (int)(Math.log(max3)/Math.log(3));
-	            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-	            //numthrees = (Double.valueOf((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-	            
-	            numthrees = nthrees - actthrees[i];
-	            if( numthrees > 0 ) {
-	            	n3fact = (int)(StrictMath.pow(3,numthrees));
-	            } else {
-	            	n3fact = 1;
-	            }
-	            max5 = Double.valueOf((num[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
-	            numfives = (int)(Math.log(max5)/Math.log(5));
-	            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives; 
-	            numfives = nfives - actfives[i];
-	            if( numfives > 0 ) {
-	            	n5fact = (int)(StrictMath.pow(5,numfives));
-	            } else {
-	            	n5fact = 1;
-	            }
-	            num[i] = n2fact*n3fact*n5fact; */
 	            int nextnum = 1;
 	            numtwos = acttwos[i] > 0? 0 : ntwos;
 	            numthrees = actthrees[i] > 0? 0 : nthrees;
@@ -468,7 +408,6 @@
 	            System.out.println("numtwos: " + numtwos + " numthrees: " + numthrees + " numfives: " + numfives + " min: " + min + " max: " + max);
 	            den[i] = 1;
 	            while( den[i] < num[i] && (numtwos > 0 || numthrees > 0 || numfives > 0) ) {
-	            	//num[i] = nextnum;
 	            	int whatsnext = (int)(min + (max - min)*Math.random());
 	            	if( whatsnext < 1 && numtwos > 0 ) {
 	            		den[i] *= 2;
@@ -539,60 +478,123 @@
            	startHere = "d0_4";
         } else if( indcatr == 3 && divCk ) {
             running = true;
-            instrs = "Divide 1st Fraction by 2nd.";
-            //instr3 = "Click 'done' when reduced.";
-            whol = 1 + (int)(StrictMath.random()*maxwhol);
-            ntwos = ntwos - 2;
-            nthrees = nthrees - 2;
-            nfives = nfives - 1;
-            den[0] = 1;
-            /*
-            while( den[0] == 1 ) {
-                twogen = (int)(gran*ntwos*Math.random());
-                acttwos = twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
-                d2fact = (int)(StrictMath.pow(2,acttwos));
-                threegen = (int)(gran*nthrees*Math.random());
-                actthrees = threegen > gran? 1 : 0;
-                d3fact = (int)(StrictMath.pow(3,actthrees));
-                fivegen = (int)(gran*nfives*Math.random());
-                actfives = fivegen > gran? 1 : 0;
-                d5fact = (int)(StrictMath.pow(5,actfives));
-                // keep denominator from being too big and cumbersome
-                if( acttwos == 3 && actthrees == 1 && actfives == 1 ) {
-                    boolean cutthrees = 2*Math.random() > 1;
-                    if( cutthrees ) {
-                        d3fact = d3fact/3;
-                    } else {
-                        d5fact = d5fact/5;
-                    }
-                }
-                den[0] = d2fact*d3fact*d5fact;
+            instrs = "Divide first Fraction by second fraction.";
+            whatOp = "&times";
+            //instr3 = " Click 'done' when reduced.";
+            ntwos = nittwos - 3;
+            nthrees = nitthrees - 3;
+            nfives = nitfives - 2;
+            int leaveWhatOut = (int)(3*Math.random());
+            for( int i = 0; i < 2; ++i ) {
+            	if( leaveWhatOut > 0 ) {
+		            twogen = (int)(gran*ntwos*Math.random());
+		            acttwos[i] = twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
+			        d2fact = (int)(StrictMath.pow(2,acttwos[i]));
+	            }
+            	if( leaveWhatOut != 1 ) {
+		            threegen = (int)(gran*nthrees*Math.random());
+		            actthrees[i] = threegen > 2*0.7*gran? 2 : threegen > 0.7*gran? 1 : 0;
+		            d3fact = (int)(StrictMath.pow(3,actthrees[i]));
+            	}
+            	if( leaveWhatOut < 2 ) {
+		            fivegen = (int)(gran*nfives*Math.random());
+		            actfives[i] = fivegen > 0.7*gran? 1 : 0; // make fives more likely
+		            d5fact = (int)(StrictMath.pow(5,actfives[i]));
+            	}            	
+	            System.out.println("acttwos: " + acttwos[i] + " d2fact: " + d2fact);
+	            System.out.println("actthrees: " + actthrees[i] + " d3fact: " + d3fact);
+	            System.out.println("actfives: " + actfives[i] + " d5fact: " + d5fact);
+	            num[i] = d2fact*d3fact*d5fact;
+	            System.out.println("leaveWhatOut: " + leaveWhatOut + " twogen: " + twogen + " threegen: " + threegen + " fivegen: " + fivegen + " den[" + i + "]: " + den[i]);            		            
+	            int nextnum = 1;
+	            numtwos = acttwos[i] > 0? 0 : ntwos;
+	            numthrees = actthrees[i] > 0? 0 : nthrees;
+	            numfives = actfives[i] > 0? 0 : nfives;
+	            int min = 0;
+	            int max = 3;
+	            if( numtwos == 0 ) {
+	            	min = 1;
+	            	if( numthrees == 0 ) {
+	            		min = 2;
+	            	}
+	            }
+	            if( numfives == 0 ) {
+	            	max = 2;
+	            	if( numthrees == 0 ) {
+	            		max = 1;
+	            	}
+	            }
+	            System.out.println("numtwos: " + numtwos + " numthrees: " + numthrees + " numfives: " + numfives + " min: " + min + " max: " + max);
+	            den[i] = 1;
+	            while( den[i] < num[i] && (numtwos > 0 || numthrees > 0 || numfives > 0) ) {
+	            	int whatsnext = (int)(min + (max - min)*Math.random());
+	            	if( whatsnext < 1 && numtwos > 0 ) {
+	            		den[i] *= 2;
+	            		numtwos -= 1;
+	            		if( numtwos == 0 ) {
+	            			min = 1;
+	            		}
+	            	} else if( whatsnext < 2 && numthrees > 0 ) {
+	            		den[i] *= 3;
+	            		numthrees -= 1;
+	            		if( numthrees == 0 ) {
+	            			if( numtwos == 0 ) {
+	            				min = 2;
+	            			}
+	            			if( numfives == 0 ) {
+	            				max = 1;
+	            			}
+	            		}
+	            	} else if( numfives > 0 ) {
+	            		den[i] *= 5;
+	            		numfives -= 1;
+	            		if( numfives == 0 ) {
+	            			max = 2;
+	            		}
+	            	}
+	            	System.out.println("whatsnext: " + whatsnext + " num[" + i + "]: " + num[i]);
+	            }
+	            System.out.println("num[" + i + "]: " + num[i]);
+	            if( den[i] == 1 ) {
+	            	running = false;
+	           }
             }
-            */
 
-            max2 = Double.valueOf((den[0]+1)*(1 - Math.random()));
-            numtwos = (int)(Math.log(max2)/Math.log(2));
-            if( numtwos < 0 ) {
-              numtwos = 0;
-            } else if( numtwos > ntwos - 1 ) {
-              numtwos = ntwos - 1;
+         	// how many factor columns required to convert den[0] and den[1] to same denominator
+            int twodiff = 0;
+            lcm = den[0];
+            int tot0diff = 0;
+            int tot1diff = 0;
+            if( acttwos[0] > acttwos[1] ) {
+            	twodiff = acttwos[0] - acttwos[1];
+            	tot0diff += twodiff;
+            } else {
+            	twodiff = acttwos[1] - acttwos[0];
+            	lcm *= (int)(StrictMath.pow(2,twodiff));
+            	tot1diff += twodiff;
             }
-            n2fact = (int)(StrictMath.pow(2,numtwos));
-            //System.out.println("num: " + num + " max2: " + max2 + " num2s: " + numtwos + " n2fact: " + n2fact);
-            max3 = Double.valueOf((den[0]/n2fact+1)*(1 - Math.random()));
-            numthrees = (int)(Math.log(max3)/Math.log(3));
-            numthrees = numthrees < 0? 0 : numthrees > nthrees - 1? nthrees - 1: numthrees;
-            //numthrees = (Double.valueOf((actthrees+1)*(1 - Math.pow(Math.random(),EXP)))).intValue();
-            n3fact = (int)(StrictMath.pow(3,numthrees));
-            max5 = Double.valueOf((den[0]/(n2fact*n3fact)+1)*(1 - Math.random()));
-            numfives = (int)(Math.log(max5)/Math.log(5));
-            numfives = numfives < 0? 0 : numfives > nfives - 1? nfives - 1: numfives;
-            n5fact = (int)(StrictMath.pow(5,numfives));
-            num[0] = n2fact*n3fact*n5fact;
-/*
-            ncols = (int)(acttwos + actthrees + actfives);
-*/
-            instr2 = "Copy the denominator of the fractional part of the mixed number: " + den[0];
+            int threediff = 0;
+            if( actthrees[0] > actthrees[1] ) {
+            	threediff = actthrees[0] - actthrees[1];
+            	tot0diff += threediff;;
+            } else {
+            	threediff = actthrees[1] - actthrees[0];
+            	lcm *= (int)(StrictMath.pow(3,threediff));
+            	tot1diff += threediff;
+            }
+            int fivediff = 0;
+            if( actfives[0] > actfives[1] ) {
+            	fivediff = actfives[0] - actfives[1];
+            	tot0diff += fivediff;
+            } else {
+            	fivediff = actfives[1] - actfives[0];
+            	lcm *= (int)(StrictMath.pow(5,fivediff));
+            	tot1diff += fivediff;
+            }
+            ncols = tot0diff > tot1diff? tot0diff : tot1diff;
+            ncols += 8; // fixit 1;
+            instr2 = "Copy the second numerator: " + den[1] + " to denominator";
+           	startHere = "d0_3";
         }
     }
 %>
@@ -769,7 +771,7 @@
             }
     %>
         </tr>
-<%  } else if( indcatr < 4 && ( mulCk ) ) {
+<%  } else if( indcatr == 2 && mulCk ) {
 		String nid = "";
 		String did = "";
         nid = "n0_0";
@@ -805,6 +807,112 @@
             </table>
         </td>
 <%		String ntd = "num";
+		op = "";
+		for( int j = 0, k = 3; j < ncols; ++j ) {   
+    		String eid = "e0" + "_" + k;
+            k = k + 1;
+            
+            nid = "n0_" + k;
+            did = "d0_" + k;
+            k = k+ 1;
+            oid = "o0_" + k; %>
+        <td class="sym" id="<%=eid%>"><%=equalSgn%></td>
+        <td>
+            <table>
+                <tr><td class="<%=ntd%>">
+                    <input type="<%=itype%>" id="<%=nid%>" onkeydown="erase( event )" value="">
+                </td></tr>
+                <tr><td>
+                    <input type="<%=itype%>" id="<%=did%>" onkeydown="erase( event )" value="">     
+                </td></tr>
+            </table>
+        </td>
+        <td id="<%=oid%>" class="sym"><%=op%></td>
+<%          itype = "hidden";
+			equalSgn = "";
+			ntd = "";
+            k = k + 1;
+            nid = "n0" + "_" + k;
+            did = "d0" + "_" + k;              
+            eid = "e0" + "_" + k; %>        
+        <td>
+            <table>
+                <tr><td class="<%=ntd%>">
+                    <input type="<%=itype%>" id="<%=nid%>" onkeydown="erase( event )" 
+                    onkeyup="checkFact( event )" value="">
+                </td></tr>
+                <tr><td>
+                    <input type="<%=itype%>" id="<%=did%>" onkeydown="erase( event )"
+                    onkeyup="checkFact( event )" value="">     
+                </td></tr>
+            </table>
+        </td>
+<%          k = k + 1;
+        } %>
+        </tr>
+<%  } else if( indcatr == 3 && divCk ) {
+		String nid = "";
+		String did = "";
+        nid = "n0_0";
+        did = "d0_0"; 
+        String op = "&divide"; 
+        String oid = "o0_1"; %>
+        <tr>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input disabled="true" value="<%=num[0]%>" id="n0_0" onclick="show()" >  
+                </td></tr>
+                <tr><td>
+                    <input disabled="true" value="<%=den[0]%>" id="d0_0" onclick="show()" >
+                </td></tr>
+            </table>
+        </td>
+       
+<%      String itype = "text";
+		String equalSgn = "="; 
+		oid = "o0_1"; 
+		nid = "n0_1";
+        did = "d0_1"; %>
+
+        <td class="sym" id="o0_1" ><%=op%></td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input disabled="true" value="<%=den[1]%>" id="n0_1">  
+                </td></tr>
+                <tr><td>
+                    <input disabled="true" value="<%=num[1]%>" id="d0_1">
+                </td></tr>
+            </table>
+        </td>
+        <td class="sym" id="e0_2"><%=equalSgn%></td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input disabled="true" value="<%=num[0]%>" id="n0_2" onclick="show()" >  
+                </td></tr>
+                <tr><td>
+                    <input disabled="true" value="<%=den[0]%>" id="d0_2" onclick="show()" >
+                </td></tr>
+            </table>
+        </td>
+<% 		op = "&times"; %>
+        <td id="o0_3" class="sym"><%=op%></td>
+        <td>
+            <table>
+                <tr><td class="num">
+                    <input type="<%=itype%>" id="n0_3" onkeydown="erase( event )" 
+                    onkeyup="checkInv( event )" value="">
+                </td></tr>
+                <tr><td>
+                    <input type="<%=itype%>" id="d0_3" onkeydown="erase( event )"
+                    onkeyup="checkInv( event )" value="">     
+                </td></tr>
+            </table>
+        </td>
+        
+<% 		String ntd = "num";
 		op = "";
 		for( int j = 0, k = 3; j < ncols; ++j ) {   
     		String eid = "e0" + "_" + k;

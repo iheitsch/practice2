@@ -246,6 +246,11 @@ function checkM( ev ) {
 		//alert("checkM col: " + col + " nord: " + nord + " ans: " + ans);
 		var col0 = col - 4;
 		var col1 = col - 3;
+		var isDivide = num(doc.getElementById("indcatr").value) === 3;
+		if( isDivide ) {
+			col0 = col - 2;
+			col1 = col - 1;
+		}
 		var num0 = num(doc.getElementById(nord + "0_"+ col0).value);
 		var num1 = num(doc.getElementById(nord + "0_"+ col1).value);
 		var instrBx = doc.getElementById("instr2");
@@ -533,6 +538,55 @@ function checkD( ev ) {
             doc.getElementById("errs").value = errs + 1;
 			instrBx.setAttribute("style", errstyles);
 			instrBx.innerHTML = ans + " is not the other denominator ( " + target + " ) and is not a factor of lcm ( " + lcm + " ) that is not already included in denominator " + orig;
+		}
+	}
+}
+function checkInv( ev ) {
+	ev = ev || window.event;
+    if (ev.which === 13 || ev.keyCode === 13) {
+		var num = Number;
+		var doc = document;
+		
+		var ansBx = ev.target;
+		var ans = ansBx.value;
+		var nans = 97;
+		if( !isNaN(ans) ) {
+			nans = num(ans);
+		}
+		var id = ansBx.id;
+		var nord = id.substr(0,1);
+		var len = id.length;
+        var pos = id.indexOf("_");
+        var col = num(id.substr(pos+1, len));		
+		var thisBx = "Denominator ";
+		var	notnord = "n";
+		var	otherBx = " numerator: ";
+		var oprand = doc.getElementById("d0_1").value;
+		var instr2 = "Copy second denominator: " + oprand + " to numerator";
+		if( nord === "n" ) {			
+			thisBx = "Numerator ";
+			notnord = "d";
+			otherBx = " denominator: ";
+			col = col + 1;
+			var oprand1 = doc.getElementById("d0_0").value;
+			var oprand2 = doc.getElementById("n0_1").value;
+			instr2 = "What is " + oprand1 + " times " + oprand2 + "?";
+		}
+		var instrBx = doc.getElementById("instr2");
+		var otherVal = doc.getElementById(notnord + "0_1").value
+		if( ans !== otherVal ) {
+			ansBx.style.color = "red";
+            var errs = Number(doc.getElementById("errs").value);
+            doc.getElementById("errs").value = errs + 1;
+			instrBx.setAttribute("style", errstyles);
+			instrBx.innerHTML = thisBx + " needs to be the same as " + otherBx + otherVal;
+		} else {
+			instrBx.setAttribute("style", goodstyles);
+			instrBx.innerHTML = instr2;
+			var bxId = notnord + "0_" + col;
+			//alert("nextBx: " + bxId);
+			nextBx = doc.getElementById(bxId);
+			nextBx.focus();
 		}
 	}
 }
