@@ -394,7 +394,19 @@
         	}
         	instrs = "Convert this Decimal to a Fraction.";
         	instr2 = "Is the decimal " + decimal + " greater than or equal to 1 or equal to 0? (Y/N) ";
-        	ncols = 12;
+        	startHere = "d0_3"; // not really starting here, need it for calculations 	
+        	ncols = 7;
+        	int[] fact = { 2, 5 };
+        	int tmpint = intversion;
+        	int tmpmult = (int)multiplier;
+        	for( int b = 0; b < fact.length; ++b ) {
+	        	while( tmpint%fact[b] == 0 && tmpmult%fact[b] == 0 ) {
+	        		tmpint /= fact[b];
+	        		tmpmult /= fact[b];
+	        		ncols += 2;
+	        		System.out.println("ncols: " + ncols + " fact[" + b + "]: " + fact[b] + " tmpint: " + tmpint + " tmpmult: " + tmpmult);
+	        	}
+        	}
         } else if( indcatr == 5 && fracToDecCk ) {
             running = true;
             ntwos = ntwos - 1;
@@ -1190,7 +1202,9 @@
 	            </td></tr>
 	        </table>
 	    </td>
-	    <td id="e0_2" class="sym"><%=eqls%></td>
+	    
+<%		if( Double.parseDouble(strDec) < 1 ) { %>
+		<td id="e0_2" class="sym"><%=eqls%></td>
 	    <td>
 	        <input type="<%=itype%>" onkeyup="checkDWhl( event )" onkeydown="erase( event )" id="n0_2" class="whole qput">
 	    </td>
@@ -1204,22 +1218,20 @@
 	            </td></tr>
 	        </table>
 	    </td>
-<% 		int i;
-		int j;
-
-		for( i = 4; i < ncols; i = i + 2 ) { 
-			String jtype = "hidden";
-			String eid = "e0_" + i;
-			String wid = "n0_" + i; 
-			j = i + 1;
-			String nid = "n0_" + j;
-			String did = "d0_" + j; 
-			
-			%>
+<% 		
+			int i;
+			int j;
+	
+			for( i = 4; i < ncols; i = i + 2 ) { 
+				String jtype = "hidden";
+				String eid = "e0_" + i;
+				String wid = "n0_" + i; 
+				j = i + 1;
+				String nid = "n0_" + j;
+				String did = "d0_" + j; 
+				
+				%>
 			<td id="<%=eid%>" class="sym"><%=eqls%></td>
-		    <td>
-		        <input type="<%=itype%>" onkeyup="checkDWhl( event )" onkeydown="erase( event )" id="<%=wid%>" class="whole qput">
-		    </td>
 		    <td>
 		        <table>
 		            <tr><td>
@@ -1230,34 +1242,35 @@
 		            </td></tr>
 		        </table>
 		    </td>
-<% 		} 
-		int k = i;
-		String e0id = "e0_" + k; 
-		String n0id = "n0_" + k;
-		String op0id = "o0_" + k;
-		k = k + 1;
-		String n1id = "n0_" + k; 
-		String d1id = "d0_" + k;
-		String op1id = "o0_" + k;
-		k = k + 1;
-		String n2id = "n0_" + k;
-		String d2id = "d0_" + k;
-		String e2id = "e0_" + k;
-		k = k + 1;
-		String n3id = "n0_" + k;
-		String d3id = "d0_" + k;
-		String ktype = "hidden"; //"text";
+<% 			} 
+		} else {
+			int k = 2;
+			String e0id = "e0_" + k; 
+			String n0id = "n0_" + k;
+			String op0id = "o0_" + k;
+			k = k + 1;
+			String n1id = "n0_" + k; 
+			String d1id = "d0_" + k;
+			String op1id = "o0_" + k;
+			k = k + 1;
+			String n2id = "n0_" + k;
+			String d2id = "d0_" + k;
+			String e2id = "e0_" + k;
+			k = k + 1;
+			String n3id = "n0_" + k;
+			String d3id = "d0_" + k;
+			String ktype = "hidden"; //"text";
 		%>
         <td id="<%=e0id%>" class="sym"><%=eqls%></td>
         <td>
             <table>
                 <tr>
                     <td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n0id%>" class="nput" >   
+                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n0id%>" class="qput" >   
                     </td>
                     <td id="<%=op0id%>"><%=timesop%></td>
                     <td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n1id%>" class="nput" >  
+                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n1id%>" class="qput" >  
                     </td>
                 </tr>
                 <tr><th colspan="3">
@@ -1270,7 +1283,7 @@
             <table>
                 <tr>
                     <td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n2id%>" class="nput" >  
+                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n2id%>" class="qput" >  
                     </td>
                 </tr>
                 <tr><th colspan="1">
@@ -1282,16 +1295,41 @@
         <td>
             <table>
                 <tr><td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n3id%>" class="nput" >  
+                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n3id%>" class="qput" >  
                 </td></tr>
                 <tr><td>
                     <input type="<%=ktype%>" onkeyup="checkMprD( event )" onkeydown="erase( event )" id="<%=d3id%>">
                 </td></tr>
             </table>
         </td>
+<%      
+			int i;
+			int j;
+			
+			for( i = 6; i < ncols; i = i + 2 ) { 
+				String jtype = "hidden";
+				String eid = "e0_" + i;
+				String wid = "n0_" + i; 
+				j = i + 1;
+				String nid = "n0_" + j;
+				String did = "d0_" + j; 
+				
+				%>
+			<td id="<%=eid%>" class="sym"><%=eqls%></td>
+			<td>
+			    <table>
+			        <tr><td>
+			            <input type="<%=jtype%>" onkeyup="checkDFrcN( event )" onkeydown="erase( event )" id="<%=nid%>" class="qput">  
+			        </td></tr>
+			        <tr><td>
+			            <input type="<%=jtype%>" onkeyup="checkDFrcD( event )" onkeydown="erase( event )" id="<%=did%>">
+			        </td></tr>
+			    </table>
+			</td>
+<%			} %>
 	</tr>
-
-<%  } else if( indcatr == 5 && fracToDecCk ) { 
+<%  	}
+	} else if( indcatr == 5 && fracToDecCk ) { 
 			int barLen = ndigs + 3;
 			boolean lastboxdebug = false;
 			String lbtype = lastboxdebug? "text" : "hidden";%>
