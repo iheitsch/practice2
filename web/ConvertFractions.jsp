@@ -178,6 +178,7 @@
         //System.out.println("before ifs startHere: " + startHere);
         if( indcatr == 0 && simplifyCk ) {
             running = true;
+            nrows = 1;
             instrs = "Simplify this Fraction.";
             twogen = (int)(gran*ntwos*Math.random());
             acttwos = twogen > 5*gran? 5 : twogen > 4*gran? 4 : twogen > 3*gran? 3 : twogen > 2*gran? 2 : twogen > gran? 1 : 0;
@@ -374,6 +375,7 @@
             ncols = (int)(acttwos + actthrees + actfives);
             instr2 = "Copy the denominator of the fractional part of the mixed number: " + den[0] + " (Enter)";
         } else if( indcatr == 4 && decToFracCk ) {
+			// skip the mixed number portion, waste of user time and hard to implement fixit
             running = true;
             boolean gtOne = 10*Math.random() > 6;
             double whlPart = 0;
@@ -1188,134 +1190,18 @@
 	    <td>
 	    	<input disabled="true" value="<%=strDec%>" id="onum">  
 	    </td>
-	    <td id="e0_0" class="sym"><%=eqls%></td>
-	    <td>
-	        <input type="<%=itype%>" onkeyup="checkDWhl( event )" onkeydown="erase( event )" id="n0_0" class="whole qput">
-	    </td>
-	    <td>
-	        <table>
-	            <tr><td>
-	                <input type="<%=itype%>" onkeyup="checkDFrcN( event )" onkeydown="erase( event )" id="n0_1" class="qput">  
-	            </td></tr>
-	            <tr><td>
-	                <input type="<%=itype%>" onkeyup="checkDFrcD( event )" onkeydown="erase( event )" id="d0_1">
-	            </td></tr>
-	        </table>
-	    </td>
-	    
-<%		if( Double.parseDouble(strDec) < 1 ) { %>
-		<td id="e0_2" class="sym"><%=eqls%></td>
-	    <td>
-	        <input type="<%=itype%>" onkeyup="checkDWhl( event )" onkeydown="erase( event )" id="n0_2" class="whole qput">
-	    </td>
-	    <td>
-	        <table>
-	            <tr><td>
-	                <input type="<%=itype%>" onkeyup="checkDFrcN( event )" onkeydown="erase( event )" id="n0_3" class="qput">  
-	            </td></tr>
-	            <tr><td>
-	                <input type="<%=itype%>" onkeyup="checkDFrcD( event )" onkeydown="erase( event )" id="d0_3">
-	            </td></tr>
-	        </table>
-	    </td>
-<% 		
-			int i;
-			int j;
-	
-			for( i = 4; i < ncols; i = i + 2 ) { 
-				String jtype = "hidden";
-				String eid = "e0_" + i;
-				String wid = "n0_" + i; 
-				j = i + 1;
-				String nid = "n0_" + j;
-				String did = "d0_" + j; 
-				
-				%>
-			<td id="<%=eid%>" class="sym"><%=eqls%></td>
-		    <td>
-		        <table>
-		            <tr><td>
-		                <input type="<%=jtype%>" onkeyup="checkDFrcN( event )" onkeydown="erase( event )" id="<%=nid%>" class="qput">  
-		            </td></tr>
-		            <tr><td>
-		                <input type="<%=jtype%>" onkeyup="checkDFrcD( event )" onkeydown="erase( event )" id="<%=did%>">
-		            </td></tr>
-		        </table>
-		    </td>
-<% 			} 
-		} else {
-			int k = 2;
-			String e0id = "e0_" + k; 
-			String n0id = "n0_" + k;
-			String op0id = "o0_" + k;
-			k = k + 1;
-			String n1id = "n0_" + k; 
-			String d1id = "d0_" + k;
-			String op1id = "o0_" + k;
-			k = k + 1;
-			String n2id = "n0_" + k;
-			String d2id = "d0_" + k;
-			String e2id = "e0_" + k;
-			k = k + 1;
-			String n3id = "n0_" + k;
-			String d3id = "d0_" + k;
-			String ktype = "hidden"; //"text";
-		%>
-        <td id="<%=e0id%>" class="sym"><%=eqls%></td>
-        <td>
-            <table>
-                <tr>
-                    <td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n0id%>" class="qput" >   
-                    </td>
-                    <td id="<%=op0id%>"><%=timesop%></td>
-                    <td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n1id%>" class="qput" >  
-                    </td>
-                </tr>
-                <tr><th colspan="3">
-                    <input type="<%=ktype%>" onkeyup="checkMprD( event )" onkeydown="erase( event )" id="<%=d1id%>">
-                </th></tr>
-            </table>
-        </td>
-        <td id="<%=op1id%>" class="sym"><%=plusop%></td>
-        <td>
-            <table>
-                <tr>
-                    <td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n2id%>" class="qput" >  
-                    </td>
-                </tr>
-                <tr><th colspan="1">
-                    <input type="<%=ktype%>" onkeyup="checkMprD( event )" onkeydown="erase( event )" id="<%=d2id%>">
-                </th></tr>
-            </table>
-        </td>
-        <td id="<%=e2id%>" class="sym"><%=eqls%></td>
-        <td>
-            <table>
-                <tr><td>
-                    <input type="<%=ktype%>" onkeyup="checkMprN( event )" onkeydown="erase( event )" id="<%=n3id%>" class="qput" >  
-                </td></tr>
-                <tr><td>
-                    <input type="<%=ktype%>" onkeyup="checkMprD( event )" onkeydown="erase( event )" id="<%=d3id%>">
-                </td></tr>
-            </table>
-        </td>
 <%      
-			int i;
-			int j;
+		int i;
+		int j;
 			
-			for( i = 6; i < ncols; i = i + 2 ) { 
-				String jtype = "hidden";
-				String eid = "e0_" + i;
-				String wid = "n0_" + i; 
-				j = i + 1;
-				String nid = "n0_" + j;
-				String did = "d0_" + j; 
-				
-				%>
-			<td id="<%=eid%>" class="sym"><%=eqls%></td>
+		for( i = 0; i < ncols; i = i + 2 ) { 
+			String jtype = "hidden";
+			String eid = "e0_" + i;
+			String wid = "n0_" + i; 
+			j = i + 1;
+			String nid = "n0_" + j;
+			String did = "d0_" + j; %>
+			<td id="<%=eid%>" class="sym"></td>
 			<td>
 			    <table>
 			        <tr><td>
@@ -1326,10 +1212,10 @@
 			        </td></tr>
 			    </table>
 			</td>
-<%			} %>
+<%		} %>
 	</tr>
-<%  	}
-	} else if( indcatr == 5 && fracToDecCk ) { 
+
+<% 	} else if( indcatr == 5 && fracToDecCk ) { 
 			int barLen = ndigs + 3;
 			boolean lastboxdebug = false;
 			String lbtype = lastboxdebug? "text" : "hidden";%>

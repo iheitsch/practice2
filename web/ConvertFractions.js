@@ -309,44 +309,41 @@ function checkD2F() {
     var onumStr = doc.getElementById("onum").value
     var onum = num(onumStr);
    	var whl = Math.floor(onum);    
-    var strtPt = onumStr.indexOf(".") + 1;
-    var len = onumStr.length;     		
-	var nchars = len - strtPt;
-	var quot = num("0." + onumStr.substr(strtPt, nchars));
+    //var strtPt = onumStr.indexOf(".") + 1;
+    //var len = onumStr.length;     		
+	//var nchars = len - strtPt;
+	//var quot = num("0." + onumStr.substr(strtPt, nchars));
+	//var whlpart = onumStr.substr( 0, strtPt-1 );
+	//if( num( whlpart > 0 ) ) {
+	//	quot = num( onumStr );
+	//}
 	var red = "#ff1ac6";
     
 	for( var i = 0; i < cols; ++i ) {
-    	if( i%2 === 0 && i < 4 ) { // i starts with n0_1, which is i = 0, whole number
-    		if( nums[i].value !== "" && (isNaN(nums[i].value) || num(nums[i].value) !== whl) ) {
-    			allgood = false;
-    			alert("i: " + i + " nums[i]: " + nums[i].value + " whl: " + whl + " allgood: " + allgood);
-    			nums[i].style.color = red;
+	    if( nums[i].value !== "" ) {
+	   		lastcol = i;
+	   		//doc.getElementById("statusBox" + x).innerHTML = "checkD2F nums[" + i + "]: " + nums[i].value;
+           	//x = (x + 1)%nSbxs;
+           	var j = 2*i + 1;
+	   		lastDBx = doc.getElementById("d0_" + j)
+    		lastdstr = lastDBx.value;
+	    	if( isNaN(nums[i].value) ) {
+	    		allgood = false;
+	   			alert("i: " + i + " NaN nums[i]: " + nums[i].value + " allgood: " + allgood);
+	   			nums[i].style.color = red;
+	   		} else if( isNaN(lastdstr) ) {
+	   		    allgood = false;
+    		    alert("i: " + i + " NaN lastdstr: " + lastdstr + " allgood: " + allgood);
+    			lastDBx.style.color = red;
     		}
+    		//alert("i: " + i + " nums[i]: " + nums[i].value + " lastd: " + lastdstr);
     	} else {
-	    	if( nums[i].value !== "" ) {
-	    		lastcol = i;
-	    		//doc.getElementById("statusBox" + x).innerHTML = "checkD2F nums[" + i + "]: " + nums[i].value;
-            	//x = (x + 1)%nSbxs;
-	    		lastDBx = doc.getElementById("d0_" + i)
-	    		lastdstr = lastDBx.value;
-	    		if( isNaN(nums[i].value) ) {
-	    			allgood = false;
-	    			alert("i: " + i + " NaN nums[i]: " + nums[i].value + " allgood: " + allgood);
-	    			nums[i].style.color = red;
-	    		} else if( isNaN(lastdstr) ) {
-	    		    allgood = false;
-	    		    alert("i: " + i + " NaN lastdstr: " + lastdstr + " allgood: " + allgood);
-    				lastDBx.style.color = red;
-    			}
-    			//alert("i: " + i + " nums[i]: " + nums[i].value + " lastd: " + lastdstr);
-	    	} else {
-		        break;
-	        }
-	    }
+           break;
+        }
     }
     var lastn = num(nums[lastcol].value);  
-	var lastd = num(lastdstr);
-	if( quot === 0 ) {
+	var lastd = lastdstr? num(lastdstr) : 1; // assume 1 if blank
+	if( onum === 0 ) {
 		if( lastn !== whl ) { 
 			allgood = false;
 			nums[lastcol].style.color = red;	    		    
@@ -354,11 +351,11 @@ function checkD2F() {
 			alert("decimal: " + onum + " not equal " + lastn);
 		}
 	} else {
-		if( quot !== lastn/lastd ) {
+		if( onum !== lastn/lastd ) {
 			allgood = false;
 			nums[lastcol].style.color = red;	    		    
 	    	lastDBx.style.color = red;
-			alert("decimal: " + quot + " not equal to " + lastn + "/" + lastd + " allgood: " + allgood);
+			alert("decimal: " + onum + " not equal to " + lastn + "/" + lastd + " allgood: " + allgood);
 		}
 	    var rdfrc = reduce(lastn, lastd);
 	    var testn = lastn - rdfrc.n;
@@ -1263,17 +1260,17 @@ function checkMprN( ev ) {
             var instr2;
             var instr3;
             var nAns = num(ans);
-            var expAns = col === frstncol? whlprt : 
-            			col === frstdcol? oden :
-            			col === scnddcol? onum :
-            			col === thrddcol? whlprt*oden + onum :
-            			97; // large prime, never to be expected
+            var expAns = col === frstncol? whlprt :
+                         col === frstdcol? oden :
+                         col === scnddcol? onum :
+                         col === thrddcol? whlprt*oden + onum :
+                  					       97; // large prime, never to be expected
             if( col < frthdcol && nAns === expAns ) { 
                 instr2 = "Copy denominator: " + oden + " to second numerator box";
                 if( col === frstdcol ) {
                     instr2 = "Copy numerator of mixed number: " + onum + " to third box";
                 } else if( col === scnddcol ) {
-                    instr2 = "What is " + whlprt + " &times " + oden + " + " + onum;
+                    instr2 = "What is whlprt &times " + oden + " + " + onum;
                 }
                 nextBx = doc.getElementById("n0_" + nextCol);
                 if( col > frstdcol ) {
@@ -2237,6 +2234,10 @@ function checkDFrcN( ev ) {
 	        		fracStr = fracStr.substr(0,nchars);
 	        		trailZero = fracStr.substr(nchars-1, 1);
 	        	}
+	        	var frstpart = onum.substr( 0, strtPt-1 );
+	        	if( num(frstpart) > 0 ) {
+	        		fracStr = frstpart + fracStr;
+	        	}
 	        	var fracPt = num(fracStr);
 	        	if( nans === fracPt ) {
 	        		var nextBx = doc.getElementById("d0_" + col );
@@ -2261,7 +2262,7 @@ function checkDFrcN( ev ) {
 	        			var ratio = prevDen/nden;
 	        			if( prevDen/nden === prevNum/nans ) {
 	        				// go to next whol part or numerator
-	        				var whlPt = num(onum.substr(0, strtPt));
+	        				//var whlPt = num(onum.substr(0, strtPt));
 	        				var nextWCol = col + 1;
 	        				var nextFCol = col + 2;
 	        				var nextBx = doc.getElementById("n0_" + nextFCol);
@@ -2273,11 +2274,11 @@ function checkDFrcN( ev ) {
 	        				var instr2 = "Is there a number that evenly divides numerator and denominator?";
 	        				var instr3 = " If so, divide by it, otherwise click 'Done'";
 	        				       				
-	        				if( whlPt !== 0 ) {
+	        				/* if( whlPt !== 0 ) {
 	        					instr3 = "If so, copy whole part, otherwise click 'Done'";
 	        					nextBx = doc.getElementById("n0_" + nextWCol);	 
 	        					nextBx.setAttribute("type", "text");
-	        				}
+	        				} */
 	        				markGood( ansBx, instr2, instr3, nextBx );
 	        			} else {
 						   	var errm = prevDen + " needs to be divided by " + ratio + " the same as you divided the numerator";
@@ -2328,47 +2329,12 @@ function checkDFrcD( ev ) {
 	        		var whl = Math.floor(num(onum));
 	        		var nextCol = col + 2;
 	        		var nextBx = doc.getElementById("n0_" + nextCol);
-	        		if( whl === 0 ) {
-	        			nextBx.setAttribute("type", "text");
-	        			var styles = "border-bottom: 2px solid #005511";
-						var td = nextBx.parentNode;
-						td.setAttribute("style", styles);
-						doc.getElementById("d0_3").type = "text";						
-	        			instr3 = "divide previous numerator by some number that evenly divides previous numerator and denominator";
-	        		} else {
-	        			var oden = doc.getElementById("d0_1").value;
-	        			instr2 = "Copy the denominator of the fractional part of the mixed number: " + oden + " (Enter)";
-	        			nextBx = doc.getElementById("d0_" + nextCol);
-	        			var styles = "border-bottom: 2px solid #005511";
-	        			var dBx = doc.getElementById("n0_2");
-	        			dBx.type = "text";
-	        			var td = dBx.parentNode;        			
-						td.setAttribute("style", styles);
-						var dTd = doc.getElementById("o0_2");
-	        			dTd.innerHTML = "&times";
-	        			dTd.style.color = "#005511";       			
-						dTd.setAttribute("style", styles);
-						for( var i = 3; i < 6; ++i ) {
-							dBx = doc.getElementById("n0_" + i);
-		        			dBx.type = "text";
-		        			td = dBx.parentNode;        			
-							td.setAttribute("style", styles);
-							dBx = doc.getElementById("d0_" + i);
-	        				dBx.type = "text"
-						}
-						dTd = doc.getElementById("o0_3");
-	        			dTd.innerHTML = "+";
-	        			dTd.style.color = "#005511";
-	        			dTd = doc.getElementById("e0_4");
-	        			dTd.innerHTML = "=";
-	        			dTd.style.color = "#005511";
-	        			/*dTd = doc.getElementById("o0_6");
-	        			dTd.innerHTML = "&divide";
-	        			dTd.style.color = "#005511";  
-	        			dTd = doc.getElementById("e0_6");
-	        			dTd.innerHTML = "=";
-	        			dTd.style.color = "#005511";*/     			
-					}
+	        		nextBx.setAttribute("type", "text");
+	        		var styles = "border-bottom: 2px solid #005511";
+					var td = nextBx.parentNode;
+					td.setAttribute("style", styles);
+					doc.getElementById("d0_3").type = "text";						
+	        		instr3 = "divide previous numerator by some number that evenly divides previous numerator and denominator";
 					doc.getElementById("e0_2").innerHTML = "=";					
 	        		markGood( ansBx, instr2, instr3, nextBx );
 	        	} else {
@@ -2389,10 +2355,10 @@ function checkDFrcD( ev ) {
 					   	markErr( errm, ansBx );
 		        	} else {
 						// go to next whol part or numerator
-	        			var whlPt = num(onum.substr(0, strtPt));
-	        			var nextWCol = col + 1;
+	        			//var whlPt = num(onum.substr(0, strtPt));
+	        			var nextECol = col + 1;
 	        			var nextFCol = col + 2;
-	        			var eBx = doc.getElementById("e0_" + nextWCol);
+	        			var eBx = doc.getElementById("e0_" + nextECol);
 	        			if( eBx ) {
 	        				eBx.innerHTML = "=";
 	        				var nextBx = doc.getElementById("n0_" + nextFCol);
@@ -2404,11 +2370,6 @@ function checkDFrcD( ev ) {
 		        			nextDBx.setAttribute("type", "text");
 		        			var instr2 = "Is there a number that evenly divides numerator and denominator?";
 		        			var instr3 = " If so, divide by it, otherwise click 'Done'";		
-		        			/*if( whlPt !== 0 ) {
-		        				instr3 = "If so, copy whole part, otherwise click 'Done'";
-		        				nextBx = doc.getElementById("n0_" + nextWCol);	 
-		        				nextBx.setAttribute("type", "text");
-		        			} */
 	        			} else {
 	        				alert("You ran out of boxes. Click 'Done' to see if fractiion is reduced");
 	        				//startAgain();
@@ -2481,17 +2442,18 @@ function checkYesNo( ev ) {
 			//alert("in putWhlBox, error");
 			return;
 		}
-		var whlBx = doc.getElementById("n0_0");
+		/* var whlBx = doc.getElementById("n0_0");
 		whlBx.type = "text";
-		whlBx.focus();
+		whlBx.focus(); */
 		var dBx = doc.getElementById("n0_1");
 		dBx.type = "text";
+		dBx.focus();
 		var styles = "border-bottom: 2px solid #005511";
 		var td = dBx.parentNode;
 		td.setAttribute("style", styles);
 		doc.getElementById("d0_1").type = "text";
 		doc.getElementById("e0_0").innerHTML = "=";
-		doc.getElementById("instr2").innerHTML = "Copy the part to the left of decimal point";
+		doc.getElementById("instr2").innerHTML = "Copy the entire number, leaving out the decimal point and trailing zeroes";
 		var instr3Bx = doc.getElementById("instr3");
 		instr3Bx.removeChild(instr3Bx.lastChild);
 		instr3Bx.style.color ="#fff9ea";
