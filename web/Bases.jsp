@@ -1,0 +1,317 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Number Bases</title>
+<link rel="stylesheet" href="Bases.css" type="text/css">
+<script src="Bases.js"></script>
+</head>
+<body>
+<form id="bases">
+<%  int MAX_COUNT = 32;
+
+	boolean countBCk = true;
+    String isCountB = "checked";
+
+    boolean countHCk = false;
+    String isCountH = "";
+    
+    boolean decToHexCk = false;
+    String isDecToHex = "";
+    
+    boolean hexToDecCk = false;
+    String isHexToDec = "";
+    
+    boolean decToBinCk = false;
+    String isDecToBin = "";
+    
+    boolean binToDecCk = false;
+    String isBinToDec = "";
+
+    boolean hexToBinCk = false;
+    String isHexToBin = "";
+
+    boolean binToHexCk = false;
+    String isBinToHex = "";
+    
+    // checks is null on first rendition of page, will contain
+    // last settings after that so they can be carried forward
+    String[] checks = request.getParameterValues("selected");
+    int len = 0;
+    if( checks != null ) {
+        len = checks.length;
+        countBCk = false;
+        isCountB = "";
+        countHCk = false;
+        isCountH = "";
+        decToHexCk = false;
+        isDecToHex = "";
+        hexToDecCk = false;
+        isHexToDec = "";
+        decToBinCk = false;
+        isDecToBin = "";
+        binToDecCk = false;
+        isBinToDec = "";
+        hexToBinCk = false;
+        isHexToBin = "";
+        binToHexCk = false;
+        isBinToHex = "";
+    }
+    for( int i = 0; i < len; ++i ) {
+        //System.out.println("checks[" + i + "]: " + checks[i]);
+        if( checks[i].compareTo("countB") == 0 ) {
+            countBCk = true;
+            isCountB = "checked";
+        } else if( checks[i].compareTo("countH") == 0 ) {
+            countHCk = true;
+            isCountH = "checked";
+        } else if( checks[i].compareTo("decToHex") == 0 ) {
+            decToHexCk = true;
+            isDecToHex = "checked";       
+        } else if( checks[i].compareTo("hexToDec") == 0 ) {
+            hexToDecCk = true;
+            isHexToDec = "checked";
+        } else if( checks[i].compareTo("decToBin") == 0 ) {
+            decToBinCk = true;
+            isDecToBin = "checked";
+        } else if( checks[i].compareTo("binToDec") == 0 ) {
+            binToDecCk = true;
+            isBinToDec = "checked";
+        } else if( checks[i].compareTo("hexToBin") == 0 ) {
+            hexToBinCk = true;
+            isHexToBin = "checked";
+        } else if( checks[i].compareTo("binToHex") == 0 ) {
+            binToHexCk = true;
+            isBinToHex = "checked";
+        }
+    }
+    
+    int strtPt = 0;
+    int maxrow = 8;
+	int  maxcol = MAX_COUNT/maxrow;
+    int blankRpttrn = 0x2A;
+    int blankCpttrn = 0x5;
+    boolean running = false;
+    int indcatr = 0;
+    int possbl = 8;
+    String startHere = "b0_0";
+    int strtCol = 0;
+    String instrs = "blank";
+    String instr2 = "blank";
+    String instr3 = "blank";
+    String instr4 = "blank";
+    while( !running ) {
+        indcatr = (int)(StrictMath.random()*possbl);
+        if( indcatr == 0 && countBCk ) {
+        	running = true;
+        	strtPt = (int)(MAX_COUNT*Math.random());
+        	int rowbits = 0xFF;
+        	int colbits = 0xF;
+        	blankRpttrn = (int)(rowbits*Math.random()) & 0xF8; // 1 bits = don't display there, 
+        	blankCpttrn = (int)(colbits*Math.random()) & 0xE;  // user fills in
+        	startHere = null;
+        	instrs = "Fill in the blank numbers in this binary count";
+        	instr2 = "What's next?";
+        } else if( indcatr == 1 && countHCk ) {
+        } else if( indcatr == 2 && decToHexCk ) {
+        } else if( indcatr == 3 && hexToDecCk ) {
+        } else if( indcatr == 4 && decToBinCk ) {
+        } else if( indcatr == 5 && binToDecCk ) {
+        } else if( indcatr == 6 && hexToBinCk ) {
+        } else if( indcatr == 7 && binToHexCk ) {
+        }
+    }
+    %>
+<table>
+<tr>
+<td>
+<div id="instrs" class="d3"><%=instrs%></div>
+<div id="instr2" class="d4"><%=instr2%></div>
+<div id="instr3" class="d4"><%=instr3%></div>
+<div id="instr4" class="d4"><%=instr4%></div>
+<div class="d1">
+<table>
+<%	if( indcatr == 0 && countBCk ) {
+		System.out.println("strtPt: " + strtPt + " blankRpttrn: " + blankRpttrn + " blankCpttrn: " + blankCpttrn);
+		for( int row = 0; row < maxrow; ++row ) {
+			long rpos = 1 << row; 
+			boolean displayRow = (rpos & blankRpttrn) > 0; 
+			//System.out.println("row: " + row + " rpos: " + rpos + " displayRow: " + displayRow); %>
+	<tr>
+<% 			for( int col = 0; col < maxcol; ++col ) {
+				int n = col*maxrow + row;
+				String val = Integer.toBinaryString(strtPt + n);
+				String bid = "b" + n;
+				// if selcted to be displayed by blankpattrn, display it 
+				long cpos = 1 << col;		
+				boolean displayThis = !displayRow && !((cpos & blankCpttrn) > 0);
+				if( col == strtCol && startHere == null && !displayThis ) {
+					startHere = "b" + n;
+				}
+				//System.out.println("col: " + col + " cpos: " + cpos + " displayThis: " + displayThis + " val: " + val);
+				if( displayThis ) { %>
+					<td><input id=<%=bid%> type="text" value=<%=val%>></td>
+<%				} else { %>
+					<td><input id=<%=bid%> type="text" onkeyup="checkCount( event )" onkeydown="erase( event )" ></td>
+<%				} %>
+<% 			} %>
+	</tr>			
+<% 		} %>
+<%	} %>
+</table>
+</div>
+<div>
+        <span><button type="button" onclick="skip()" id="skpBx">Skip</button>
+        
+        <button type="button" onclick="check()" id="chkBx">Done</button></span>
+</div>
+<div>
+	    <a href="/" class="ndx">Home</a>
+</div>
+<div>
+	    <a href="index.html" class="ndx">Back to Practice Index</a>
+</div>
+<div>
+	<table>
+	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
+	    String whatId = "statusBox" + i; 
+	    String whatId2 = "statusBox" + j; %>
+	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
+	<% } %>
+	</table>
+</div>
+</td>
+<td>
+<%  String numAttmptdV = "0";
+    String numWoErr = "0";
+    String consWoErr = "0";
+    String corrPerHr = "0";
+    String strtTime = String.valueOf(System.currentTimeMillis());
+    String errs = "0";
+    String tmp = "";    // temporary storage for newly gotten 
+                        // request parameter      
+
+    //retrieves the value of the DOM object with name="numAttmptdP"
+    if(( tmp = request.getParameter("numAttmptdP")) != null) {
+        numAttmptdV = tmp.toString();
+    }
+    
+    if(( tmp = request.getParameter("numWoErrP")) != null) {
+        numWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("consWoErrP")) != null) {
+        consWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("corrPerHrP")) != null) {
+        corrPerHr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("strtTimeP")) != null) {
+        strtTime = tmp.toString();
+    } 
+%>
+<div class="d5">
+<table >
+<tr>
+    <th class="title">Score</th>     
+</tr>
+<tr>    
+    <td><label>Problems Attempted</label></td>
+    <td>
+    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Completed Without Error</label></td>   
+    <td>
+    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Consecutive Without Error</label></td>   
+    <td>
+    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Correct Per Hour</label></td>   
+    <td>
+    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Errors This Problem</label></td>
+    <td><input type="text" id="errs" name="errs" value="<%=errs%>"
+               class="blackbox"></td>
+</tr>
+</table>
+<table >
+<tr>
+    <th class="title">Types of Problems</th>
+</tr>
+<tr><td><input type="checkbox" value="countB" name="selected" 
+                   <%=isCountB%> onclick="zeroCounts()">
+            <label>Count Binary</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="countH" name="selected" 
+                   <%=isCountH%> onclick="zeroCounts()">
+            <label>Count Hex</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="decToHex" name="selected" 
+                   <%=isDecToHex%> onclick="zeroCounts()">
+            <label>Base 10 to Hexadecimal</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="hexToDec" name="selected" 
+                   <%=isHexToDec%> onclick="zeroCounts()">
+            <label>Hexadecimal to Base 10</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="decToBin" name="selected" 
+                   <%=isDecToBin%> onclick="zeroCounts()">
+            <label>Base 10 to Binary</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="binToDec" name="selected" 
+                   <%=isBinToDec%> onclick="zeroCounts()">
+            <label>Binary to Base 10</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="hexToBin" name="selected" 
+                   <%=isHexToBin%> onclick="zeroCounts()">
+            <label>Hexadecimal to Binary</label>
+        </td>
+</tr>
+<tr>
+        <td><input type="checkbox" value="binToHex" name="selected" 
+                   <%=isBinToHex%> onclick="zeroCounts()">
+            <label>Binary to Hexadecimal</label>
+        </td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+<input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
+<input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
+<input type="hidden" id="indcatr" value="<%=indcatr%>">
+</form>
+</body>
+</html>

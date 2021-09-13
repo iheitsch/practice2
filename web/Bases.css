@@ -1,0 +1,6 @@
+@charset "UTF-8";
+input {
+	text-align: right;
+	width: 8em;
+	font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+}
