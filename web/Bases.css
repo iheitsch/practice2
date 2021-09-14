@@ -1,6 +1,41 @@
 @charset "UTF-8";
+body {
+    background-color: #efffd2;
+    font-family: Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
+}
 input {
+	border: 1px solid WhiteSmoke;
+	font-family: Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
+}
+input:focus { background-color: white; caret-color: red; }
+table{
+	border-collapse: collapse;	
+}
+.entry{
+	background-color:  #339966;
+}
+.evenstripe{
+	background-color: #efffd2;
+}
+.mgn{
+	background-color: #efffd2;
+	color: #339966;
+}
+.nbox{
 	text-align: right;
 	width: 8em;
-	font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+	height: 30px;
+	
+}
+.oddstripe{
+	background-color: WhiteSmoke;
+}
+.probset{
+	border: 1px solid #339966;
+}
+#instr3{
+	color: #efffd2;
+}
+#instr4{
+	color: #efffd2;
 }

@@ -58,10 +58,11 @@ function erase( ev ) {
 function markGood( aBx, ins2, ins3, nBx ) {
 	var doc = document;
 	var errBx = doc.getElementById("instr4");
-	errBx.style.color = "#fff9ea";
+	var invisible = "#efffd2";
+	errBx.style.color = invisible;
 	if( aBx ) {
 		aBx.style.color = "black";
-		aBx.style.borderColor = "#e9d398";
+		aBx.style.borderColor = "WhiteSmoke";
 	}
 	if( ins2 ) {
 		doc.getElementById("instr2").innerHTML = ins2;
@@ -71,7 +72,7 @@ function markGood( aBx, ins2, ins3, nBx ) {
 		instr3Bx.style.color = "black";
 	    instr3Bx.innerHTML = ins3;		
 	} else {
-	    instr3Bx.style.color = "#fff9ea";
+	    instr3Bx.style.color = invisible;
 	}
 	if( nBx ) {
 		//nBx.type = "text"; // does this belong here? fixit
@@ -122,6 +123,31 @@ function dec2bin( decNum ) {
 	}
 	return binStr;
 }
+function isLsbOne( val ) {
+	var bitpos = val.length - 1;
+	var bit0 = val.substr(bitpos, 1);
+	return bit0 === "1";
+}
+function countOnes( val ) {
+	var count = 0;
+	var bitpos = val.length - 2;
+	var bit0 = val.substr(bitpos, 1);
+	//document.getElementById("statusBox" + x).innerHTML = "before bitpos: " + bitpos + " bit: " + bit0;
+	//x = (x + 1)%nSbxs;
+	while( bit0 === "1" && bitpos >= 0) {
+		count = count + 1;
+		//document.getElementById("statusBox" + x).innerHTML = "val: " +  val + " bitpos: " + bitpos + " bit: " + bit0 + " count: " + count;
+		//x = (x + 1)%nSbxs;
+		val = val.substr(0, bitpos);
+		bitpos = bitpos - 1;
+		if( bitpos > 0 ) {
+			bit0 = val.substr(bitpos, 1);
+		}		
+	}
+	//document.getElementById("statusBox" + x).innerHTML = " after bitpos: " + bitpos + " bit: " + bit0 + " count: " + count;
+	//x = (x + 1)%nSbxs;
+	return count;
+}
 function checkCount( ev ) {
     ev = ev || window.event;
     if (ev.which === 13 || ev.keyCode === 13) { 
@@ -143,12 +169,27 @@ function checkCount( ev ) {
 			if( nans === expAns ) {
 				bxNum = bxNum + 1;
 				nextBx = doc.getElementById("b" + bxNum);
+				var prevBx = ansBx;
 				while( nextBx && nextBx.value ) {
 					bxNum = bxNum + 1;
+					prevBx = nextBx;
 					nextBx = doc.getElementById("b" + bxNum);
 				}
-				var instr2 = "What's next?";
+				var instr2 = "Least significant bit of previous number is 0, so togggle to 1";
 				var instr3;
+				var lsbIsOne = isLsbOne( prevBx.value );
+				if( lsbIsOne ) {
+					instr2 = "Least significant bit of previous number is 1, so toggle to 0, carry 1.";
+					instr3 = "Next bit is 0, toggle it to 1.";
+					howManyOnes = countOnes( prevBx.value );
+					//alert("howManyONes: " + howManyOnes);
+					if( howManyOnes > 0 ) {
+						instr3 = "Next bit is 1, toggle it to 0 and toggle the bit after that to 1";
+						if( howManyOnes > 1 ) {
+							instr3 = "Next " + howManyOnes + " bits are 1, toggle them to 0 and toggle the bit after that to 1";
+						}
+					}
+				}		
 				markGood( ansBx, instr2, instr3, nextBx );
 			} else {
 				markErr( "Should be " + expBin, ansBx);

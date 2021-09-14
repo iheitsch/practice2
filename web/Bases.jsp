@@ -132,14 +132,16 @@
 <div id="instr3" class="d4"><%=instr3%></div>
 <div id="instr4" class="d4"><%=instr4%></div>
 <div class="d1">
-<table>
+<table class="probset">
 <%	if( indcatr == 0 && countBCk ) {
 		System.out.println("strtPt: " + strtPt + " blankRpttrn: " + blankRpttrn + " blankCpttrn: " + blankCpttrn);
 		for( int row = 0; row < maxrow; ++row ) {
 			long rpos = 1 << row; 
 			boolean displayRow = (rpos & blankRpttrn) > 0; 
+			String stripeclr = row%2 == 0? "evenstripe" : "oddstripe";
 			//System.out.println("row: " + row + " rpos: " + rpos + " displayRow: " + displayRow); %>
 	<tr>
+			<td class="mgn">o</td>
 <% 			for( int col = 0; col < maxcol; ++col ) {
 				int n = col*maxrow + row;
 				String val = Integer.toBinaryString(strtPt + n);
@@ -151,12 +153,18 @@
 					startHere = "b" + n;
 				}
 				//System.out.println("col: " + col + " cpos: " + cpos + " displayThis: " + displayThis + " val: " + val);
-				if( displayThis ) { %>
-					<td><input id=<%=bid%> type="text" value=<%=val%>></td>
+				if( displayThis ) { //  %>
+					<td class="entry">
+					<input id=<%=bid%> type="text" disabled="true" value=<%=val%> class="nbox <%=stripeclr%>">
+					</td>
 <%				} else { %>
-					<td><input id=<%=bid%> type="text" onkeyup="checkCount( event )" onkeydown="erase( event )" ></td>
+					<td class="entry">
+					<input id=<%=bid%> type="text" class="nbox <%=stripeclr%>"
+					onkeyup="checkCount( event )" onkeydown="erase( event )" >
+					</td>
 <%				} %>
 <% 			} %>
+			<td class="mgn">o</td>
 	</tr>			
 <% 		} %>
 <%	} %>
