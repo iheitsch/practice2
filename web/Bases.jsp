@@ -11,12 +11,13 @@
 <body>
 <form id="bases">
 <%  int MAX_COUNT = 32;
+	int MAX_HEX = 16777184;
 
 	boolean countBCk = true;
     String isCountB = "checked";
 
-    boolean countHCk = false;
-    String isCountH = "";
+    boolean countHCk = true;
+    String isCountH = "checked";
     
     boolean decToHexCk = false;
     String isDecToHex = "";
@@ -102,6 +103,7 @@
     String instr2 = "blank";
     String instr3 = "blank";
     String instr4 = "blank";
+    genNumbers:
     while( !running ) {
         indcatr = (int)(StrictMath.random()*possbl);
         if( indcatr == 0 && countBCk ) {
@@ -111,10 +113,49 @@
         	int colbits = 0xF;
         	blankRpttrn = (int)(rowbits*Math.random()) & 0xF8; // 1 bits = don't display there, 
         	blankCpttrn = (int)(colbits*Math.random()) & 0xE;  // user fills in
+        	if( blankRpttrn == 0 ) {
+        		if( blankCpttrn == 0 ) {
+        			running = false;
+        			continue genNumbers;
+        		}
+        		// set strtCol to Cpptrn bit with 1
+        		// Cpttrn is backwards
+        		if( ( blankCpttrn & 1 << 1 ) > 0 ) {
+        			strtCol = 1;
+        		} else if( ( blankCpttrn & 1 << 2 ) > 0 ) {
+        			strtCol = 2;
+        		} else {
+        			strtCol = 3;
+        		}
+        	}
         	startHere = null;
         	instrs = "Fill in the blank numbers in this binary count";
         	instr2 = "What's next?";
         } else if( indcatr == 1 && countHCk ) {
+        	running = true;
+        	strtPt = (int)(MAX_HEX*Math.random());
+        	int rowbits = 0xFF;
+        	int colbits = 0xF;
+        	blankRpttrn = (int)(rowbits*Math.random()) & 0xF8; // 1 bits = don't display there, 
+        	blankCpttrn = (int)(colbits*Math.random()) & 0xE;  // user fills in
+        	if( blankRpttrn == 0 ) {
+        		if( blankCpttrn == 0 ) {
+        			running = false;
+        			continue genNumbers;
+        		}
+        		// set strtCol to Cpptrn bit with 1
+        		// Cpttrn is backwards
+        		if( ( blankCpttrn & 1 << 1 ) > 0 ) {
+        			strtCol = 1;
+        		} else if( ( blankCpttrn & 1 << 2 ) > 0 ) {
+        			strtCol = 2;
+        		} else {
+        			strtCol = 3;
+        		}
+        	}
+        	startHere = null;
+        	instrs = "Fill in the blank numbers in this hexadecimal count";
+        	instr2 = "What's next?";
         } else if( indcatr == 2 && decToHexCk ) {
         } else if( indcatr == 3 && hexToDecCk ) {
         } else if( indcatr == 4 && decToBinCk ) {
@@ -134,7 +175,7 @@
 <div class="d1">
 <table class="probset">
 <%	if( indcatr == 0 && countBCk ) {
-		System.out.println("strtPt: " + strtPt + " blankRpttrn: " + blankRpttrn + " blankCpttrn: " + blankCpttrn);
+		//System.out.println("strtPt: " + strtPt + " blankRpttrn: " + blankRpttrn + " blankCpttrn: " + blankCpttrn);
 		for( int row = 0; row < maxrow; ++row ) {
 			long rpos = 1 << row; 
 			boolean displayRow = (rpos & blankRpttrn) > 0; 
@@ -160,12 +201,47 @@
 <%				} else { %>
 					<td class="entry">
 					<input id=<%=bid%> type="text" class="nbox <%=stripeclr%>"
-					onkeyup="checkCount( event )" onkeydown="erase( event )" >
+					onkeyup="checkBCount( event )" onkeydown="erase( event )" >
 					</td>
 <%				} %>
 <% 			} %>
 			<td class="mgn">o</td>
 	</tr>			
+<% 		} %>
+<%	} else if( indcatr == 1 && countHCk ) {
+		//System.out.println("strtPt: " + strtPt + " blankRpttrn: " + blankRpttrn + " blankCpttrn: " + blankCpttrn + " strtCol: " + strtCol);
+		for( int row = 0; row < maxrow; ++row ) {
+			long rpos = 1 << row; 
+			boolean displayRow = (rpos & blankRpttrn) > 0; 
+			String stripeclr = row%2 == 0? "evenstripe" : "oddstripe";
+			//System.out.println("row: " + row + " rpos: " + rpos + " displayRow: " + displayRow); %>
+<tr>
+		<td class="mgn">o</td>
+<% 			for( int col = 0; col < maxcol; ++col ) {
+			int n = col*maxrow + row;
+			String val = Integer.toHexString(strtPt + n);
+			String bid = "b" + n;
+			// if selcted to be displayed by blankpattrn, display it 
+			long cpos = 1 << col;		
+			boolean displayThis = !displayRow && !((cpos & blankCpttrn) > 0);
+			if( col == strtCol && startHere == null && !displayThis ) {
+				startHere = "b" + n;
+			}
+			//System.out.println("col: " + col + " cpos: " + cpos + " displayRow: " + displayRow + " blankCpttrn: " + blankCpttrn + " startHere: " + startHere + " displayThis: " + displayThis);
+			//System.out.println("col: " + col + " cpos: " + cpos + " displayThis: " + displayThis + " val: " + val);
+			if( displayThis ) { //  %>
+				<td class="entry">
+				<input id=<%=bid%> type="text" disabled="true" value=<%=val%> class="nbox <%=stripeclr%>">
+				</td>
+<%				} else { %>
+				<td class="entry">
+				<input id=<%=bid%> type="text" class="nbox <%=stripeclr%>"
+				onkeyup="checkHCount( event )" onkeydown="erase( event )" >
+				</td>
+<%				} %>
+<% 			} %>
+		<td class="mgn">o</td>
+</tr>			
 <% 		} %>
 <%	} %>
 </table>
