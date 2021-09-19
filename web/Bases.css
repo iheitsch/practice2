@@ -8,30 +8,91 @@ input {
 	font-family: Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
 input:focus { background-color: white; caret-color: red; }
-table{
-	border-collapse: collapse;	
+table{		
+}
+th{
+	border: 1px solid #339966;
+	text-align: right;
+}
+.a1 {
+  width: 1em;
+  min-width: 1em;
+  max-width: 1em;
+  background-color: white;
+  color: black; 
+  text-align: center;
+  border: none;
+  font: inherit;
+  height: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.bar{
+	border: 1px solid #339966;
+	background-color: #339966;
+}
+.blank{
+	border: none;
+}
+.conversion{
+	border-collapse: separate;
+	border: 1px solid #339966;
+}
+.digits{
+	border-collapse: collapse;
+	padding: none;
+	margin: none;
+	border: none;
+	width: 6em;
+	max-width: 6em;
+}
+.ebox{
+	text-align: right;
+	width: 7em;
+	border: none;
+	height: 1.5em;
+	font: inherit;
 }
 .entry{
 	background-color:  #339966;
 }
 .evenstripe{
-	background-color: #efffd2;
+	background-color: WhiteSmoke;
 }
 .mgn{
 	background-color: #efffd2;
 	color: #339966;
 }
+.mult{
+	/* border-bottom: 2px solid #339966; */
+	font-weight: bold;
+	border-collapse: collapse;
+	margin: 0px;
+}
 .nbox{
 	text-align: right;
 	width: 8em;
-	height: 30px;
-	
+	height: 30px;	
 }
 .oddstripe{
-	background-color: WhiteSmoke;
+	background-color: #efffd2;
 }
 .probset{
+	border-collapse: collapse;
 	border: 1px solid #339966;
+}
+.verticalTableHeader {
+    text-align:center;
+    white-space:nowrap;
+    transform-origin:50% 50%;
+    transform: rotate(90deg);
+
+}
+.verticalTableHeader:before {
+    content:'';
+    padding-top:110%;/* takes width as reference, + 10% for faking some extra padding */
+    display:inline-block;
+    vertical-align:middle;
 }
 #instr3{
 	color: #efffd2;

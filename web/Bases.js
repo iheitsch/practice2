@@ -66,6 +66,29 @@ function erase( ev ) {
     }
     return false;
 }
+function eraseAll( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    if( ansBx.style.color === "red" ) {
+		id = ansBx.id;
+		var stp = id.lastIndexOf("_") + 1;
+		var partStr = id.substr(0, stp);
+		//var strt = stp + 1;
+		var bxNum = Number(id.substr( stp, 1 ));
+		var doc = document;
+		var bxid = partStr + bxNum;
+		//doc.getElementById("statusBox" + x).innerHTML = "eraseAll bxid: " + bxid;
+		//x = (x+1)%nSbxs;
+		var bx = doc.getElementById(bxid);
+		while( bx ) {
+        	bx.style.color = "black";
+        	bx.value = "";
+			bxNum = bxNum + 1;
+			bx = doc.getElementById(partStr + bxNum);
+		}
+    }
+    return false;
+}
 function markGood( aBx, ins2, ins3, nBx ) {
 	var doc = document;
 	var errBx = doc.getElementById("instr4");
@@ -104,6 +127,324 @@ function markErr( msg, aBx ) {
 	errBx.innerHTML = msg;
 	var errs = Number(doc.getElementById("errs").value);
     doc.getElementById("errs").value = errs + 1;
+}
+function checkAdd( ev ) {
+		ev = ev || window.event;
+	var ansBx = ev.target;
+	var num = Number;
+    var doc = document;
+    if( ev.which === 13 || ev.keyCode === 13 ) {
+		var mat = Math;
+		ans = ansBx.value;
+		var id = ansBx.id;		
+		var strtpt = id.indexOf("_") + 1;
+		var stppt = id.lastIndexOf("_");
+		var nchars = stppt - strtpt;
+		var bxNum = num(id.substr( strtpt, nchars ));
+		var powOf16 = mat.pow(16,bxNum);
+		var factr = num(doc.getElementById("b0_" + bxNum).value);
+		var expAns = powOf16*factr;
+		//doc.getElementById("statusBox" + x).innerHTML = "powOf16: " + powOf16 + " factr: " + factr + " expAns: " + expAns;
+		//x = (x + 1)%nSbxs;
+		var nans = num(ans);			
+		var st = stppt + 1;
+		var partStr = id.substr( 0, st);
+		var msdnum = num(id.substr(st, 1));
+		var dgtnum = msdnum;
+		var bxId = partStr + dgtnum;
+		//doc.getElementById("statusBox" + x).innerHTML = "checkAdd adding boxes bxId: " + bxId + " nans: " + nans;
+		//x = (x + 1)%nSbxs;
+		var prevBx = doc.getElementById(bxId);
+		while( prevBx ) {
+			nans = 10*nans + num(prevBx.value);
+			//doc.getElementById("statusBox" + x).innerHTML = "checkAdd while loop nans: " + nans;
+			//x = (x + 1)%nSbxs;
+			dgtnum = dgtnum - 1;
+			prevBx = doc.getElementById(partStr + dgtnum);
+		}
+		if( nans === expAns ) {
+			bxNum = bxNum + 1;
+			var nextBx = doc.getElementById("b1_" + bxNum);
+			var instr2;
+			var instr3;			
+			powOf16 = 16*powOf16;
+			if( nextBx ) {
+				var factr = doc.getElementById("b0_" + bxNum).value;
+				instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+			} else {
+				var bxId = "a0_" + bxNum + "_0";
+				nextBx = doc.getElementById(bxId);
+				if( nextBx ) {
+					var factr = (num(doc.getElementById("b0_" + bxNum).value))%10;
+					instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+				} else {
+					alert("time to copy and add all the products");
+				}
+			}
+			markGood( ansBx, instr2, instr3, nextBx );
+		} else {
+			markErr("Should be " + expAns, ansBx);
+		}
+	} else {
+		// aid = "a0_" + hexdignum + "_" + thisansdig;
+		ans = ansBx.value;
+		if( !isNaN(ans) ) {
+			var id = ansBx.id;
+			var stpos = id.lastIndexOf("_");
+			var nchars = id.length - stpos;
+			stpos = stpos + 1;
+			var bxNum = num(id.substr( stpos,  nchars )) + 1;
+			var partStr = id.substr( 0, stpos);
+			var bxId = partStr + bxNum;
+			var nextBx = doc.getElementById(bxId);
+			var instr2;
+			var instr3;
+			markGood( ansBx, instr2, instr3, nextBx );
+		} else {
+			markErr("Not a number", ansBx);
+		}
+	}
+}
+function checkDmult( ev ) {
+	ev = ev || window.event;
+	var ansBx = ev.target;
+	var num = Number;
+    var doc = document;
+    if( ev.which === 13 || ev.keyCode === 13 ) {
+		var mat = Math;
+		ans = ansBx.value;
+		var id = ansBx.id;		
+		var strtpt = id.indexOf("_") + 1;
+		var stppt = id.lastIndexOf("_");
+		var nchars = stppt - strtpt;
+		var bxNum = num(id.substr( strtpt, nchars ));
+		var powOf16 = mat.pow(16,bxNum);
+		var factr = num(doc.getElementById("b0_" + bxNum).value);
+		// first digit or second?
+		var row = num(id.substr( 1, 1));
+		var nextrow = row + 1;
+		var moremults = doc.getElementById("a" + nextrow + "_" + bxNum + "_0");
+		if( moremults && row === 0 ) {
+			factr = factr%10;
+		} else if( row === 1 ){
+			factr = mat.floor(factr/10); 
+		}
+		var expAns = factr*powOf16;
+		var nans = num(ans);			
+		var st = stppt + 1;
+		var partStr = id.substr( 0, st);
+		var msdnum = num(id.substr(st, 1));
+		var dgtnum = msdnum;
+		var bxId = partStr + dgtnum;
+		var prevBx = doc.getElementById(bxId);
+		//doc.getElementById("statusBox" + x).innerHTML = "bxId: " + bxId + " nans: " + nans;
+		//x = (x + 1)%nSbxs;
+		while( prevBx ) {
+			nans = 10*nans + num(prevBx.value);
+			//doc.getElementById("statusBox" + x).innerHTML = "bxId: " + bxId + " nans: " + nans;
+			//x = (x + 1)%nSbxs;
+			dgtnum = dgtnum - 1;
+			bxId = partStr + dgtnum;
+			prevBx = doc.getElementById(bxId);
+		}
+		if( nans === expAns ) {			
+			var factr;
+			var instr2;
+			var instr3;
+			if( row === 0 ) {
+				bxId = "a1_" + bxNum + "_0";
+				nextBx = doc.getElementById(bxId);
+				if( nextBx ) {
+					factr = num(doc.getElementById("b0_" + bxNum).value);
+					factr = mat.floor(factr/10);
+					instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+				} else {
+					bxNum = bxNum + 1;
+					powOf16 = 16*powOf16;
+					nextBx = doc.getElementById("b1_" + bxNum);
+					if( nextBx ) {
+						factr = num(doc.getElementById("b0_" + bxNum).value);
+						instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+					} else {
+						bxId = "a0_" + bxNum + "_0";
+						nextBx = doc.getElementById(bxId);
+						//doc.getElementById("statusBox" + x).innerHTML = "nextBx: " + bxId;
+						//x = (x + 1)%nSbxs;
+						if( nextBx ) {
+							factr = num(doc.getElementById("b0_" + bxNum).value);
+							factr = mat.floor(factr/10);
+							instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+						} else {
+							alert("time to copy and add");
+						}
+					}
+				}
+			} else {
+				bxId = "a2_" + bxNum + "_0";
+				//alert("row: " + row + " bxId: " + bxId);
+				nextBx = doc.getElementById(bxId);
+				if( nextBx ) {
+					partStr = "a0_" + bxNum + "_";
+					dgtnum = 4;
+					bxId = partStr + dgtnum;
+					prevBx = doc.getElementById(bxId);
+					prevRowAns = 0;
+					//doc.getElementById("statusBox" + x).innerHTML = "prevRowAns: " + prevRowAns + " bxId: " + bxId;
+					//x = (x + 1)%nSbxs;
+					while( prevBx ) {
+						prevRowAns = 10*prevRowAns + num(prevBx.value);				
+						dgtnum = dgtnum - 1;
+						prevBx = doc.getElementById(partStr + dgtnum);
+						//doc.getElementById("statusBox" + x).innerHTML = "prevRowAns: " + prevRowAns + " dgtnum: " + dgtnum;
+						//x = (x + 1)%nSbxs;
+					}
+					expAns = 10*expAns;
+					instr2 = "What is " + prevRowAns + " plus " + expAns + "?";
+				} else {
+					alert("stuck on line 197");
+				}
+			}
+			markGood( ansBx, instr2, instr3, nextBx );
+		} else {
+			dgtnum = msdnum;
+			var bxId = partStr + dgtnum;
+			prevBx = doc.getElementById(bxId);
+			//doc.getElementById("statusBox" + x).innerHTML = "CheckD ans != expAns bxId: " + bxId;
+			//x = (x + 1)%nSbxs;
+			var lastPrev = prevBx;
+			while( prevBx ) {
+				prevBx.style.color = "red";
+				dgtnum = dgtnum - 1;
+				lastPrev = prevBx;
+				bxId = partStr + dgtnum;
+				//doc.getElementById("statusBox" + x).innerHTML = "in while loop bxId: " + bxId;
+			 	//x = (x + 1)%nSbxs;
+				prevBx = doc.getElementById(bxId);
+			}
+			var errBx = doc.getElementById("instr4");
+			errBx.style.color = "red";
+			errBx.innerHTML = "Should be " + expAns;
+			var errs = Number(doc.getElementById("errs").value);
+		    doc.getElementById("errs").value = errs + 1;
+			lastPrev.focus();
+		}
+	} else {
+		// aid = "a0_" + hexdignum + "_" + thisansdig;
+		ans = ansBx.value;
+		if( !isNaN(ans) ) {
+			var id = ansBx.id;
+			var stpos = id.lastIndexOf("_");
+			var nchars = id.length - stpos;
+			stpos = stpos + 1;
+			var bxNum = num(id.substr( stpos,  nchars )) + 1;
+			var partStr = id.substr( 0, stpos);
+			var bxId = partStr + bxNum;
+			//alert("nextBx: " + bxId);
+			var nextBx = doc.getElementById(bxId);
+			var instr2;
+			var instr3;
+			if( !nextBx ) {
+				nextBx = ansBx;
+			}
+			markGood( ansBx, instr2, instr3, nextBx );
+		} else {
+			markErr("Not a number", ansBx);
+		}
+	}
+}
+function checkSmult( ev ){
+	ev = ev || window.event;
+    if( ev.which === 13 || ev.keyCode === 13 ) { 
+        var num = Number;
+        var doc = document;
+		var mat = Math;
+
+        var ansBx = ev.target;
+        var ans = ansBx.value;        
+		if( !isNaN(ans) ) {
+			var id = ansBx.id;		
+			var strtpt = id.indexOf("_") + 1;
+			var nchars = id.length - strtpt;
+			var bxNum = num(id.substr( strtpt, nchars ));
+			var powOf16 = mat.pow(16,bxNum);
+			var factr = num(doc.getElementById("b0_" + bxNum).value);
+			var expAns = factr*powOf16;
+			if( num(ans) === expAns ) {
+				powOf16 = 16*powOf16;
+				bxNum = bxNum + 1;
+				var nextF;
+				var instr2;
+				var instr3;
+				var nextBx = doc.getElementById("b1_" + bxNum);
+				if( nextBx ) {
+					nextF = doc.getElementById("b0_" + bxNum).value;
+					instr2 = "What is " + powOf16 + " times " + nextF  + "? (Type backwards and Enter)";
+				} else {
+					nextBx = doc.getElementById("a0_" + bxNum + "_0");
+					if( nextBx ) {
+						nextF = num(doc.getElementById("b0_" + bxNum).value)%10;
+						instr2 = "What is " + powOf16 + " times " + nextF + "? (Type backwards and Enter)";
+					} else {					
+						alert("what now?");
+					}
+				}
+				markGood( ansBx, instr2, instr3, nextBx );
+			} else {
+				markErr("Should be " + expAns, ansBx);
+			}
+		} else {
+			markErr("Not a number", ansBx);
+		}
+	}
+}
+function checkHDig( ev ) {
+    ev = ev || window.event;
+    if( ev.which === 13 || ev.keyCode === 13 ) { 
+        var num = Number;
+        var doc = document;
+
+        var ansBx = ev.target;
+        var ans = ansBx.value;        
+		if( !isNaN(ans) ) {
+			var id = ansBx.id;		
+			var strtpt = id.indexOf("_") + 1;
+			var nchars = id.length - strtpt;
+			var bxNum = num(id.substr( strtpt, nchars ));
+			//var hexNum = doc.getElementById("hexNum").value;
+			//var hexPos = hexNum.length - 1;
+			var hexDig = doc.getElementById("d" + bxNum).innerHTML; //hexNum.substr(hexPos - bxNum, 1);
+			var nans = num( ans );
+			//var decDig = hex2dec( hexDig );
+			//var hexans = nans.toString(16);
+			//doc.getElementById("statusBox" + x).innerHTML = "nans: " + nans + " decDig: " + decDig;
+			//x = (x + 1)%nSbxs;
+			if( nans === hex2dec( hexDig ) ) {
+				bxNum = bxNum + 1;
+				var bxid = "b0_" + bxNum;
+				var nextBx = doc.getElementById(bxid);
+				var instr2;
+				var instr3;
+				if( nextBx ) {
+					var place = Math.pow(16,bxNum);
+					var newHexDig = doc.getElementById("d" + bxNum).innerHTML; //hexNum.substr(hexPos - bxNum, 1);
+					instr2 = "What is the decimal equivalent of the " + place + "'s hex digit " + newHexDig + "? (Enter)";
+				} else {
+					nextBx = doc.getElementById("b1_" + 0);
+					var frstDig = doc.getElementById("b0_0").value;
+					instr2 = "What is 1 times " + frstDig + "? (Type backwards and Enter)";
+					if( !nextBx ) {
+						nextBx = doc.getElementById("a0_0_0");
+					}				
+				}
+				markGood( ansBx, instr2, instr3, nextBx );
+			} else {
+				var decStr = hex2dec( hexDig );
+				markErr( "Should be " + decStr, ansBx );
+			}
+		} else {
+			markErr( "Not a number", ansBx );
+		}
+	}
 }
 function isNaH( aStr ) {
 	var len = aStr.length;
@@ -148,29 +489,31 @@ function hex2dec( hStr ) {
 	}
 	return decNum;
 }
-/*
-function dec2hex( decNum ) {
+function dec2hex( decStr ) {
 	var mat = Math;
-	
+	var decNum = Number( decStr );
+	if( decNum === 0 ) {
+		return decStr;
+	}
 	var expnt = 5; // log2(MAX_COUNT)
 	var hexStr = "";
 	while( expnt  >= 0 ) {
 		var sixtntopow = mat.pow( 16, expnt );
 		if( decNum >=  sixtntopow ) {
-			var digit = Math.floor(decNum/sixtntopow)
-			var chrctr = digit.toString;
-			if( digit > 9 )
-			hexStr = hexStr + "1";
-			decNum = decNum - sixtntopow;
+			var digit = Math.floor(decNum/sixtntopow);
+			var chrctr = digit.toString();
+			if( digit > 9 ) {
+				chrctr = String.fromCharCode(87 + digit);
+			}
+			hexStr = hexStr + chrctr;
+			decNum = decNum - digit*sixtntopow;
 		} else if( hexStr !== "" ){
 			hexStr = hexStr + "0";
 		}
-		document.getElementById("statusBox" + x).innerHTML = "expnt: " + expnt + " hexStr: " + hexStr;
-		x = (x + 1)%nSbxs;
 		expnt = expnt - 1;
 	}
 	return hexStr;
-} */
+}
 function checkHCount( ev ) {
     ev = ev || window.event;
     if (ev.which === 13 || ev.keyCode === 13) { 
@@ -186,10 +529,13 @@ function checkHCount( ev ) {
 			var prevBxNum = bxNum - 1;
 			var prevStr = doc.getElementById("b" + prevBxNum).value;
 			var prevNum = hex2dec( prevStr );
-			var nans = hex2dec( ans );
+			//var nans = hex2dec( ans );
 			var expAns = prevNum + 1;
-			var expHex = expAns.toString(16); //dec2hex( expAns );			
-			if( nans === expAns ) {
+			//var expHex = expAns.toString(16); //dec2hex( expAns );
+			var decAns = hex2dec( ans );
+			//doc.getElementById("statusBox" + x).innerHTML = "decAns: " + decAns + " expAns: " + expAns;
+			//x = (x + 1)%nSbxs;		
+			if( decAns === expAns ) {
 				bxNum = bxNum + 1;
 				nextBx = doc.getElementById("b" + bxNum);
 				var prevBx = ansBx;
@@ -404,8 +750,14 @@ window.onload = function(){
     //alert("startWhere: " + startWhere);
     var strtBx = doc.getElementById(startWhere);
 	var indcatr = Number(doc.getElementById("indcatr").value);
+	/* for( var i = 2809; i < 2833; ++i ) {
+		var st = i.toString();
+		var to16 = i.toString(16);
+		var dec2H = dec2hex( st );
+		doc.getElementById("statusBox" + x).innerHTML = "dec " + i + " to16: " + to16 + " dec2H " + dec2H;
+		x = (x + 1)%nSbxs;
+	} */
 	if( strtBx ) {
         strtBx.focus();
     }
-
 };

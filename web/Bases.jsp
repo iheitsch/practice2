@@ -12,18 +12,20 @@
 <form id="bases">
 <%  int MAX_COUNT = 32;
 	int MAX_HEX = 16777184;
+	int HEX4CONV = 65536;
+	int EXPNT = 3;
 
-	boolean countBCk = true;
-    String isCountB = "checked";
+	boolean countBCk = false;
+    String isCountB = "";
 
-    boolean countHCk = true;
-    String isCountH = "checked";
+    boolean countHCk = false;
+    String isCountH = "";
     
     boolean decToHexCk = false;
     String isDecToHex = "";
     
-    boolean hexToDecCk = false;
-    String isHexToDec = "";
+    boolean hexToDecCk = true;
+    String isHexToDec = "checked";
     
     boolean decToBinCk = false;
     String isDecToBin = "";
@@ -90,6 +92,7 @@
     }
     
     int strtPt = 0;
+    String hexNum = "XXXX";
     int maxrow = 8;
 	int  maxcol = MAX_COUNT/maxrow;
     int blankRpttrn = 0x2A;
@@ -103,6 +106,9 @@
     String instr2 = "blank";
     String instr3 = "blank";
     String instr4 = "blank";
+    int stp = EXPNT;
+    String[] digits = new String[4]; // EXPNT + 1
+    
     genNumbers:
     while( !running ) {
         indcatr = (int)(StrictMath.random()*possbl);
@@ -157,7 +163,25 @@
         	instrs = "Fill in the blank numbers in this hexadecimal count";
         	instr2 = "What's next?";
         } else if( indcatr == 2 && decToHexCk ) {
+        	running = true;
+        	strtPt = (int)(HEX4CONV*Math.random());
+        	startHere = "b0";        	
+        	int  sixtn2pow = 16777216;
+        	instrs = "Convert this base 10 number to hexadecimal";
+        	instr2 = "How many times does 16^" + EXPNT + " = " + sixtn2pow + " go into " +  strtPt + "?";
         } else if( indcatr == 3 && hexToDecCk ) {
+        	running = true;
+        	strtPt = (int)(HEX4CONV*Math.random());
+        	hexNum = (Integer.toHexString( strtPt )).toUpperCase();
+        	stp = hexNum.length();
+        	for( int i = 0; i < stp; ++i ) {
+        		int frst = stp - 1 - i;
+        		int last = frst + 1;
+        		digits[i]= hexNum.substring( frst, last );
+        	}
+        	instrs = "Convert the hexadecimal number 0x" + hexNum + " to base 10";
+        	instr2 = "What is the decimal equivalent of least significant hex digit " + digits[0] + "? (Enter)";
+        	startHere = "b0_0";
         } else if( indcatr == 4 && decToBinCk ) {
         } else if( indcatr == 5 && binToDecCk ) {
         } else if( indcatr == 6 && hexToBinCk ) {
@@ -173,10 +197,10 @@
 <div id="instr3" class="d4"><%=instr3%></div>
 <div id="instr4" class="d4"><%=instr4%></div>
 <div class="d1">
+
+<%	if( indcatr == 0 && countBCk ) { %>
 <table class="probset">
-<%	if( indcatr == 0 && countBCk ) {
-		//System.out.println("strtPt: " + strtPt + " blankRpttrn: " + blankRpttrn + " blankCpttrn: " + blankCpttrn);
-		for( int row = 0; row < maxrow; ++row ) {
+<%		for( int row = 0; row < maxrow; ++row ) {
 			long rpos = 1 << row; 
 			boolean displayRow = (rpos & blankRpttrn) > 0; 
 			String stripeclr = row%2 == 0? "evenstripe" : "oddstripe";
@@ -208,9 +232,10 @@
 			<td class="mgn">o</td>
 	</tr>			
 <% 		} %>
-<%	} else if( indcatr == 1 && countHCk ) {
-		//System.out.println("strtPt: " + strtPt + " blankRpttrn: " + blankRpttrn + " blankCpttrn: " + blankCpttrn + " strtCol: " + strtCol);
-		for( int row = 0; row < maxrow; ++row ) {
+</table>
+<%	} else if( indcatr == 1 && countHCk ) { %>
+<table class="probset">
+<%		for( int row = 0; row < maxrow; ++row ) {
 			long rpos = 1 << row; 
 			boolean displayRow = (rpos & blankRpttrn) > 0; 
 			String stripeclr = row%2 == 0? "evenstripe" : "oddstripe";
@@ -219,7 +244,7 @@
 		<td class="mgn">o</td>
 <% 			for( int col = 0; col < maxcol; ++col ) {
 			int n = col*maxrow + row;
-			String val = Integer.toHexString(strtPt + n);
+			String val = Integer.toHexString(strtPt + n).toUpperCase();
 			String bid = "b" + n;
 			// if selcted to be displayed by blankpattrn, display it 
 			long cpos = 1 << col;		
@@ -243,8 +268,256 @@
 		<td class="mgn">o</td>
 </tr>			
 <% 		} %>
-<%	} %>
 </table>
+<%	} else if( indcatr == 2 && decToHexCk ) { 
+		%>
+		<table></table>
+<%	} else if( indcatr == 3 && hexToDecCk ) {
+		String sixtnraised = "16^"+EXPNT;
+		int powof16 = (int)Math.pow(16, EXPNT); %>
+<table class="conversion" >
+<tr>
+		<th colspan=2 class="evenstripe">Power of 16</th>
+<% 		for( int i = 0; i <= EXPNT; ++i ) { %>
+			<th colspan=2 class="evenstripe" ><%=sixtnraised%></th>
+<% 			int pow = EXPNT - 1 - i;
+			sixtnraised = "16^" + pow;
+			//System.out.println("i: " + i + " next sixtnraised: " + sixtnraised);
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="oddstripe" >Hex digit</th>
+<% 		for( int i = 0; i <= EXPNT; ++i ) {
+			int dignum = EXPNT - i; 
+			if( dignum >= stp ) { %>
+			<th colspan=2 class="oddstripe" ></th>
+<% 			} else {
+			String did = "d" + dignum; %>
+			<th colspan=2 id=<%=did%> class="oddstripe" ><%=digits[dignum]%></th>
+<%			} 
+		} %>
+</tr>
+<tr>
+<tr>
+		<th colspan=2 class="evenstripe" >Power of 16</th>
+<% 		for( int i = 0; i <= EXPNT; ++i ) { %>
+			<th colspan=2 class="evenstripe" ><%=powof16%></th>
+<% 			powof16 /= 16;
+			//System.out.println("i: " + i + " next powof16: " + powof16);
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="oddstripe" >Decimal Equivalent</th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			String bid = "b0_" + i; 
+			if( i >= stp ) { %>
+			<td class="mult oddstripe" ><td class="mult" >
+<% 			} else { %>
+			<td class="mult oddstripe" >&times</td>
+			<td class="mult oddstripe" >
+				<input type="text" id=<%=bid%> class="ebox oddstripe"
+					onkeyup="checkHDig( event )" onkeydown="erase( event )" >
+			</td>
+<% 			}
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="blank" ></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) {
+			if( i >= stp ) { %>
+			<th colspan=2 class="blank" ></th>
+<% 			} else { %>
+			<th colspan=2 class="bar" ></th>
+<% 			}
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="blank evenstripe" ></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			String bid = "b1_" + i;
+			boolean simple = false; //(i < stp) && ( i == 0 || digits[i].equals("0") || digits[i].equals("1") );
+			if( i >= stp ) { %>
+			<td class="mult evenstripe" ><td class="mult" >
+<% 			} else if( simple ){ %>
+			<td class="mult evenstripe" ></td>
+			<td class="mult evenstripe">
+				<input type="text" id=<%=bid%> class="ebox"
+					onkeyup="checkSmult( event )" onkeydown="erase( event )" >
+			</td>
+<% 			} else { 
+				String id = "a0_" + i + "_"; 
+				String aid = id + "5"; %>
+			<th colspan=2 class="blank evenstripe digits" >
+				<table>
+				<tr>
+					<td>
+					<input id=<%=aid%> class="a1" 
+					onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "4"; %>
+					<input id=<%=aid%> class="a1" 
+					onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "3"; %>
+						<input id=<%=aid%> class="a1" 
+						onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "2"; %>
+						<input id=<%=aid%> class="a1" 
+						onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "1"; %>
+						<input id=<%=aid%> class="a1"
+						onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "0"; %>
+						<input id=<%=aid%> class="a1"
+						onkeyup="checkDmult( event )" onkeydown="eraseAll( event )" >
+					</td>
+				</tr>
+				</table>
+			</th>
+<%			}
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="blank oddstripe"></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			boolean nomoremult = true;
+			if( i < stp ) {
+				char c = digits[i].charAt(0);
+    			if( c < '0' || c > '9' ) {
+    				nomoremult = false;
+    				if( c == 'a' || c == 'A') {
+    					nomoremult = true;
+    				}
+    			}
+			}
+			if( nomoremult || i == 0 ) { %>
+			<td class="mult oddstripe" ><td class="mult oddstripe" >
+<% 			} else { 
+				String id = "a1_" + i + "_"; %>
+			<th colspan=2 class="blank oddstripe digits">
+				<table>
+				<tr>
+					<td>
+<%				 	String aid = id + "4"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "3"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "2"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "1"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkDmult( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "0"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkDmult( event )" onkeydown="eraseAll( event )" >
+					</td>
+					<td>
+					<input disabled="true" class="a1" >
+					</td>
+				</tr>
+				</table>
+			</th>
+<%			}
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="blank"></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			boolean nomoremult = true;
+			if( i < stp ) {
+				char c = digits[i].charAt(0);
+				if( c < '0' || c > '9' ) {
+					nomoremult = false;
+					if( c == 'a' || c == 'A') {
+    					nomoremult = true;
+    				}
+				}
+			}
+			if( nomoremult || i == 0 ) { %>
+			<th colspan=2 class="blank"></th>
+<% 			} else { %>
+			<th colspan=2 class="bar"></th>
+<%			}
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="blank evenstripe digits"></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			boolean nomoremult = true;
+			if( i < stp ) {
+				char c = digits[i].charAt(0);
+				if( c < '0' || c > '9' ) {
+					nomoremult = false;
+					if( c == 'a' || c == 'A') {
+    					nomoremult = true;
+    				}
+				}
+			}
+			if( nomoremult || i == 0 ) { %>
+			<td class="mult" ><td class="mult evenstripe" >
+<% 			} else {
+			String id = "a2_" + i + "_"; %>
+			<th colspan=2 class="blank evenstripe">
+				<table>
+				<tr>
+					<td>
+<%				 	String aid = id + "5"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkAdd( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "4"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkAdd( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "3"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkAdd( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "2"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkAdd( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "1"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkAdd( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "0"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkAdd( event )" onkeydown="eraseAll( event )" >
+					</td>
+				</tr>
+				</table>
+			</th>
+<%			}
+		} %>
+</tr>
+</table>
+<%	} %>
+
 </div>
 <div>
         <span><button type="button" onclick="skip()" id="skpBx">Skip</button>
@@ -259,7 +532,7 @@
 </div>
 <div>
 	<table>
-	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
@@ -396,6 +669,7 @@
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
 <input type="hidden" id="indcatr" value="<%=indcatr%>">
+<input type="hidden" id="hexNum" value="<%=hexNum%>">
 </form>
 </body>
 </html>
