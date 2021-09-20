@@ -90,6 +90,9 @@
             isBinToHex = "checked";
         }
     }
+
+    String [] powers = { "", "", "", "" };
+    
     
     int strtPt = 0;
     String hexNum = "XXXX";
@@ -180,8 +183,32 @@
         		digits[i]= hexNum.substring( frst, last );
         	}
         	instrs = "Convert the hexadecimal number 0x" + hexNum + " to base 10";
-        	instr2 = "What is the decimal equivalent of least significant hex digit " + digits[0] + "? (Enter)";
-        	startHere = "b0_0";
+
+            String tmp = "";    // temporary storage for newly gotten 
+                                // request parameter      
+
+            //retrieves the value of the DOM object with name="s0"
+            if(( tmp = request.getParameter("s0")) != null) {
+                powers[0] = tmp.toString();
+                instr2 = "What is the decimal equivalent of least significant hex digit " + digits[0] + "? (Enter)";
+        		startHere = "b0_0";
+            } else {
+            	instr2 = "What is any number raised to the 0 power? (Enter)";
+	        	startHere = "s0";
+            }
+            
+            if(( tmp = request.getParameter("s1")) != null) {
+                powers[1] = tmp.toString();
+            } 
+            
+            if(( tmp = request.getParameter("s2")) != null) {
+                powers[2] = tmp.toString();
+            } 
+            
+            if(( tmp = request.getParameter("s3")) != null) {
+                powers[3] = tmp.toString();
+            } 
+
         } else if( indcatr == 4 && decToBinCk ) {
         } else if( indcatr == 5 && binToDecCk ) {
         } else if( indcatr == 6 && hexToBinCk ) {
@@ -300,8 +327,12 @@
 <tr>
 <tr>
 		<th colspan=2 class="evenstripe" >Power of 16</th>
-<% 		for( int i = 0; i <= EXPNT; ++i ) { %>
-			<th colspan=2 class="evenstripe" ><%=powof16%></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			String sid = "s" + i; %>
+			<th colspan=2 class="evenstripe" >
+			<input type="text" id=<%=sid%> class="ebox evenstripe" name="<%=sid%>"
+					onkeyup="checkPow( event )" onkeydown="erase( event )" 
+					value=<%=powers[i]%>></th>
 <% 			powof16 /= 16;
 			//System.out.println("i: " + i + " next powof16: " + powof16);
 		} %>

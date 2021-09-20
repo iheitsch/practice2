@@ -183,7 +183,27 @@ function checkAdd( ev ) {
 			}
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
-			markErr("Should be " + expAns, ansBx);
+			dgtnum = msdnum;
+			var bxId = partStr + dgtnum;
+			prevBx = doc.getElementById(bxId);
+			//doc.getElementById("statusBox" + x).innerHTML = "CheckD ans != expAns bxId: " + bxId;
+			//x = (x + 1)%nSbxs;
+			var lastPrev = prevBx;
+			while( prevBx ) {
+				prevBx.style.color = "red";
+				dgtnum = dgtnum - 1;
+				lastPrev = prevBx;
+				bxId = partStr + dgtnum;
+				//doc.getElementById("statusBox" + x).innerHTML = "in while loop bxId: " + bxId;
+			 	//x = (x + 1)%nSbxs;
+				prevBx = doc.getElementById(bxId);
+			}
+			var errBx = doc.getElementById("instr4");
+			errBx.style.color = "red";
+			errBx.innerHTML = "Should be " + expAns;
+			var errs = Number(doc.getElementById("errs").value);
+		    doc.getElementById("errs").value = errs + 1;
+			lastPrev.focus();
 		}
 	} else {
 		// aid = "a0_" + hexdignum + "_" + thisansdig;
@@ -445,6 +465,43 @@ function checkHDig( ev ) {
 			markErr( "Not a number", ansBx );
 		}
 	}
+}
+function checkPow( ev ) {
+	ev = ev || window.event;
+    if( ev.which === 13 || ev.keyCode === 13 ) {       
+        var ansBx = ev.target;
+        var ans = ansBx.value;        
+		if( !isNaN(ans) ) {
+			var num = Number;
+        	var doc = document;
+			var mat = Math;
+			var id = ansBx.id;
+			var len = id.length;
+			var nchars = len - 1;
+			var whatdgt = num(id.substr(1,nchars));
+			var expAns= mat.pow(16,whatdgt);
+			var nans = num(ans);
+			if( nans === expAns ) {
+				whatdgt = whatdgt + 1;
+				var nextBx = doc.getElementById("s" + whatdgt);
+				var instr2;
+				var instr3;
+				if( nextBx ) {
+					instr2 = "What is 16 to the " + whatdgt + " power? (Enter)";
+				} else {
+					nextBx = doc.getElementById("b0_0");
+					var digit0 = doc.getElementById("d0").innerHTML;
+					instr2 = "What is the decimal equivalent of least significant hex digit " + digit0 + "? (Enter)";
+				}
+				markGood( ansBx, instr2, instr3, nextBx );
+			} else {
+				markErr( "Should be " + expAns, ansBx );
+			}
+
+		} else {
+			markErr( "Not a number", ansBx );
+		}
+	}		
 }
 function isNaH( aStr ) {
 	var len = aStr.length;
