@@ -10,7 +10,8 @@
 </head>
 <body>
 <form id="bases">
-<%  int MAX_COUNT = 32;
+<%  // make backup work in a1 boxes fixit
+	int MAX_COUNT = 32;
 	int MAX_HEX = 16777184;
 	int HEX4CONV = 65536;
 	int EXPNT = 3;
@@ -383,27 +384,27 @@
 				<tr>
 					<td>
 					<input id=<%=aid%> class="a1" 
-					onkeyup="checkDmult( event )" >
+					onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-					onkeyup="checkDmult( event )" >
+					onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 						<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" >
+						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 						<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" >
+						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 						<input id=<%=aid%> class="a1"
-						onkeyup="checkDmult( event )" >
+						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
@@ -439,22 +440,22 @@
 					<td>
 <%				 	String aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" >
+						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" >
+						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" >
+						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" >
+						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
@@ -492,15 +493,21 @@
 </tr>
 <tr>
 		<th colspan=2 class="blank evenstripe digits"></th>
-<% 		for( int i = EXPNT; i >= 0; --i ) { 
+<% 		int chosenCol = -1;
+		for( int i = EXPNT; i >= 0; --i ) { 
 			boolean nomoremult = true;
-			if( i < stp ) {
+			if( 0 < i && i < stp ) {
 				char c = digits[i].charAt(0);
 				if( c < '0' || c > '9' ) {
 					nomoremult = false;
-					if( c == 'a' || c == 'A') {
+					if( c == 'a' || c == 'A' || c == 0 ) {
     					nomoremult = true;
     				}
+				}
+				if( chosenCol < 0 && !nomoremult ) {
+					System.out.println("i: " + i + " nomoremult: " + nomoremult + " chosenCol: " + chosenCol);
+					chosenCol = i;
+					
 				}
 			}
 			if( nomoremult || i == 0 ) { %>
@@ -513,32 +520,156 @@
 					<td>
 <%				 	String aid = id + "5"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" >
+						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" >
+						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" >
+						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" >
+						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" >
+						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
 					<input id=<%=aid%> class="a1" 
 						onkeyup="checkAdd( event )" onkeydown="eraseAll( event )" >
+					</td>
+				</tr>
+				</table>
+			</th>
+<%			}
+		} %>
+</tr>
+<% 	System.out.println("before chosenCol: " + chosenCol);
+	if( chosenCol < 0 ) {
+		chosenCol = (int)(Math.log(strtPt)/Math.log(10)) - 1;
+	}
+	System.out.println("chosenCol: " + chosenCol);
+	int row = 3;
+	String whatstripe = "oddstripe";
+	for( int j = 0; j < EXPNT; ++j ) { %>
+<tr>
+		<th colspan=2 class="blank <%=whatstripe%>" digits"></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			boolean nomoremult = true;
+			if( i < stp ) {
+				char c = digits[i].charAt(0);
+				if( c < '0' || c > '9' ) {
+					nomoremult = false;
+					if( c == 'a' || c == 'A') {
+    					nomoremult = true;
+    				}
+				}
+			}
+
+			if( i != chosenCol ) { %>
+			<td class="mult" ><td class="mult <%=whatstripe%>" >
+<% 			} else {
+			String id = "a" + row + "_0_"; %>
+			<th colspan=2 class="blank <%=whatstripe%>">
+				<table>
+				<tr>
+					<td>
+<%				 	String aid = id + "5"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "4"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "3"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "2"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "1"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "0"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkCp( event )" onkeydown="eraseAll( event )" >
+					</td>
+				</tr>
+				</table>
+			</th>
+<%			}
+		} %>
+</tr>
+<%			row = row + 1;
+			whatstripe = whatstripe.compareTo( "evenstripe" ) == 0? "oddstripe" : "evenstripe";
+		} %>
+<tr>
+		<th colspan=2 class="blank"></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			if( i != chosenCol ) { %>
+			<th colspan=2 class="blank"></th>
+<% 			} else { %>
+			<th colspan=2 class="bar"></th>
+<%			}
+		} %>
+</tr>
+<tr>
+		<th colspan=2 class="blank <%=whatstripe%> digits"></th>
+<% 		for( int i = EXPNT; i >= 0; --i ) { 
+			if( i != chosenCol ) { %>
+			<td class="mult" ><td class="mult <%=whatstripe%>" >
+<% 			} else {
+			String id = "a" + row + "_0_"; %>
+			<th colspan=2 class="blank <%=whatstripe%>">
+				<table>
+				<tr>
+					<td>
+<%				 	String aid = id + "5"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "4"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "3"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "2"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "1"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+					</td>
+					<td>
+<%				 	aid = id + "0"; %>
+					<input id=<%=aid%> class="a1" 
+						onkeyup="checkTot( event )" onkeydown="eraseAll( event )" >
 					</td>
 				</tr>
 				</table>
@@ -563,7 +694,7 @@
 </div>
 <div>
 	<table>
-	<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
