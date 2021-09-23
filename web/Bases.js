@@ -232,7 +232,7 @@ function checkTot( ev ) {
 }
 // if adding in col 2 and put column 1 first it never lets you add coloum 3 0x1308  and it askes for column 2 fixit
 // 0xEDA won't let you put all the columns at all fixit
-// 0xFF1E won't let you put all the columns at all fixit
+// 0xFF1E won't let you put all the columns at all fixit can't get to repeat
 function checkCp( ev ) {
 	ev = ev || window.event;
 	var ansBx = ev.target;
@@ -462,8 +462,8 @@ function checkAdd( ev ) {
 			var instr3;			
 			powOf16 = 16*powOf16;		
 			if( nextBx ) {
-				doc.getElementById("statusBox" + x).innerHTML = "CheckAdd nextBX: " + bxId;
-				x = (x + 1)%nSbxs;
+				//doc.getElementById("statusBox" + x).innerHTML = "CheckAdd nextBX: " + bxId;
+				//x = (x + 1)%nSbxs;
 				var factr = doc.getElementById("b0_" + nxNum).value;
 				instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
 			} else {
@@ -478,7 +478,7 @@ function checkAdd( ev ) {
 					nextBx = doc.getElementById("a3_0_0");
 					whatcol = bxNum - 1;
 					instr2 = "Copy product under the 16^" + whatcol + " column";
-					accounted4[3] = true;
+					accounted4[nxNum-1] = true;
 				}
 			}
 			markGood( ansBx, instr2, instr3, nextBx );
@@ -608,7 +608,7 @@ function checkDmult( ev ) {
 								}
 							}
 							accounted4[highestlongmult] = true;
-							var	whatcol = highestlongmult === bxNum? 2 : 3;
+							var	whatcol = highestlongmult === bxNum? bxNum - 1 : bxNum;
 							/* if( whatcol < 0 ) {
 								whatcol = bxNum;
 							} */

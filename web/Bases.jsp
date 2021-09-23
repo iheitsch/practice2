@@ -555,7 +555,7 @@
 </tr>
 <% 	System.out.println("before chosenCol: " + chosenCol);
 	if( chosenCol < 0 ) {
-		chosenCol = (int)(Math.log(strtPt)/Math.log(10)) - 1;
+		chosenCol = (int)(Math.log(strtPt)/Math.log(16));
 	}
 	System.out.println("chosenCol: " + chosenCol);
 	int row = 3;
