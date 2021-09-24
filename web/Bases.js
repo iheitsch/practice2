@@ -86,27 +86,29 @@ function erase( ev ) {
     }
     return false;
 }
+function eraseDig( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    ansBx.style.color = "black";
+    ansBx.value = "";
+    return false;
+}
 function eraseAll( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
-    if( ansBx.style.color === "red" ) {
-		id = ansBx.id;
-		var stp = id.lastIndexOf("_") + 1;
-		var partStr = id.substr(0, stp);
-		//var strt = stp + 1;
-		var bxNum = Number(id.substr( stp, 1 ));
-		var doc = document;
-		var bxid = partStr + bxNum;
-		//doc.getElementById("statusBox" + x).innerHTML = "eraseAll bxid: " + bxid;
-		//x = (x+1)%nSbxs;
-		var bx = doc.getElementById(bxid);
-		while( bx ) {
-        	bx.style.color = "black";
-        	bx.value = "";
-			bxNum = bxNum + 1;
-			bx = doc.getElementById(partStr + bxNum);
-		}
-    }
+	id = ansBx.id;
+	var stp = id.lastIndexOf("_") + 1;
+	var partStr = id.substr(0, stp);
+	var bxNum = Number(id.substr( stp, 1 ));
+	var doc = document;
+	var bxid = partStr + bxNum;
+	var bx = doc.getElementById(bxid);
+	while( bx ) {
+       	bx.style.color = "black";
+       	bx.value = "";
+		bxNum = bxNum + 1;
+		bx = doc.getElementById(partStr + bxNum);
+	}
     return false;
 }
 function markGood( aBx, ins2, ins3, nBx ) {
@@ -160,7 +162,7 @@ function checkTot( ev ) {
 		var stppt = id.lastIndexOf("_");
 		var nchars = stppt - strtpt;
 		var bxNum = num(id.substr( strtpt, nchars ));
-		var nans = num(ans);			
+		var nans = 0; //num(ans);			
 		var st = stppt + 1;
 		var partStr = id.substr( 0, st);
 		var msdnum = num(id.substr(st, 1));
@@ -207,6 +209,16 @@ function checkTot( ev ) {
 		    doc.getElementById("errs").value = errs + 1;
 			lastPrev.focus();
 		}
+	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var id = ansBx.id;
+		var stpos = id.lastIndexOf("_");
+		var nchars = id.length - stpos;
+		stpos = stpos + 1;
+		var bxNum = num(id.substr( stpos,  nchars )) - 1;
+		var partStr = id.substr( 0, stpos);
+		var bxId = partStr + bxNum;
+		doc.getElementById(bxId).focus();
 	} else {
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
@@ -230,9 +242,6 @@ function checkTot( ev ) {
 		}
 	}
 }
-// if adding in col 2 and put column 1 first it never lets you add coloum 3 0x1308  and it askes for column 2 fixit
-// 0xEDA won't let you put all the columns at all fixit
-// 0xFF1E won't let you put all the columns at all fixit can't get to repeat
 function checkCp( ev ) {
 	ev = ev || window.event;
 	var ansBx = ev.target;
@@ -245,7 +254,7 @@ function checkCp( ev ) {
 		var stppt = id.lastIndexOf("_");
 		var nchars = stppt - strtpt;
 		var bxNum = num(id.substr( strtpt, nchars ));
-		var nans = num(ans);			
+		var nans = 0; //num(ans);			
 		var st = stppt + 1;
 		var partStr = id.substr( 0, st);
 		var aStr = partStr;
@@ -395,6 +404,16 @@ function checkCp( ev ) {
 		var errs = Number(doc.getElementById("errs").value);
 	    doc.getElementById("errs").value = errs + 1;
 		lastPrev.focus();
+	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var id = ansBx.id;
+		var stpos = id.lastIndexOf("_");
+		var nchars = id.length - stpos;
+		stpos = stpos + 1;
+		var bxNum = num(id.substr( stpos,  nchars )) - 1;
+		var partStr = id.substr( 0, stpos);
+		var bxId = partStr + bxNum;
+		doc.getElementById(bxId).focus();
 	} else {
 		// aid = "a0_" + hexdignum + "_" + thisansdig;
 		ans = ansBx.value;
@@ -438,7 +457,7 @@ function checkAdd( ev ) {
 		var expAns = powOf16*factr;
 		//doc.getElementById("statusBox" + x).innerHTML = "powOf16: " + powOf16 + " factr: " + factr + " expAns: " + expAns;
 		//x = (x + 1)%nSbxs;
-		var nans = num(ans);			
+		var nans = 0; //num(ans);			
 		var st = stppt + 1;
 		var partStr = id.substr( 0, st);
 		var msdnum = num(id.substr(st, 1));
@@ -505,6 +524,16 @@ function checkAdd( ev ) {
 		    doc.getElementById("errs").value = errs + 1;
 			lastPrev.focus();
 		}
+	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var id = ansBx.id;
+		var stpos = id.lastIndexOf("_");
+		var nchars = id.length - stpos;
+		stpos = stpos + 1;
+		var bxNum = num(id.substr( stpos,  nchars )) - 1;
+		var partStr = id.substr( 0, stpos);
+		var bxId = partStr + bxNum;
+		doc.getElementById(bxId).focus();
 	} else {
 		// aid = "a0_" + hexdignum + "_" + thisansdig;
 		ans = ansBx.value;
@@ -517,6 +546,9 @@ function checkAdd( ev ) {
 			var partStr = id.substr( 0, stpos);
 			var bxId = partStr + bxNum;
 			var nextBx = doc.getElementById(bxId);
+			if( !nextBx ) {
+				nextBx = ansBx;
+			}
 			var instr2;
 			var instr3;
 			markGood( ansBx, instr2, instr3, nextBx );
@@ -550,7 +582,7 @@ function checkDmult( ev ) {
 			factr = mat.floor(factr/10); 
 		}
 		var expAns = factr*powOf16;
-		var nans = num(ans);			
+		var nans = 0; //num(ans);			
 		var st = stppt + 1;
 		var partStr = id.substr( 0, st);
 		var msdnum = num(id.substr(st, 1));
@@ -567,6 +599,8 @@ function checkDmult( ev ) {
 			bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
 		}
+		//doc.getElementById("statusBox" + x).innerHTML = "final bxId: " + bxId + " nans: " + nans;
+		//x = (x + 1)%nSbxs;
 		if( nans === expAns ) {			
 			var factr;
 			var instr2;
@@ -665,6 +699,16 @@ function checkDmult( ev ) {
 		    doc.getElementById("errs").value = errs + 1;
 			lastPrev.focus();
 		}
+	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var id = ansBx.id;
+		var stpos = id.lastIndexOf("_");
+		var nchars = id.length - stpos;
+		stpos = stpos + 1;
+		var bxNum = num(id.substr( stpos,  nchars )) - 1;
+		var partStr = id.substr( 0, stpos);
+		var bxId = partStr + bxNum;
+		doc.getElementById(bxId).focus();
 	} else {
 		// aid = "a0_" + hexdignum + "_" + thisansdig;
 		ans = ansBx.value;
@@ -684,51 +728,6 @@ function checkDmult( ev ) {
 				nextBx = ansBx;
 			}
 			markGood( ansBx, instr2, instr3, nextBx );
-		} else {
-			markErr("Not a number", ansBx);
-		}
-	}
-}
-function checkSmult( ev ){
-	ev = ev || window.event;
-    if( ev.which === 13 || ev.keyCode === 13 ) { 
-        var num = Number;
-        var doc = document;
-		var mat = Math;
-
-        var ansBx = ev.target;
-        var ans = ansBx.value;        
-		if( !isNaN(ans) ) {
-			var id = ansBx.id;		
-			var strtpt = id.indexOf("_") + 1;
-			var nchars = id.length - strtpt;
-			var bxNum = num(id.substr( strtpt, nchars ));
-			var powOf16 = mat.pow(16,bxNum);
-			var factr = num(doc.getElementById("b0_" + bxNum).value);
-			var expAns = factr*powOf16;
-			if( num(ans) === expAns ) {
-				powOf16 = 16*powOf16;
-				bxNum = bxNum + 1;
-				var nextF;
-				var instr2;
-				var instr3;
-				var nextBx = doc.getElementById("b1_" + bxNum);
-				if( nextBx ) {
-					nextF = doc.getElementById("b0_" + bxNum).value;
-					instr2 = "What is " + powOf16 + " times " + nextF  + "? (Type backwards and Enter)";
-				} else {
-					nextBx = doc.getElementById("a0_" + bxNum + "_0");
-					if( nextBx ) {
-						nextF = num(doc.getElementById("b0_" + bxNum).value)%10;
-						instr2 = "What is " + powOf16 + " times " + nextF + "? (Type backwards and Enter)";
-					} else {					
-						alert("what now?");
-					}
-				}
-				markGood( ansBx, instr2, instr3, nextBx );
-			} else {
-				markErr("Should be " + expAns, ansBx);
-			}
 		} else {
 			markErr("Not a number", ansBx);
 		}

@@ -384,27 +384,27 @@
 				<tr>
 					<td>
 					<input id=<%=aid%> class="a1" 
-					onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+					onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-					onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+					onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 						<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+						onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 						<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+						onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 						<input id=<%=aid%> class="a1"
-						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+						onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
@@ -440,22 +440,22 @@
 					<td>
 <%				 	String aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+						onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+						onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+						onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+						onkeyup="checkDmult( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
@@ -520,27 +520,27 @@
 					<td>
 <%				 	String aid = id + "5"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
+						onkeyup="checkAdd( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
+						onkeyup="checkAdd( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
+						onkeyup="checkAdd( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
+						onkeyup="checkAdd( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkAdd( event )" onkeydown="erase( event )" >
+						onkeyup="checkAdd( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
@@ -585,27 +585,27 @@
 					<td>
 <%				 	String aid = id + "5"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+						onkeyup="checkCp( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+						onkeyup="checkCp( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+						onkeyup="checkCp( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+						onkeyup="checkCp( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkCp( event )" onkeydown="erase( event )" >
+						onkeyup="checkCp( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
@@ -644,27 +644,27 @@
 					<td>
 <%				 	String aid = id + "5"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+						onkeyup="checkTot( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "4"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+						onkeyup="checkTot( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "3"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+						onkeyup="checkTot( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "2"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+						onkeyup="checkTot( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "1"; %>
 					<input id=<%=aid%> class="a1" 
-						onkeyup="checkTot( event )" onkeydown="erase( event )" >
+						onkeyup="checkTot( event )" onkeydown="eraseDig( event )" >
 					</td>
 					<td>
 <%				 	aid = id + "0"; %>
