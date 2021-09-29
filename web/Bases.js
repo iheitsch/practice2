@@ -452,7 +452,7 @@ function checkAdd( ev ) {
 		var nchars = stppt - strtpt;
 		var bxNum = num(id.substr( strtpt, nchars ));
 		var powOf16 = mat.pow(16,bxNum);
-		var factr = num(doc.getElementById("q0_" + bxNum).value);
+		var factr = num(doc.getElementById("q" + bxNum + "_0").value);
 		var expAns = powOf16*factr;
 		//doc.getElementById("statusBox" + x).innerHTML = "powOf16: " + powOf16 + " factr: " + factr + " expAns: " + expAns;
 		//x = (x + 1)%nSbxs;
@@ -490,7 +490,7 @@ function checkAdd( ev ) {
 				if( nextBx ) {
 					//doc.getElementById("statusBox" + x).innerHTML = "CheckAdd nextBX: " + bxId;
 					//x = (x + 1)%nSbxs;
-					var factr = (num(doc.getElementById("q0_" + nxNum).value))%10;
+					var factr = (num(doc.getElementById("q" + nxNum + "_0").value))%10;
 					instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
 				} else {
 					nextBx = doc.getElementById("a3_0_0");
@@ -575,9 +575,9 @@ function checkDmult( ev ) {
 		var row = num(id.substr( 1, 1));
 		var nextrow = row + 1;
 		var indcatr = doc.getElementById("indcatr").value;
-		var bxId = "q"
+		var bxId = "q" + expnt + "_";
 		bxId += indcatr == "3" ? 0 : row; 
-		bxId += "_" + expnt;
+		//bxId += "_" + expnt;
 		doc.getElementById("statusBox" + x).innerHTML = "checkDm expnt: " + expnt + " bxId: " + bxId;
 		x = (x + 1)%nSbxs;
 		
@@ -624,7 +624,7 @@ function checkDmult( ev ) {
 					bxId = "a1_" + expnt + "_0";
 					nextBx = doc.getElementById(bxId);
 					if( nextBx ) {
-						factr = num(doc.getElementById("q0_" + expnt).value);
+						factr = num(doc.getElementById("q" + expnt + "_0").value);
 						factr = mat.floor(factr/10);
 						instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
 					} else {
@@ -641,7 +641,7 @@ function checkDmult( ev ) {
 							bxId = "a0_" + nxNum + "_0";
 							nextBx = doc.getElementById(bxId);						
 							if( nextBx ) {
-								factr = num(doc.getElementById("q0_" + nxNum).value)%10;
+								factr = num(doc.getElementById("q" + nxNum + "_0").value)%10;
 								instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
 							} else {
 								nextBx = doc.getElementById("a3_0_0");
@@ -688,18 +688,10 @@ function checkDmult( ev ) {
 				var prevrow = row + 1;
 				partStr = "b" + prevrow + "_" + expnt + "_";
 				dgtnum = 0;
-				bxId = partStr + dgtnum;
-				prevBx = doc.getElementById(bxId);
-				var dvdnd = prevBx.value;
-				while( prevBx ) {				
-					dgtnum = dgtnum + 1;
-					prevBx = doc.getElementById(partStr + dgtnum);
-					if( prevBx ) {
-						dvdnd = prevBx.value + dvdnd;
-							//doc.getElementById("statusBox" + x).innerHTML = "prevRowAns: " + prevRowAns + " dgtnum: " + dgtnum;
-							//x = (x + 1)%nSbxs;
-					}
+				if( prevrow === 2 ) {
+					dgtnum = 1; // don't want the whole thing
 				}
+				dvdnd = readAllBxs( partStr, dgtnum );
 				nextrow = row - 1;
 				nextBx = doc.getElementById("b" + row + "_" + expnt + "_" + row);
 				instr2 = "What is " + dvdnd + " minus " + expAns + "?";
@@ -784,9 +776,19 @@ function checkDvdnd( ev ) {
 		x = (x + 1)%nSbxs;
 		var expAns = readAllBxs(partStr, 0);
 		if( ans === expAns ) {
-			var instr2 = "What is the highest power of 16 that goes into " + ans + "?";
+			var mat = Math;
+			var sixtn2pow = mat.pow(16, expnt);
+			gdvdnd = ans;
+			while( mat.floor(ans/sixtn2pow) > 9 ) {
+				ans = mat.floor(ans/10);
+			}
+			var instr2 = "How many times does " + sixtn2pow + " go into " + ans + "?";
 			var instr3;
-			var nextBx;
+			var nextBx = doc.getElementById("q" + expnt + "_1");
+			if( !nextBx ) {
+				nextBx = doc.getElementById("q" + expnt + "_0");
+			}
+			gdvsr = sixtn2pow;	
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
 			markErr("Should be " + expAns, ansBx);
@@ -876,7 +878,9 @@ function checkDsub( ev ) {
 		x = (x + 1)%nSbxs;
 		
 		var partStr = "b" + prevrow + "_" + expnt + "_";
-		var bxId = partStr + dgtnum;
+		var minuend = readAllBxs( partStr, dgtnum );
+		alert("minuend: " + minuend);
+		/* var bxId = partStr + dgtnum;
 		
 		var bx = doc.getElementById(bxId);
 		var minuend = bx.value;
@@ -887,50 +891,65 @@ function checkDsub( ev ) {
 			if( bx ) {
 				minuend = bx.value + minuend;
 			}
-		}
-		dgtnum = 0;
+		} 
+		dgtnum = 0;*/
 		partStr = "m" + row + "_" + expnt + "_";
-		bxId = partStr + dgtnum;
-		bx = doc.getElementById(bxId);
-		var subtrahend = bx.value;
-		while( bx ) {
+		/* bxId = partStr + dgtnum;
+		bx = doc.getElementById(bxId); */
+		var subtrahend = readAllBxs( partStr, 0); //bx.value;
+		alert("subtrahend: " + subtrahend);
+		/* while( bx ) {
 			dgtnum = dgtnum + 1;
 			bxId = partStr + dgtnum;
 			bx = doc.getElementById(bxId);
 			if( bx ) {
 				subtrahend = bx.value + subtrahend;
 			}
-		}
+		} */
 		var expAns = num(minuend) - num(subtrahend);		
-		dgtnum = num(id.substr(stppos+1,1));
+		//dgtnum = num(id.substr(stppos+1,1));
 		partStr = id.substr(0,stppos+1);
-		bxId = partStr + dgtnum;
+		//bxId = partStr + dgtnum;
 		
-		bx = doc.getElementById(bxId);
-		var ans = bx.value;
-		while( bx ) {
+		//bx = doc.getElementById(bxId);
+		var ans = readAllBxs( partStr, dgtnum); //bx.value;
+		alert("diff: " + ans);
+		/* while( bx ) {
 			dgtnum = dgtnum - 1;
 			bxId = partStr + dgtnum;
 			bx = doc.getElementById(bxId);
 			if( bx ) {
 				ans = ans + bx.value;
 			}
-		}
+		} */
 		if( num(ans) === expAns ) {
-			var instr2 = "Copy remainder under the next division sign";
-			var maxQs = 1;
-			var nextExpnt = expnt - 1;
-			if( !doc.getElementById("q" + maxQs + "_" + nextExpnt)){
-				maxQs = maxQs - 1;
+			var instr2 = "Bring down next digit";
+			var nextBx = doc.getElementById("b1_" + expnt + "_0");
+			
+			if( prevrow !== 2 ) {
+				instr2 = "Copy remainder under the next division sign";
+				var maxQs = 1;
+				var nextExpnt = expnt - 1;
+				if( !doc.getElementById("q" + maxQs + "_" + nextExpnt)){
+					maxQs = maxQs - 1;
+				}
+				var maxB = maxQs + 1;
+				bxId = "b" + maxB + "_" + nextExpnt + "_0"
+				nextBx = doc.getElementById(bxId);
 			}
-			var maxB = maxQs + 1;
-			bxId = "b" + maxB + "_" + nextExpnt + "_0"
-			var nextBx = doc.getElementById(bxId); 
-			doc.getElementById("statusBox" + x).innerHTML = "checkDsub assuming done with this divisor nextBx: " + bxId;
-			x = (x + 1)%nSbxs;
-			if( prevrow === 2 ) {
-				instr2 = "Bring down next digit";
-				nextBx = doc.getElementById("b1_" + expnt + "_0");
+			if( !nextBx ) {			
+				var frstex = 3;
+				var partStr = "q" + frstex + "_";
+				var bxId = partStr + 0;
+				var frstBx = doc.getElementById(bxId);
+				while( !frstBx ) {
+					frstex = frstex - 1;
+					partStr = "q" + frstex + "_";
+					bxId = partStr + 0;
+					frstBx = doc.getElementById(bxId);
+				}			
+				var frstDig = readAllBxs( partStr, 0 );
+				instr2 = "What is the hex equivalent of base 10 number " + frstDig;
 			}
 			var instr3;		
 			markGood( ansBx, instr2, instr3, nextBx )
@@ -947,7 +966,7 @@ function checkDsub( ev ) {
 			stpos = stpos + 1;
 			var bxNum = num(id.substr( stpos,  nchars )) + 1;
 			var partStr = id.substr( 0, stpos);
-			var bxId = partStr + bxNum;
+			var bxId = partStr + expnt;
 			//alert("nextBx: " + bxId);
 			var nextBx = doc.getElementById(bxId);
 			var instr2;
@@ -968,10 +987,12 @@ function checkQ( ev ) {
 	if( !isNaN( ans ) ) {
 		var dvsr = gdvsr;
 		var id = ansBx.id;
-		var whatDig = Number(id.substr(1,1));
-		var expnt = id.substr(3,1);
+		var whatDig = Number(id.substr(3,1));
+		var expnt = id.substr(1,1);
 		var dvdnd = gdvdnd/Math.pow(10,whatDig);
 		var expAns = Math.floor(dvdnd/dvsr);
+		document.getElementById("statusBox" + x).innerHTML = "checkQ whatDig: " + whatDig + " gdvdnd: " + gdvdnd + " dvsr: " + dvsr;
+		x = (x + 1)%nSbxs;
 		if( Number(ans) === expAns ) {
 			var nextBx = document.getElementById("m" + whatDig + "_" + expnt + "_0");
 			var instr2 = "What is " + ans + " times " + dvsr + "?";
@@ -1037,11 +1058,11 @@ function checkSel( ev ) {
 		var instr2 = "How many times does " + dvsr + " go into " + dvdnd + "?";
 		var instr3;
 		var whatDig = 1;
-		var bxId = "q" + whatDig + "_" + expnt;
+		var bxId = "q" + expnt + "_" + whatDig;
 		var nextBx = doc.getElementById(bxId);
 		if( !nextBx ) {
 			whatDig = 0;
-			bxId = "q" + whatDig + "_" + expnt;
+			bxId = "q" + expnt + "_" + whatDig;
 			nextBx = doc.getElementById(bxId);
 		}
 		//gwhatDig = whatDig;
@@ -1060,26 +1081,24 @@ function checkHDig( ev ) {
         var ans = ansBx.value;        
 		if( !isNaN(ans) ) {
 			var id = ansBx.id;		
-			var strtpt = id.indexOf("_") + 1;
-			var nchars = id.length - strtpt;
-			var bxNum = num(id.substr( strtpt, nchars ));
+			var expnt = num(id.substr( 1, 1 ));
 			//var hexNum = doc.getElementById("hexNum").value;
 			//var hexPos = hexNum.length - 1;
-			var hexDig = doc.getElementById("d" + bxNum).innerHTML; //hexNum.substr(hexPos - bxNum, 1);
+			var hexDig = doc.getElementById("d" + expnt).innerHTML; //hexNum.substr(hexPos - expnt, 1);
 			var nans = num( ans );
 			//var decDig = hex2dec( hexDig );
 			//var hexans = nans.toString(16);
 			//doc.getElementById("statusBox" + x).innerHTML = "nans: " + nans + " decDig: " + decDig;
 			//x = (x + 1)%nSbxs;
 			if( nans === hex2dec( hexDig ) ) {
-				bxNum = bxNum + 1;
-				var bxid = "q0_" + bxNum;
+				expnt = expnt + 1;
+				var bxid = "q" + expnt + "_0";
 				var nextBx = doc.getElementById(bxid);
 				var instr2;
 				var instr3;
 				if( nextBx ) {
-					var place = Math.pow(16,bxNum);
-					var newHexDig = doc.getElementById("d" + bxNum).innerHTML; //hexNum.substr(hexPos - bxNum, 1);
+					var place = Math.pow(16,expnt);
+					var newHexDig = doc.getElementById("d" + expnt).innerHTML; //hexNum.substr(hexPos - bxNum, 1);
 					instr2 = "What is the decimal equivalent of the " + place + "'s hex digit " + newHexDig + "? (Enter)";
 				} else {
 					nextBx = doc.getElementById("b1_" + 0);

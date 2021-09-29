@@ -23,10 +23,10 @@
     boolean countHCk = false;
     String isCountH = "";
     
-    boolean decToHexCk = true;
-    String isDecToHex = "checked";
+    boolean decToHexCk = false;
+    String isDecToHex = "";
     
-    boolean hexToDecCk = false;
+    boolean hexToDecCk = true;
     String isHexToDec = "checked";
     
     boolean decToBinCk = false;
@@ -172,7 +172,7 @@
         } else if( indcatr == 2 && decToHexCk ) {
         	// no Q displayed when digit iz zero fixit
         	running = true;
-        	strtPt = (int)(HEX4CONV*Math.random());
+        	strtPt = 6603; // dbfxt (int)(HEX4CONV*Math.random());
         	String decStr = Integer.toString( strtPt );
         	stp = decStr.length();
         	for( int i = 0; i < stp; ++i ) {
@@ -323,7 +323,7 @@
 		String rparen = ")"; 
 		String isDisabled = "disabled = 'true'"; %>
 		<table>
-<%		for( int i = EXPNT; i >= 0; --i ) {
+<%		for( int i = EXPNT; i > 0; --i ) {
 			String pid = "p" + i;
 			String sid = "s" + i;
 			String lid = "l" + i;
@@ -335,7 +335,7 @@
 				<td></td>
 <%			} 
 			for( int k = numQ[i] - 1; k>= 0; --k ) { 
-				String qid = "q" + k + "_" + i; %>
+				String qid = "q" + i + "_" + k; %>
 			<td>
 			<input id="<%=qid%>" class="a1" type="<%=itype%>"
 			onkeyup="checkQ( event )" onkeydown="erase( event )">
@@ -347,6 +347,7 @@
 			<th colspan=<%=barwidth%> class="bar" ></th>
 		</tr>
 		<tr>
+<%			if( i == EXPNT ) { %>
 			<th colspan=4>
 		      <select id=<%=lid%> name="powof16" class="slct" onchange="checkSel( event )">   
 		           <option>Select a number</option>
@@ -356,6 +357,10 @@
 		           <option>4096</option> 
 		       </select>
 			</th>
+<%			} else { 
+				int val = (int)Math.pow(16,i); %>
+			<th colspan=4><input type="<%=itype%> disabled="true" value="<%=val%>" ></th>
+<%			} %>
 			<td class="sym" id=<%=sid%>><%=rparen%></td>
 <%			for( int j = stp-1; j >= 0; --j ) { 
 				String bid = "b" + numQ[i] + "_" +  i + "_" + j; %>
@@ -446,7 +451,7 @@
 <tr>
 		<th colspan=2 class="oddstripe" >Decimal Equivalent</th>
 <% 		for( int i = EXPNT; i >= 0; --i ) { 
-			String bid = "q0_" + i; 
+			String bid = "q" + i + "_0"; 
 			if( i >= stp ) { %>
 			<td class="mult oddstripe" ><td class="mult" >
 <% 			} else { %>
