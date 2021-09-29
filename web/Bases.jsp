@@ -10,11 +10,12 @@
 </head>
 <body>
 <form id="bases">
-<%  // make backup work in a1 boxes fixit
+<% 
 	int MAX_COUNT = 32;
 	int MAX_HEX = 16777184;
 	int HEX4CONV = 65536;
 	int EXPNT = 3;
+	int DECEXPNT = 4;
 
 	boolean countBCk = false;
     String isCountB = "";
@@ -22,10 +23,10 @@
     boolean countHCk = false;
     String isCountH = "";
     
-    boolean decToHexCk = false;
-    String isDecToHex = "";
+    boolean decToHexCk = true;
+    String isDecToHex = "checked";
     
-    boolean hexToDecCk = true;
+    boolean hexToDecCk = false;
     String isHexToDec = "checked";
     
     boolean decToBinCk = false;
@@ -111,7 +112,9 @@
     String instr3 = "blank";
     String instr4 = "blank";
     int stp = EXPNT;
-    String[] digits = new String[4]; // EXPNT + 1
+    int barwidth = EXPNT;
+    String[] digits = new String[5]; // DECEXPNT + 1
+    int[] numQ = new int[EXPNT+1];
     
     genNumbers:
     while( !running ) {
@@ -167,12 +170,30 @@
         	instrs = "Fill in the blank numbers in this hexadecimal count";
         	instr2 = "What's next?";
         } else if( indcatr == 2 && decToHexCk ) {
+        	// no Q displayed when digit iz zero fixit
         	running = true;
         	strtPt = (int)(HEX4CONV*Math.random());
-        	startHere = "b0";        	
-        	int  sixtn2pow = 16777216;
-        	instrs = "Convert this base 10 number to hexadecimal";
-        	instr2 = "How many times does 16^" + EXPNT + " = " + sixtn2pow + " go into " +  strtPt + "?";
+        	String decStr = Integer.toString( strtPt );
+        	stp = decStr.length();
+        	for( int i = 0; i < stp; ++i ) {
+        		int frst = stp - 1 - i;
+        		int last = frst + 1;
+        		digits[i]= decStr.substring( frst, last );
+        	}
+        	barwidth = stp + 1;
+        	startHere = "b0"; // make sure it's not a valid box. need to start by selecting fixit     	        	
+        	int tmp = strtPt;
+        	for( int i = EXPNT; i >= 0; i-- ) {
+        		int  sixtn2pow = (int)Math.pow(16, i);
+        		if( tmp >= sixtn2pow ) {
+        			int part = tmp/sixtn2pow;
+        			numQ[i] = 1 + (int)Math.log10((double)part);
+        			tmp -= part*sixtn2pow;
+                	System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
+        		}
+        	}
+        	instrs = "Convert " + strtPt + " base 10 to hexadecimal";
+        	instr2 = "What is the highest power of 16 that goes into " +  strtPt + "?";
         } else if( indcatr == 3 && hexToDecCk ) {
         	running = true;
         	strtPt = (int)(HEX4CONV*Math.random());
@@ -192,7 +213,7 @@
             if(( tmp = request.getParameter("s0")) != null) {
                 powers[0] = tmp.toString();
                 instr2 = "What is the decimal equivalent of least significant hex digit " + digits[0] + "? (Enter)";
-        		startHere = "b0_0";
+        		startHere = "q0_0";
             } else {
             	instr2 = "What is any number raised to the 0 power? (Enter)";
 	        	startHere = "s0";
@@ -298,8 +319,92 @@
 <% 		} %>
 </table>
 <%	} else if( indcatr == 2 && decToHexCk ) { 
+		String itype = "text"; 
+		String rparen = ")"; 
+		String isDisabled = "disabled = 'true'"; %>
+		<table>
+<%		for( int i = EXPNT; i >= 0; --i ) {
+			String pid = "p" + i;
+			String sid = "s" + i;
+			String lid = "l" + i;
 		%>
-		<table></table>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+<%			System.out.println("stp: " + stp + " numQ: " + numQ[i]);
+			for( int k = 0; k < stp - numQ[i]; ++k ) { %>
+				<td></td>
+<%			} 
+			for( int k = numQ[i] - 1; k>= 0; --k ) { 
+				String qid = "q" + k + "_" + i; %>
+			<td>
+			<input id="<%=qid%>" class="a1" type="<%=itype%>"
+			onkeyup="checkQ( event )" onkeydown="erase( event )">
+			</td>
+<%			} %>
+		</tr>
+		<tr>
+			<td></td><td></td><td></td><td></td>
+			<th colspan=<%=barwidth%> class="bar" ></th>
+		</tr>
+		<tr>
+			<th colspan=4>
+		      <select id=<%=lid%> name="powof16" class="slct" onchange="checkSel( event )">   
+		           <option>Select a number</option>
+		           <option>1</option>
+		           <option>16</option>
+		           <option>256</option>
+		           <option>4096</option> 
+		       </select>
+			</th>
+			<td class="sym" id=<%=sid%>><%=rparen%></td>
+<%			for( int j = stp-1; j >= 0; --j ) { 
+				String bid = "b" + numQ[i] + "_" +  i + "_" + j; %>
+			<td>
+				<input id="<%=bid%>" class="a1" <%=isDisabled%> value="<%=digits[j]%>" 
+				onkeyup="checkDvdnd( event)" onkeydown="erase( event )" >
+			</td>
+<%			} %>
+		</tr>
+<%			for( int k = numQ[i] - 1; k>= 0; --k ) { %>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+	<%			for( int j = j = stp-1; j >= k; --j ) { 
+					int l = j - k;
+					String mid = "m" + k + "_" +  i + "_" + l; %>
+			<td>
+				<input id="<%=mid%>" class="a1" onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+			</td>
+<%				} %>
+		</tr>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+			<th colspan=<%=stp%> class="bar" ></th>
+		</tr>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+	<%			for( int j = stp-1; j >= k; --j ) { 
+					String bid = "b" + k + "_" +  i + "_" + j; %>
+			<td>
+				<input id="<%=bid%>" class="a1" onkeyup="checkDsub( event )" onkeydown="erase( event )" >
+			</td>
+
+<%				} 
+				if( k == 1 ) { 
+					String did ="b" + k + "_" +  i + "_0"; %>
+			<td>
+				<input id="<%=did%>" class="a1" onkeyup="checkBD( event )" onkeydown="erase( event )" >
+			</td>
+<% 				}%>
+		</tr>
+<%			}
+			itype = "text";
+			rparen = ")";
+			isDisabled = "";
+			for( int j = stp-1; j >= 0; --j ) { 
+				digits[j] = "";
+			}
+		} %>
+		</table>
 <%	} else if( indcatr == 3 && hexToDecCk ) {
 		String sixtnraised = "16^"+EXPNT;
 		int powof16 = (int)Math.pow(16, EXPNT); %>
@@ -341,7 +446,7 @@
 <tr>
 		<th colspan=2 class="oddstripe" >Decimal Equivalent</th>
 <% 		for( int i = EXPNT; i >= 0; --i ) { 
-			String bid = "b0_" + i; 
+			String bid = "q0_" + i; 
 			if( i >= stp ) { %>
 			<td class="mult oddstripe" ><td class="mult" >
 <% 			} else { %>
@@ -694,7 +799,7 @@
 </div>
 <div>
 	<table>
-	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 24; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
