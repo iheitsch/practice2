@@ -826,7 +826,12 @@ function readAllBxs( partStr, dgtnum ) {
 		bxId = partStr + dgtnum;
 		bx = doc.getElementById(bxId);
 		if( bx ) {
-			ans = bx.value + ans;
+			var newval = bx.value;
+			if( newval ) {
+				ans = newval + ans;
+			} else {
+				break;
+			}
 		}
 	}
 	return Number(ans);
@@ -843,7 +848,7 @@ function checkBD( ev ) {
 		var bxId = "b2_" + expnt + "_" + 0;
 		var expAns = doc.getElementById(bxId).value;
 		if( ans === expAns ) {
-			var nextBx = doc.getElementById("q0_" + expnt);
+			var nextBx = doc.getElementById("q" + expnt + "_0");
 			var dvdnd = readAllBxs("b1_" + expnt + "_", 0);
 			var sixtn2pow = Math.pow(16,expnt);
 			var instr2 = "What is " + dvdnd + " divided by " + sixtn2pow;
@@ -879,49 +884,12 @@ function checkDsub( ev ) {
 		
 		var partStr = "b" + prevrow + "_" + expnt + "_";
 		var minuend = readAllBxs( partStr, dgtnum );
-		alert("minuend: " + minuend);
-		/* var bxId = partStr + dgtnum;
-		
-		var bx = doc.getElementById(bxId);
-		var minuend = bx.value;
-		while( bx ) {
-			dgtnum = dgtnum + 1;
-			bxId = partStr + dgtnum;
-			bx = doc.getElementById(bxId);
-			if( bx ) {
-				minuend = bx.value + minuend;
-			}
-		} 
-		dgtnum = 0;*/
 		partStr = "m" + row + "_" + expnt + "_";
-		/* bxId = partStr + dgtnum;
-		bx = doc.getElementById(bxId); */
-		var subtrahend = readAllBxs( partStr, 0); //bx.value;
-		alert("subtrahend: " + subtrahend);
-		/* while( bx ) {
-			dgtnum = dgtnum + 1;
-			bxId = partStr + dgtnum;
-			bx = doc.getElementById(bxId);
-			if( bx ) {
-				subtrahend = bx.value + subtrahend;
-			}
-		} */
+		var subtrahend = readAllBxs( partStr, 0);
 		var expAns = num(minuend) - num(subtrahend);		
-		//dgtnum = num(id.substr(stppos+1,1));
 		partStr = id.substr(0,stppos+1);
-		//bxId = partStr + dgtnum;
-		
-		//bx = doc.getElementById(bxId);
-		var ans = readAllBxs( partStr, dgtnum); //bx.value;
-		alert("diff: " + ans);
-		/* while( bx ) {
-			dgtnum = dgtnum - 1;
-			bxId = partStr + dgtnum;
-			bx = doc.getElementById(bxId);
-			if( bx ) {
-				ans = ans + bx.value;
-			}
-		} */
+		var ans = readAllBxs( partStr, dgtnum);
+		//alert("diff: " + ans);
 		if( num(ans) === expAns ) {
 			var instr2 = "Bring down next digit";
 			var nextBx = doc.getElementById("b1_" + expnt + "_0");
@@ -930,7 +898,7 @@ function checkDsub( ev ) {
 				instr2 = "Copy remainder under the next division sign";
 				var maxQs = 1;
 				var nextExpnt = expnt - 1;
-				if( !doc.getElementById("q" + maxQs + "_" + nextExpnt)){
+				if( !doc.getElementById("q" + nextExpnt + "_" + maxQs )){
 					maxQs = maxQs - 1;
 				}
 				var maxB = maxQs + 1;
@@ -964,9 +932,9 @@ function checkDsub( ev ) {
 			var stpos = id.lastIndexOf("_");
 			var nchars = id.length - stpos;
 			stpos = stpos + 1;
-			var bxNum = num(id.substr( stpos,  nchars )) + 1;
 			var partStr = id.substr( 0, stpos);
-			var bxId = partStr + expnt;
+			var bxNum = num(id.substr(stpos, 1)) + 1;
+			var bxId = partStr + bxNum;
 			//alert("nextBx: " + bxId);
 			var nextBx = doc.getElementById(bxId);
 			var instr2;
@@ -1026,7 +994,7 @@ function checkSel( ev ) {
 		tstId = partStr + dgtnum;
 		tstBx = doc.getElementById(tstId);
 	}
-	var dvdnd = num(tstBx.value);
+	var dvdnd = readAllBxs( partStr, 0); /* num(tstBx.value);
 	var ten2pow = 10;
 	while( tstBx ) {
 		dgtnum = dgtnum + 1;
@@ -1043,7 +1011,7 @@ function checkSel( ev ) {
 		}
 		//doc.getElementById("statusBox" + x).innerHTML = "checkSel while loop dvdnd: " + dvdnd + " tstId: " + tstId;
 		//x = (x + 1)%nSbxs;
-	}
+	} */
 	if( dvsr > dvdnd ) {		
 		markErr( "Choose a smaller number", whichSel );
 	} else if( dvdnd >= 16*dvsr ) {

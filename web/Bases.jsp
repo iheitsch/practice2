@@ -23,11 +23,11 @@
     boolean countHCk = false;
     String isCountH = "";
     
-    boolean decToHexCk = false;
-    String isDecToHex = "";
+    boolean decToHexCk = true;
+    String isDecToHex = "checked";
     
-    boolean hexToDecCk = true;
-    String isHexToDec = "checked";
+    boolean hexToDecCk = false;
+    String isHexToDec = "";
     
     boolean decToBinCk = false;
     String isDecToBin = "";
@@ -172,7 +172,7 @@
         } else if( indcatr == 2 && decToHexCk ) {
         	// no Q displayed when digit iz zero fixit
         	running = true;
-        	strtPt = 6603; // dbfxt (int)(HEX4CONV*Math.random());
+        	strtPt = (int)(HEX4CONV*Math.random());
         	String decStr = Integer.toString( strtPt );
         	stp = decStr.length();
         	for( int i = 0; i < stp; ++i ) {
