@@ -219,7 +219,9 @@ function checkTot( ev ) {
 		var bxNum = num(id.substr( stpos,  nchars )) - 1;
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
-		doc.getElementById(bxId).focus();
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
 	} else {
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
@@ -414,7 +416,9 @@ function checkCp( ev ) {
 		var bxNum = num(id.substr( stpos,  nchars )) - 1;
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
-		doc.getElementById(bxId).focus();
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
 	} else {
 		// aid = "a0_" + hexdignum + "_" + thisansdig;
 		ans = ansBx.value;
@@ -533,7 +537,9 @@ function checkAdd( ev ) {
 		var bxNum = num(id.substr( stpos,  nchars )) - 1;
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
-		doc.getElementById(bxId).focus();
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
 	} else {
 		// aid = "a0_" + hexdignum + "_" + thisansdig;
 		ans = ansBx.value;
@@ -705,9 +711,11 @@ function checkDmult( ev ) {
 		var bxNum = num(id.substr( stpos,  nchars )) - 1;
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
-		doc.getElementById("statusBox" + x).innerHTML = "checkDmult backspacing focus bxId: " + bxId;
-		x = (x + 1)%nSbxs;
-		doc.getElementById(bxId).focus();
+		//doc.getElementById("statusBox" + x).innerHTML = "checkDmult backspacing focus bxId: " + bxId;
+		//x = (x + 1)%nSbxs;
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
 	} else {
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
@@ -811,8 +819,8 @@ function checkDvdnd( ev ) {
 		} else {
 			dgtnum = id.substr(id.length-1,1);
 			var bxId = partStr + dgtnum;
-			doc.getElementById("statusBox" + x).innerHTML = "checkDvdnd erasing bxid: " + bxId;
-			x = (x + 1)%nSbxs;
+			//doc.getElementById("statusBox" + x).innerHTML = "checkDvdnd erasing bxid: " + bxId;
+			//x = (x + 1)%nSbxs;
 			prevBx = doc.getElementById(bxId);
 			var lastPrev = prevBx;
 			while( prevBx ) {
@@ -839,7 +847,9 @@ function checkDvdnd( ev ) {
 		var bxNum = num(id.substr( stpos,  nchars )) - 1;
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
-		doc.getElementById(bxId).focus();
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
 	} else {
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
@@ -946,6 +956,21 @@ function checkDsub( ev ) {
 				var maxB = maxQs + 1;
 				bxId = "b" + maxB + "_" + nextExpnt + "_0"
 				nextBx = doc.getElementById(bxId);
+				if( nextExpnt !== 0 ) {
+					var allNextBxs = doc.getElementsByName("b" + nextExpnt);
+					var len = allNextBxs.length;
+					for( var i = 0; i < len; ++i ) {
+						allNextBxs[i].type = "text";
+					}
+					var allBars = doc.getElementsByName("v" + nextExpnt);
+					len = allBars.length;
+					var styles = "border: 1px solid #339966;";
+					styles = styles + "background-color: #339966;";
+					for( var i = 0; i < len; ++i ) {
+						allBars[i].setAttribute("style", styles);
+					}
+					doc.getElementById("s" + nextExpnt).innerHTML = ")";
+				}
 			}
 			//doc.getElementById("statusBox" + x).innerHTML = "checkDsub nextBx: " + bxId;
 					//x = (x + 1)%nSbxs;
@@ -977,6 +1002,9 @@ function checkDsub( ev ) {
 			var lastPrev = prevBx;
 			while( prevBx ) {
 				prevBx.style.color = "red";
+				if( dgtnum == 0 && !prevBx.value ) {
+					break;
+				}
 				dgtnum = dgtnum - 1;
 				lastPrev = prevBx;
 				bxId = partStr + dgtnum;
@@ -999,9 +1027,11 @@ function checkDsub( ev ) {
 		var bxNum = num(id.substr( stpos,  nchars )) - 1;
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
-		doc.getElementById("statusBox" + x).innerHTML = "checkDmult backspacing focus bxId: " + bxId;
-		x = (x + 1)%nSbxs;
-		doc.getElementById(bxId).focus();
+		//doc.getElementById("statusBox" + x).innerHTML = "checkDmult backspacing focus bxId: " + bxId;
+		//x = (x + 1)%nSbxs;
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
 	} else {
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {

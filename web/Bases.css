@@ -1,11 +1,11 @@
 @charset "UTF-8";
 body {
     background-color: #efffd2;
-    font-family: Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
+    font-family: Lucida Console,Monaco, Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
 input {
 	border: 1px solid WhiteSmoke;
-	font-family: Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
+	font-family: Lucida Console,Monaco,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
 input:focus { background-color: white; caret-color: red; }
 table{		
@@ -46,6 +46,14 @@ th{
 	width: 6em;
 	max-width: 6em;
 }
+.dvsr{
+	font: inherit;
+	background-color: white;
+	width: 5em;
+	min-width: 5em;
+	max-width: 5em;
+	text-align: right;
+}
 .ebox{
 	text-align: right;
 	width: 7em;
@@ -58,6 +66,10 @@ th{
 }
 .evenstripe{
 	background-color: WhiteSmoke;
+}
+.invisible{
+	border: none;
+	text-align: right;
 }
 .mgn{
 	background-color: #efffd2;
@@ -74,12 +86,46 @@ th{
 	width: 8em;
 	height: 30px;	
 }
+.not{
+	border: 1px solid #efffd2;
+	background-color: #efffd2;
+}
 .oddstripe{
 	background-color: #efffd2;
 }
 .probset{
 	border-collapse: collapse;
 	border: 1px solid #339966;
+}
+.q{
+	font-weight: bold;
+}
+.shortbox {
+  width: 4em;
+  min-width: 4em;
+  max-width: 4em;
+  background-color: white;
+  color: black; 
+  text-align: center;
+  border: none;
+  font: inherit;
+  height: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.slct{
+	font: inherit;
+	border: none;
+	width: 5em;
+	min-width: 5em;
+	max-width: 5em;
+	text-align: right;
+}
+.sym{
+    text-align: center;
+    color: #339966;
+    font-weight: bold;
+    font-family: Arial;
 }
 .verticalTableHeader {
     text-align:center;

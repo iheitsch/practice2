@@ -174,8 +174,8 @@
         	// no Q displayed when digit iz zero fixit
         	running = true;
         	strtPt = (int)(HEX4CONV*Math.random());
-        	int dice = 1 + (int)(EXPNT*Math.random());
-        	for( int i = 1; i < dice; ++i ) {
+        	int dice = (int)(EXPNT*Math.random());
+        	for( int i = 1; i < dice && strtPt > 256; ++i ) {
         		strtPt = strtPt/16;
         	}
         	String decStr = Integer.toString( strtPt );
@@ -191,9 +191,10 @@
         	int tmp = strtPt;
         	for( int i = EXPNT; i >= 0; i-- ) {
         		int  sixtn2pow = (int)Math.pow(16, i);
+        		numQ[i] = 1;
         		if( tmp >= sixtn2pow ) {
         			int part = tmp/sixtn2pow;
-        			numQ[i] = 1 + (int)Math.log10((double)part);
+        			numQ[i] += (int)Math.log10((double)part);
         			tmp -= part*sixtn2pow;
                 	//System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
         		}
@@ -327,12 +328,15 @@
 <%	} else if( indcatr == 2 && decToHexCk ) { 
 		String itype = "text"; 
 		String rparen = ")"; 
-		String isDisabled = "disabled = 'true'"; %>
+		String isDisabled = "disabled = 'true'"; 
+		String visible = "bar"; %>
 		<table>
 <%		for( int i = frstrow; i > 0; --i ) {
 			String pid = "p" + i;
 			String sid = "s" + i;
 			String lid = "l" + i;
+			String rname = "b" + i;
+			String vbar = "v" + i;
 		%>
 		<tr>
 			<td></td><td></td><td></td><td></td><td></td>
@@ -343,14 +347,14 @@
 			for( int k = numQ[i] - 1; k>= 0; --k ) { 
 				String qid = "q" + i + "_" + k; %>
 			<td>
-			<input id="<%=qid%>" class="a1" type="<%=itype%>"
+			<input id="<%=qid%>" class="a1 q" type="<%=itype%>" name="<%=rname%>"
 			onkeyup="checkQ( event )" onkeydown="erase( event )">
 			</td>
 <%			} %>
 		</tr>
 		<tr>
 			<td></td><td></td><td></td><td></td>
-			<th colspan=<%=barwidth%> class="bar" ></th>
+			<th colspan=<%=barwidth%> class="<%=visible%>" name="<%=vbar%>" ></th>
 		</tr>
 		<tr>
 <%			if( i == frstrow ) { %>
@@ -365,19 +369,23 @@
 			</th>
 <%			} else { 
 				int val = (int)Math.pow(16,i); %>
-			<th colspan=4><input type="<%=itype%> disabled="true" value="<%=val%>" ></th>
+			<th colspan=4 class="invisible" name="<%=vbar%>" >
+				<input type="<%=itype%>" disabled="true"
+				name="<%=rname%>" value="<%=val%>" class="dvsr" ></th>
 <%			} %>
 			<td class="sym" id=<%=sid%>><%=rparen%></td>
 <%			for( int j = stp-1; j >= 0; --j ) {
 				String bid = "b" + numQ[i] + "_" +  i + "_" + j;
 				if( j == 0 ) { %>
 			<td>
-				<input id="<%=bid%>" class="a1" <%=isDisabled%> value="<%=digits[j]%>" 
+				<input id="<%=bid%>" class="a1" <%=isDisabled%>  type="<%=itype%>"
+				name="<%=rname%>" value="<%=digits[j]%>" 
 				onkeyup="checkDvdnd( event)" onkeydown="eraseAll( event )" >
 			</td>
 <%				} else { %>
 			<td>
-				<input id="<%=bid%>" class="a1" <%=isDisabled%> value="<%=digits[j]%>" 
+				<input id="<%=bid%>" class="a1" <%=isDisabled%>  type="<%=itype%>"
+				name="<%=rname%>" value="<%=digits[j]%>" 
 				onkeyup="checkDvdnd( event)" onkeydown="erase( event )" >
 			</td>
 <%				}
@@ -391,47 +399,53 @@
 					String mid = "m" + k + "_" +  i + "_" + l; 
 					if( j == 0 ) { %>
 			<td>
-				<input id="<%=mid%>" class="a1" onkeyup="checkDmult( event )" onkeydown="eraseAll( event )" >
+				<input id="<%=mid%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkDmult( event )" onkeydown="eraseAll( event )" >
 			</td>
 <%					} else { %>
 			<td>
-				<input id="<%=mid%>" class="a1" onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+				<input id="<%=mid%>" class="a1" type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 			</td>
 <%					}
 				} %>
 		</tr>
 		<tr>
 			<td></td><td></td><td></td><td></td><td></td>
-			<th colspan=<%=stp%> class="bar" ></th>
+			<th colspan=<%=stp%> class="<%=visible%>" name="<%=vbar%>" ></th>
 		</tr>
 		<tr>
 			<td></td><td></td><td></td><td></td><td></td>
 	<%			for( int j = stp-1; j >= k; --j ) { 
 					String bid = "b" + k + "_" +  i + "_" + j; 
-					if( j == 0 ) {  %>
+					if( j == 0 || (j == 1 && k == 1) ) {  %>
 			<td>
-				<input id="<%=bid%>" class="a1" onkeyup="checkDsub( event )" onkeydown="eraseAll( event )" >
+				<input id="<%=bid%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkDsub( event )" onkeydown="eraseAll( event )" >
 			</td>
 <%					} else { %>
 			<td>
-				<input id="<%=bid%>" class="a1" onkeyup="checkDsub( event )" onkeydown="erase( event )" >
+				<input id="<%=bid%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkDsub( event )" onkeydown="erase( event )" >
 			</td>
 <%					} 
 				}
 				if( k == 1 ) { 
 					String did ="b" + k + "_" +  i + "_0"; %>
 			<td>
-				<input id="<%=did%>" class="a1" onkeyup="checkBD( event )" onkeydown="erase( event )" >
+				<input id="<%=did%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkBD( event )" onkeydown="erase( event )" >
 			</td>
 <% 				}%>
 		</tr>
 <%			}
-			itype = "text";
-			rparen = ")";
+			itype = "hidden";
+			rparen = "";
 			isDisabled = "";
 			for( int j = stp-1; j >= 0; --j ) { 
 				digits[j] = "";
 			}
+			visible = "not";
 		} %>
 		</table>
 <%	} else if( indcatr == 3 && hexToDecCk ) {
@@ -639,7 +653,7 @@
     				}
 				}
 				if( chosenCol < 0 && !nomoremult ) {
-					System.out.println("i: " + i + " nomoremult: " + nomoremult + " chosenCol: " + chosenCol);
+					//System.out.println("i: " + i + " nomoremult: " + nomoremult + " chosenCol: " + chosenCol);
 					chosenCol = i;
 					
 				}
