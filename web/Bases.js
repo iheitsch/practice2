@@ -107,7 +107,8 @@ function eraseAll( ev ) {
        	bx.style.color = "black";
        	bx.value = "";
 		bxNum = bxNum + 1;
-		bx = doc.getElementById(partStr + bxNum);
+		bxid = partStr + bxNum;
+		bx = doc.getElementById(bxid);
 	}
     return false;
 }
@@ -568,8 +569,6 @@ function checkDmult( ev ) {
 		var strtpt = id.indexOf("_") + 1;
 		var stppt = id.lastIndexOf("_");
 		var nchars = stppt - strtpt;
-		doc.getElementById("statusBox" + x).innerHTML = "checkDm id: " + id + " stppt: " + stppt;
-		x = (x + 1)%nSbxs;
 		var expnt = num(id.substr( strtpt, nchars ));
 		var powOf16 = mat.pow(16,expnt);
 		var row = num(id.substr( 1, 1));
@@ -577,13 +576,7 @@ function checkDmult( ev ) {
 		var indcatr = doc.getElementById("indcatr").value;
 		var bxId = "q" + expnt + "_";
 		bxId += indcatr == "3" ? 0 : row; 
-		//bxId += "_" + expnt;
-		doc.getElementById("statusBox" + x).innerHTML = "checkDm expnt: " + expnt + " bxId: " + bxId;
-		x = (x + 1)%nSbxs;
-		
 		var factr = num(doc.getElementById(bxId).value);
-		doc.getElementById("statusBox" + x).innerHTML = "bxId: " + bxId + " factr: " + factr;
-		x = (x + 1)%nSbxs;
 		// first digit or second?
 		if( indcatr === "3") {
 			var moremults = doc.getElementById("a" + nextrow + "_" + expnt + "_0");
@@ -601,18 +594,12 @@ function checkDmult( ev ) {
 		var dgtnum = msdnum;
 		bxId = partStr + dgtnum;
 		var prevBx = doc.getElementById(bxId);
-		doc.getElementById("statusBox" + x).innerHTML = "bxId: " + bxId + " nans: " + nans;
-		x = (x + 1)%nSbxs;
 		while( prevBx ) {
 			nans = 10*nans + num(prevBx.value);
-			doc.getElementById("statusBox" + x).innerHTML = "bxId: " + bxId + " nans: " + nans;
-			x = (x + 1)%nSbxs;
 			dgtnum = dgtnum - 1;
 			bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
 		}
-		doc.getElementById("statusBox" + x).innerHTML = "final bxId: " + bxId + " nans: " + nans;
-		x = (x + 1)%nSbxs;
 		if( nans === expAns ) {	
 			var instr2;
 			var instr3;
@@ -633,8 +620,6 @@ function checkDmult( ev ) {
 						bxId = "b1_" + nxNum;
 						nextBx = doc.getElementById(bxId);					
 						if( nextBx ) {
-							//doc.getElementById("statusBox" + x).innerHTML = "checkDm nextBx: " + bxId;
-							//x = (x + 1)%nSbxs;
 							factr = num(doc.getElementById("q0_" + nxNum).value);
 							instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
 						} else {
@@ -661,7 +646,6 @@ function checkDmult( ev ) {
 					}
 				} else {
 					bxId = "a2_" + expnt + "_0";
-					//alert("row: " + row + " bxId: " + bxId);
 					nextBx = doc.getElementById(bxId);
 					if( nextBx ) {
 						partStr = "a0_" + expnt + "_";
@@ -669,14 +653,10 @@ function checkDmult( ev ) {
 						bxId = partStr + dgtnum;
 						prevBx = doc.getElementById(bxId);
 						prevRowAns = 0;
-						//doc.getElementById("statusBox" + x).innerHTML = "prevRowAns: " + prevRowAns + " bxId: " + bxId;
-						//x = (x + 1)%nSbxs;
 						while( prevBx ) {
 							prevRowAns = 10*prevRowAns + num(prevBx.value);				
 							dgtnum = dgtnum - 1;
 							prevBx = doc.getElementById(partStr + dgtnum);
-							//doc.getElementById("statusBox" + x).innerHTML = "prevRowAns: " + prevRowAns + " dgtnum: " + dgtnum;
-							//x = (x + 1)%nSbxs;
 						}
 						expAns = 10*expAns;
 						instr2 = "What is " + prevRowAns + " plus " + expAns + "?";
@@ -701,16 +681,12 @@ function checkDmult( ev ) {
 			dgtnum = msdnum;
 			var bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
-			//doc.getElementById("statusBox" + x).innerHTML = "CheckD ans != expAns bxId: " + bxId;
-			//x = (x + 1)%nSbxs;
 			var lastPrev = prevBx;
 			while( prevBx ) {
 				prevBx.style.color = "red";
 				dgtnum = dgtnum - 1;
 				lastPrev = prevBx;
 				bxId = partStr + dgtnum;
-				//doc.getElementById("statusBox" + x).innerHTML = "in while loop bxId: " + bxId;
-			 	//x = (x + 1)%nSbxs;
 				prevBx = doc.getElementById(bxId);
 			}
 			var errBx = doc.getElementById("instr4");
@@ -733,7 +709,6 @@ function checkDmult( ev ) {
 		x = (x + 1)%nSbxs;
 		doc.getElementById(bxId).focus();
 	} else {
-		// aid = "a0_" + hexdignum + "_" + thisansdig;
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
 			var id = ansBx.id;
@@ -743,7 +718,6 @@ function checkDmult( ev ) {
 			var bxNum = num(id.substr( stpos,  nchars )) + 1;
 			var partStr = id.substr( 0, stpos);
 			var bxId = partStr + bxNum;
-			//alert("nextBx: " + bxId);
 			var nextBx = doc.getElementById(bxId);
 			var instr2;
 			var instr3;
@@ -756,6 +730,54 @@ function checkDmult( ev ) {
 		}
 	}
 }
+function checkHD( ev ) {
+	ev = ev || window.event;
+	var ansBx = ev.target;
+    var doc = document;
+	ans = ansBx.value.toUpperCase();
+	ansBx.value = ans;
+	if( !isNaH(ans) ) {
+		var id = ansBx.id;
+		var expnt = id.substr(1,1);
+		var partStr = "q" + expnt + "_";
+		if( Number(expnt) === 0 ) {
+			partStr = "b0_1_";
+		}
+		//doc.getElementById("statusBox" + x).innerHTML = "checkHD expAns partStr: " + partStr;
+		//x = (x + 1)%nSbxs;
+		var expAns = readAllBxs( partStr, 0 ).toString(16).toUpperCase();
+		if( ans === expAns ) {
+			
+			var nextBx;
+			var instr2;
+			var instr3;
+			if( expnt == 0 ) {
+				instr2 = 'Click "Done"';
+			} else if( expnt >= 1 ) {
+				var nextDig;
+				if( expnt > 1 ) {
+					expnt = expnt - 1;
+					partStr = "q" + expnt + "_";
+					//doc.getElementById("statusBox" + x).innerHTML = "checkHD quotient partStr: " + partStr;
+					//x = (x + 1)%nSbxs;
+				} else {
+					partStr = "b0_" + expnt + "_";
+					expnt = expnt - 1;
+					//doc.getElementById("statusBox" + x).innerHTML = "checkHD remainder partStr: " + partStr;
+					//x = (x + 1)%nSbxs;
+				}
+				nextDig = readAllBxs(partStr, 0);
+			 	nextBx = doc.getElementById("h" + expnt);
+				instr2 = "What is the hex equivalent of base 10 number " + nextDig + "?";
+			}
+			markGood( ansBx, instr2, instr3, nextBx );
+		} else {
+			markErr("Should be " + expAns, ansBx);
+		}
+	} else {
+		markErr("Not a hex number", ansBx);
+	}
+}
 function checkDvdnd( ev ) {
 	ev = ev || window.event;
 	var ansBx = ev.target;
@@ -763,18 +785,14 @@ function checkDvdnd( ev ) {
     var doc = document;
     if( ev.which === 13 || ev.keyCode === 13 ) {
 		var id = ansBx.id;			
-		var stppos = id.lastIndexOf("_") + 1;
-		var partStr = id.substr(0,stppos);
-		doc.getElementById("statusBox" + x).innerHTML = "checkDvdnd ans partStr: " + partStr;
-		x = (x + 1)%nSbxs;
-		var ans = readAllBxs(partStr, 0);
 		var strtpos = id.indexOf("_") + 1;
 		var expnt = num(id.substr(strtpos, 1));
 		var prevexpnt = expnt + 1;
 		partStr = "b0_" + prevexpnt + "_";
-		doc.getElementById("statusBox" + x).innerHTML = "checkDvdnd remainder partStr: " + partStr;
-		x = (x + 1)%nSbxs;
 		var expAns = readAllBxs(partStr, 0);
+		var stppos = id.lastIndexOf("_") + 1;
+		var partStr = id.substr(0,stppos);
+		var ans = readAllBxs(partStr, 0);
 		if( ans === expAns ) {
 			var mat = Math;
 			var sixtn2pow = mat.pow(16, expnt);
@@ -791,8 +809,37 @@ function checkDvdnd( ev ) {
 			gdvsr = sixtn2pow;	
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
-			markErr("Should be " + expAns, ansBx);
+			dgtnum = id.substr(id.length-1,1);
+			var bxId = partStr + dgtnum;
+			doc.getElementById("statusBox" + x).innerHTML = "checkDvdnd erasing bxid: " + bxId;
+			x = (x + 1)%nSbxs;
+			prevBx = doc.getElementById(bxId);
+			var lastPrev = prevBx;
+			while( prevBx ) {
+				prevBx.style.color = "red";
+				dgtnum = dgtnum - 1;
+				lastPrev = prevBx;
+				bxId = partStr + dgtnum;
+				prevBx = doc.getElementById(bxId);
+			}
+			var errBx = doc.getElementById("instr4");
+			errBx.style.color = "red";
+			errBx.innerHTML = "Should be " + expAns;
+			var errs = Number(doc.getElementById("errs").value);
+		    doc.getElementById("errs").value = errs + 1;
+			lastPrev.focus();
+			//markErr("Should be " + expAns, ansBx);
 		}
+	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var id = ansBx.id;
+		var stpos = id.lastIndexOf("_");
+		var nchars = id.length - stpos;
+		stpos = stpos + 1;
+		var bxNum = num(id.substr( stpos,  nchars )) - 1;
+		var partStr = id.substr( 0, stpos);
+		var bxId = partStr + bxNum;
+		doc.getElementById(bxId).focus();
 	} else {
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
@@ -803,7 +850,6 @@ function checkDvdnd( ev ) {
 			var bxNum = num(id.substr( stpos,  nchars )) + 1;
 			var partStr = id.substr( 0, stpos);
 			var bxId = partStr + bxNum;
-			//alert("nextBx: " + bxId);
 			var nextBx = doc.getElementById(bxId);
 			var instr2;
 			var instr3;
@@ -879,9 +925,6 @@ function checkDsub( ev ) {
 		if( prevrow === 2 ) {
 			dgtnum = 1; // don't want the whole thing
 		}
-		doc.getElementById("statusBox" + x).innerHTML = "checkDsub prevrow: " + prevrow + " dgtnum: " + dgtnum + " id: " + id + " row: " + row;
-		x = (x + 1)%nSbxs;
-		
 		var partStr = "b" + prevrow + "_" + expnt + "_";
 		var minuend = readAllBxs( partStr, dgtnum );
 		partStr = "m" + row + "_" + expnt + "_";
@@ -889,11 +932,10 @@ function checkDsub( ev ) {
 		var expAns = num(minuend) - num(subtrahend);		
 		partStr = id.substr(0,stppos+1);
 		var ans = readAllBxs( partStr, dgtnum);
-		//alert("diff: " + ans);
 		if( num(ans) === expAns ) {
+			var bxId;
 			var instr2 = "Bring down next digit";
-			var nextBx = doc.getElementById("b1_" + expnt + "_0");
-			
+			var nextBx = doc.getElementById("b1_" + expnt + "_0");	
 			if( prevrow !== 2 ) {
 				instr2 = "Copy remainder under the next division sign";
 				var maxQs = 1;
@@ -905,27 +947,62 @@ function checkDsub( ev ) {
 				bxId = "b" + maxB + "_" + nextExpnt + "_0"
 				nextBx = doc.getElementById(bxId);
 			}
+			//doc.getElementById("statusBox" + x).innerHTML = "checkDsub nextBx: " + bxId;
+					//x = (x + 1)%nSbxs;
 			if( !nextBx ) {			
 				var frstex = 3;
 				var partStr = "q" + frstex + "_";
-				var bxId = partStr + 0;
+				bxId = partStr + 0;
+				//doc.getElementById("statusBox" + x).innerHTML = "checkDsub frstBx: " + bxId;
+					//x = (x + 1)%nSbxs;
 				var frstBx = doc.getElementById(bxId);
 				while( !frstBx ) {
 					frstex = frstex - 1;
 					partStr = "q" + frstex + "_";
 					bxId = partStr + 0;
+					//doc.getElementById("statusBox" + x).innerHTML = "checkDsub frstBx: " + bxId;
+					//x = (x + 1)%nSbxs;
 					frstBx = doc.getElementById(bxId);
 				}			
 				var frstDig = readAllBxs( partStr, 0 );
-				instr2 = "What is the hex equivalent of base 10 number " + frstDig;
+				instr2 = "What is the hex equivalent of base 10 number " + frstDig + "?";
+				nextBx = doc.getElementById("h" + frstex);
 			}
 			var instr3;		
 			markGood( ansBx, instr2, instr3, nextBx )
 		} else {
-			markErr("Should be " + expAns, ansBx);
+			dgtnum = id.substr(stppos+1,1);
+			var bxId = partStr + dgtnum;
+			prevBx = doc.getElementById(bxId);
+			var lastPrev = prevBx;
+			while( prevBx ) {
+				prevBx.style.color = "red";
+				dgtnum = dgtnum - 1;
+				lastPrev = prevBx;
+				bxId = partStr + dgtnum;
+				prevBx = doc.getElementById(bxId);
+			}
+			var errBx = doc.getElementById("instr4");
+			errBx.style.color = "red";
+			errBx.innerHTML = "Should be " + expAns;
+			var errs = Number(doc.getElementById("errs").value);
+		    doc.getElementById("errs").value = errs + 1;
+			lastPrev.focus();
+			//markErr("Should be " + expAns, ansBx);
 		}
+	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var id = ansBx.id;
+		var stpos = id.lastIndexOf("_");
+		var nchars = id.length - stpos;
+		stpos = stpos + 1;
+		var bxNum = num(id.substr( stpos,  nchars )) - 1;
+		var partStr = id.substr( 0, stpos);
+		var bxId = partStr + bxNum;
+		doc.getElementById("statusBox" + x).innerHTML = "checkDmult backspacing focus bxId: " + bxId;
+		x = (x + 1)%nSbxs;
+		doc.getElementById(bxId).focus();
 	} else {
-		// aid = "a0_" + hexdignum + "_" + thisansdig;
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
 			var id = ansBx.id;
@@ -959,8 +1036,6 @@ function checkQ( ev ) {
 		var expnt = id.substr(1,1);
 		var dvdnd = gdvdnd/Math.pow(10,whatDig);
 		var expAns = Math.floor(dvdnd/dvsr);
-		document.getElementById("statusBox" + x).innerHTML = "checkQ whatDig: " + whatDig + " gdvdnd: " + gdvdnd + " dvsr: " + dvsr;
-		x = (x + 1)%nSbxs;
 		if( Number(ans) === expAns ) {
 			var nextBx = document.getElementById("m" + whatDig + "_" + expnt + "_0");
 			var instr2 = "What is " + ans + " times " + dvsr + "?";
@@ -981,9 +1056,7 @@ function checkSel( ev ) {
 	var mat = Math;
 	
 	var id = whichSel.id;
-	//alert("whichSel: " + id);
 	var dvsr = whichSel.value;
-	//alert("value: " + val);
 	var expnt = num(id.substr(1,1));
 	var dgtnum = 0;
 	var partStr = "b2_" + expnt + "_";
@@ -994,24 +1067,7 @@ function checkSel( ev ) {
 		tstId = partStr + dgtnum;
 		tstBx = doc.getElementById(tstId);
 	}
-	var dvdnd = readAllBxs( partStr, 0); /* num(tstBx.value);
-	var ten2pow = 10;
-	while( tstBx ) {
-		dgtnum = dgtnum + 1;
-		tstId = partStr + dgtnum;
-		tstBx = doc.getElementById(tstId);
-		if( tstBx ) {
-			var newval = tstBx.value;
-			if( newval ) {
-				dvdnd = ten2pow*num(newval) + dvdnd;
-				ten2pow *= 10;
-			} else {
-				break;
-			}
-		}
-		//doc.getElementById("statusBox" + x).innerHTML = "checkSel while loop dvdnd: " + dvdnd + " tstId: " + tstId;
-		//x = (x + 1)%nSbxs;
-	} */
+	var dvdnd = readAllBxs( partStr, 0);
 	if( dvsr > dvdnd ) {		
 		markErr( "Choose a smaller number", whichSel );
 	} else if( dvdnd >= 16*dvsr ) {
@@ -1019,7 +1075,6 @@ function checkSel( ev ) {
 	} else {
 		gdvsr = dvsr
 		gdvdnd = dvdnd;
-		//gexpnt = expnt;
 		while( dvdnd/dvsr > 9 ) {
 			dvdnd = mat.floor(dvdnd/10);
 		}
@@ -1033,9 +1088,6 @@ function checkSel( ev ) {
 			bxId = "q" + expnt + "_" + whatDig;
 			nextBx = doc.getElementById(bxId);
 		}
-		//gwhatDig = whatDig;
-		doc.getElementById("statusBox" + x).innerHTML = "checkSel nextBx: " + bxId;
-		x = (x + 1)%nSbxs;
 		markGood( whichSel, instr2, instr3, nextBx);
 	}
 }
