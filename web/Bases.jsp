@@ -245,9 +245,7 @@
         }
     }
     %>
-<table>
-<tr>
-<td>
+ <span class=leftsd>
 <div id="instrs" class="d3"><%=instrs%></div>
 <div id="instr2" class="d4"><%=instr2%></div>
 <div id="instr3" class="d4"><%=instr3%></div>
@@ -840,6 +838,8 @@
 <div>
 	    <a href="index.html" class="ndx">Back to Practice Index</a>
 </div>
+</span>
+<span class=rightsd>
 <div>
 	<table>
 	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
@@ -849,9 +849,7 @@
 	<% } %>
 	</table>
 </div>
-</td>
 
-<td>
 <% if( indcatr == 2 ) { %>
 <table>
 <tr>
@@ -986,13 +984,11 @@
 </tr>
 </table>
 </div>
-</td>
-</tr>
-</table>
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
 <input type="hidden" id="indcatr" value="<%=indcatr%>">
 <input type="hidden" id="hexNum" value="<%=hexNum%>">
+</span>
 </form>
 </body>
 </html>

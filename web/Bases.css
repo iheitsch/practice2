@@ -71,6 +71,9 @@ th{
 	border: none;
 	text-align: right;
 }
+.leftsd{
+	float: left;
+}
 .mgn{
 	background-color: #efffd2;
 	color: #339966;
@@ -99,6 +102,9 @@ th{
 }
 .q{
 	font-weight: bold;
+}
+.rightsd{
+	float: right;
 }
 .shortbox {
   width: 4em;
