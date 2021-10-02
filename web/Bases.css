@@ -67,6 +67,9 @@ th{
 .evenstripe{
 	background-color: WhiteSmoke;
 }
+.final{
+	margin: 5%;
+}
 .invisible{
 	border: none;
 	text-align: right;

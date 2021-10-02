@@ -680,7 +680,7 @@ function checkDmult( ev ) {
 				dvdnd = readAllBxs( partStr, dgtnum );
 				nextrow = row - 1;
 				nextBx = doc.getElementById("b" + row + "_" + expnt + "_" + row);
-				instr2 = "What is " + dvdnd + " minus " + expAns + "?";
+				instr2 = "What is " + dvdnd + " minus " + expAns + "? type backwards (Enter)";
 			}
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
@@ -755,7 +755,7 @@ function checkHD( ev ) {
 		//x = (x + 1)%nSbxs;
 		var expAns = readAllBxs( partStr, 0 ).toString(16).toUpperCase();
 		if( ans === expAns ) {
-			
+			lowlightBxs( partStr, 0 );
 			var nextBx;
 			var instr2;
 			var instr3;
@@ -774,8 +774,8 @@ function checkHD( ev ) {
 					//doc.getElementById("statusBox" + x).innerHTML = "checkHD remainder partStr: " + partStr;
 					//x = (x + 1)%nSbxs;
 				}
-				nextDig = readAllBxs(partStr, 0);
-			 	nextBx = doc.getElementById("h" + expnt);
+				nextDig = highlightBxs(partStr, 0);
+				nextBx = doc.getElementById("h" + expnt);
 				instr2 = "What is the hex equivalent of base 10 number " + nextDig + "?";
 			}
 			markGood( ansBx, instr2, instr3, nextBx );
@@ -813,6 +813,18 @@ function checkDvdnd( ev ) {
 			var nextBx = doc.getElementById("q" + expnt + "_1");
 			if( !nextBx ) {
 				nextBx = doc.getElementById("q" + expnt + "_0");
+			}
+			var styles = "height: 0.3em";
+			var oldBxs = doc.getElementsByClassName("t" + prevexpnt);
+			var len = oldBxs.length;
+			for( var i = 0; i < len; ++i ) {
+				oldBxs[i].setAttribute("style", styles);
+			}
+			styles = "border: none; background-color: #339966;";
+			var oldBars = doc.getElementsByName("v" + prevexpnt);
+			len = oldBars.length;
+			for( var i = 0; i < len; ++i ) {
+				oldBars[i].setAttribute("style", styles);
 			}
 			gdvsr = sixtn2pow;	
 			markGood( ansBx, instr2, instr3, nextBx );
@@ -871,6 +883,52 @@ function checkDvdnd( ev ) {
 			markErr("Not a number", ansBx);
 		}
 	}
+}
+function lowlightBxs( partStr, dgtnum ) {
+	var doc = document;
+	var styles = "border: none";
+	var bxId = partStr + dgtnum;	
+	var bx = doc.getElementById(bxId);
+	bx.setAttribute("style", styles);
+	//var ans = bx.value;
+	while( bx ) {
+		dgtnum = dgtnum + 1;
+		bxId = partStr + dgtnum;
+		bx = doc.getElementById(bxId);
+		if( bx ) {
+			var newval = bx.value;
+			if( newval ) {
+				//ans = newval + ans;
+				bx.setAttribute("style", styles);
+			} else {
+				break;
+			}
+		}
+	}
+	//return Number(ans);
+}
+function highlightBxs( partStr, dgtnum ) {
+	var doc = document;
+	var styles = "border: 2px solid red";
+	var bxId = partStr + dgtnum;	
+	var bx = doc.getElementById(bxId);
+	bx.setAttribute("style", styles);
+	var ans = bx.value;
+	while( bx ) {
+		dgtnum = dgtnum + 1;
+		bxId = partStr + dgtnum;
+		bx = doc.getElementById(bxId);
+		if( bx ) {
+			var newval = bx.value;
+			if( newval ) {
+				ans = newval + ans;
+				bx.setAttribute("style", styles);
+			} else {
+				break;
+			}
+		}
+	}
+	return Number(ans);
 }
 function readAllBxs( partStr, dgtnum ) {
 	var doc = document;
@@ -972,26 +1030,34 @@ function checkDsub( ev ) {
 					doc.getElementById("s" + nextExpnt).innerHTML = ")";
 				}
 			}
-			//doc.getElementById("statusBox" + x).innerHTML = "checkDsub nextBx: " + bxId;
-					//x = (x + 1)%nSbxs;
 			if( !nextBx ) {			
 				var frstex = 3;
 				var partStr = "q" + frstex + "_";
 				bxId = partStr + 0;
-				//doc.getElementById("statusBox" + x).innerHTML = "checkDsub frstBx: " + bxId;
-					//x = (x + 1)%nSbxs;
 				var frstBx = doc.getElementById(bxId);
 				while( !frstBx ) {
 					frstex = frstex - 1;
 					partStr = "q" + frstex + "_";
 					bxId = partStr + 0;
-					//doc.getElementById("statusBox" + x).innerHTML = "checkDsub frstBx: " + bxId;
-					//x = (x + 1)%nSbxs;
 					frstBx = doc.getElementById(bxId);
 				}			
-				var frstDig = readAllBxs( partStr, 0 );
+				var frstDig = highlightBxs( partStr, 0 );
 				instr2 = "What is the hex equivalent of base 10 number " + frstDig + "?";
 				nextBx = doc.getElementById("h" + frstex);
+							var styles = "height: 0.3em";
+				var oldBxs = doc.getElementsByClassName("t" + expnt);
+				var len = oldBxs.length;
+				for( var i = 0; i < len; ++i ) {
+					if( oldBxs[i].id.substr(0,2) !== "b0" ) {
+						oldBxs[i].setAttribute("style", styles);
+					}
+				}
+				styles = "border: none; background-color: #339966;";
+				var oldBars = doc.getElementsByName("v" + expnt);
+				len = oldBars.length;
+				for( var i = 0; i < len; ++i ) {
+					oldBars[i].setAttribute("style", styles);
+				}
 			}
 			var instr3;		
 			markGood( ansBx, instr2, instr3, nextBx )
@@ -1027,8 +1093,6 @@ function checkDsub( ev ) {
 		var bxNum = num(id.substr( stpos,  nchars )) - 1;
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
-		//doc.getElementById("statusBox" + x).innerHTML = "checkDmult backspacing focus bxId: " + bxId;
-		//x = (x + 1)%nSbxs;
 		var newBx = doc.getElementById(bxId);
 		newBx.value = "";
 		newBx.focus();
@@ -1068,7 +1132,7 @@ function checkQ( ev ) {
 		var expAns = Math.floor(dvdnd/dvsr);
 		if( Number(ans) === expAns ) {
 			var nextBx = document.getElementById("m" + whatDig + "_" + expnt + "_0");
-			var instr2 = "What is " + ans + " times " + dvsr + "?";
+			var instr2 = "What is " + ans + " times " + dvsr + "? type backwards (Enter)";
 			var instr3;
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
@@ -1132,14 +1196,8 @@ function checkHDig( ev ) {
 		if( !isNaN(ans) ) {
 			var id = ansBx.id;		
 			var expnt = num(id.substr( 1, 1 ));
-			//var hexNum = doc.getElementById("hexNum").value;
-			//var hexPos = hexNum.length - 1;
 			var hexDig = doc.getElementById("d" + expnt).innerHTML; //hexNum.substr(hexPos - expnt, 1);
 			var nans = num( ans );
-			//var decDig = hex2dec( hexDig );
-			//var hexans = nans.toString(16);
-			//doc.getElementById("statusBox" + x).innerHTML = "nans: " + nans + " decDig: " + decDig;
-			//x = (x + 1)%nSbxs;
 			if( nans === hex2dec( hexDig ) ) {
 				expnt = expnt + 1;
 				var bxid = "q" + expnt + "_0";
@@ -1156,7 +1214,7 @@ function checkHDig( ev ) {
 					instr2 = "What is 1 times " + frstDig + "? (Type backwards and Enter)";
 					if( !nextBx ) {
 						nextBx = doc.getElementById("a0_0_0");
-					}				
+					}		
 				}
 				markGood( ansBx, instr2, instr3, nextBx );
 			} else {

@@ -200,7 +200,7 @@
         		}
         	}
         	instrs = "Convert " + strtPt + " base 10 to hexadecimal";
-        	instr2 = "What is the highest power of 16 that goes into " +  strtPt + "?";
+        	instr2 = "Select the highest power of 16 that goes into " +  strtPt;
         } else if( indcatr == 3 && hexToDecCk ) {
         	running = true;
         	strtPt = (int)(HEX4CONV*Math.random());
@@ -327,7 +327,8 @@
 		String itype = "text"; 
 		String rparen = ")"; 
 		String isDisabled = "disabled = 'true'"; 
-		String visible = "bar"; %>
+		String visible = "bar";
+		 %>
 		<table>
 <%		for( int i = frstrow; i > 0; --i ) {
 			String pid = "p" + i;
@@ -335,6 +336,7 @@
 			String lid = "l" + i;
 			String rname = "b" + i;
 			String vbar = "v" + i;
+			String tway = "t" + i;
 		%>
 		<tr>
 			<td></td><td></td><td></td><td></td><td></td>
@@ -397,12 +399,12 @@
 					String mid = "m" + k + "_" +  i + "_" + l; 
 					if( j == 0 ) { %>
 			<td>
-				<input id="<%=mid%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				<input id="<%=mid%>" class="a1 <%=tway%>"  type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkDmult( event )" onkeydown="eraseAll( event )" >
 			</td>
 <%					} else { %>
 			<td>
-				<input id="<%=mid%>" class="a1" type="<%=itype%>" name="<%=rname%>" 
+				<input id="<%=mid%>" class="a1 <%=tway%>" type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 			</td>
 <%					}
@@ -418,12 +420,12 @@
 					String bid = "b" + k + "_" +  i + "_" + j; 
 					if( j == 0 || (j == 1 && k == 1) ) {  %>
 			<td>
-				<input id="<%=bid%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				<input id="<%=bid%>" class="a1 <%=tway%>"  type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkDsub( event )" onkeydown="eraseAll( event )" >
 			</td>
 <%					} else { %>
 			<td>
-				<input id="<%=bid%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				<input id="<%=bid%>" class="a1 <%=tway%>"  type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkDsub( event )" onkeydown="erase( event )" >
 			</td>
 <%					} 
@@ -431,7 +433,7 @@
 				if( k == 1 ) { 
 					String did ="b" + k + "_" +  i + "_0"; %>
 			<td>
-				<input id="<%=did%>" class="a1"  type="<%=itype%>" name="<%=rname%>" 
+				<input id="<%=did%>" class="a1 <%=tway%>"  type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkBD( event )" onkeydown="erase( event )" >
 			</td>
 <% 				}%>
@@ -851,7 +853,7 @@
 </div>
 
 <% if( indcatr == 2 ) { %>
-<table>
+<table class="final" >
 <tr>
 <td>0x</td>
 <%	for( int i = frstrow; i >= 0; --i ) { 
