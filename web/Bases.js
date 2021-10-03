@@ -3,23 +3,33 @@
  */
 var x = 0;
 var nSbxs = 24;
+var gindcatr;
 
 var accounted4 = [ false, false, false, false ];
 
 function check() {
-	var indcatr = Number(document.getElementById("indcatr").value);
+	var indcatr = gindcatr;
     if( indcatr < 2 ) {
         checkFilled();
     } else if( indcatr < 3 ) {
         checkD2H();
     } else if( indcatr < 4 ) {
         checkH2D();
-    } /* else if( indcatr < 5 ) {
-        checkD2F();
-    } else if( indcatr < 6 ) {
+    }  else if( indcatr < 5 ) {
+        checkD2B();
+    } /* else if( indcatr < 6 ) {
         checkF2D();
     } */
     return false;
+}
+function checkD2B() {
+	var doc = document;
+	
+	allgood = true;
+	// need to check if user skipped something fixit
+	if( allgood ) {
+		startAgain();
+	}
 }
 function checkH2D() {
 	var doc = document;
@@ -576,15 +586,16 @@ function checkDmult( ev ) {
 		var stppt = id.lastIndexOf("_");
 		var nchars = stppt - strtpt;
 		var expnt = num(id.substr( strtpt, nchars ));
-		var powOf16 = mat.pow(16,expnt);
+		var base = num(doc.getElementById("base").value);
+		var powOfbase = mat.pow(base,expnt);
 		var row = num(id.substr( 1, 1));
 		var nextrow = row + 1;
-		var indcatr = doc.getElementById("indcatr").value;
+		var indcatr = gindcatr;
 		var bxId = "q" + expnt + "_";
-		bxId += indcatr == "3" ? 0 : row; 
+		bxId += indcatr == 3 ? 0 : row; 
 		var factr = num(doc.getElementById(bxId).value);
 		// first digit or second?
-		if( indcatr === "3") {
+		if( indcatr === 3 ) {
 			var moremults = doc.getElementById("a" + nextrow + "_" + expnt + "_0");
 			if( moremults && row === 0 ) {
 				factr = factr%10;
@@ -592,7 +603,7 @@ function checkDmult( ev ) {
 				factr = mat.floor(factr/10); 
 			}
 		}
-		var expAns = factr*powOf16;
+		var expAns = factr*powOfbase;
 		var nans = 0;			
 		var st = stppt + 1;
 		var partStr = id.substr( 0, st);
@@ -609,9 +620,8 @@ function checkDmult( ev ) {
 		if( nans === expAns ) {	
 			var instr2;
 			var instr3;
-			var nextBx;
-						
-			if( indcatr === "3" ) {		
+			var nextBx;	
+			if( indcatr === 3 ) {		
 				var factr;				
 				if( row === 0 ) {
 					bxId = "a1_" + expnt + "_0";
@@ -619,21 +629,21 @@ function checkDmult( ev ) {
 					if( nextBx ) {
 						factr = num(doc.getElementById("q" + expnt + "_0").value);
 						factr = mat.floor(factr/10);
-						instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+						instr2 = "What is " + powOfbase + " times " + factr + "? (Type backwards and Enter)";
 					} else {
 						nxNum = expnt + 1;
-						powOf16 = 16*powOf16;
+						powOfbase = base*powOfbase;
 						bxId = "b1_" + nxNum;
 						nextBx = doc.getElementById(bxId);					
 						if( nextBx ) {
 							factr = num(doc.getElementById("q0_" + nxNum).value);
-							instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+							instr2 = "What is " + powOfbase + " times " + factr + "? (Type backwards and Enter)";
 						} else {
 							bxId = "a0_" + nxNum + "_0";
 							nextBx = doc.getElementById(bxId);						
 							if( nextBx ) {
 								factr = num(doc.getElementById("q" + nxNum + "_0").value)%10;
-								instr2 = "What is " + powOf16 + " times " + factr + "? (Type backwards and Enter)";
+								instr2 = "What is " + powOfbase + " times " + factr + "? (Type backwards and Enter)";
 							} else {
 								nextBx = doc.getElementById("a3_0_0");
 								var highestlongmult = expnt;
@@ -670,7 +680,7 @@ function checkDmult( ev ) {
 						alert("stuck on line 197");
 					}
 				}				
-			} else if( indcatr === "2" ) {
+			} else if( indcatr === 2 || indcatr === 4) {
 				var prevrow = row + 1;
 				partStr = "b" + prevrow + "_" + expnt + "_";
 				dgtnum = 0;
@@ -751,8 +761,6 @@ function checkHD( ev ) {
 		if( Number(expnt) === 0 ) {
 			partStr = "b0_1_";
 		}
-		//doc.getElementById("statusBox" + x).innerHTML = "checkHD expAns partStr: " + partStr;
-		//x = (x + 1)%nSbxs;
 		var expAns = readAllBxs( partStr, 0 ).toString(16).toUpperCase();
 		if( ans === expAns ) {
 			lowlightBxs( partStr, 0 );
@@ -766,8 +774,6 @@ function checkHD( ev ) {
 				if( expnt > 1 ) {
 					expnt = expnt - 1;
 					partStr = "q" + expnt + "_";
-					//doc.getElementById("statusBox" + x).innerHTML = "checkHD quotient partStr: " + partStr;
-					//x = (x + 1)%nSbxs;
 				} else {
 					partStr = "b0_" + expnt + "_";
 					expnt = expnt - 1;
@@ -777,6 +783,9 @@ function checkHD( ev ) {
 				nextDig = highlightBxs(partStr, 0);
 				nextBx = doc.getElementById("h" + expnt);
 				instr2 = "What is the hex equivalent of base 10 number " + nextDig + "?";
+				if( gindcatr === 4 ) {
+					instr2 = "";
+				}
 			}
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
@@ -803,12 +812,13 @@ function checkDvdnd( ev ) {
 		var ans = readAllBxs(partStr, 0);
 		if( ans === expAns ) {
 			var mat = Math;
-			var sixtn2pow = mat.pow(16, expnt);
+			var base = num(doc.getElementById("base").value);
+			var base2pow = mat.pow(base, expnt);
 			gdvdnd = ans;
-			while( mat.floor(ans/sixtn2pow) > 9 ) {
+			while( mat.floor(ans/base2pow) > 9 ) {
 				ans = mat.floor(ans/10);
 			}
-			var instr2 = "How many times does " + sixtn2pow + " go into " + ans + "?";
+			var instr2 = "How many times does " + base2pow + " go into " + ans + "?";
 			var instr3;
 			var nextBx = doc.getElementById("q" + expnt + "_1");
 			if( !nextBx ) {
@@ -826,7 +836,7 @@ function checkDvdnd( ev ) {
 			for( var i = 0; i < len; ++i ) {
 				oldBars[i].setAttribute("style", styles);
 			}
-			gdvsr = sixtn2pow;	
+			gdvsr = base2pow;	
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
 			dgtnum = id.substr(id.length-1,1);
@@ -964,8 +974,9 @@ function checkBD( ev ) {
 		if( ans === expAns ) {
 			var nextBx = doc.getElementById("q" + expnt + "_0");
 			var dvdnd = readAllBxs("b1_" + expnt + "_", 0);
-			var sixtn2pow = Math.pow(16,expnt);
-			var instr2 = "What is " + dvdnd + " divided by " + sixtn2pow;
+			var base = Number(doc.getElementById("base").value);
+			var base2pow = Math.pow(base,expnt);
+			var instr2 = "What is " + dvdnd + " divided by " + base2pow;
 			var instr3;
 			gdvdnd = dvdnd;
 			markGood( ansBx, instr2, instr3, nextBx );
@@ -1030,8 +1041,8 @@ function checkDsub( ev ) {
 					doc.getElementById("s" + nextExpnt).innerHTML = ")";
 				}
 			}
-			if( !nextBx ) {			
-				var frstex = 3;
+			if( !nextBx ) {		
+				var frstex = 4;
 				var partStr = "q" + frstex + "_";
 				bxId = partStr + 0;
 				var frstBx = doc.getElementById(bxId);
@@ -1043,8 +1054,11 @@ function checkDsub( ev ) {
 				}			
 				var frstDig = highlightBxs( partStr, 0 );
 				instr2 = "What is the hex equivalent of base 10 number " + frstDig + "?";
+				if( gindcatr === 4 ) {
+					instr2 = "Copy all the quotients and the last remainder";
+				}
 				nextBx = doc.getElementById("h" + frstex);
-							var styles = "height: 0.3em";
+				var styles = "height: 0.3em";
 				var oldBxs = doc.getElementsByClassName("t" + expnt);
 				var len = oldBxs.length;
 				for( var i = 0; i < len; ++i ) {
@@ -1106,7 +1120,6 @@ function checkDsub( ev ) {
 			var partStr = id.substr( 0, stpos);
 			var bxNum = num(id.substr(stpos, 1)) + 1;
 			var bxId = partStr + bxNum;
-			//alert("nextBx: " + bxId);
 			var nextBx = doc.getElementById(bxId);
 			var instr2;
 			var instr3;
@@ -1162,12 +1175,13 @@ function checkSel( ev ) {
 		tstBx = doc.getElementById(tstId);
 	}
 	var dvdnd = readAllBxs( partStr, 0);
+	var base = num(doc.getElementById("base").value);
 	if( dvsr > dvdnd ) {		
 		markErr( "Choose a smaller number", whichSel );
-	} else if( dvdnd >= 16*dvsr ) {
+	} else if( dvdnd >= base*dvsr ) {
 		markErr( "Choose a larger number", whichSel );
 	} else {
-		gdvsr = dvsr
+		gdvsr = dvsr;
 		gdvdnd = dvdnd;
 		while( dvdnd/dvsr > 9 ) {
 			dvdnd = mat.floor(dvdnd/10);
@@ -1566,17 +1580,7 @@ window.onload = function(){
     var startWhere = doc.getElementById("startHere").value;
     //alert("startWhere: " + startWhere);
     var strtBx = doc.getElementById(startWhere);
-	var indcatr = Number(doc.getElementById("indcatr").value);
-	//if( indcatr === 3 ) {
-	//	gexpnt = 0;
-	//}
-	/* for( var i = 2809; i < 2833; ++i ) {
-		var st = i.toString();
-		var to16 = i.toString(16);
-		var dec2H = dec2hex( st );
-		doc.getElementById("statusBox" + x).innerHTML = "dec " + i + " to16: " + to16 + " dec2H " + dec2H;
-		x = (x + 1)%nSbxs;
-	} */
+	gindcatr = Number(doc.getElementById("indcatr").value);
 	if( strtBx ) {
         strtBx.focus();
     }

@@ -14,7 +14,9 @@
 	int MAX_COUNT = 32;
 	int MAX_HEX = 16777184;
 	int HEX4CONV = 65536;
+	int BIN4CONV = 29;
 	int EXPNT = 3;
+	int BEXPNT = 4;
 	int DECEXPNT = 4;
 
 	boolean countBCk = false;
@@ -23,14 +25,14 @@
     boolean countHCk = false;
     String isCountH = "";
     
-    boolean decToHexCk = true;
-    String isDecToHex = "checked";
+    boolean decToHexCk = false;
+    String isDecToHex = "";
     
     boolean hexToDecCk = false;
     String isHexToDec = "";
     
-    boolean decToBinCk = false;
-    String isDecToBin = "";
+    boolean decToBinCk = true;
+    String isDecToBin = "checked";
     
     boolean binToDecCk = false;
     String isBinToDec = "";
@@ -114,8 +116,9 @@
     int stp = EXPNT;
     int barwidth = EXPNT;
     String[] digits = new String[5]; // DECEXPNT + 1
-    int[] numQ = new int[EXPNT+1];
-    int frstrow = EXPNT;
+    int[] numQ = new int[BEXPNT+1];
+    int frstrow = BEXPNT;
+    int base = 16;
     
     genNumbers:
     while( !running ) {
@@ -171,12 +174,12 @@
         	instrs = "Fill in the blank numbers in this hexadecimal count";
         	instr2 = "What's next?";
         } else if( indcatr == 2 && decToHexCk ) {
-        	// no Q displayed when digit iz zero fixit
         	running = true;
+        	base = 16;
         	strtPt = (int)(HEX4CONV*Math.random());
         	int dice = (int)(EXPNT*Math.random());
         	for( int i = 1; i < dice && strtPt > 256; ++i ) {
-        		strtPt = strtPt/16;
+        		strtPt = strtPt/base;
         	}
         	String decStr = Integer.toString( strtPt );
         	stp = decStr.length();
@@ -203,6 +206,7 @@
         	instr2 = "Select the highest power of 16 that goes into " +  strtPt;
         } else if( indcatr == 3 && hexToDecCk ) {
         	running = true;
+        	base = 16;
         	strtPt = (int)(HEX4CONV*Math.random());
         	hexNum = (Integer.toHexString( strtPt )).toUpperCase();
         	stp = hexNum.length();
@@ -239,6 +243,36 @@
             } 
 
         } else if( indcatr == 4 && decToBinCk ) {
+        	running = true;
+        	base = 2;
+        	strtPt = 2 + (int)(BIN4CONV*Math.random());
+        	/* int dice = (int)(EXPNT*Math.random());
+        	for( int i = 1; i < dice && strtPt > 4; ++i ) {
+        		strtPt = strtPt/2;
+        	} */
+        	String decStr = Integer.toString( strtPt );
+        	stp = decStr.length();
+        	for( int i = 0; i < stp; ++i ) {
+        		int frst = stp - 1 - i;
+        		int last = frst + 1;
+        		digits[i]= decStr.substring( frst, last );
+        	}
+        	barwidth = stp + 1;
+        	frstrow = strtPt > 15? 4 : strtPt > 7? 3 : strtPt > 3? 2 : strtPt > 1? 1 : 0;
+        	startHere = "b0"; // make sure it's not a valid box. need to start by selecting fixit     	        	
+        	int tmp = strtPt;
+        	for( int i = BEXPNT; i >= 0; i-- ) {
+        		int  two2pow = (int)Math.pow(2, i);
+        		numQ[i] = 1;
+        		if( tmp >= two2pow ) {
+        			int part = tmp/two2pow;
+        			numQ[i] += (int)Math.log10((double)part);
+        			tmp -= part*two2pow;
+                	//System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
+        		}
+        	}
+        	instrs = "Convert " + strtPt + " base 10 to binary";
+        	instr2 = "Select the highest power of 2 that goes into " +  strtPt;
         } else if( indcatr == 5 && binToDecCk ) {
         } else if( indcatr == 6 && hexToBinCk ) {
         } else if( indcatr == 7 && binToHexCk ) {
@@ -826,6 +860,110 @@
 		} %>
 </tr>
 </table>
+<%	} else if( indcatr == 4 && decToBinCk ) { 
+		String itype = "text"; 
+		String rparen = ")"; 
+		String isDisabled = "disabled = 'true'"; 
+		String visible = "bar";
+		 %>
+		<table>
+<%		for( int i = frstrow; i > 0; --i ) {
+			String pid = "p" + i;
+			String sid = "s" + i;
+			String lid = "l" + i;
+			String rname = "b" + i;
+			String vbar = "v" + i;
+			String tway = "t" + i;
+		%>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+<%			//System.out.println("stp: " + stp + " numQ: " + numQ[i]);
+			for( int k = 0; k < stp - numQ[i]; ++k ) { %>
+				<td></td>
+<%			} 
+			for( int k = numQ[i] - 1; k>= 0; --k ) { 
+				String qid = "q" + i + "_" + k; %>
+			<td>
+			<input id="<%=qid%>" class="a1 q" type="<%=itype%>" name="<%=rname%>"
+			onkeyup="checkQ( event )" onkeydown="erase( event )">
+			</td>
+<%			} %>
+		</tr>
+		<tr>
+			<td></td><td></td><td></td><td></td>
+			<th colspan=<%=barwidth%> class="<%=visible%>" name="<%=vbar%>" ></th>
+		</tr>
+		<tr>
+<%			if( i == frstrow ) { %>
+			<th colspan=4>
+		      <select id=<%=lid%> name="powof16" class="slct" onchange="checkSel( event )">   
+		           <option>Select a number</option>
+		           <option>1</option>
+		           <option>2</option>
+		           <option>4</option>
+		           <option>8</option>
+		           <option>16</option>
+		       </select>
+			</th>
+<%			} else { 
+				int val = (int)Math.pow(2,i); %>
+			<th colspan=4 class="invisible" name="<%=vbar%>" >
+				<input type="<%=itype%>" disabled="true"
+				name="<%=rname%>" value="<%=val%>" class="dvsr" ></th>
+<%			} %>
+			<td class="sym" id=<%=sid%>><%=rparen%></td>
+<%			for( int j = stp-1; j >= 0; --j ) {
+				String bid = "b" + numQ[i] + "_" +  i + "_" + j; %>
+			<td>
+				<input id="<%=bid%>" class="a1" <%=isDisabled%>  type="<%=itype%>"
+				name="<%=rname%>" value="<%=digits[j]%>" 
+				onkeyup="checkDvdnd( event)" onkeydown="erase( event )" >
+			</td>
+<%			} %>
+		</tr>
+<%			for( int k = numQ[i] - 1; k>= 0; --k ) { %>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+	<%			for( int j = j = stp-1; j >= k; --j ) { 
+					int l = j - k;
+					String mid = "m" + k + "_" +  i + "_" + l; %>
+			<td>
+				<input id="<%=mid%>" class="a1 <%=tway%>" type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkDmult( event )" onkeydown="erase( event )" >
+			</td>
+<%				} %>
+		</tr>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+			<th colspan=<%=stp%> class="<%=visible%>" name="<%=vbar%>" ></th>
+		</tr>
+		<tr>
+			<td></td><td></td><td></td><td></td><td></td>
+	<%			for( int j = stp-1; j >= k; --j ) { 
+					String bid = "b" + k + "_" +  i + "_" + j; %>
+			<td>
+				<input id="<%=bid%>" class="a1 <%=tway%>"  type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkDsub( event )" onkeydown="erase( event )" >
+			</td>
+<%				}
+				if( k == 1 ) { 
+					String did ="b" + k + "_" +  i + "_0"; %>
+			<td>
+				<input id="<%=did%>" class="a1 <%=tway%>"  type="<%=itype%>" name="<%=rname%>" 
+				onkeyup="checkBD( event )" onkeydown="erase( event )" >
+			</td>
+<% 				}%>
+		</tr>
+<%			}
+			itype = "hidden";
+			rparen = "";
+			isDisabled = "";
+			for( int j = stp-1; j >= 0; --j ) { 
+				digits[j] = "";
+			}
+			visible = "not";
+		} %>
+		</table>
 <%	} %>
 
 </div>
@@ -852,10 +990,17 @@
 	</table>
 </div>
 
-<% if( indcatr == 2 ) { %>
+<% if( indcatr == 2 || indcatr == 4 ) { 
+	String pref = "0x";
+	String heading = "Hex";
+	if( indcatr == 4 ) {
+		pref = "";
+		heading = "Binary";
+	} %>
 <table class="final" >
+<tr><th colspan=<%=5%> class="final" ><%=heading%></th></tr>
 <tr>
-<td>0x</td>
+<td><%=pref%></td>
 <%	for( int i = frstrow; i >= 0; --i ) { 
 		String hid = "h" + i; %>
 <td><input id="<%=hid%>" class="a1" type="text" 
@@ -990,6 +1135,7 @@
 <input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
 <input type="hidden" id="indcatr" value="<%=indcatr%>">
 <input type="hidden" id="hexNum" value="<%=hexNum%>">
+<input type="hidden" id="base" value="<%=base%>">
 </span>
 </form>
 </body>

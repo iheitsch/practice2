@@ -68,7 +68,10 @@ th{
 	background-color: WhiteSmoke;
 }
 .final{
+	border: 2px solid #339966;
 	margin: 5%;
+	margin-top: 15%;
+	text-align: center;
 }
 .invisible{
 	border: none;
