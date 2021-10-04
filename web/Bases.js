@@ -1,5 +1,6 @@
 /**
- * 
+ *  make it so user can enter final binary or hex number without intermediate steps fixit
+ * make base2pow a globl variable faster than reading base and recalculation, isn't it? fixit'
  */
 var x = 0;
 var nSbxs = 24;
@@ -17,10 +18,19 @@ function check() {
         checkH2D();
     }  else if( indcatr < 5 ) {
         checkD2B();
-    } /* else if( indcatr < 6 ) {
-        checkF2D();
-    } */
+    } else if( indcatr < 6 ) {
+        checkB2D();
+    }
     return false;
+}
+function checkB2D() {
+	var doc = document;
+	
+	allgood = true;
+	// need to check if user skipped something fixit
+	if( allgood ) {
+		startAgain();
+	}
 }
 function checkD2B() {
 	var doc = document;
@@ -161,6 +171,59 @@ function markErr( msg, aBx ) {
 	var errs = Number(doc.getElementById("errs").value);
     doc.getElementById("errs").value = errs + 1;
 }
+function checkp( ev ) {
+	ev = ev || window.event;
+	var ansBx = ev.target;
+	var num = Number;
+    var doc = document;
+    if( ev.which === 13 || ev.keyCode === 13 ) {
+		nans = num(ansBx.value);
+		var id = ansBx.id;
+		var nchars = id.length - 1;
+		var bitnum = num(id.substr(1,nchars));
+		var bit = num(doc.getElementById("t" + bitnum).value);
+		var factr = num(doc.getElementById("f" + bitnum).innerHTML);
+		var expAns = bit*factr;
+		if( nans === expAns ) {
+			bitnum = bitnum + 1;
+			var nextBx = doc.getElementById("e" + bitnum);
+			var instr2;
+			var instr3;
+			if( !nextBx ) {
+				instr2 = "Add the last column";
+				nextBx = doc.getElementById("b_" + 0);			
+			}
+			markGood(ansBx, instr2, instr3, nextBx);
+		} else {
+			markErr("Should be " + expAns, ansBx);
+		}
+	}
+}
+function checkbit( ev ) {
+	ev = ev || window.event;
+	var ansBx = ev.target;
+    var doc = document;
+	ans = ansBx.value;
+	var id = ansBx.id;
+	var nchars = id.length - 1;
+	var bitnum = Number(id.substr(1,nchars));
+	var expAns = doc.getElementById("d" + bitnum).innerHTML;
+	if( ans === expAns ) {
+		var instr2;
+		var instr3;
+		bitnum = bitnum + 1;
+		bxId = "t" + bitnum;
+		nextBx = doc.getElementById(bxId);
+		//alert("checkbit nextBx: " + bxId);
+		if( !nextBx ) {
+			nextBx = doc.getElementById("e" + 0);
+			instr2 = 'Copy power of two for every bit that is a "1", skip if bit is "0"';
+		}
+		markGood(ansBx, instr2, instr3, nextBx);
+	} else {
+		markErr("Should be " + expAns, ansBx);
+	}
+}
 function checkTot( ev ) {
 	ev = ev || window.event;
 	var ansBx = ev.target;
@@ -184,20 +247,24 @@ function checkTot( ev ) {
 		var prevBx = doc.getElementById(bxId);
 		while( prevBx ) {
 			nans = 10*nans + num(prevBx.value);
-			//doc.getElementById("statusBox" + x).innerHTML = "checkTot while loop nans: " + nans + " bxId: " + bxId;
-			//x = (x + 1)%nSbxs;
 			dgtnum = dgtnum - 1;
 			bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
 		}
 		var hexStr = "";
-		for( var i = 3; i >= 0; --i ) {
+		for( var i = 12; i >= 0; --i ) {
 			var whatBx = doc.getElementById("d" + i);
 			if( whatBx ) {
 				hexStr = hexStr + whatBx.innerHTML;
 			}
 		}
-		var expAns = hex2dec( hexStr );
+		var expAns;
+		var base = doc.getElementById("base").value;
+		if( base === "16" ) {
+			expAns = hex2dec( hexStr );
+		} else if( base === "2" ) {
+			expAns = bin2dec( hexStr );
+		}
 		if( nans === expAns ) {
 			markGood( ansBx, 'Click "Done"', null, null );
 		} else {

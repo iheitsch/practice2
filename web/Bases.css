@@ -34,6 +34,12 @@ th{
 .blank{
 	border: none;
 }
+.compressed{
+	border-collapse: collapse;
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+}
 .conversion{
 	border-collapse: separate;
 	border: 1px solid #339966;
@@ -60,12 +66,13 @@ th{
 	border: none;
 	height: 1.5em;
 	font: inherit;
+	letter-spacing: 0.6em;
 }
 .entry{
 	background-color:  #339966;
 }
 .evenstripe{
-	background-color: WhiteSmoke;
+	background-color: #ffffff;
 }
 .final{
 	border: 2px solid #339966;
@@ -97,10 +104,11 @@ th{
 }
 .not{
 	border: 1px solid #efffd2;
-	background-color: #efffd2;
+	background-color: #efffd2
 }
 .oddstripe{
-	background-color: #efffd2;
+	background-color: #9fdf9f;
+	/* background-color: #a4ec42; */
 }
 .probset{
 	border-collapse: collapse;

@@ -31,11 +31,11 @@
     boolean hexToDecCk = false;
     String isHexToDec = "";
     
-    boolean decToBinCk = true;
-    String isDecToBin = "checked";
+    boolean decToBinCk = false;
+    String isDecToBin = "";
     
-    boolean binToDecCk = false;
-    String isBinToDec = "";
+    boolean binToDecCk = true;
+    String isBinToDec = "checked";
 
     boolean hexToBinCk = false;
     String isHexToBin = "";
@@ -115,7 +115,7 @@
     String instr4 = "blank";
     int stp = EXPNT;
     int barwidth = EXPNT;
-    String[] digits = new String[5]; // DECEXPNT + 1
+    String[] digits = new String[12]; // big enough for binary 4095
     int[] numQ = new int[BEXPNT+1];
     int frstrow = BEXPNT;
     int base = 16;
@@ -246,10 +246,6 @@
         	running = true;
         	base = 2;
         	strtPt = 2 + (int)(BIN4CONV*Math.random());
-        	/* int dice = (int)(EXPNT*Math.random());
-        	for( int i = 1; i < dice && strtPt > 4; ++i ) {
-        		strtPt = strtPt/2;
-        	} */
         	String decStr = Integer.toString( strtPt );
         	stp = decStr.length();
         	for( int i = 0; i < stp; ++i ) {
@@ -274,6 +270,28 @@
         	instrs = "Convert " + strtPt + " base 10 to binary";
         	instr2 = "Select the highest power of 2 that goes into " +  strtPt;
         } else if( indcatr == 5 && binToDecCk ) {
+        	running = true;
+        	base = 2;
+        	strtPt = 2 + (int)(4095*Math.random());
+        	frstrow = (int)(Math.log((double)strtPt)/Math.log(2));
+        	startHere = "t0";    	        	
+        	int tmp = strtPt;
+        	instrs = "Convert ";
+        	for( int i = frstrow; i >= 0; i-- ) {
+        		int  two2pow = (int)Math.pow(2, i);
+        		if( tmp >= two2pow ) {
+        			int part = tmp/two2pow;
+        			tmp -= part*two2pow;
+        			digits[i] = "1";
+                	//System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
+        		} else {
+        			digits[i] = "0";
+        		}
+        		instrs = instrs + digits[i];
+        	}
+        	instrs = instrs + " binary to base 10";
+        	instr2 = "Type the binary number horizonatally, starting with least"; 
+        	instr3 = "signiificant bit at the bottom"; 
         } else if( indcatr == 6 && hexToBinCk ) {
         } else if( indcatr == 7 && binToHexCk ) {
         }
@@ -963,6 +981,51 @@
 			}
 			visible = "not";
 		} %>
+		</table>
+<% 	} else if( indcatr == 5 && binToDecCk ) { 
+		 %>
+		<table>
+		<tr>
+<%		for( int i = frstrow; i >= 0; --i ) { 
+			String did = "d" + i;
+			String stripeclass = (i/4)%2 == 0? "oddstripe" : "evenstripe"; %>
+			<td id="<%=did%>" class="<%=stripeclass%>" ><%=digits[i]%></td>
+<%		} %>
+		</tr>
+		</table>
+		<table >
+<%		for( int i = frstrow; i >= 0; --i ) {
+			int powOf2 = (int)Math.pow(2,i);
+
+			
+			String eid = "e" + i; 
+			String fid = "f" + i; 
+			String tid = "t" + i; 
+			String stripeclass = (i/4)%2 == 0? "oddstripe" : "evenstripe"; %>
+		<tr >
+		<td><input id="<%=tid%>" class="a1 <%=stripeclass%>" type="text" 
+		onkeyup="checkbit( event )" onkeydown="erase( event )" ></td>
+		<td id="<%=fid%>" class="<%=stripeclass%>" ><%=powOf2%></td>
+		<th colspan=5>
+		<input id="<%=eid%>" type="text" class="ebox <%=stripeclass%>"
+		onkeyup="checkp( event )" onkeydown="erase( event )" ></th>
+		</tr>
+<%		} %>
+		<tr >
+		<th colspan=2 ></th>
+<%		for( int i = 4; i >= 0; --i ) {
+			String bid = "b_" + i;  
+			if( i== 0 ) { %>
+			<td class="compressed" >
+			<input id="<%=bid%>" class="a1" onkeyup="checkTot(event)" onkeydown="eraseAll( event )">
+			</td>
+<%		 	} else { %>
+			<td class="compressed" >
+			<input id="<%=bid%>" class="a1" onkeyup="checkTot(event)" onkeydown="eraseAll( event )">
+			</td>
+<% 			} 
+		}%>
+		</tr>
 		</table>
 <%	} %>
 
