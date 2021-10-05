@@ -100,14 +100,15 @@ th{
 .nbox{
 	text-align: right;
 	width: 8em;
-	height: 30px;	
+	height: 30px;
+	font: inherit;	
 }
 .not{
 	border: 1px solid #efffd2;
-	background-color: #efffd2
+	background-color: #efffd2;
 }
 .oddstripe{
-	background-color: #9fdf9f;
+	background-color:  #c6ecc6;
 	/* background-color: #a4ec42; */
 }
 .probset{

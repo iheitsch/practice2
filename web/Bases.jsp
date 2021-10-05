@@ -34,14 +34,14 @@
     boolean decToBinCk = false;
     String isDecToBin = "";
     
-    boolean binToDecCk = true;
-    String isBinToDec = "checked";
+    boolean binToDecCk = false;
+    String isBinToDec = "";
 
-    boolean hexToBinCk = false;
-    String isHexToBin = "";
+    boolean hexToBinCk = true;
+    String isHexToBin = "checked";
 
-    boolean binToHexCk = false;
-    String isBinToHex = "";
+    boolean binToHexCk = true;
+    String isBinToHex = "checked";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -115,9 +115,10 @@
     String instr4 = "blank";
     int stp = EXPNT;
     int barwidth = EXPNT;
-    String[] digits = new String[12]; // big enough for binary 4095
+    String[] digits = new String[16]; // big enough for binary 65535
     int[] numQ = new int[BEXPNT+1];
     int frstrow = BEXPNT;
+    int frstcol = EXPNT;
     int base = 16;
     
     genNumbers:
@@ -293,7 +294,44 @@
         	instr2 = "Type the binary number horizonatally, starting with least"; 
         	instr3 = "signiificant bit at the bottom"; 
         } else if( indcatr == 6 && hexToBinCk ) {
+        	running = true;
+        	base = 2;
+        	strtPt = (int)(HEX4CONV*Math.random());
+        	hexNum = (Integer.toHexString( strtPt )).toUpperCase();
+        	stp = hexNum.length();
+        	for( int i = 0; i < stp; ++i ) {
+        		int frst = stp - 1 - i;
+        		int last = frst + 1;
+        		digits[i]= hexNum.substring( frst, last );
+        	}
+        	frstcol = stp - 1;
+        	instrs = "Convert the hexadecimal number 0x" + hexNum + " to binary";
+        	int frstbit = stp*4 - 1;
+        	startHere = "b" + frstbit;
+        	System.out.println("hex2bin strtPt: " + strtPt + " frstcol: " + frstcol + " startHere: " + startHere);
         } else if( indcatr == 7 && binToHexCk ) {
+        	running = true;
+        	base = 16;
+        	strtPt = (int)(HEX4CONV*Math.random());
+        	int tmp = strtPt;
+        	instrs = "Convert ";
+        	frstcol = (int)(Math.log((double)strtPt)/Math.log(2));
+        	for( int i = frstcol; i >= 0; i-- ) {
+        		int  two2pow = (int)Math.pow(2, i);
+        		if( tmp >= two2pow ) {
+        			int part = tmp/two2pow;
+        			tmp -= part*two2pow;
+        			digits[i] = "1";
+                	//System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
+        		} else {
+        			digits[i] = "0";
+        		}
+        		instrs = instrs + digits[i];
+        	}
+        	instrs = instrs + " binary to Hexadecimal";
+        	int frstdig = (int)(Math.log((double)strtPt)/Math.log(16));
+        	startHere = "h" + frstdig;
+        	System.out.println("bin2hex strtPt: " + strtPt + " frstcol: " + frstcol + " startHere: " + startHere);
         }
     }
     %>
@@ -991,13 +1029,12 @@
 			String stripeclass = (i/4)%2 == 0? "oddstripe" : "evenstripe"; %>
 			<td id="<%=did%>" class="<%=stripeclass%>" ><%=digits[i]%></td>
 <%		} %>
+		<td>B</td>
 		</tr>
 		</table>
 		<table >
 <%		for( int i = frstrow; i >= 0; --i ) {
-			int powOf2 = (int)Math.pow(2,i);
-
-			
+			int powOf2 = (int)Math.pow(2,i);		
 			String eid = "e" + i; 
 			String fid = "f" + i; 
 			String tid = "t" + i; 
@@ -1027,8 +1064,69 @@
 		}%>
 		</tr>
 		</table>
-<%	} %>
+<% 	} else if( indcatr == 6 && hexToBinCk ) { %>
+		<table >
+		<tr >
+		<td>0x</td>
+<%		for( int i = frstcol; i >= 0; --i ) {		
+			String hid = "h" + i; %>		
+			<th colspan=4>
+			<input id="<%=hid%>" type="text" class="ebox" 
+			value="<%=digits[i]%>" disabled="true" >
+			</th>		
+<%		} %>
+		<td></td>
+		</tr>
+		<tr >
+		<td></td>
+<% 		frstcol = 4*(frstcol + 1) - 1;
+		for( int i = frstcol; i >= 0; --i ) {		
+			String bid = "b" + i; %>	
+			<td>
+			<input id="<%=bid%>" type="text" class="a1"
+			onkeyup="checkBH( event )" onkeydown="erase( event )" >
+			</td>
+<%		} %>
+		<td>B</td>
+		</tr>
+		</table>
+<% 	} else if( indcatr == 7 && binToHexCk ) { 
+		int partial = (frstcol+1)%4;
+		int leadzeroes = partial > 0? 4 - partial : 0;%>
+		<table >
+		<tr>
+		<td></td>
+<% 		for( int i = leadzeroes + frstcol; i >= 0; --i ) {		
+			String bid = "b" + i; %>
+			<td>
+<%			if( i > frstcol ) { %>
+				<input id="<%=bid%>" type="text" class="a1"
+				value="0" disabled="true" >
+<%			} else { %>
+				<input id="<%=bid%>" type="text" class="a1"
+				value="<%=digits[i]%>" disabled="true" >		
+			
+<%			} %>
+			</td>
+<% 		} %>
+		<td>B</td>
+	   	</tr>
+	   	<tr >
+	   	<td>0x</td>
+<% 		
+		frstcol = (leadzeroes + frstcol + 1)/4 - 1;
+		for( int i = frstcol; i >= 0; --i ) {		
+			String hid = "h" + i; %>	
+			<th colspan=4>
+			<input id="<%=hid%>" type="text" class="ebox" 
+			onkeyup="checkBH( event )" onkeydown="erase( event )" >
+			</th>
 
+<%		} %>
+		<td></td>
+		</tr>
+		</table>
+<%	} %>
 </div>
 <div>
         <span><button type="button" onclick="skip()" id="skpBx">Skip</button>
@@ -1052,16 +1150,18 @@
 	<% } %>
 	</table>
 </div>
-
 <% if( indcatr == 2 || indcatr == 4 ) { 
 	String pref = "0x";
+	String suf = "";
 	String heading = "Hex";
+	String ncols = Integer.toString(frstrow + 3);
 	if( indcatr == 4 ) {
 		pref = "";
 		heading = "Binary";
+		suf = "B";
 	} %>
 <table class="final" >
-<tr><th colspan=<%=5%> class="final" ><%=heading%></th></tr>
+<tr><th colspan=<%=ncols%> class="final" ><%=heading%></th></tr>
 <tr>
 <td><%=pref%></td>
 <%	for( int i = frstrow; i >= 0; --i ) { 
@@ -1069,6 +1169,7 @@
 <td><input id="<%=hid%>" class="a1" type="text" 
 		onkeyup="checkHD( event )" onkeydown="erase( event )"></td>
 <%	} %>
+<td><%=suf%></td>
 </tr>
 </table>
 <% } %>

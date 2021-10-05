@@ -1,6 +1,8 @@
 /**
  *  make it so user can enter final binary or hex number without intermediate steps fixit
- * make base2pow a globl variable faster than reading base and recalculation, isn't it? fixit'
+ * make base2pow a globl variable faster than reading base and recalculation, isn't it? fixit
+ *
+ * no error messaging for hex count fixit
  */
 var x = 0;
 var nSbxs = 24;
@@ -20,8 +22,30 @@ function check() {
         checkD2B();
     } else if( indcatr < 6 ) {
         checkB2D();
+	} else if( indcatr < 7 ) {
+        checkH2B();
+	} else if( indcatr < 8 ) {
+        checkB2H();
     }
     return false;
+}
+function checkB2H() {
+	var doc = document;
+	
+	allgood = true;
+	// need to check if user skipped something fixit
+	if( allgood ) {
+		startAgain();
+	}
+}
+function checkH2B() {
+	var doc = document;
+	
+	allgood = true;
+	// need to check if user skipped something fixit
+	if( allgood ) {
+		startAgain();
+	}
 }
 function checkB2D() {
 	var doc = document;
@@ -141,8 +165,12 @@ function markGood( aBx, ins2, ins3, nBx ) {
 		aBx.style.color = "black";
 		aBx.style.borderColor = "WhiteSmoke";
 	}
+	var instr2Bx = doc.getElementById("instr2");
 	if( ins2 ) {
-		doc.getElementById("instr2").innerHTML = ins2;
+		instr2Bx.style.color = "black";
+		instr2Bx.innerHTML = ins2;
+	} else {
+	    instr2Bx.style.color = invisible;
 	}
 	var instr3Bx = doc.getElementById("instr3");
 	if( ins3 ) {
@@ -170,6 +198,125 @@ function markErr( msg, aBx ) {
 	errBx.innerHTML = msg;
 	var errs = Number(doc.getElementById("errs").value);
     doc.getElementById("errs").value = errs + 1;
+}
+function checkBH( ev ) {
+	ev = ev || window.event;
+	var ansBx = ev.target;
+	var num = Number;
+    var doc = document;
+    if( ev.which === 13 || ev.keyCode === 13 ) {
+		var id = ansBx.id;
+		var partStr = id.substr(0,1);
+		for( var i = 0; i < 2; ++i ) {
+			var dgtnum = 0;
+			var bxId = partStr + dgtnum;	
+			var bx = doc.getElementById(bxId);
+			var ans = bx.value;
+			var msdnum = 0;
+			while( bx ) {
+				dgtnum = dgtnum + 1;
+				bxId = partStr + dgtnum;
+				bx = doc.getElementById(bxId);
+				if( bx ) {
+					var newval = bx.value;
+					if( newval ) {
+						ans = newval + ans;
+						msdnum = msdnum + 1;
+					} else {
+						break;
+					}
+				}
+			}
+			if( i == 0 ) {
+				if( partStr === "h" ) {
+					nans = hex2dec( ans );
+					partStr = "b";
+				} else {
+					nans = bin2dec( ans );
+					partStr = "h";
+				}
+			} else {
+				if( partStr === "h" ) {
+					expAns = hex2dec( ans );
+					
+				} else {
+					expAns = bin2dec( ans );
+				}
+			}
+		}
+		if( nans === expAns ) {
+			markGood( ansBx, 'Click "Done"', null, null );
+		} else {
+			var corrAns = expAns.toString(16);		
+			var instr4 = "";
+			//doc.getElementById("statusBox" + x).innerHTML = "checkBh instr4: " + instr4 + " corrAns: " + corrAns;
+					//x = (x + 1)%nSbxs;
+			if( partStr == "h" ) {
+				corrAns = expAns.toString(2);
+				len = corrAns.length;		
+				while( len > 3 ) {
+					instr4 = " " + corrAns.substr(len-4, 4) + instr4;					
+					len = len - 4;
+					corrAns = corrAns.substr(0, len);
+					//doc.getElementById("statusBox" + x).innerHTML = "checkBh instr4: " + instr4 + " corrAns: " + corrAns;
+					//x = (x + 1)%nSbxs;
+				}
+				instr4 = "Should be " + corrAns + instr4;
+				partStr = "b"
+			} else {
+				partStr = "h";
+				instr4 = "Should be " + corrAns.toUpperCase();
+			}
+			dgtnum = 0;
+			bxId = partStr + dgtnum;
+			prevBx = doc.getElementById(bxId);
+			var lastPrev = prevBx;
+			while( prevBx ) {
+				prevBx.style.color = "red";
+				dgtnum = dgtnum + 1;
+				lastPrev = prevBx;
+				bxId = partStr + dgtnum;
+				
+				prevBx = doc.getElementById(bxId);
+			}
+			var errBx = doc.getElementById("instr4");
+			errBx.style.color = "red";
+			errBx.innerHTML = instr4;
+			var errs = Number(doc.getElementById("errs").value);
+		    doc.getElementById("errs").value = errs + 1;
+			lastPrev.focus();
+		}
+	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var id = ansBx.id;
+		var nchars = id.length - 1;
+		var bxNum = num(id.substr( 1,  nchars )) + 1;
+		var partStr = id.substr( 0, 1);
+		var bxId = partStr + bxNum;
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
+	} else {
+		ans = ansBx.value;
+		if( !isNaH(ans) ) {
+			ansBx.value = ans.toUpperCase();
+			var id = ansBx.id;
+			var nchars = id.length - 1;
+			var bxNum = num(id.substr( 1,  nchars )) - 1;
+			var partStr = id.substr( 0, 1);
+			var bxId = partStr + bxNum;
+			//alert("nextBx: " + bxId);
+			var nextBx = doc.getElementById(bxId);
+			var instr2;
+			var instr3;
+			if( !nextBx ) {
+				nextBx = ansBx;
+			}
+			markGood( ansBx, instr2, instr3, nextBx );
+		} else {
+			markErr("Not a number", ansBx);
+		}
+	}
 }
 function checkp( ev ) {
 	ev = ev || window.event;
@@ -1419,7 +1566,8 @@ function checkHCount( ev ) {
         var doc = document;
 
         var ansBx = ev.target;
-        var ans = ansBx.value;
+        var ans = ansBx.value.toUpperCase();
+        ansBx.value = ans;
         var id = ansBx.id;
 		var nchars = id.length - 1;		
 		if( !isNaH(ans) ) {
@@ -1427,9 +1575,7 @@ function checkHCount( ev ) {
 			var prevBxNum = bxNum - 1;
 			var prevStr = doc.getElementById("b" + prevBxNum).value;
 			var prevNum = hex2dec( prevStr );
-			//var nans = hex2dec( ans );
 			var expAns = prevNum + 1;
-			//var expHex = expAns.toString(16); //dec2hex( expAns );
 			var decAns = hex2dec( ans );
 			//doc.getElementById("statusBox" + x).innerHTML = "decAns: " + decAns + " expAns: " + expAns;
 			//x = (x + 1)%nSbxs;		
@@ -1466,6 +1612,7 @@ function checkHCount( ev ) {
 				}	
 				markGood( ansBx, instr2, instr3, nextBx );
 			} else {
+				var expHex = expAns.toString(16).toUpperCase();
 				markErr( "Should be " + expHex, ansBx);
 			}
 		} else {
@@ -1647,7 +1794,12 @@ window.onload = function(){
     var startWhere = doc.getElementById("startHere").value;
     //alert("startWhere: " + startWhere);
     var strtBx = doc.getElementById(startWhere);
-	gindcatr = Number(doc.getElementById("indcatr").value);
+	indcatr = Number(doc.getElementById("indcatr").value);
+	if( indcatr > 5 ) {
+		var invisible = "#efffd2";
+		doc.getElementById("instr2").style.color = invisible;
+	}
+	gindcatr = indcatr;
 	if( strtBx ) {
         strtBx.focus();
     }
