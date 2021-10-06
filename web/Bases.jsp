@@ -1298,7 +1298,7 @@
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="startHere" name="startHere" value="<%=startHere%>" class="shortbox">
 <input type="hidden" id="indcatr" value="<%=indcatr%>">
-<input type="hidden" id="hexNum" value="<%=hexNum%>">
+<input type="hidden" id="strtPt" value="<%=strtPt%>">
 <input type="hidden" id="base" value="<%=base%>">
 </span>
 </form>

@@ -970,12 +970,15 @@ function checkHD( ev ) {
 	ansBx.value = ans;
 	if( !isNaH(ans) ) {
 		var id = ansBx.id;
-		var expnt = id.substr(1,1);
+		var expnt = Number(id.substr(1,1));
+		var conv = gConv;
+		var wutDgt = conv.length - expnt - 1;
+		var expAns = conv.substr(wutDgt, 1);
 		var partStr = "q" + expnt + "_";
-		if( Number(expnt) === 0 ) {
+		if( expnt === 0 ) {
 			partStr = "b0_1_";
 		}
-		var expAns = readAllBxs( partStr, 0 ).toString(16).toUpperCase();
+		//var expAns = readAllBxs( partStr, 0 ).toString(16).toUpperCase();
 		if( ans === expAns ) {
 			lowlightBxs( partStr, 0 );
 			var nextBx;
@@ -1424,7 +1427,7 @@ function checkHDig( ev ) {
 		if( !isNaN(ans) ) {
 			var id = ansBx.id;		
 			var expnt = num(id.substr( 1, 1 ));
-			var hexDig = doc.getElementById("d" + expnt).innerHTML; //hexNum.substr(hexPos - expnt, 1);
+			var hexDig = doc.getElementById("d" + expnt).innerHTML;
 			var nans = num( ans );
 			if( nans === hex2dec( hexDig ) ) {
 				expnt = expnt + 1;
@@ -1434,7 +1437,7 @@ function checkHDig( ev ) {
 				var instr3;
 				if( nextBx ) {
 					var place = Math.pow(16,expnt);
-					var newHexDig = doc.getElementById("d" + expnt).innerHTML; //hexNum.substr(hexPos - bxNum, 1);
+					var newHexDig = doc.getElementById("d" + expnt).innerHTML;
 					instr2 = "What is the decimal equivalent of the " + place + "'s hex digit " + newHexDig + "? (Enter)";
 				} else {
 					nextBx = doc.getElementById("b1_" + 0);
@@ -1791,13 +1794,18 @@ function startAgain() {
 }
 window.onload = function(){
     var doc = document;
+    var num = Number;
     var startWhere = doc.getElementById("startHere").value;
     //alert("startWhere: " + startWhere);
     var strtBx = doc.getElementById(startWhere);
-	indcatr = Number(doc.getElementById("indcatr").value);
-	if( indcatr > 5 ) {
-		var invisible = "#efffd2";
-		doc.getElementById("instr2").style.color = invisible;
+	indcatr = num(doc.getElementById("indcatr").value);
+	if( indcatr > 1 ) {
+		var base = num(doc.getElementById("base").value)
+		gConv = (num(doc.getElementById("strtPt").value)).toString(base).toUpperCase();
+		if( indcatr > 5 ) {
+			var invisible = "#efffd2";
+			doc.getElementById("instr2").style.color = invisible;
+		}
 	}
 	gindcatr = indcatr;
 	if( strtBx ) {
