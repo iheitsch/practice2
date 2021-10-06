@@ -3,6 +3,12 @@ body {
     background-color: #efffd2;
     font-family: Lucida Console,Monaco, Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
+button{
+	font: inherit;
+}
+button:hover{
+	background-color: yellow;
+}
 input {
 	border: 1px solid WhiteSmoke;
 	font-family: Lucida Console,Monaco,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
@@ -30,6 +36,10 @@ th{
 .bar{
 	border: 1px solid #339966;
 	background-color: #339966;
+}
+.blackbox{
+    width: 5em;
+    text-align: center;
 }
 .blank{
 	border: none;
@@ -74,15 +84,11 @@ th{
 .evenstripe{
 	background-color: #ffffff;
 }
-.final{
-	border: 2px solid #339966;
-	margin: 5%;
-	margin-top: 15%;
-	text-align: center;
-}
+
 .invisible{
 	border: none;
 	text-align: right;
+	color: #efffd2;
 }
 .leftsd{
 	float: left;
@@ -161,9 +167,31 @@ th{
     display:inline-block;
     vertical-align:middle;
 }
+#bottomleft{
+	position: fixed;
+	left: 2%;
+	bottom: 5%;
+}
+#final{
+	border: 2px solid #339966;
+/*	margin: 5%;
+	margin-right: 15%; */
+	position: fixed;
+	top: 2%;
+	right: 20%;
+	text-align: center;
+}
+#instrs{
+	font-weight: bold;
+}
 #instr3{
 	color: #efffd2;
 }
 #instr4{
 	color: #efffd2;
+}
+#score{
+	position: fixed;
+	top: 15%;
+	right: 2%;
 }

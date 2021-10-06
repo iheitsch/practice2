@@ -1,8 +1,6 @@
 /**
- *  make it so user can enter final binary or hex number without intermediate steps fixit
  * make base2pow a globl variable faster than reading base and recalculation, isn't it? fixit
  *
- * no error messaging for hex count fixit
  */
 var x = 0;
 var nSbxs = 24;
@@ -165,12 +163,9 @@ function markGood( aBx, ins2, ins3, nBx ) {
 		aBx.style.color = "black";
 		aBx.style.borderColor = "WhiteSmoke";
 	}
-	var instr2Bx = doc.getElementById("instr2");
+
 	if( ins2 ) {
-		instr2Bx.style.color = "black";
-		instr2Bx.innerHTML = ins2;
-	} else {
-	    instr2Bx.style.color = invisible;
+		doc.getElementById("instr2").innerHTML = ins2;
 	}
 	var instr3Bx = doc.getElementById("instr3");
 	if( ins3 ) {
@@ -204,8 +199,41 @@ function checkBH( ev ) {
 	var ansBx = ev.target;
 	var num = Number;
     var doc = document;
-    if( ev.which === 13 || ev.keyCode === 13 ) {
-		var id = ansBx.id;
+    var id = ansBx.id;
+    
+    if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
+		ansBx.value = "";
+		var nchars = id.length - 1;
+		var bxNum = num(id.substr( 1,  nchars )) + 1;
+		var partStr = id.substr( 0, 1);
+		var bxId = partStr + bxNum;
+		var newBx = doc.getElementById(bxId);
+		newBx.value = "";
+		newBx.focus();
+		return;
+	} else {
+		ans = ansBx.value;
+		if( !isNaH(ans) ) {
+			ansBx.value = ans.toUpperCase();
+			var nchars = id.length - 1;
+			var bxNum = num(id.substr( 1,  nchars )) - 1;
+			var partStr = id.substr( 0, 1);
+			var bxId = partStr + bxNum;
+			//alert("nextBx: " + bxId);
+			var nextBx = doc.getElementById(bxId);
+			var instr2;
+			var instr3;
+			if( !nextBx ) {
+				nextBx = ansBx;
+			}
+			markGood( ansBx, instr2, instr3, nextBx );
+		} else {
+			markErr("Not a number", ansBx);
+			return;
+		}
+    }
+    var bitnum = num(id.substr(1, id.length-1));
+    if( bitnum === 0 ) {
 		var partStr = id.substr(0,1);
 		for( var i = 0; i < 2; ++i ) {
 			var dgtnum = 0;
@@ -286,36 +314,6 @@ function checkBH( ev ) {
 		    doc.getElementById("errs").value = errs + 1;
 			lastPrev.focus();
 		}
-	} else if( ev.which === 8 || ev.keyCode === 8 ) { // backspace
-		ansBx.value = "";
-		var id = ansBx.id;
-		var nchars = id.length - 1;
-		var bxNum = num(id.substr( 1,  nchars )) + 1;
-		var partStr = id.substr( 0, 1);
-		var bxId = partStr + bxNum;
-		var newBx = doc.getElementById(bxId);
-		newBx.value = "";
-		newBx.focus();
-	} else {
-		ans = ansBx.value;
-		if( !isNaH(ans) ) {
-			ansBx.value = ans.toUpperCase();
-			var id = ansBx.id;
-			var nchars = id.length - 1;
-			var bxNum = num(id.substr( 1,  nchars )) - 1;
-			var partStr = id.substr( 0, 1);
-			var bxId = partStr + bxNum;
-			//alert("nextBx: " + bxId);
-			var nextBx = doc.getElementById(bxId);
-			var instr2;
-			var instr3;
-			if( !nextBx ) {
-				nextBx = ansBx;
-			}
-			markGood( ansBx, instr2, instr3, nextBx );
-		} else {
-			markErr("Not a number", ansBx);
-		}
 	}
 }
 function checkp( ev ) {
@@ -354,7 +352,10 @@ function checkbit( ev ) {
 	var id = ansBx.id;
 	var nchars = id.length - 1;
 	var bitnum = Number(id.substr(1,nchars));
-	var expAns = doc.getElementById("d" + bitnum).innerHTML;
+	var conv = gConv;
+	var wutDgt = conv.length - bitnum - 1;
+	var expAns = conv.substr(wutDgt, 1);
+	//var expAns = doc.getElementById("d" + bitnum).innerHTML;
 	if( ans === expAns ) {
 		var instr2;
 		var instr3;
@@ -412,6 +413,7 @@ function checkTot( ev ) {
 		} else if( base === "2" ) {
 			expAns = bin2dec( hexStr );
 		}
+		expAns = num(doc.getElementById("strtPt").value);
 		if( nans === expAns ) {
 			markGood( ansBx, 'Click "Done"', null, null );
 		} else {
@@ -1193,7 +1195,7 @@ function checkBD( ev ) {
 			var dvdnd = readAllBxs("b1_" + expnt + "_", 0);
 			var base = Number(doc.getElementById("base").value);
 			var base2pow = Math.pow(base,expnt);
-			var instr2 = "What is " + dvdnd + " divided by " + base2pow;
+			var instr2 = "How many times does " + base2pow  + " go into " + dvdnd;
 			var instr3;
 			gdvdnd = dvdnd;
 			markGood( ansBx, instr2, instr3, nextBx );
@@ -1579,9 +1581,7 @@ function checkHCount( ev ) {
 			var prevStr = doc.getElementById("b" + prevBxNum).value;
 			var prevNum = hex2dec( prevStr );
 			var expAns = prevNum + 1;
-			var decAns = hex2dec( ans );
-			//doc.getElementById("statusBox" + x).innerHTML = "decAns: " + decAns + " expAns: " + expAns;
-			//x = (x + 1)%nSbxs;		
+			var decAns = hex2dec( ans );		
 			if( decAns === expAns ) {
 				bxNum = bxNum + 1;
 				nextBx = doc.getElementById("b" + bxNum);
@@ -1594,7 +1594,7 @@ function checkHCount( ev ) {
 				var prevVal = prevBx.value;
 				var pos = prevVal.length - 1;
 				var prevLSD = prevVal.substr(pos, 1);
-				var instr2 = "Least significant bit of previous number is " + prevLSD + ", so increment it";
+				var instr2 = "Least significant digit of previous number is " + prevLSD + ", so increment it";
 				var instr3;
 				if( !nextBx ) {
 					instr2 = 'Click "Done"';
@@ -1604,7 +1604,6 @@ function checkHCount( ev ) {
 						var nextDig = prevVal.substr( pos-1, 1 );
 						instr3 = "Next bit is " + nextDig + ", increment it.";
 						howManyFs = countConsec( prevBx.value, "f" );
-						//alert("howManyONes: " + howManyOnes);
 						if( howManyFs > 0 ) {
 							instr3 = "Next digit is f, set to 0 and increment the digit after that";
 							if( howManyFs > 1 ) {
@@ -1802,10 +1801,6 @@ window.onload = function(){
 	if( indcatr > 1 ) {
 		var base = num(doc.getElementById("base").value)
 		gConv = (num(doc.getElementById("strtPt").value)).toString(base).toUpperCase();
-		if( indcatr > 5 ) {
-			var invisible = "#efffd2";
-			doc.getElementById("instr2").style.color = invisible;
-		}
 	}
 	gindcatr = indcatr;
 	if( strtBx ) {

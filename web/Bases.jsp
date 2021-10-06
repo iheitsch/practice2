@@ -28,20 +28,20 @@
     boolean decToHexCk = false;
     String isDecToHex = "";
     
-    boolean hexToDecCk = false;
-    String isHexToDec = "";
+    boolean hexToDecCk = true;
+    String isHexToDec = "checked";
     
     boolean decToBinCk = false;
     String isDecToBin = "";
     
-    boolean binToDecCk = false;
-    String isBinToDec = "";
+    boolean binToDecCk = true;
+    String isBinToDec = "checked";
 
-    boolean hexToBinCk = true;
-    String isHexToBin = "checked";
+    boolean hexToBinCk = false;
+    String isHexToBin = "";
 
-    boolean binToHexCk = true;
-    String isBinToHex = "checked";
+    boolean binToHexCk = false;
+    String isBinToHex = "";
     
     // checks is null on first rendition of page, will contain
     // last settings after that so they can be carried forward
@@ -182,6 +182,7 @@
         	for( int i = 1; i < dice && strtPt > 256; ++i ) {
         		strtPt = strtPt/base;
         	}
+        	   	
         	String decStr = Integer.toString( strtPt );
         	stp = decStr.length();
         	for( int i = 0; i < stp; ++i ) {
@@ -189,9 +190,10 @@
         		int last = frst + 1;
         		digits[i]= decStr.substring( frst, last );
         	}
+        	
         	barwidth = stp + 1;
         	frstrow = strtPt > 4095? 3 : strtPt > 255? 2 : strtPt > 15? 1 : 0;
-        	startHere = "b0"; // make sure it's not a valid box. need to start by selecting fixit     	        	
+        	startHere = "b0";
         	int tmp = strtPt;
         	for( int i = EXPNT; i >= 0; i-- ) {
         		int  sixtn2pow = (int)Math.pow(16, i);
@@ -203,6 +205,7 @@
                 	//System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
         		}
         	}
+
         	instrs = "Convert " + strtPt + " base 10 to hexadecimal";
         	instr2 = "Select the highest power of 16 that goes into " +  strtPt;
         } else if( indcatr == 3 && hexToDecCk ) {
@@ -256,7 +259,7 @@
         	}
         	barwidth = stp + 1;
         	frstrow = strtPt > 15? 4 : strtPt > 7? 3 : strtPt > 3? 2 : strtPt > 1? 1 : 0;
-        	startHere = "b0"; // make sure it's not a valid box. need to start by selecting fixit     	        	
+        	startHere = "b0";
         	int tmp = strtPt;
         	for( int i = BEXPNT; i >= 0; i-- ) {
         		int  two2pow = (int)Math.pow(2, i);
@@ -277,7 +280,17 @@
         	frstrow = (int)(Math.log((double)strtPt)/Math.log(2));
         	startHere = "t0";    	        	
         	int tmp = strtPt;
-        	instrs = "Convert ";
+        	instrs = "Convert <span style=";
+        	int green = 1;
+        	int white = 0;
+        	int color = 1;
+        	if( (frstrow/4)%2 == 0 ) {
+        		instrs = instrs + "'background-color:#c6ecc6'>";
+        		color = green;
+        	} else {
+        		instrs = instrs + "'background-color:white'>";
+        		color = white;
+        	}
         	for( int i = frstrow; i >= 0; i-- ) {
         		int  two2pow = (int)Math.pow(2, i);
         		if( tmp >= two2pow ) {
@@ -289,10 +302,18 @@
         			digits[i] = "0";
         		}
         		instrs = instrs + digits[i];
+        		if( (i%4) == 0 ) {
+        			color = (color + 1)%2;			
+        			if( color == green ) {
+        				instrs = instrs + "</span><span style='background-color:#c6ecc6'>";
+        			} else {
+        				instrs = instrs + "</span><span style='background-color:white'>";
+        			}
+        		}
         	}
-        	instrs = instrs + " binary to base 10";
-        	instr2 = "Type the binary number horizonatally, starting with least"; 
-        	instr3 = "signiificant bit at the bottom"; 
+        	instrs = instrs + "</span> binary to base 10";
+        	instr2 = "Type the binary number horizontally, LSB at the bottom"; 
+        	instr3 = ""; 
         } else if( indcatr == 6 && hexToBinCk ) {
         	running = true;
         	base = 2;
@@ -306,9 +327,10 @@
         	}
         	frstcol = stp - 1;
         	instrs = "Convert the hexadecimal number 0x" + hexNum + " to binary";
+        	instr2 = "Each hexadecimal digit makes 4 binary bits";
         	int frstbit = stp*4 - 1;
         	startHere = "b" + frstbit;
-        	System.out.println("hex2bin strtPt: " + strtPt + " frstcol: " + frstcol + " startHere: " + startHere);
+        	//System.out.println("hex2bin strtPt: " + strtPt + " frstcol: " + frstcol + " startHere: " + startHere);
         } else if( indcatr == 7 && binToHexCk ) {
         	running = true;
         	base = 16;
@@ -329,9 +351,10 @@
         		instrs = instrs + digits[i];
         	}
         	instrs = instrs + " binary to Hexadecimal";
+        	instr2 = "Each 4 binary bits makes one hexadecimal digit";
         	int frstdig = (int)(Math.log((double)strtPt)/Math.log(16));
         	startHere = "h" + frstdig;
-        	System.out.println("bin2hex strtPt: " + strtPt + " frstcol: " + frstcol + " startHere: " + startHere);
+        	//System.out.println("bin2hex strtPt: " + strtPt + " frstcol: " + frstcol + " startHere: " + startHere);
         }
     }
     %>
@@ -1020,25 +1043,15 @@
 			visible = "not";
 		} %>
 		</table>
-<% 	} else if( indcatr == 5 && binToDecCk ) { 
-		 %>
+<% 	} else if( indcatr == 5 && binToDecCk ) { %>
 		<table>
-		<tr>
-<%		for( int i = frstrow; i >= 0; --i ) { 
-			String did = "d" + i;
-			String stripeclass = (i/4)%2 == 0? "oddstripe" : "evenstripe"; %>
-			<td id="<%=did%>" class="<%=stripeclass%>" ><%=digits[i]%></td>
-<%		} %>
-		<td>B</td>
-		</tr>
-		</table>
-		<table >
-<%		for( int i = frstrow; i >= 0; --i ) {
+<% 		for( int i = frstrow; i >= 0; --i ) {
 			int powOf2 = (int)Math.pow(2,i);		
 			String eid = "e" + i; 
 			String fid = "f" + i; 
 			String tid = "t" + i; 
 			String stripeclass = (i/4)%2 == 0? "oddstripe" : "evenstripe"; %>
+
 		<tr >
 		<td><input id="<%=tid%>" class="a1 <%=stripeclass%>" type="text" 
 		onkeyup="checkbit( event )" onkeydown="erase( event )" ></td>
@@ -1128,17 +1141,29 @@
 		</table>
 <%	} %>
 </div>
+<table id="bottomleft">
+<tr>
+<td>
 <div>
-        <span><button type="button" onclick="skip()" id="skpBx">Skip</button>
-        
-        <button type="button" onclick="check()" id="chkBx">Done</button></span>
-</div>
-<div>
-	    <a href="/" class="ndx">Home</a>
+	    <a href="/" class="ndx">Home</a>         
 </div>
 <div>
 	    <a href="index.html" class="ndx">Back to Practice Index</a>
 </div>
+</td>
+<td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
+<td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
+<td>
+<td>
+	    <button type="button" onclick="skip()" id="skpBx">Skip</button> 
+</td>
+<td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
+<td>    
+        <button type="button" onclick="check()" id="chkBx">Done</button>
+ </td>
+ </td>
+</tr>
+</table>
 </span>
 <span class=rightsd>
 <div>
@@ -1160,8 +1185,8 @@
 		heading = "Binary";
 		suf = "B";
 	} %>
-<table class="final" >
-<tr><th colspan=<%=ncols%> class="final" ><%=heading%></th></tr>
+<table id="final" >
+<tr><th colspan=<%=ncols%> ><%=heading%></th></tr>
 <tr>
 <td><%=pref%></td>
 <%	for( int i = frstrow; i >= 0; --i ) { 
@@ -1203,7 +1228,7 @@
         strtTime = tmp.toString();
     } 
 %>
-<div class="d5">
+<div id="score">
 <table >
 <tr>
     <th class="title">Score</th>     
