@@ -1,5 +1,6 @@
 @charset "UTF-8";
 body {
+	overflow-y: scroll;
     background-color: #efffd2;
     font-family: Lucida Console,Monaco, Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
@@ -54,6 +55,7 @@ th{
 	border-collapse: separate;
 	border: 1px solid #339966;
 }
+
 .digits{
 	border-collapse: collapse;
 	padding: none;
@@ -172,12 +174,13 @@ th{
 	left: 2%;
 	bottom: 5%;
 }
+
 #final{
 	border: 2px solid #339966;
 /*	margin: 5%;
 	margin-right: 15%; */
 	position: fixed;
-	top: 2%;
+	top: .4em;
 	right: 20%;
 	text-align: center;
 }
@@ -192,6 +195,13 @@ th{
 }
 #score{
 	position: fixed;
-	top: 15%;
+	top: 5em;
 	right: 2%;
+}
+#xrcise{
+	position: fixed;
+	left: 2%;
+	top: 6em;
+	bottom: 4em;
+	overflow-y: scroll;
 }

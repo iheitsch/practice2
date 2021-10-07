@@ -363,7 +363,7 @@
 <div id="instr2" class="d4"><%=instr2%></div>
 <div id="instr3" class="d4"><%=instr3%></div>
 <div id="instr4" class="d4"><%=instr4%></div>
-<div class="d1">
+<div id="xrcise">
 
 <%	if( indcatr == 0 && countBCk ) { %>
 <table class="probset">
