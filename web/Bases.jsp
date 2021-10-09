@@ -27,11 +27,11 @@
     boolean countHCk = false;
     String isCountH = "";
     
-    boolean decToHexCk = true;
-    String isDecToHex = "checked";
+    boolean decToHexCk = false;
+    String isDecToHex = "";
     
-    boolean hexToDecCk = false;
-    String isHexToDec = "";
+    boolean hexToDecCk = true;
+    String isHexToDec = "checked";
     
     boolean decToBinCk = false;
     String isDecToBin = "";
@@ -558,15 +558,15 @@
 		} %>
 		</table>
 <%	} else if( indcatr == 3 && hexToDecCk ) {
-		String sixtnraised = "16^"+EXPNT;
+		String sixtnraised = "16<sup>" + EXPNT + "</sup>";
 		int powof16 = (int)Math.pow(16, EXPNT); %>
 <table class="conversion" >
 <tr>
 		<th colspan=2 class="evenstripe">Power of 16</th>
 <% 		for( int i = 0; i <= EXPNT; ++i ) { %>
-			<th colspan=2 class="evenstripe" ><%=sixtnraised%></th>
+			<th colspan=2 class="evenstripe oprand" ><%=sixtnraised%></th>
 <% 			int pow = EXPNT - 1 - i;
-			sixtnraised = "16^" + pow;
+			sixtnraised = "16<sup>" + pow + "</sup>";
 			//System.out.println("i: " + i + " next sixtnraised: " + sixtnraised);
 		} %>
 </tr>
@@ -578,7 +578,7 @@
 			<th colspan=2 class="oddstripe" ></th>
 <% 			} else {
 			String did = "d" + dignum; %>
-			<th colspan=2 id=<%=did%> class="oddstripe" ><%=digits[dignum]%></th>
+			<th colspan=2 id=<%=did%> class="oddstripe oprand" ><%=digits[dignum]%></th>
 <%			} 
 		} %>
 </tr>
@@ -587,10 +587,11 @@
 		<th colspan=2 class="evenstripe" >Power of 16</th>
 <% 		for( int i = EXPNT; i >= 0; --i ) { 
 			String sid = "exp" + i; %>
-			<th colspan=2 class="evenstripe" >
+			<td></td>
+			<td class="evenstripe" >
 			<input type="text" id=<%=sid%> class="ebox evenstripe" name="<%=sid%>"
 					onkeyup="checkPow( event )" onkeydown="erase( event )" 
-					value=<%=powers[i]%>></th>
+					value=<%=powers[i]%>></td>
 <% 			powof16 /= 16;
 			//System.out.println("i: " + i + " next powof16: " + powof16);
 		} %>

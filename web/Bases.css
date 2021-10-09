@@ -18,6 +18,7 @@ table{
 }
 th{
 	text-align: center;
+	padding: 0;
 }
 .a1 {
   width: 1em;
@@ -76,7 +77,8 @@ th{
 	border: none;
 	height: 1.5em;
 	font: inherit;
-	letter-spacing: 0.6em;
+	letter-spacing: 0.5em;
+	margin: none;
 }
 .entry{
 	background-color:  #339966;
@@ -121,7 +123,10 @@ th{
 }
 .oddstripe{
 	background-color:  #c6ecc6;
-	/* background-color: #a4ec42; */
+}
+.oprand{
+	text-align: right;
+	padding-right: 0.6em;
 }
 .probset{
 	border-collapse: collapse;
