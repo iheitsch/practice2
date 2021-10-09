@@ -1,6 +1,8 @@
 /**
  *
  * needs tutorials on powers and number bases
+ * 
+ * page as a whole doesn't scroll fixit fixed convert fractions by making it one big table
  *
  */
 var x = 0;
@@ -938,16 +940,24 @@ function checkHD( ev ) {
 					partStr = "b0_" + expnt + "_";
 					expnt = expnt - 1;
 				}
-			    var e = doc.getElementById(partStr + 0); 
-			    var top = 0;
-			    while( e.id !== "xrcise" ){  
-					top += e.offsetTop; 
-					//alert("checkHD top: " + top + " e: " + e.id);
-			        e = e.offsetParent; 
-			    }  
-			    top += e.offsetTop;
-			    //alert("checkHD top: " + top + " e: " + e.id);
-				doc.getElementById("xrcise").scrollTo(0, top);
+			    var e = doc.getElementById(partStr + 0);
+			    findoffset:
+			    if( e ) {
+				    var xrcise = doc.getElementById("xrcise");
+				    var top = 0;
+				    //var styles = "color: red; border-color: orange; background-color: fushia";
+				    while( e.tagName !== "TD" ) {  
+						top += e.offsetTop; 
+						//alert("checkHD top: " + top + " e: " + e.id + " tagName: " + e.tagName);
+				        e = e.offsetParent;
+				        if( !e ) {
+				        	break findoffset;
+				        }
+				    }  
+				    top += e.offsetTop;
+				    //alert("checkHD top: " + top + " e: " + e.id + " tagName: " + e.tagName);
+					xrcise.scrollTo(0, top);
+				}
 				nextDig = highlightBxs(partStr, 0);
 				nextBx = doc.getElementById("h" + expnt);
 				instr2 = "What is the hex equivalent of base 10 number " + nextDig + "?";
@@ -992,17 +1002,11 @@ function checkDvdnd( ev ) {
 			if( !nextBx ) {
 				nextBx = doc.getElementById("q" + expnt + "_0");
 			}
-			var styles = "height: 0.3em";
+			var styles = "height: 0.2em";
 			var oldBxs = doc.getElementsByClassName("t" + prevexpnt);
 			var len = oldBxs.length;
 			for( var i = 0; i < len; ++i ) {
-				oldBxs[i].setAttribute("style", styles);
-			}
-			styles = "border: none; background-color: #339966;";
-			var oldBars = doc.getElementsByName("v" + prevexpnt);
-			len = oldBars.length;
-			for( var i = 0; i < len; ++i ) {
-				oldBars[i].setAttribute("style", styles);
+				oldBxs[i].setAttribute("style", styles);		
 			}
 			gdvsr = base2pow;	
 			markGood( ansBx, instr2, instr3, nextBx );
@@ -1189,16 +1193,16 @@ function checkDsub( ev ) {
 				nextBx = doc.getElementById(bxId);
 				if( nextExpnt !== 0 ) {
 					var allNextBxs = doc.getElementsByName("b" + nextExpnt);
-					var len = allNextBxs.length;
+					var len = allNextBxs.length;		
 					for( var i = 0; i < len; ++i ) {
 						allNextBxs[i].type = "text";
 					}
-					var allBars = doc.getElementsByName("v" + nextExpnt);
+					var allBars = doc.getElementsByClassName("v" + nextExpnt);
 					len = allBars.length;
-					var styles = "border: 1px solid #339966;";
-					styles = styles + "background-color: #339966;";
+					var tdstyle = "border-bottom: 2px solid #339966";
+					//styles = styles + "background-color: #339966;";
 					for( var i = 0; i < len; ++i ) {
-						allBars[i].setAttribute("style", styles);
+						allBars[i].setAttribute("style", tdstyle);
 					}
 					doc.getElementById("s" + nextExpnt).innerHTML = ")";
 				}
@@ -1229,12 +1233,12 @@ function checkDsub( ev ) {
 						oldBxs[i].setAttribute("style", styles);
 					}
 				}
-				styles = "border: none; background-color: #339966;";
+				/* styles = "border: none; background-color: #339966;";
 				var oldBars = doc.getElementsByName("v" + expnt);
 				len = oldBars.length;
 				for( var i = 0; i < len; ++i ) {
 					oldBars[i].setAttribute("style", styles);
-				}
+				} */
 			}
 			var instr3;		
 			markGood( ansBx, instr2, instr3, nextBx )
@@ -1413,13 +1417,13 @@ function checkPow( ev ) {
 			var mat = Math;
 			var id = ansBx.id;
 			var len = id.length;
-			var nchars = len - 1;
-			var whatdgt = num(id.substr(1,nchars));
+			var nchars = len - 3;
+			var whatdgt = num(id.substr(3,nchars));
 			var expAns= mat.pow(16,whatdgt);
 			var nans = num(ans);
 			if( nans === expAns ) {
 				whatdgt = whatdgt + 1;
-				var nextBx = doc.getElementById("s" + whatdgt);
+				var nextBx = doc.getElementById("exp" + whatdgt);
 				var instr2;
 				var instr3;
 				if( nextBx ) {

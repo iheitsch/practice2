@@ -10,7 +10,9 @@
 </head>
 <body>
 <form id="bases">
-<% 
+<%  // remove bars, use border-bottom and border-top fixit
+	// request.getParameter("exp0") is not returning numm when 
+	// hexToDec page is displayed and someone deselects another checkbox fixit
 	int MAX_COUNT = 32;
 	int MAX_HEX = 16777184;
 	int HEX4CONV = 65536;
@@ -25,17 +27,17 @@
     boolean countHCk = false;
     String isCountH = "";
     
-    boolean decToHexCk = false;
-    String isDecToHex = "";
+    boolean decToHexCk = true;
+    String isDecToHex = "checked";
     
-    boolean hexToDecCk = true;
-    String isHexToDec = "checked";
+    boolean hexToDecCk = false;
+    String isHexToDec = "";
     
     boolean decToBinCk = false;
     String isDecToBin = "";
     
-    boolean binToDecCk = true;
-    String isBinToDec = "checked";
+    boolean binToDecCk = false;
+    String isBinToDec = "";
 
     boolean hexToBinCk = false;
     String isHexToBin = "";
@@ -224,25 +226,25 @@
             String tmp = "";    // temporary storage for newly gotten 
                                 // request parameter      
 
-            //retrieves the value of the DOM object with name="s0"
-            if(( tmp = request.getParameter("s0")) != null) {
+            //retrieves the value of the DOM object with name="exp0"
+            if(( tmp = request.getParameter("exp0")) != null) {
                 powers[0] = tmp.toString();
                 instr2 = "What is the decimal equivalent of least significant hex digit " + digits[0] + "? (Enter)";
         		startHere = "q0_0";
             } else {
             	instr2 = "What is any number raised to the 0 power? (Enter)";
-	        	startHere = "s0";
+	        	startHere = "exp0";
             }
             
-            if(( tmp = request.getParameter("s1")) != null) {
+            if(( tmp = request.getParameter("exp1")) != null) {
                 powers[1] = tmp.toString();
             } 
             
-            if(( tmp = request.getParameter("s2")) != null) {
+            if(( tmp = request.getParameter("exp2")) != null) {
                 powers[2] = tmp.toString();
             } 
             
-            if(( tmp = request.getParameter("s3")) != null) {
+            if(( tmp = request.getParameter("exp3")) != null) {
                 powers[3] = tmp.toString();
             } 
 
@@ -441,8 +443,9 @@
 		String rparen = ")"; 
 		String isDisabled = "disabled = 'true'"; 
 		String visible = "bar";
+		String vsbl = "ubar";
 		 %>
-		<table>
+		<table class="longdiv" >
 <%		for( int i = frstrow; i > 0; --i ) {
 			String pid = "p" + i;
 			String sid = "s" + i;
@@ -452,22 +455,18 @@
 			String tway = "t" + i;
 		%>
 		<tr>
-			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td class="<%=vsbl%> <%=vbar%>"></td>
 <%			//System.out.println("stp: " + stp + " numQ: " + numQ[i]);
 			for( int k = 0; k < stp - numQ[i]; ++k ) { %>
-				<td></td>
+				<td class="<%=vsbl%> <%=vbar%>"></td>
 <%			} 
 			for( int k = numQ[i] - 1; k>= 0; --k ) { 
 				String qid = "q" + i + "_" + k; %>
-			<td>
+			<td class="<%=vsbl%> <%=vbar%>">
 			<input id="<%=qid%>" class="a1 q" type="<%=itype%>" name="<%=rname%>"
 			onkeyup="checkQ( event )" onkeydown="erase( event )">
 			</td>
 <%			} %>
-		</tr>
-		<tr>
-			<td></td><td></td><td></td><td></td>
-			<th colspan=<%=barwidth%> class="<%=visible%>" name="<%=vbar%>" ></th>
 		</tr>
 		<tr>
 <%			if( i == frstrow ) { %>
@@ -506,26 +505,22 @@
 		</tr>
 <%			for( int k = numQ[i] - 1; k>= 0; --k ) { %>
 		<tr>
-			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td class="<%=vsbl%> <%=vbar%>"></td>
 	<%			for( int j = j = stp-1; j >= k; --j ) { 
 					int l = j - k;
 					String mid = "m" + k + "_" +  i + "_" + l; 
 					if( j == 0 ) { %>
-			<td>
+			<td class="<%=vsbl%> <%=vbar%>">
 				<input id="<%=mid%>" class="a1 <%=tway%>"  type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkDmult( event )" onkeydown="eraseAll( event )" >
 			</td>
 <%					} else { %>
-			<td>
+			<td class="<%=vsbl%> <%=vbar%>">
 				<input id="<%=mid%>" class="a1 <%=tway%>" type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 			</td>
 <%					}
 				} %>
-		</tr>
-		<tr>
-			<td></td><td></td><td></td><td></td><td></td>
-			<th colspan=<%=stp%> class="<%=visible%>" name="<%=vbar%>" ></th>
 		</tr>
 		<tr>
 			<td></td><td></td><td></td><td></td><td></td>
@@ -559,6 +554,7 @@
 				digits[j] = "";
 			}
 			visible = "not";
+			vsbl = "nobar";
 		} %>
 		</table>
 <%	} else if( indcatr == 3 && hexToDecCk ) {
@@ -590,7 +586,7 @@
 <tr>
 		<th colspan=2 class="evenstripe" >Power of 16</th>
 <% 		for( int i = EXPNT; i >= 0; --i ) { 
-			String sid = "s" + i; %>
+			String sid = "exp" + i; %>
 			<th colspan=2 class="evenstripe" >
 			<input type="text" id=<%=sid%> class="ebox evenstripe" name="<%=sid%>"
 					onkeyup="checkPow( event )" onkeydown="erase( event )" 
@@ -944,8 +940,9 @@
 		String rparen = ")"; 
 		String isDisabled = "disabled = 'true'"; 
 		String visible = "bar";
+		String vsbl = "ubar";
 		 %>
-		<table>
+		<table class="longdiv" >
 <%		for( int i = frstrow; i > 0; --i ) {
 			String pid = "p" + i;
 			String sid = "s" + i;
@@ -955,22 +952,18 @@
 			String tway = "t" + i;
 		%>
 		<tr>
-			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td class="<%=vsbl%> <%=vbar%>"></td>
 <%			//System.out.println("stp: " + stp + " numQ: " + numQ[i]);
 			for( int k = 0; k < stp - numQ[i]; ++k ) { %>
-				<td></td>
+				<td class="<%=vsbl%> <%=vbar%>" ></td>
 <%			} 
 			for( int k = numQ[i] - 1; k>= 0; --k ) { 
 				String qid = "q" + i + "_" + k; %>
-			<td>
+			<td class="<%=vsbl%> <%=vbar%>" >
 			<input id="<%=qid%>" class="a1 q" type="<%=itype%>" name="<%=rname%>"
 			onkeyup="checkQ( event )" onkeydown="erase( event )">
 			</td>
 <%			} %>
-		</tr>
-		<tr>
-			<td></td><td></td><td></td><td></td>
-			<th colspan=<%=barwidth%> class="<%=visible%>" name="<%=vbar%>" ></th>
 		</tr>
 		<tr>
 <%			if( i == frstrow ) { %>
@@ -1002,19 +995,15 @@
 		</tr>
 <%			for( int k = numQ[i] - 1; k>= 0; --k ) { %>
 		<tr>
-			<td></td><td></td><td></td><td></td><td></td>
+			<td></td><td></td><td></td><td></td><td class="<%=vsbl%> <%=vbar%> " ></td>
 	<%			for( int j = j = stp-1; j >= k; --j ) { 
 					int l = j - k;
 					String mid = "m" + k + "_" +  i + "_" + l; %>
-			<td>
+			<td class="<%=vsbl%>  <%=vbar%> " >
 				<input id="<%=mid%>" class="a1 <%=tway%>" type="<%=itype%>" name="<%=rname%>" 
 				onkeyup="checkDmult( event )" onkeydown="erase( event )" >
 			</td>
 <%				} %>
-		</tr>
-		<tr>
-			<td></td><td></td><td></td><td></td><td></td>
-			<th colspan=<%=stp%> class="<%=visible%>" name="<%=vbar%>" ></th>
 		</tr>
 		<tr>
 			<td></td><td></td><td></td><td></td><td></td>
@@ -1041,6 +1030,7 @@
 				digits[j] = "";
 			}
 			visible = "not";
+			vsbl = "nobar";
 		} %>
 		</table>
 <% 	} else if( indcatr == 5 && binToDecCk ) { %>
@@ -1231,7 +1221,7 @@
 <div id="score">
 <table >
 <tr>
-    <th class="title">Score</th>     
+    <th class="title" colspan="2">Score</th>     
 </tr>
 <tr>    
     <td><label>Problems Attempted</label></td>

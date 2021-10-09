@@ -1,6 +1,5 @@
 @charset "UTF-8";
 body {
-	overflow-y: scroll;
     background-color: #efffd2;
     font-family: Lucida Console,Monaco, Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
@@ -18,8 +17,7 @@ input:focus { background-color: white; caret-color: red; }
 table{		
 }
 th{
-	border: 1px solid #339966;
-	text-align: right;
+	text-align: center;
 }
 .a1 {
   width: 1em;
@@ -95,6 +93,9 @@ th{
 .leftsd{
 	float: left;
 }
+.longdiv{
+	border-collapse: collapse;
+}
 .mgn{
 	background-color: #efffd2;
 	color: #339966;
@@ -110,6 +111,9 @@ th{
 	width: 8em;
 	height: 30px;
 	font: inherit;	
+}
+.nobar{
+	border-bottom: 1px solid #efffd2;
 }
 .not{
 	border: 1px solid #efffd2;
@@ -156,19 +160,26 @@ th{
     font-weight: bold;
     font-family: Arial;
 }
+.title{
+		border: 2px solid #339966;
+}
+.ubar{
+	border-bottom: 2px solid #339966;
+}
+/*
 .verticalTableHeader {
     text-align:center;
     white-space:nowrap;
     transform-origin:50% 50%;
     transform: rotate(90deg);
 
-}
-.verticalTableHeader:before {
+} */
+/* .verticalTableHeader:before {
     content:'';
-    padding-top:110%;/* takes width as reference, + 10% for faking some extra padding */
+    padding-top:110%;
     display:inline-block;
     vertical-align:middle;
-}
+} */
 #bottomleft{
 	position: fixed;
 	left: 2%;
