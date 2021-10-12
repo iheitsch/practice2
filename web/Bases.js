@@ -519,7 +519,7 @@ function checkCp( ev ) {
 							var ndx = j; // dbfxt (i + j + 3)%4;
 							if( !accounted4[ndx] ) {
 								allAccounted4 = false;
-								instr2 = "Copy product under the 16^" + ndx + " column";
+								instr2 = "Copy product under the 16<sup>" + ndx + "</sup> column";
 								break;
 							}
 						}
@@ -564,7 +564,7 @@ function checkCp( ev ) {
 							var ndx = j; // dbfxt (i + j + 3)%4;
 							if( !accounted4[ndx] ) {
 								allAccounted4 = false;
-								instr2 = "Copy product under the 16^" + ndx + " column";
+								instr2 = "Copy product under the 16<sup>" + ndx + "</sup> column";
 								break;
 							}
 						}
@@ -677,7 +677,7 @@ function checkAdd( ev ) {
 				} else {
 					nextBx = doc.getElementById("a3_0_0");
 					whatcol = bxNum - 1;
-					instr2 = "Copy product under the 16^" + whatcol + " column";
+					instr2 = "Copy product under the 16<sup>" + whatcol + "</sup> column";
 					accounted4[nxNum-1] = true;
 				}
 			}
@@ -818,7 +818,7 @@ function checkDmult( ev ) {
 								}
 								accounted4[highestlongmult] = true;
 								var	whatcol = highestlongmult === expnt? expnt - 1 : expnt;
-								instr2 = "Copy product under the 16^" + whatcol + " column";
+								instr2 = "Copy product under the 16<sup>" + whatcol + "</sup> column";
 							}
 						}
 					}

@@ -10,8 +10,8 @@
 </head>
 <body>
 <form id="bases">
-<%  // remove bars, use border-bottom and border-top fixit
-	// request.getParameter("exp0") is not returning numm when 
+<%  
+	// request.getParameter("exp0") is not returning null when 
 	// hexToDec page is displayed and someone deselects another checkbox fixit
 	int MAX_COUNT = 32;
 	int MAX_HEX = 16777184;
@@ -122,6 +122,10 @@
     int frstrow = BEXPNT;
     int frstcol = EXPNT;
     int base = 16;
+    String lnk2 = "<a href='/Tutorials/NumberBases.jsp#binary' class='ndx'> binary </a>";
+    String lnk10 = "<a href='/Tutorials/NumberBases.jsp#decimal' class='ndx'> base 10 </a>";
+	String lnk16 = "<a href='/Tutorials/NumberBases.jsp#hex' class='ndx'> hexadecimal </a>";
+	String lnkpow = "<a href='/Tutorials/Powers.jsp' class='ndx'> power </a>";
     
     genNumbers:
     while( !running ) {
@@ -148,8 +152,8 @@
         			strtCol = 3;
         		}
         	}
-        	startHere = null;
-        	instrs = "Fill in the blank numbers in this binary count";
+        	startHere = null;       	
+        	instrs = "Fill in the blank numbers in this " + lnk2 + " count";
         	instr2 = "What's next?";
         } else if( indcatr == 1 && countHCk ) {
         	running = true;
@@ -174,7 +178,7 @@
         		}
         	}
         	startHere = null;
-        	instrs = "Fill in the blank numbers in this hexadecimal count";
+        	instrs = "Fill in the blank numbers in this " + lnk16 + " count";
         	instr2 = "What's next?";
         } else if( indcatr == 2 && decToHexCk ) {
         	running = true;
@@ -207,9 +211,9 @@
                 	//System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
         		}
         	}
-
-        	instrs = "Convert " + strtPt + " base 10 to hexadecimal";
-        	instr2 = "Select the highest power of 16 that goes into " +  strtPt;
+        	
+        	instrs = "Convert " + strtPt + lnk10 + " to " + lnk16;
+        	instr2 = "Select the highest " + lnkpow + " of 16 that goes into " +  strtPt;
         } else if( indcatr == 3 && hexToDecCk ) {
         	running = true;
         	base = 16;
@@ -221,7 +225,7 @@
         		int last = frst + 1;
         		digits[i]= hexNum.substring( frst, last );
         	}
-        	instrs = "Convert the hexadecimal number 0x" + hexNum + " to base 10";
+        	instrs = "Convert the " + lnk16 + " number 0x" + hexNum + " to " + lnk10;
 
             String tmp = "";    // temporary storage for newly gotten 
                                 // request parameter      
@@ -232,7 +236,7 @@
                 instr2 = "What is the decimal equivalent of least significant hex digit " + digits[0] + "? (Enter)";
         		startHere = "q0_0";
             } else {
-            	instr2 = "What is any number raised to the 0 power? (Enter)";
+            	instr2 = "What is any number raised to the 0 <a href='/Tutorials/Powers.jsp' class='ndx'> power </a>? (Enter)";
 	        	startHere = "exp0";
             }
             
@@ -273,8 +277,8 @@
                 	//System.out.println("strtPt: "  + strtPt + " sixtn2pow: " + sixtn2pow + " numQ[" + i + "]: "  + numQ[i] + " part: " + part + " tmp: " + tmp);
         		}
         	}
-        	instrs = "Convert " + strtPt + " base 10 to binary";
-        	instr2 = "Select the highest power of 2 that goes into " +  strtPt;
+        	instrs = "Convert " + strtPt + lnk10 + " to " + lnk2;
+        	instr2 = "Select the highest " + lnkpow + " of 2 that goes into " +  strtPt;
         } else if( indcatr == 5 && binToDecCk ) {
         	running = true;
         	base = 2;
@@ -313,7 +317,7 @@
         			}
         		}
         	}
-        	instrs = instrs + "</span> binary to base 10";
+        	instrs = instrs + "</span> " + lnk2 + " to " + lnk10;
         	instr2 = "Type the binary number horizontally, LSB at the bottom"; 
         	instr3 = ""; 
         } else if( indcatr == 6 && hexToBinCk ) {
@@ -328,7 +332,7 @@
         		digits[i]= hexNum.substring( frst, last );
         	}
         	frstcol = stp - 1;
-        	instrs = "Convert the hexadecimal number 0x" + hexNum + " to binary";
+        	instrs = "Convert the " + lnk16 + " number 0x" + hexNum + " to " + lnk2;
         	instr2 = "Each hexadecimal digit makes 4 binary bits";
         	int frstbit = stp*4 - 1;
         	startHere = "b" + frstbit;
@@ -352,7 +356,7 @@
         		}
         		instrs = instrs + digits[i];
         	}
-        	instrs = instrs + " binary to Hexadecimal";
+        	instrs = instrs + lnk2 + " to " + lnk16;
         	instr2 = "Each 4 binary bits makes one hexadecimal digit";
         	int frstdig = (int)(Math.log((double)strtPt)/Math.log(16));
         	startHere = "h" + frstdig;
