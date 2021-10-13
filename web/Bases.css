@@ -1,5 +1,9 @@
 @charset "UTF-8";
 body {
+/*	width: 800px;
+	height: 600px;
+	overflow: scroll; 
+	score and others are fixed; won't make a differrence */
     background-color: #efffd2;
     font-family: Lucida Console,Monaco, Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
@@ -187,8 +191,8 @@ th{
 } */
 #bottomleft{
 	position: fixed;
-	left: 2%;
-	bottom: 5%;
+	left: 2px;
+	bottom: 5px;
 }
 
 #final{
@@ -197,7 +201,7 @@ th{
 	margin-right: 15%; */
 	position: fixed;
 	top: .4em;
-	right: 20%;
+	right: 20px;
 	text-align: center;
 }
 #instrs{
@@ -212,11 +216,11 @@ th{
 #score{
 	position: fixed;
 	top: 5em;
-	right: 2%;
+	right: 2px;
 }
 #xrcise{
 	position: fixed;
-	left: 2%;
+	left: 2px;
 	top: 6em;
 	bottom: 4em;
 	overflow-y: scroll;

@@ -852,7 +852,7 @@ function checkDmult( ev ) {
 				dvdnd = readAllBxs( partStr, dgtnum );
 				nextrow = row - 1;
 				nextBx = doc.getElementById("b" + row + "_" + expnt + "_" + row);
-				instr2 = "What is " + dvdnd + " minus " + expAns + "? type backwards (Enter)";
+				instr2 = "What is " + dvdnd + " minus " + expAns + "? (type backwards & Enter)";
 			}
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
@@ -1182,7 +1182,7 @@ function checkDsub( ev ) {
 			var instr2 = "Bring down next digit";
 			var nextBx = doc.getElementById("b1_" + expnt + "_0");	
 			if( prevrow !== 2 ) {
-				instr2 = "Copy remainder under the next division sign";
+				instr2 = "Copy remainder under the next division sign (type backwards & Enter)";
 				var maxQs = 1;
 				var nextExpnt = expnt - 1;
 				if( !doc.getElementById("q" + nextExpnt + "_" + maxQs )){
@@ -1311,7 +1311,7 @@ function checkQ( ev ) {
 		var expAns = Math.floor(dvdnd/dvsr);
 		if( Number(ans) === expAns ) {
 			var nextBx = document.getElementById("m" + whatDig + "_" + expnt + "_0");
-			var instr2 = "What is " + ans + " times " + dvsr + "? type backwards (Enter)";
+			var instr2 = "What is " + ans + " times " + dvsr + "? (type backwards & Enter)";
 			var instr3;
 			markGood( ansBx, instr2, instr3, nextBx );
 		} else {
