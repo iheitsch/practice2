@@ -99,7 +99,6 @@
 
     String [] powers = { "", "", "", "" };
     
-    
     int strtPt = 0;
     String hexNum = "XXXX";
     int maxrow = 8;
@@ -226,31 +225,19 @@
         		digits[i]= hexNum.substring( frst, last );
         	}
         	instrs = "Convert the " + lnk16 + " number 0x" + hexNum + " to " + lnk10;
+			
+        	instr2 = "What is any number raised to the 0 <a href='/Tutorials/Powers.jsp' class='ndx'> power </a>? (Enter)";
+        	startHere = "exp0";
 
-            String tmp = "";    // temporary storage for newly gotten 
-                                // request parameter      
-
-            //retrieves the value of the DOM object with name="exp0"
-            if(( tmp = request.getParameter("exp0")) != null) {
-                powers[0] = tmp.toString();
+            String[] tmp = request.getParameterValues("exp");
+            if( tmp != null && tmp[0] != "" ) {
+                len = tmp.length;
                 instr2 = "What is the decimal equivalent of least significant hex digit " + digits[0] + "? (Enter)";
-        		startHere = "q0_0";
-            } else {
-            	instr2 = "What is any number raised to the 0 <a href='/Tutorials/Powers.jsp' class='ndx'> power </a>? (Enter)";
-	        	startHere = "exp0";
+        		startHere = "q0_0";	
+	            for( int i = len-1; i >= 0; --i ) {
+	                powers[i] = tmp[len-1-i];
+	            }
             }
-            
-            if(( tmp = request.getParameter("exp1")) != null) {
-                powers[1] = tmp.toString();
-            } 
-            
-            if(( tmp = request.getParameter("exp2")) != null) {
-                powers[2] = tmp.toString();
-            } 
-            
-            if(( tmp = request.getParameter("exp3")) != null) {
-                powers[3] = tmp.toString();
-            } 
 
         } else if( indcatr == 4 && decToBinCk ) {
         	running = true;
@@ -593,7 +580,7 @@
 			String sid = "exp" + i; %>
 			<td></td>
 			<td class="evenstripe" >
-			<input type="text" id=<%=sid%> class="ebox evenstripe" name="<%=sid%>"
+			<input type="text" id=<%=sid%> class="ebox evenstripe" name="exp"
 					onkeyup="checkPow( event )" onkeydown="erase( event )" 
 					value=<%=powers[i]%>></td>
 <% 			powof16 /= 16;
