@@ -27,14 +27,14 @@
     boolean countHCk = false;
     String isCountH = "";
     
-    boolean decToHexCk = false;
-    String isDecToHex = "";
+    boolean decToHexCk = true;
+    String isDecToHex = "checked";
     
-    boolean hexToDecCk = true;
-    String isHexToDec = "checked";
+    boolean hexToDecCk = false;
+    String isHexToDec = "";
     
-    boolean decToBinCk = false;
-    String isDecToBin = "";
+    boolean decToBinCk = true;
+    String isDecToBin = "checked";
     
     boolean binToDecCk = false;
     String isBinToDec = "";

@@ -17,7 +17,7 @@ input {
 	border: 1px solid WhiteSmoke;
 	font-family: Lucida Console,Monaco,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono, monospace;
 }
-input:focus { background-color: white; caret-color: red; }
+input:focus { background-color: white; caret-color: red; border-color: black;}
 table{		
 }
 th{

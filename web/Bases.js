@@ -16,95 +16,92 @@ var accounted4 = [ false, false, false, false ];
 
 function check() {
 	var indcatr = gindcatr;
-    if( indcatr < 2 ) {
-        checkFilled();
+	if( indcatr < 1 ) {
+        checkCount( 2 );
+    } else if( indcatr < 2 ) {
+        checkCount( 16 );
     } else if( indcatr < 3 ) {
-        checkD2H();
+        checkD2( 16, "h" );
     } else if( indcatr < 4 ) {
-        checkH2D();
+        check2D( "a6_0_" );
     }  else if( indcatr < 5 ) {
-        checkD2B();
+        checkD2( 2, "h" );
     } else if( indcatr < 6 ) {
-        checkB2D();
+        check2D( "b_" );
 	} else if( indcatr < 7 ) {
-        checkH2B();
+        checkD2( 2, "b" );
 	} else if( indcatr < 8 ) {
-        checkB2H();
+        checkD2( 16, "h" );
     }
     return false;
 }
-function checkB2H() {
+function check2D( partstr ) {
 	var doc = document;
-	
-	allgood = true;
-	// need to check if user skipped something fixit
+	var ans = readAllBxs(partstr, 0);
+	var expAns = doc.getElementById("strtPt").value;
+	allgood = ans === expAns;
 	if( allgood ) {
 		startAgain();
+	} else {
+		redBxs(partstr, 0);
+		document.getElementById("instr2").innerHTML = 'Correct and click "Done"';
+		var errs = Number(doc.getElementById("errs").value);
+    	doc.getElementById("errs").value = errs + 1;
 	}
 }
-function checkH2B() {
+function checkD2( base, partStr ) {
 	var doc = document;
-	
-	allgood = true;
-	// need to check if user skipped something fixit
+	var num = Number;
+	// check if final answer is filled in and correct
+	var ans = readAllBxs(partStr, 0);
+	var expAns = (num(doc.getElementById("strtPt").value)).toString(base).toUpperCase();
+	if( base === 2 ) {
+		//var xtradig = expAns.length%4;
+		//var lacking = xtradig > 0? 4 - xtradig : 0;
+		//while( lacking > 0 ) {
+		//	expAns = "0" + expAns;
+		//	lacking = lacking - 1;
+		//} 
+		ans = (num(ans)).toString();
+	}
+	allgood = ans === expAns;
+	//alert("ans: " + ans + " expAns: " + expAns);
 	if( allgood ) {
 		startAgain();
+	} else {
+		redBxs(partStr, 0);
+		document.getElementById("instr2").innerHTML = 'Correct and click "Done"';
+		var errs = num(doc.getElementById("errs").value);
+    	doc.getElementById("errs").value = errs + 1;
 	}
 }
-function checkB2D() {
+function checkCount( base ) {
 	var doc = document;
-	
-	allgood = true;
-	// need to check if user skipped something fixit
-	if( allgood ) {
-		startAgain();
-	}
-}
-function checkD2B() {
-	var doc = document;
-	
-	allgood = true;
-	// need to check if user skipped something fixit
-	if( allgood ) {
-		startAgain();
-	}
-}
-function checkH2D() {
-	var doc = document;
-	
-	allgood = true;
-	// need to check if user skipped something fixit
-	if( allgood ) {
-		startAgain();
-	}
-}
-function checkD2H() {
-	var doc = document;
-	
-	allgood = true;
-	// need to check if user skipped something fixit
-	if( allgood ) {
-		startAgain();
-	}
-}
-function checkFilled() {
-	var doc = document;
-	
+	// can fill it with garbage, only checks if user hits enter fixit
 	allgood = true;
 	var bxNum = 0;
+	var lowestBx = 999;
 	var bx = doc.getElementById("b" + bxNum);
+	var focusBx = bx;
+	var count = Number(doc.getElementById("strtPt").value);
 	while( bx ) {
-		if( !bx.value ) {
+		if( !bx.value || bx.value.toUpperCase() !== count.toString(base).toUpperCase() ) {
 			allgood = false;
-			bx.style.borderColor = "red";
-			bx.focus();
+			var styles = "border: 2px solid red; color red;";
+			bx.setAttribute("style", styles);
+			if( bxNum < lowestBx ) {
+				focusBx = bx;
+				lowestBx = bxNum;
+			}
 			var errs = Number(doc.getElementById("errs").value);
     		doc.getElementById("errs").value = errs + 1;
-			break;
+			//break;
 		}
 		bxNum = bxNum + 1;
 		bx = doc.getElementById("b" + bxNum);
+		count = count + 1;
 	}
+	focusBx.focus();
 	if( allgood ) {
 		startAgain();
 	}
@@ -125,8 +122,12 @@ function zeroCounts() {
 function erase( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
-    if( ansBx.style.color === "red" ) { 
+    if( ansBx.style.color === "red" || 
+    	ansBx.style.backgroundColor === "red" ||
+    	ansBx.style.borderColor === "red" ) { 
         ansBx.style.color = "black";
+        ansBx.style.borderColor = "WhiteSmoke";
+        ansBx.style.backroundColor = "white";
         ansBx.value = "";
         var errBx = document.getElementById("instr4");
 		var invisible = "#efffd2";
@@ -153,6 +154,7 @@ function eraseAll( ev ) {
 	var bx = doc.getElementById(bxid);
 	while( bx ) {
        	bx.style.color = "black";
+       	bx.style.backgroundColor = "white";
        	bx.value = "";
 		bxNum = bxNum + 1;
 		bxid = partStr + bxNum;
@@ -166,6 +168,7 @@ function markGood( aBx, ins2, ins3, nBx ) {
 	var invisible = "#efffd2";
 	errBx.style.color = invisible;
 	if( aBx ) {
+		aBx.style.backgroundColor = "white";
 		aBx.style.color = "black";
 		aBx.style.borderColor = "WhiteSmoke";
 	}
@@ -190,9 +193,14 @@ function markGood( aBx, ins2, ins3, nBx ) {
 }
 function markErr( msg, aBx ) {
 	var doc = document;
+	var red = "red";
 	if( aBx ) {
-		aBx.style.color = "red";
-		aBx.style.borderColor = "red";
+		if( aBx.style.backgroundColor === "red" ) {
+			red = "white";
+		//	alert("red = white");
+		}
+		aBx.style.color = red;
+		aBx.style.borderColor = red;
 	}
 	var errBx = doc.getElementById("instr4");
 	errBx.style.color = "red";
@@ -287,8 +295,14 @@ function checkBH( ev ) {
 					//x = (x + 1)%nSbxs;
 			if( partStr == "h" ) {
 				corrAns = expAns.toString(2);
+				var xtradig = corrAns.length%4;
+				var lacking = xtradig > 0? 4 - xtradig : 0;
+				while( lacking > 0 ) { // pad with zeros so it matches user input
+					corrAns = "0" + corrAns;
+					lacking = lacking - 1;
+				} 
 				len = corrAns.length;		
-				while( len > 3 ) {
+				while( len > 3 ) { // break it into 4 bits at a time for readability
 					instr4 = " " + corrAns.substr(len-4, 4) + instr4;					
 					len = len - 4;
 					corrAns = corrAns.substr(0, len);
@@ -305,12 +319,15 @@ function checkBH( ev ) {
 			bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
 			var lastPrev = prevBx;
+			// where else do i need to fixit ?
+			var red = "red";
+			var white = "white";
 			while( prevBx ) {
-				prevBx.style.color = "red";
+				prevBx.style.color = red;
+				prevBx.style.backgroundColor = white;
 				dgtnum = dgtnum + 1;
 				lastPrev = prevBx;
-				bxId = partStr + dgtnum;
-				
+				bxId = partStr + dgtnum;		
 				prevBx = doc.getElementById(bxId);
 			}
 			var errBx = doc.getElementById("instr4");
@@ -411,8 +428,10 @@ function checkTot( ev ) {
 			bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
 			var lastPrev = prevBx;
+			//var red = prevBx.style.backgroundColor === "red" ? "white" : "red";
 			while( prevBx ) {
 				prevBx.style.color = "red";
+				prevBx.style.backgroundColor = "white";
 				dgtnum = dgtnum - 1;
 				lastPrev = prevBx;
 				bxId = partStr + dgtnum;
@@ -435,8 +454,10 @@ function checkTot( ev ) {
 		var partStr = id.substr( 0, stpos);
 		var bxId = partStr + bxNum;
 		var newBx = doc.getElementById(bxId);
-		newBx.value = "";
-		newBx.focus();
+		if( newBx ) {
+			newBx.value = "";
+			newBx.focus();
+		}
 	} else {
 		ans = ansBx.value;
 		if( !isNaN(ans) ) {
@@ -849,7 +870,7 @@ function checkDmult( ev ) {
 				if( prevrow === 2 ) {
 					dgtnum = 1; // don't want the whole thing
 				}
-				dvdnd = readAllBxs( partStr, dgtnum );
+				dvdnd = num(readAllBxs( partStr, dgtnum ));
 				nextrow = row - 1;
 				nextBx = doc.getElementById("b" + row + "_" + expnt + "_" + row);
 				instr2 = "What is " + dvdnd + " minus " + expAns + "? (type backwards & Enter)";
@@ -984,10 +1005,10 @@ function checkDvdnd( ev ) {
 		var expnt = num(id.substr(strtpos, 1));
 		var prevexpnt = expnt + 1;
 		partStr = "b0_" + prevexpnt + "_";
-		var expAns = readAllBxs(partStr, 0);
+		var expAns = num(readAllBxs(partStr, 0));
 		var stppos = id.lastIndexOf("_") + 1;
 		var partStr = id.substr(0,stppos);
-		var ans = readAllBxs(partStr, 0);
+		var ans = num(readAllBxs(partStr, 0));
 		if( ans === expAns ) {
 			var mat = Math;
 			var base = num(doc.getElementById("base").value);
@@ -1063,6 +1084,23 @@ function checkDvdnd( ev ) {
 		}
 	}
 }
+function redBxs( partStr, dgtnum ) {
+	var doc = document;
+	// if not all boxes are filled that should be, need
+	// to highlight them. borders makes the boxes bigger and messes
+	// up layout
+	var styles = 'background-color: red;';
+	styles = styles + ' color: white;';
+	var bxId = partStr + dgtnum;	
+	var bx = doc.getElementById(bxId);
+	while( bx ) {
+		bx.setAttribute("style", styles);
+		dgtnum = dgtnum + 1;
+		bxId = partStr + dgtnum;
+		//alert("bxid: " + bxId + " styles: " + styles);
+		bx = doc.getElementById(bxId);
+	}
+}
 function lowlightBxs( partStr, dgtnum ) {
 	var doc = document;
 	var styles = "border: none";
@@ -1111,6 +1149,7 @@ function readAllBxs( partStr, dgtnum ) {
 	var bxId = partStr + dgtnum;	
 	var bx = doc.getElementById(bxId);
 	var ans = bx.value;
+	//alert("bxId: " + bxId + " ans: " + ans);
 	while( bx ) {
 		dgtnum = dgtnum + 1;
 		bxId = partStr + dgtnum;
@@ -1119,12 +1158,13 @@ function readAllBxs( partStr, dgtnum ) {
 			var newval = bx.value;
 			if( newval ) {
 				ans = newval + ans;
+				//alert("bxId: " + bxId + " ans: " + ans);
 			} else {
 				break;
 			}
 		}
 	}
-	return Number(ans);
+	return ans;
 }
 function checkBD( ev ) {
 	ev = ev || window.event;
@@ -1139,8 +1179,7 @@ function checkBD( ev ) {
 		var expAns = doc.getElementById(bxId).value;
 		if( ans === expAns ) {
 			var nextBx = doc.getElementById("q" + expnt + "_0");
-			var dvdnd = readAllBxs("b1_" + expnt + "_", 0);
-			//var base = Number(doc.getElementById("base").value);
+			var dvdnd = Number(readAllBxs("b1_" + expnt + "_", 0));
 			var base2pow = gdvsr; //Math.pow(base,expnt);
 			var instr2 = "How many times does " + base2pow  + " go into " + dvdnd;
 			var instr3;
@@ -1171,12 +1210,12 @@ function checkDsub( ev ) {
 			dgtnum = 1; // don't want the whole thing
 		}
 		var partStr = "b" + prevrow + "_" + expnt + "_";
-		var minuend = readAllBxs( partStr, dgtnum );
+		var minuend = num(readAllBxs( partStr, dgtnum ));
 		partStr = "m" + row + "_" + expnt + "_";
-		var subtrahend = readAllBxs( partStr, 0);
+		var subtrahend = num(readAllBxs( partStr, 0));
 		var expAns = num(minuend) - num(subtrahend);		
 		partStr = id.substr(0,stppos+1);
-		var ans = readAllBxs( partStr, dgtnum);
+		var ans = num(readAllBxs( partStr, dgtnum));
 		if( num(ans) === expAns ) {
 			var bxId;
 			var instr2 = "Bring down next digit";
@@ -1304,6 +1343,10 @@ function checkQ( ev ) {
 	ans = ansBx.value;
 	if( !isNaN( ans ) ) {
 		var dvsr = gdvsr;
+		if( isNaN(dvsr) ){
+			markErr("Select a divisor", ansBx);
+			return;
+		}
 		var id = ansBx.id;
 		var whatDig = Number(id.substr(3,1));
 		var expnt = id.substr(1,1);
@@ -1340,7 +1383,7 @@ function checkSel( ev ) {
 		tstId = partStr + dgtnum;
 		tstBx = doc.getElementById(tstId);
 	}
-	var dvdnd = readAllBxs( partStr, 0);
+	var dvdnd = num(readAllBxs( partStr, 0));
 	var base = num(doc.getElementById("base").value);
 	if( dvsr > dvdnd ) {		
 		markErr( "Choose a smaller number", whichSel );
@@ -1529,7 +1572,7 @@ function checkHCount( ev ) {
 				bxNum = bxNum + 1;
 				nextBx = doc.getElementById("b" + bxNum);
 				var prevBx = ansBx;
-				while( nextBx && nextBx.value ) {
+				while( nextBx && nextBx.value && nextBx.style.borderColor !== "red") {
 					bxNum = bxNum + 1;
 					prevBx = nextBx;
 					nextBx = doc.getElementById("b" + bxNum);
@@ -1636,7 +1679,7 @@ function checkBCount( ev ) {
 				bxNum = bxNum + 1;
 				nextBx = doc.getElementById("b" + bxNum);
 				var prevBx = ansBx;
-				while( nextBx && nextBx.value ) {
+				while( nextBx && nextBx.value && nextBx.style.borderColor !== "red") {
 					bxNum = bxNum + 1;
 					prevBx = nextBx;
 					nextBx = doc.getElementById("b" + bxNum);
@@ -1645,6 +1688,7 @@ function checkBCount( ev ) {
 				var instr3;
 				if( !nextBx ) {
 					instr2 = 'Click "Done"';
+					//nextBx = doc.getElementById("chkBx");
 				} else {
 					var lsbIsOne = isLsbOne( prevBx.value );
 					if( lsbIsOne ) {
