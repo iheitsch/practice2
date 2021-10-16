@@ -11,8 +11,6 @@
 <body>
 <form id="bases">
 <%  
-	// request.getParameter("exp0") is not returning null when 
-	// hexToDec page is displayed and someone deselects another checkbox fixit
 	int MAX_COUNT = 32;
 	int MAX_HEX = 16777184;
 	int HEX4CONV = 65536;

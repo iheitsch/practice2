@@ -2,7 +2,7 @@
  *
  * needs tutorials on powers and number bases
  * 
- * page as a whole doesn't scroll fixit fixed convert fractions by making it one big table
+ * page as a whole doesn't scroll fixit scrolling requires fixed sizes and no fixed positions
  *
  */
 var x = 0;
@@ -56,16 +56,9 @@ function checkD2( base, partStr ) {
 	var ans = readAllBxs(partStr, 0);
 	var expAns = (num(doc.getElementById("strtPt").value)).toString(base).toUpperCase();
 	if( base === 2 ) {
-		//var xtradig = expAns.length%4;
-		//var lacking = xtradig > 0? 4 - xtradig : 0;
-		//while( lacking > 0 ) {
-		//	expAns = "0" + expAns;
-		//	lacking = lacking - 1;
-		//} 
-		ans = (num(ans)).toString();
+		ans = (num(ans)).toString(); // toString( 2) won't include leading 0s
 	}
 	allgood = ans === expAns;
-	//alert("ans: " + ans + " expAns: " + expAns);
 	if( allgood ) {
 		startAgain();
 	} else {
@@ -77,7 +70,6 @@ function checkD2( base, partStr ) {
 }
 function checkCount( base ) {
 	var doc = document;
-	// can fill it with garbage, only checks if user hits enter fixit
 	allgood = true;
 	var bxNum = 0;
 	var lowestBx = 999;
@@ -95,7 +87,6 @@ function checkCount( base ) {
 			}
 			var errs = Number(doc.getElementById("errs").value);
     		doc.getElementById("errs").value = errs + 1;
-			//break;
 		}
 		bxNum = bxNum + 1;
 		bx = doc.getElementById("b" + bxNum);
@@ -108,8 +99,6 @@ function checkCount( base ) {
 }
 function zeroCounts() {
     var doc = document;
-
-    //alert("zerocounts");
     doc.getElementById("numAttmptd").value = 0;
     doc.getElementById("errs").value = 0;
     doc.getElementById("numWoErr").value = 0;
@@ -184,7 +173,6 @@ function markGood( aBx, ins2, ins3, nBx ) {
 	    instr3Bx.style.color = invisible;
 	}
 	if( nBx ) {
-		//nBx.type = "text"; // does this belong here? fixit
 		nBx.focus();
 		gNextBx = nBx;
 	} else if( aBx ) {
@@ -197,7 +185,6 @@ function markErr( msg, aBx ) {
 	if( aBx ) {
 		if( aBx.style.backgroundColor === "red" ) {
 			red = "white";
-		//	alert("red = white");
 		}
 		aBx.style.color = red;
 		aBx.style.borderColor = red;
@@ -233,7 +220,6 @@ function checkBH( ev ) {
 			var bxNum = num(id.substr( 1,  nchars )) - 1;
 			var partStr = id.substr( 0, 1);
 			var bxId = partStr + bxNum;
-			//alert("nextBx: " + bxId);
 			var nextBx = doc.getElementById(bxId);
 			var instr2;
 			var instr3;
@@ -291,8 +277,6 @@ function checkBH( ev ) {
 		} else {
 			var corrAns = expAns.toString(16);		
 			var instr4 = "";
-			//doc.getElementById("statusBox" + x).innerHTML = "checkBh instr4: " + instr4 + " corrAns: " + corrAns;
-					//x = (x + 1)%nSbxs;
 			if( partStr == "h" ) {
 				corrAns = expAns.toString(2);
 				var xtradig = corrAns.length%4;
@@ -306,8 +290,6 @@ function checkBH( ev ) {
 					instr4 = " " + corrAns.substr(len-4, 4) + instr4;					
 					len = len - 4;
 					corrAns = corrAns.substr(0, len);
-					//doc.getElementById("statusBox" + x).innerHTML = "checkBh instr4: " + instr4 + " corrAns: " + corrAns;
-					//x = (x + 1)%nSbxs;
 				}
 				instr4 = "Should be " + corrAns + instr4;
 				partStr = "b"
@@ -319,12 +301,9 @@ function checkBH( ev ) {
 			bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
 			var lastPrev = prevBx;
-			// where else do i need to fixit ?
-			var red = "red";
-			var white = "white";
 			while( prevBx ) {
-				prevBx.style.color = red;
-				prevBx.style.backgroundColor = white;
+				prevBx.style.color = "red";
+				prevBx.style.backgroundColor = "white";
 				dgtnum = dgtnum + 1;
 				lastPrev = prevBx;
 				bxId = partStr + dgtnum;		
@@ -384,7 +363,6 @@ function checkbit( ev ) {
 		bitnum = bitnum + 1;
 		bxId = "t" + bitnum;
 		nextBx = doc.getElementById(bxId);
-		//alert("checkbit nextBx: " + bxId);
 		if( !nextBx ) {
 			nextBx = doc.getElementById("e" + 0);
 			instr2 = 'Copy power of two for every bit that is a "1", skip if bit is "0"';
@@ -428,7 +406,6 @@ function checkTot( ev ) {
 			bxId = partStr + dgtnum;
 			prevBx = doc.getElementById(bxId);
 			var lastPrev = prevBx;
-			//var red = prevBx.style.backgroundColor === "red" ? "white" : "red";
 			while( prevBx ) {
 				prevBx.style.color = "red";
 				prevBx.style.backgroundColor = "white";
@@ -638,7 +615,6 @@ function checkCp( ev ) {
 			var bxNum = num(id.substr( stpos,  nchars )) + 1;
 			var partStr = id.substr( 0, stpos);
 			var bxId = partStr + bxNum;
-			//alert("nextBx: " + bxId);
 			var nextBx = doc.getElementById(bxId);
 			var instr2;
 			var instr3;
@@ -667,7 +643,7 @@ function checkAdd( ev ) {
 		var powOf16 = mat.pow(16,bxNum);
 		var factr = num(doc.getElementById("q" + bxNum + "_0").value);
 		var expAns = powOf16*factr;
-		var nans = 0; //num(ans);			
+		var nans = 0;			
 		var st = stppt + 1;
 		var partStr = id.substr( 0, st);
 		var msdnum = num(id.substr(st, 1));
@@ -966,7 +942,6 @@ function checkHD( ev ) {
 			    if( e ) {
 				    var xrcise = doc.getElementById("xrcise");
 				    var top = 0;
-				    //var styles = "color: red; border-color: orange; background-color: fushia";
 				    while( e.tagName !== "TD" ) {  
 						top += e.offsetTop; 
 						//alert("checkHD top: " + top + " e: " + e.id + " tagName: " + e.tagName);
@@ -976,7 +951,6 @@ function checkHD( ev ) {
 				        }
 				    }  
 				    top += e.offsetTop;
-				    //alert("checkHD top: " + top + " e: " + e.id + " tagName: " + e.tagName);
 					xrcise.scrollTo(0, top);
 				}
 				nextDig = highlightBxs(partStr, 0);
@@ -1149,7 +1123,6 @@ function readAllBxs( partStr, dgtnum ) {
 	var bxId = partStr + dgtnum;	
 	var bx = doc.getElementById(bxId);
 	var ans = bx.value;
-	//alert("bxId: " + bxId + " ans: " + ans);
 	while( bx ) {
 		dgtnum = dgtnum + 1;
 		bxId = partStr + dgtnum;
@@ -1158,7 +1131,6 @@ function readAllBxs( partStr, dgtnum ) {
 			var newval = bx.value;
 			if( newval ) {
 				ans = newval + ans;
-				//alert("bxId: " + bxId + " ans: " + ans);
 			} else {
 				break;
 			}
@@ -1239,7 +1211,6 @@ function checkDsub( ev ) {
 					var allBars = doc.getElementsByClassName("v" + nextExpnt);
 					len = allBars.length;
 					var tdstyle = "border-bottom: 2px solid #339966";
-					//styles = styles + "background-color: #339966;";
 					for( var i = 0; i < len; ++i ) {
 						allBars[i].setAttribute("style", tdstyle);
 					}
@@ -1272,12 +1243,6 @@ function checkDsub( ev ) {
 						oldBxs[i].setAttribute("style", styles);
 					}
 				}
-				/* styles = "border: none; background-color: #339966;";
-				var oldBars = doc.getElementsByName("v" + expnt);
-				len = oldBars.length;
-				for( var i = 0; i < len; ++i ) {
-					oldBars[i].setAttribute("style", styles);
-				} */
 			}
 			var instr3;		
 			markGood( ansBx, instr2, instr3, nextBx )
@@ -1688,7 +1653,6 @@ function checkBCount( ev ) {
 				var instr3;
 				if( !nextBx ) {
 					instr2 = 'Click "Done"';
-					//nextBx = doc.getElementById("chkBx");
 				} else {
 					var lsbIsOne = isLsbOne( prevBx.value );
 					if( lsbIsOne ) {
