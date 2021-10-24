@@ -1,0 +1,85 @@
+@charset "UTF-8";
+body
+{
+	background: #e6ffff;
+	position:absolute;
+	padding:0;
+	margin:0;
+}
+button{
+	font: inherit;
+}
+img{
+	position: absolute;
+	top: 50px;
+	left: 50px;
+}
+input{
+	width: 3em;
+	font: inherit;
+}
+.invisible{
+	border: none;
+	text-align: right;
+	color: #e6ffff;
+}
+.line
+{
+	position:absolute;
+}
+.rightsd{
+	float: right;
+}
+.slct{
+	font: inherit;
+	border: none;
+	width: 7em;
+	min-width: 7em;
+	max-width: 7em;
+	text-align: center;
+	position: fixed;
+	left: 50px;
+	top: 25px;
+}
+.title{
+		border: 2px solid #339966;
+}
+#bottomleft{
+	position: fixed;
+	left: 2px;
+	bottom: 5px;
+}
+#horizontal{
+	border: 1px solid pink;
+	width: 400px;
+	height: 0px;
+    position: absolute;
+    top: 252px;
+	left: 50px;
+}
+#instr2{
+	position: fixed;
+	left: 200px;
+	top: 25px;
+}
+#instrs{
+	position: fixed;
+	left: 50px;
+}
+#preload {
+	height:0;
+	overflow:hidden;
+}
+#score{
+	position: fixed;
+	top: 5em;
+	right: 2px;
+}
+#vertical{
+	border: 1px solid pink;
+	width: 0px;
+	height: 400px;
+    position: absolute;
+    top: 50px;
+	left: 249px;
+}
