@@ -22,8 +22,25 @@ create table banandose( id int unsigned not null auto_increment, xval int not nu
 grant select on banandose to irene@localhost;
 insert into banandose (xval, yval) values (-2, 2), (-3, -1), (-2, -2), (3, -2), (3, -3), (4, -3), (5, -2), (5, -1), (4, 0), (0, 0), (0, 1);
 insert into banandose (xval, yval) values (0, 0), (3, 0), (3, 1), (2, 2), (4, 0), (6, 0), (6, 1), (7, 2), (7,5), (6, 4), (7, 3), (5, 5), (5, 4);
-insert into banandose (xval, yval) values (5, 5), (4, 4), (5, 5), (2, 6), (0, 5), (-2, 5), (-4, 4), (-6, 2), (-7, -1), (-7, -3), (-6, -5), (-7, -6);
-insert into banandose (xval, yval) values (-8, -5), (-8, -4), (-7, -3), (-6, -5), (-7, -6), (-7, -7), (-6, -7), (-2, -8), (-1, -8), (0, -7); 
-insert into banandose (xval, yval) values (-1, -6), (-5, -6), (-2, -5), (-1, -3), (-2, -5), (-5, -6), (-2, -6), (0, -5), (2, -2), (0, -5);
-insert into banandose (xval, yval) values (-2, -6), (1, -6), (1, -4), (1, -6), (2, -8), (4, -8), (4, -7), (3, -6), (3, -2), (3,-4), (4, -5);
-insert into banandose (xval, yval) values (4, -6), (3, -6), (5, -6), (6, -5), (6, -4), (5, -3), (4, -4), (3, -4);
+insert into banandose (xval, yval) values (5, 5), (4, 4), (5, 5), (2, 6), (0, 5), (-2, 5), (-4, 4), (-6, 2), (-7, -1), (-7, -3), (-6, -5);
+insert into banandose (xval, yval) values (-7, -6), (-7, -7), (-6, -7), (-2, -8), (-1, -8), (0, -7); 
+insert into banandose (xval, yval) values (-1, -6), (-4, -6), (-2, -5), (-1, -3), (-2, -5), (-4, -6), (-2, -6), (0, -5), (2, -2), (0, -5);
+insert into banandose (xval, yval) values (-2, -6), (1, -6), (1, -4), (1, -6), (2, -8), (4, -8), (4, -7), (3, -6), (3, -2);
+insert into banandose (xval, yval) values (3, -6), (5, -6), (6, -5), (6, -4), (5, -3), (4, -4), (3, -4);
+
+drop table stella;
+create table stella( id int unsigned not null auto_increment, xval int not null, yval int not null, primary key(id) );
+grant select on stella to irene@localhost;
+insert into stella (xval, yval) values (8, 6), (-2, -10), (-6, 8), (10, -2), (-8, -6), (2, 10), (6, -8), (-10, 2), (8, 6);
+
+drop table zellij;
+create table zellij( id int unsigned not null auto_increment, xval int not null, yval int not null, primary key(id) );
+grant select on zellij to irene@localhost;
+insert into zellij(xval, yval) values (-10, 4), (-4, 7), (1, 2), (8, 2), (10, -2);
+insert into zellij(xval, yval) values (10, 4), (4, 7), (-1, 2), (-8, 2), (-10, -2);
+insert into zellij(xval, yval) values (-10, -4), (-4, -7), (1, -2), (8, -2), (10, 2);
+insert into zellij(xval, yval) values (10, -4), (4, -7), (-1, -2), (-8, -2), (-10, 2), (-10, 10);
+insert into zellij(xval, yval) values (-4, 10), (-7, 4), (-2, -1), (-2, -8), (2, -10);
+insert into zellij(xval, yval) values (-4,  -10), (-7, -4), (-2, 1), (-2, 8), (2, 10);
+insert into zellij(xval, yval) values ( 4, 10), (7, 4), (2, -1), (2, -8), (-2, -10);
+insert into zellij(xval, yval) values (4, -10), (7, -4), (2, 1), (2, 8), (-2, 10);

@@ -44,26 +44,6 @@ int [] xpoints = new int[MAXPTS];
 int [] ypoints = new int[MAXPTS]; %>
 
 <body>
-<div id="preload">
-	<img alt='' src='images/1up.gif' >
-	<img alt='' src='images/1down.gif' >
-	<img alt='' src='images/2up.gif' >
-	<img alt='' src='images/2down.gif' >
-	<img alt='' src='images/4up.gif' >
-	<img alt='' src='images/4down.gif' >
-	<img alt='' src='images/8up.gif' >
-	<img alt='' src='images/8down.gif' >
-	<img alt='' src='images/16up.gif' >
-	<img alt='' src='images/16down.gif' >
-	<img alt='' src='images/32up.gif' >
-	<img alt='' src='images/32down.gif' >
-	<img alt='' src='images/64up.gif' >
-	<img alt='' src='images/64down.gif' >
-	<img alt='' src='images/128up.gif' >
-	<img alt='' src='images/128down.gif' >
-	<img alt='' src='images/256up.gif' >
-	<img alt='' src='images/256down.gif' >
-</div>
 <form id="plots">
 <span>
 <div id="instrs">Choose a Picture</div>
@@ -98,7 +78,7 @@ int [] ypoints = new int[MAXPTS]; %>
         	if( slctopts[kdx].equals(whatTable) ) {
         		isNowSelected[kdx] = "selected";
         		itype = "text";
-        	    instr2 = "Plot this point: ";
+        	    instr2 = "Click this point: ";
         	    comma = ",";
         		break;
         	}
@@ -129,9 +109,9 @@ int [] ypoints = new int[MAXPTS]; %>
 	} %>
 <span id="instr2" ><%=instr2%><input type = "<%=itype%>" id="expX" disabled="true" value="<%=xpoints[0]%>"><%=comma%> 
 <input type="<%=itype%>" id="expY" disabled="true" value="<%=ypoints[0]%>"></span>
-<img src="images/allwhite.png" >
-<div id="horizontal"></div>
-<div id="vertical"></div>
+<div id="frame">
+<svg id="xygraph" onclick="checkPt( event )" ></svg>
+</div>
 
 <% 	for( int i = 0; i < MAXPTS; ++i ) { 
 		String xid = "x" + i;
@@ -157,7 +137,6 @@ int [] ypoints = new int[MAXPTS]; %>
 </td>
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 <td>    
-        <button type="button" onclick="check()" id="chkBx">Done</button>
  </td>
 </tr>
 </table>
@@ -214,34 +193,35 @@ int [] ypoints = new int[MAXPTS]; %>
     <td><label>Problems Attempted</label></td>
     <td>
     <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
-           class="blackbox">
+           class="blackbox" >
     </td>
 </tr>
 <tr>
     <td><label>Completed Without Error</label></td>   
     <td>
     <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
-           class="blackbox">
+           class="blackbox" >
     </td>
 </tr>
 <tr>
     <td><label>Consecutive Without Error</label></td>   
     <td>
     <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
-           class="blackbox">
+           class="blackbox" >
     </td>
 </tr>
 <tr>
     <td><label>Correct Per Hour</label></td>   
     <td>
     <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
-           class="blackbox">
+           class="blackbox" >
     </td>
 </tr>
 <tr>
     <td><label>Errors This Problem</label></td>
-    <td><input disabled type="text" id="errct" name="errct" value="<%=errct%>"
-               class="blackbox"></td>
+    <td><input type="text" id="errct" name="errct" value="<%=errct%>"
+               class="blackbox" disabled >
+    </td>
 </tr>
 </table>
 </div>

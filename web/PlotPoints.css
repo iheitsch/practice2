@@ -5,15 +5,12 @@ body
 	position:absolute;
 	padding:0;
 	margin:0;
+	font-family: Copperplate, Copperplate Gothic Light, fantasy;
 }
 button{
 	font: inherit;
 }
-img{
-	position: absolute;
-	top: 50px;
-	left: 50px;
-}
+
 input{
 	width: 3em;
 	font: inherit;
@@ -49,6 +46,22 @@ input{
 	left: 2px;
 	bottom: 5px;
 }
+/*
+#frame{
+	background: #ffe6b3;
+	border: 2px solid #e6e600;
+	border-top-color: #f0e6c3;
+    border-left-color: #f0e6c3;
+    background:  #ffe274;
+    border-bottom-color:#b38f00;
+    border-right-color: #b38f00;
+	position: absolute;
+	top: 60px;
+	left: 50px;
+	width: 424px;
+	height: 424px;
+} */
+/*
 #horizontal{
 	border: 1px solid pink;
 	width: 400px;
@@ -56,7 +69,7 @@ input{
     position: absolute;
     top: 252px;
 	left: 50px;
-}
+} */
 #instr2{
 	position: fixed;
 	left: 200px;
@@ -75,6 +88,7 @@ input{
 	top: 5em;
 	right: 2px;
 }
+/*
 #vertical{
 	border: 1px solid pink;
 	width: 0px;
@@ -82,4 +96,11 @@ input{
     position: absolute;
     top: 50px;
 	left: 249px;
+} */
+#xygraph{
+	position: absolute;
+	top: 60px;
+	left: 50px;
+	width: 444px;
+	height: 444px;
 }
