@@ -132,12 +132,10 @@ int [] ypoints = new int[MAXPTS]; %>
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 <td>
-<td>
-	    <button type="button" onclick="skip()" id="skpBx">Skip</button> 
+            <button type="button" onclick="skip()" id="skpBx">Skip</button>
 </td>
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
-<td>    
- </td>
+<td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 </tr>
 </table>
 </span>
@@ -192,29 +190,29 @@ int [] ypoints = new int[MAXPTS]; %>
 <tr>    
     <td><label>Problems Attempted</label></td>
     <td>
-    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
-           class="blackbox" >
+    <input type="hidden" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox" ><%=numAttmptdV%>
     </td>
 </tr>
 <tr>
     <td><label>Completed Without Error</label></td>   
     <td>
-    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
-           class="blackbox" >
+    <input type="hidden" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox" ><%=numWoErr%>
     </td>
 </tr>
 <tr>
     <td><label>Consecutive Without Error</label></td>   
     <td>
-    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
-           class="blackbox" >
+    <input type="hidden" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox" ><%=consWoErr%>
     </td>
 </tr>
 <tr>
     <td><label>Correct Per Hour</label></td>   
     <td>
-    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
-           class="blackbox" >
+    <input type="hidden" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox" ><%=corrPerHr%>
     </td>
 </tr>
 <tr>
