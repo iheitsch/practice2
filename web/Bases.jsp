@@ -1215,36 +1215,38 @@
 </tr>
 <tr>    
     <td><label>Problems Attempted</label></td>
-    <td>
-    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
-           class="blackbox">
+    <td class="score" >
+    <input type="hidden" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox"><%=numAttmptdV%>
     </td>
 </tr>
 <tr>
     <td><label>Completed Without Error</label></td>   
-    <td>
-    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
-           class="blackbox">
+    <td class="score" >
+    <input type="hidden" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox"><%=numWoErr%>
     </td>
 </tr>
 <tr>
     <td><label>Consecutive Without Error</label></td>   
-    <td>
-    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
-           class="blackbox">
+    <td class="score" >
+    <input type="hidden" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox"><%=consWoErr%>
     </td>
 </tr>
 <tr>
     <td><label>Correct Per Hour</label></td>   
-    <td>
-    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
-           class="blackbox">
+    <td class="score" >
+    <input type="hidden" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox"><%=corrPerHr%>
     </td>
 </tr>
 <tr>
     <td><label>Errors This Problem</label></td>
-    <td><input type="text" id="errs" name="errs" value="<%=errs%>"
-               class="blackbox"></td>
+    <td>
+    <input type="text" id="errs" name="errs" value="<%=errs%>"
+               class="blackbox" disabled>
+    </td>
 </tr>
 </table>
 <table >

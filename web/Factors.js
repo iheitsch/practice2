@@ -1,3 +1,4 @@
+
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -1162,7 +1163,7 @@ function setPaper() {
     topPos = 1 + linespace;
     finalIns0.style.top = topPos + "px";
     finalIns0.style.width = imgWid + "px";
-    topPos = topPos + 2*linespace;
+    topPos = topPos + 3*linespace;
     finalIns1.style.top = topPos + "px";
     finalIns1.style.width = imgWid + "px";
     frame.insertBefore(graphP, frame.childNodes[0]);

@@ -74,7 +74,9 @@ button {
     min-height: 4em;
     text-align: center;
 }
-
+.score{
+	text-align: center;
+}
 /* table cell with space, carry, or decimal point */
 .t2 {
   text-align: center;
@@ -198,6 +200,7 @@ button {
     margin-left: 0px;
     margin-right: 0px;
     color: #F5F8FF;
+	font-weight: bold;
 }
 /* visible incorrect decimal point */
 .ep{
@@ -207,6 +210,7 @@ button {
     margin-left: 0px;
     margin-right: 0px;
     color: red;
+    font-weight: bold;
 }
 /* visible correct decimal point */
 .fp{
@@ -216,6 +220,7 @@ button {
     margin-left: 0px;
     margin-right: 0px;
     color: black;
+    font-weight: bold;
 }
 /* answer boxes */
 .a1 {

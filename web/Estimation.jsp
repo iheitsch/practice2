@@ -1,4 +1,4 @@
-<%-- 
+<%--
     Document   : Estimation
     Created on : Jun 22, 2016, 11:14:06 AM
     Author     : frieda
@@ -19,14 +19,14 @@
     <script src="Open.js"></script>
 </head>
 <body>
-    
-<% 
+
+<%
     // may have another infinite loop fixit.
     // how do you really want to handle divide by zero? try again or spit back a huge number
     // as currently done? fixit
     // had a problem with identical answers, one with dp, one without. first was true only, other was false only
     // how to duplicate? 369.0 * 6,268 = 2,312,892. fixit
-    
+
     final int N_OPERATORS = 4;
     final double DEXP = 2.6;
     final double EXP = 1.4;
@@ -40,21 +40,21 @@
                       { "", "4", "5", "2", ".", "0", "11" },
                       { "", "5", "6", "3", ".", "0", "1", "4", "22" },
                       { "", "6", "*", "-", "+", ".", "2", "5", "33" },
-                      { "", "7", "8", "5", "2", "1", "44" }, 
+                      { "", "7", "8", "5", "2", "1", "44" },
                       { "", "8", "9", "6", "3", "2", "1", "4", "7", "55" },
                       { "", "9", "/", "*", "-", "3", "2", "5", "8", "66" },
                       { "", "8", "5", "4", "77" },
                       { "", "9", "6", "5", "4", "7", "88" },
                       { "", "/", "*", "6", "5", "8", "99" }
-    }; 
+    };
 
-    /* operators only     }; 
-    
+    /* operators only     };
+
     String[][] alt = {{ "", "1", "2", ".", "00" },
                       { "", "4", "5", "2", ".", "0", "11" },
                       { "", "5", "6", "3", ".", "0", "1", "4", "22" },
                       { "*", "-", "+" },
-                      { "", "7", "8", "5", "2", "1", "44" }, 
+                      { "", "7", "8", "5", "2", "1", "44" },
                       { "", "8", "9", "6", "3", "2", "1", "4", "7", "55" },
                       { "/", "*", "-" },
                       { "", "8", "5", "4", "77" },
@@ -74,18 +74,18 @@
                         { "", "*", "+", "3", "6", "/" },
                         { "", "/", "-", "3", "6", "9", "+" },
                         { "", "*", "6", "9" }};
-    
+
     String[] altSign =  { "", "9", "8", "7", "" };
-    
+
     String[] altPoint = { "", "3", "2", "1", "0" };
-    
+
     // numbers only, no operands or decimal points
     /*
     String[][] alt = {{ "", "1", "2", "00" },
                       { "", "4", "5", "2", "0", "11" },
                       { "", "5", "6", "3", "0", "1", "4", "22" },
                       { "", "6", "2", "5", "33" },
-                      { "", "7", "8", "5", "2", "1", "44" }, 
+                      { "", "7", "8", "5", "2", "1", "44" },
                       { "", "8", "9", "6", "3", "2", "1", "4", "7", "55" },
                       { "", "9", "3", "2", "5", "8", "66" },
                       { "", "8", "5", "4", "77" },
@@ -211,22 +211,22 @@
     if(( tmp = request.getParameter("numAttmptdP")) != null) {
         numAttmptdV = tmp.toString();
     }
-    
+   
     if(( tmp = request.getParameter("numWoErrP")) != null) {
         numWoErr = tmp.toString();
-    } 
-    
+    }
+
     if(( tmp = request.getParameter("consWoErrP")) != null) {
         consWoErr = tmp.toString();
-    } 
-    
+    }
+
     if(( tmp = request.getParameter("corrPerHrP")) != null) {
         corrPerHr = tmp.toString();
-    } 
-    
+    }
+
     if(( tmp = request.getParameter("strtTimeP")) != null) {
         strtTime = tmp.toString();
-    } 
+    }
     final int MAX_DGTS = 4;
     final int TWO_XDGTS = 8;
     int maxOpPlus1 = (int)Math.pow(10, MAX_DGTS);
@@ -260,27 +260,26 @@
                 operand2 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
             }
 
-            int finalAns = 
+            int finalAns =
                     (new Double(1+(maxOpPlus1/operand2)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
-  
+ 
             operand1 = finalAns*operand2;
-            System.out.println("operand1 = " + operand1 + " operand2 = " + operand2 + " finalAns = " + finalAns);
         } else {
             while( operand2 == 0 ) {
                 operand2 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
                 System.out.println("operand2 was zero, now it is " + operand2);
-            } 
+            }
         }
     }
-    
+   
     int nDgts1 = operand1 > 0 ? 1 + (int)Math.log10(operand1) : 1;
     int nDgts2 = operand2 > 0 ? 1 + (int)Math.log10(operand2) : 1;
-    
+
     String stringSign1 = "";
     String stringSign2 = "";
     String stringDecPt1 = ".";
     String stringDecPt2 = ".";
-        
+
     if( negativesCk ) {
         boolean changeSign = Math.random() > 0.5;
         if( changeSign ) {
@@ -293,21 +292,20 @@
             isNeg2 = true;
         }
     }
-    
+   
 
     int decPt1 = 0;
-    int decPt2 = 0;  
-    
+    int decPt2 = 0;
+
     if( decimalsCk ) {
         decPt1 = (int)((MAX_DGTS+1)*Math.random());
         decPt2 = (int)((MAX_DGTS+1)*Math.random());
         // make sure answer is positive
-        if( !negativesCk && 
-                operand2*(int)(Math.pow( 10, decPt1 )) > operand1*(int)(Math.pow(10, decPt2)) && 
+        if( !negativesCk &&
+                operand2*(int)(Math.pow( 10, decPt1 )) > operand1*(int)(Math.pow(10, decPt2)) &&
                         operator[0].compareTo("-") == 0 ) {
             int dp2Mn = 1 + (int)(Math.log10(operand2*Math.pow(10, decPt1)/operand1));
             decPt2 = dp2Mn + (int)((MAX_DGTS+1-dp2Mn)*Math.random());
-            //System.out.println("operand2 = " + operand2 + " decPt1 = " + decPt1 + " operand1 = " + operand1 + " dp2Mn = " + dp2Mn);
         }
         // make sure there are significant digits showing in answer
         if( 2 + nDgts2 - decPt2 - (nDgts1 - decPt1) >= MAX_DGTS &&
@@ -316,11 +314,11 @@
             decPt2 = dp2Mn + (int)((MAX_DGTS+1-dp2Mn)*Math.random());
             System.out.println("dp2Mn = " + dp2Mn + " decPt2 = " + decPt2);
         }
-    } 
-    
+    }
+
     int decPtAct = decPt1; // for addition or subtraction assuming decPt1 >= decPt
 
-    String[][] opDgts1 = new String[TWO_XDGTS][]; 
+    String[][] opDgts1 = new String[TWO_XDGTS][];
     String[][] opDgts2 = new String[TWO_XDGTS][];
     for( int idx = 0; idx < TWO_XDGTS; ++idx ) {
         opDgts1[idx] = new String[nMucked];
@@ -340,7 +338,7 @@
         tmp1 /= 10;
         tmp2 /= 10;
     }
-    int leastDig = 0; 
+    int leastDig = 0;
     int mostDig = 9;
     int ten2pow = (int)Math.pow(10, nDgts1 - 1);
     long[] actualInt = {Integer.MAX_VALUE, 0, 0 };
@@ -348,10 +346,9 @@
 
     String [] expl = new String[3];
     decPtAct = op( operator[0], MAX_DGTS, decimalsCk,
-            operand1, decPt1, operand2, decPt2, 
+            operand1, decPt1, operand2, decPt2,
             nDgts1, nDgts2, isNeg1, isNeg2,
             actualInt, expl );
-    
     int origOp = -1;
     if( operator[0].compareTo("+") == 0 ) {
         origOp = 0;
@@ -367,7 +364,7 @@
     double doubleMax = actualInt[2]*Math.pow(10,-decPtAct);
     leastDig = 0;
     int actpow = 10;
-    int rightDp = decPtAct;//origOp == 2? 
+    int rightDp = decPtAct;//origOp == 2?
             // decPt1 + decPt2 : decPt1 > decPt2 ? decPt1 : decPt2;
     System.out.println("operator = " + operator[0] + " decPt1 = " + decPt1 + " decpt2 = " + decPt2 + " rightDp = " + rightDp);
 
@@ -384,7 +381,7 @@
             }
         }
     }
-    
+   
     String[] actual = new String[3];
     String[] actNoComma = new String[3];
     int[] nDigsAct = new int[3];
@@ -394,7 +391,7 @@
         actNoComma[i] = Format.getFormat( actualInt[i], decPtAct, nDigsAct[i], false );
         System.out.println("actualInt = " + actualInt[i] + " actual[" + i + "] = " + actual[i] + " decPtAct = " + decPtAct + " nDigsAct[" + i + "] = " + nDigsAct[i]);
     }
-    
+   
     mostDig = (int)(Math.abs(actualInt[1])/((int)Math.pow(10,nDigsAct[1]-1)));
     System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1);
     System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2);
@@ -423,8 +420,8 @@
     int pdx = 1;
     outer:
     while( pdx < nMucked) {
-    //for( int pdx = 1; pdx < nMucked; ++pdx ) 
-    	System.out.println("pdx: " + pdx);
+    //for( int pdx = 1; pdx < nMucked; ++pdx )
+        System.out.println("pdx: " + pdx);
         operator[pdx] = operator[0];
         stringSign1 = isNeg1? "-" : "";
         stringSign2 = isNeg2? "-" : "";
@@ -472,18 +469,18 @@
                         }
                     } else {
                         System.err.println( "Error: whichDigIsMucked = " + whichDigIsMucked + " TWO_XDGTS = " + TWO_XDGTS);
-                    }
+                    }   
                 }
-            }
+            }       
         } else if( whichOpIsMucked < 5 ) { // 4: muck with operator
-
+            
             if( 0 <= origOp && origOp < 4 ) {
                 int whichAlt = (int)(altOp[origOp].length*Math.random());
                 String altDig = altOp[origOp][whichAlt];
                 operator[pdx] = altDig;
 
                 System.out.println("whichOp = " + whichOpIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
-            } else { 
+            } else {
                 System.out.println("Error: operator = " + operator[pdx] + " origOp = " + origOp);
             }
         } else { // 5, 6, 7, 8: muck with operand2
@@ -517,7 +514,7 @@
                             StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
                             opDgts2[whichDigIsMucked][pdx] = altDig.toString();
                             System.out.println(" whichAlt = " + whichAlt + " altDig = " + altDig);
-                        } else { 
+                        } else {
                             System.out.println("Error: operator = " + operator[pdx] + " origOp = " + origOp);
                         }
                     } else {
@@ -542,7 +539,7 @@
             tmp4 = tmp4 - 1;
         }
         for( int i = nDgts1 - 1; i >= 0; --i ) {
-            muckedProb.append(opDgts1[i][pdx]); 
+            muckedProb.append(opDgts1[i][pdx]);
             //System.out.println("op1 digits muckedProb = " + muckedProb);
             if( i == decPt1 ) {
                 muckedProb.append(stringDecPt1);
@@ -595,7 +592,7 @@
         boolean countingDp = false;
         int sign = 1;
         System.out.println("about to parse mucked Problem: " + muckedProb);
-        // do two consecutive operators imply a "0" between them or is one or the other operators ignored? 
+        // do two consecutive operators imply a "0" between them or is one or the other operators ignored?
         // nothing followed by operator implies 0 fixit
         // two operators in a row: hp only sees first operator fixit
         // windows only sees second operator fixit
@@ -605,10 +602,10 @@
         // 4+5* = = = 29, 54, 79 = 4+5^2, 4+2*5^2, 4+3*5^2 windows scientific calculator
         // 4 + 5 * 2 = 18 in windows basic calculator
         // = 14 in windows scientific calculator
-        
+
         // parse out mucked (mis-typed) problem
         while( tmp5.length() > 0 ) {
-            
+
             // find sign, if any
             if( !countingDp && s.matcher( tmp5.substring( 0, 1 )).matches() ) {
                 sign = -1;
@@ -715,7 +712,7 @@
                 if( prelimAns[y+1][1] == 0 && muckedOp[y].compareTo("/") == 0 ) {
                     System.out.println("divide by zero -breaking out of loop TWO_XDGTS: " + TWO_XDGTS );
                     for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
-                    	System.out.println("before reset opDgts1[" + j + "][" + pdx + "]: " + opDgts1[j][pdx] + " opDgts2[" + j + "][" + pdx + "]: " + opDgts2[j][pdx]);
+                        System.out.println("before reset opDgts1[" + j + "][" + pdx + "]: " + opDgts1[j][pdx] + " opDgts2[" + j + "][" + pdx + "]: " + opDgts2[j][pdx]);
                         opDgts1[j][pdx] = opDgts1[j][0];
                         opDgts2[j][pdx] = opDgts2[j][0];
                         System.out.println("after reset opDgts1[" + j + "][" + pdx + "]: " + opDgts1[j][pdx] + " opDgts2[" + j + "][" + pdx + "]: " + opDgts2[j][pdx]);
@@ -724,7 +721,7 @@
                     continue outer;
                 }
                 prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
-                prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
+                prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1],
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
                 prelimAns[y], junk );
                 System.out.println(prelimAns[y][1] + " dp " + prelimDp[y]);
@@ -749,7 +746,7 @@
                     continue outer;
                 }
                 prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
-                prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
+                prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1],
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
                 prelimAns[y], junk );
                 finalMucked[pdx] = prelimAns[y][1];
@@ -757,16 +754,16 @@
                 muckedDp[pdx] = prelimDp[y];
                 System.out.println(finalMucked[pdx] + " mucked dp " + muckedDp[pdx]);
                 prelimAns[y+1][1] = prelimAns[y][1];
-                prelimDp[y+1] = prelimDp[y]; 
+                prelimDp[y+1] = prelimDp[y];
             }
-        }      
-        
+        }
+
         doubleMucked[pdx] = finalMucked[pdx]*Math.pow(10, -muckedDp[pdx]);
         muckedString[pdx] = Format.getFormat( finalMucked[pdx], muckedDp[pdx], true );
         String muckNoComma = Format.getFormat( finalMucked[pdx], muckedDp[pdx], false );
         System.out.println("finalMucked[" + pdx + "] = " + finalMucked[pdx] + " muckedDp = " + muckedDp[pdx] + " string version = " + muckedString[pdx]);
         // eliminate any duplicate
-        
+
         //if( muckedString[pdx].equals(actual[1]) ) { // can't handle xy.0 == xy == xy. fixit
         if( Float.valueOf(muckNoComma).floatValue() == Float.valueOf(actNoComma[1]).floatValue() ) { // can't handle , fixit
             System.out.println("duplicate to actualInt" );
@@ -789,9 +786,9 @@
                 }
             }
         }
-       	pdx = pdx + 1;
+        pdx = pdx + 1;
     }
-    
+   
     Question[] questions = new Question[maxQstns];
     for( int i = 0; i < maxQstns; ++i ) {
         questions[i] = new Question();
@@ -820,12 +817,12 @@
             questions[firstMucked].setQuesAns( "false" );
         } else {
             questions[firstMucked].setQuesText(  "Is greater than " + actual[0]);
-            questions[firstMucked].setQuesAns( "true" );          
+            questions[firstMucked].setQuesAns( "true" );
         }
         String txt = questions[firstMucked].getQuesText();
         //System.out.println("question[" + firstMucked + "] = " + txt );
         firstMucked = firstMucked + 1;
-    } else if( whichOtherQuestion >= uBndQstn ) {     
+    } else if( whichOtherQuestion >= uBndQstn ) {
         if( whichOtherQuestion == uBndQstn ) {
             questions[firstMucked].setQuesText("Is greater than " + actual[2]);
             questions[firstMucked].setQuesAns( "false" );
@@ -858,13 +855,13 @@
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
         }
-        
+
         for( int idx = firstMucked, x = 1; idx < nMucked; ++idx, ++x ) {
             //ten2pow = (int)Math.pow(10,nDigsAct[1]-1); //+muckedDp[idx]);
             //int x = idx;
             questions[idx].setQuesText("Answer equals     " + muckedString[x] );
             //long junk3 = finalMucked[idx]/ten2pow;
-            //System.out.println("doubleMucked[" + idx + "] = " + doubleMucked[idx] + " mucked msd = " + junk3);       
+            //System.out.println("doubleMucked[" + idx + "] = " + doubleMucked[idx] + " mucked msd = " + junk3);
             // if it's in range and has correct msd, possible
             long absMucked = Math.abs(finalMucked[x]);
             int digsMuckedM1 = absMucked > 0 ? (int)(Math.log10(absMucked)) : 1 ;
@@ -872,7 +869,7 @@
             System.out.println("absMucked = " + absMucked + " digsMuckedM1 = " + digsMuckedM1 + " muckedMostDig = " + muckedMostDig);
             System.out.println("doubleMin = " + doubleMin + " doubleMucked[" + x + "] = " + doubleMucked[x] + " doubleMax = " + doubleMax);
             System.out.println("finalMucked[" + x + "] = " + finalMucked[x] + " muckedMostDig = " + muckedMostDig + " mostDig = " + mostDig);
-            if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
+            if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax &&
                     muckedMostDig == mostDig ) {
                 questions[idx].setAltAns( "possible" );
                 possibleCount++;
@@ -969,7 +966,7 @@
                     mDpCopy = mDpCopy - 1;
                 }
             }
-            if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
+            if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax &&
                     leastDigx == leastDig && actpow == ten2pow &&
                     mDpCopy == rightDp ) {
                 questions[idx].setAltAns( "possible" );
@@ -998,7 +995,7 @@
         questions[nMucked].setAltAns( "possible" );
     }
 
-    //String txt = questions[nMucked].getQuesText();  
+    //String txt = questions[nMucked].getQuesText();
     //System.out.println("question[" + nMucked + "] = " + txt );
 
     // LFSR to scramble questions
@@ -1028,31 +1025,31 @@
     </th>
     </tr>
     <tr>
-        <td><input type="checkbox" value="Addition" name="addition" 
+        <td><input type="checkbox" value="Addition" name="addition"
                    id="addition"
                    <%=isAddition%> onclick="checkOne()">
         </td>
         <td name="pLables">Addition</td>
-        <td><input type="checkbox" value="Multiplication" name="multiplication" 
+        <td><input type="checkbox" value="Multiplication" name="multiplication"
                    id="multiplication"
                    <%=isMultiplication%> onclick="checkOne()">
         </td>
         <td name="pLables">Multiplication</td>
-        <td><input type="checkbox" value="Subtraction" name="subtraction" 
+        <td><input type="checkbox" value="Subtraction" name="subtraction"
                    id="subtraction"
                    <%=isSubtraction%> onclick="checkOne()">
         </td>
         <td name="pLables">Subtraction</td>
-        <td><input type="checkbox" value="Division" name="division" 
+        <td><input type="checkbox" value="Division" name="division"
                    id="division"
                    <%=isDivision%> onclick="checkOne()">
         </td>
         <td name="pLables">Division</td>
-        <td><input type="checkbox" value="Decimals" name="decimals" 
+        <td><input type="checkbox" value="Decimals" name="decimals"
                    <%=isDecimals%> onclick="checkOne()">
         </td>
         <td><label>With Decimals</label></td>
-        <td><input type="checkbox" value="Negatives" name="negatives" 
+        <td><input type="checkbox" value="Negatives" name="negatives"
                    <%=isNegatives%> onclick="checkOne()">
         </td>
         <td><label>With Negative Numbers</label></td>
@@ -1077,28 +1074,28 @@
 </table>
 <table>
 <tr>
-<td>                        
+<td>
 <table>
-    
+
     <tr class="hdrRow">
     <td></td>
     <td></td>
     <th colspan=1 class="hdr">True</th>
     <th colspan=1 class="hdr">Possible</th>
     <th colspan=1 class="hdr">False</th>
-    <th colspan=2><div class="blank">Acceptable Answers</div></th> 
+    <th colspan=2><div class="blank">Acceptable Answers</div></th>
     </tr>
-    
-<%      for( int i = 0; i < 4; ++i ) { 
+
+<%      for( int i = 0; i < 4; ++i ) {
             Integer k = scramble.firstKey();
             Question q = scramble.remove( k );
             String quesText = q.getQuesText();
             String quesAns = q.getQuesAns();
             String altAns = q.getAltAns();
-            int x = q.getOrderIndex(); 
+            int x = q.getOrderIndex();
             String name = "q" + i;
             String qid = "q" + i;
-            String aid = "a" + i;  
+            String aid = "a" + i;
             String lid = "l" + i; %>
         <tr>
             <td>
@@ -1147,44 +1144,44 @@
 </td>
 <td>
 <table>
-<tr>    
+<tr>   
     <td><label>Problems Attempted</label></td>
-    <td>
-    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
-           class="blackbox">
+    <td class="score" >
+    <input type="hidden" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox"><%=numAttmptdV%>
     </td>
 </tr>
 <tr>
-    <td><label>Completed Without Error</label></td>   
-    <td>
-    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
-           class="blackbox">
+    <td><label>Completed Without Error</label></td>
+    <td class="score" >
+    <input type="hidden" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox"><%=numWoErr%>
     </td>
 </tr>
 <tr>
-    <td><label>Consecutive Without Error</label></td>   
-    <td>
-    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
-           class="blackbox">
+    <td><label>Consecutive Without Error</label></td>
+    <td class="score" >
+    <input type="hidden" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox"><%=consWoErr%>
     </td>
 </tr>
 <tr>
-    <td><label>Correct Per Hour</label></td>   
-    <td>
-    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
-           class="blackbox">
+    <td><label>Correct Per Hour</label></td>
+    <td class="score" >
+    <input type="hidden" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox"><%=corrPerHr%>
     </td>
 </tr>
 <tr>
     <td><label>Errors This Problem</label></td>
     <td><input type="text" id="errs" name="errs" value="<%=errs%>"
-               class="blackbox"></td>
+               class="blackbox" disabled></td>
 </tr>
 <tr>
     <td></td>
     <td></td>
 </tr>
-</table>  
+</table> 
 </td>
 </tr>
 </table>
@@ -1207,9 +1204,9 @@
 </form>
 <%!
     static int op( String operator, int MAX_DGTS, boolean decimalsCk,
-            long operand1, int decPt1, long operand2, int decPt2, 
+            long operand1, int decPt1, long operand2, int decPt2,
             int nDgts1, int nDgts2, boolean isNeg1, boolean isNeg2,
-            long [] actualInt, String [] expl ) { 
+            long [] actualInt, String [] expl ) {
         System.out.println("op just starting operator = " + operator + " decimalsCK = " + decimalsCk + " operand1 = " + operand1 );
         System.out.println("decPt1 = " + decPt1 + " operand2 = " + operand2 + " decPt2 = " + decPt2 + " nDgts1 = " + nDgts1 + " nDgts2 = " + nDgts2);
         System.out.println(" isNeg1 = " + isNeg1 + " isNeg2 = " + isNeg2);
@@ -1228,7 +1225,7 @@
 
         int ten2pow = (int)Math.pow(10, nDgts1 - 1);
         // round to one significant digit
-        if( ten2pow != 0 ) {            
+        if( ten2pow != 0 ) {
             if( isNeg1 ) {
                 round1up = ten2pow*(operand1/ten2pow);
                 round1down = -ten2pow*((ten2pow + absOp1)/ten2pow);
@@ -1240,10 +1237,9 @@
             // not sure how this would happen
             System.out.println("nDgts1 = " + nDgts1 + " ten2pow = " + ten2pow);
         }
-
         ten2pow = (int)Math.pow(10, nDgts2 - 1);
         // round to one significant digit
-        if( ten2pow != 0 ) {         
+        if( ten2pow != 0 ) {
             if( isNeg2 ) {
                 round2up = ten2pow*(operand2/ten2pow);
                 round2down = -ten2pow*((ten2pow + absOp2)/ten2pow);
@@ -1258,7 +1254,7 @@
 
 
         if( operator.compareTo("+") == 0 ||
-            operator.compareTo("-") == 0 ) {   
+            operator.compareTo("-") == 0 ) {
             int factor1 = 1;
             int factor2 = 1;
 
@@ -1330,38 +1326,38 @@
             ten2pow = factor1 > factor2? factor1 : factor2; //(int)Math.pow(10,decPtAct);
             if( operator.compareTo("+") == 0 ) {
                 // if real answer is positive, don't let lower range be negative
-                if( operand1*Math.pow(10,-decPt1) + operand2*Math.pow(10, -decPt2) > 0 && 
+                if( operand1*Math.pow(10,-decPt1) + operand2*Math.pow(10, -decPt2) > 0 &&
                         round2down*Math.pow(10, -decPt2) + round1down*Math.pow(10, -decPt1) < 0 ) {
                     round1down = 0;
                     round2down = 0;
                 // if real answer is negative, don't let upper range be positive
-                } else if( operand1*Math.pow(10,-decPt1) + operand2*Math.pow(10, -decPt2)  < 0 && 
+                } else if( operand1*Math.pow(10,-decPt1) + operand2*Math.pow(10, -decPt2)  < 0 &&
                         round2up*Math.pow(10, -decPt2) + round1up*Math.pow(10, -decPt1) > 0 ) {
                     round1up = 0;
                     round2up = 0;
                 }
                 actualInt[2] = (factor1*round1up + factor2*round2up);
                 actualInt[1] = factor1*operand1 + factor2*operand2;
-                actualInt[0] = (factor1*round1down + factor2*round2down); 
+                actualInt[0] = (factor1*round1down + factor2*round2down);
                 if( isNeg2 ) {
-                    expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                    expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator +
                             " ( "  + Format.getFormat( round2up, decPt2, true )  + " ) ";
-                    expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                    expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator +
                             " ( " + Format.getFormat( round2down, decPt2, true ) + " ) ";
                 } else {
-                    expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                    expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator +
                             " " + Format.getFormat( round2up, decPt2, true );
-                    expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                    expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator +
                             " " + Format.getFormat( round2down, decPt2, true );
                 }
             } else {
                 // if real answer is positive, don't let lower range be negative
-                if( operand1*Math.pow(10,-decPt1) >= operand2*Math.pow(10, -decPt2) && 
+                if( operand1*Math.pow(10,-decPt1) >= operand2*Math.pow(10, -decPt2) &&
                         round2up*Math.pow(10, -decPt2) > round1down*Math.pow(10, -decPt1) ) {
                     round1down = 0;
                     round2up = 0;
                 // if real answer is negative, don't let upper range be positive
-                } else if( operand1*Math.pow(10,-decPt1) < operand2*Math.pow(10, -decPt2) && 
+                } else if( operand1*Math.pow(10,-decPt1) < operand2*Math.pow(10, -decPt2) &&
                         round2down*Math.pow(10, -decPt2) < round1up*Math.pow(10, -decPt1) ) {
                     round1up = 0;
                     round2down = 0;
@@ -1374,12 +1370,12 @@
                     round2down = -round2down;
                     round2up = -round2up;
                 }
-                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator +
                         " " + Format.getFormat( round2down, decPt2, true );
-                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator +
                         " " + Format.getFormat( round2up, decPt2, true );
             }
-            
+
         } else if(  operator.compareTo("*") == 0  ) {
             decPtAct = decPt1 + decPt2;
             //ten2pow = (int)Math.pow(10,decPtAct);
@@ -1393,7 +1389,7 @@
             } else if( isNeg1 ) {
                 long tmp = round2up;
                 round2up = round2down;
-                round2down = tmp;  
+                round2down = tmp;
             } else if( isNeg2 ) {
                 long tmp = round1up;
                 round1up = round1down;
@@ -1404,14 +1400,14 @@
             actualInt[1] = operand1 * operand2;
             actualInt[0] = round1down * round2down;
             if( isNeg2 ) {
-                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator +
                         " ( "  + Format.getFormat( round2up, decPt2, true )  + " ) ";
-                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator +
                         " ( " + Format.getFormat( round2down, decPt2, true ) + " ) ";
             } else {
-                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator + 
+                expl[2] = Format.getFormat( round1up, decPt1, true ) + " " + operator +
                         " " + Format.getFormat( round2up, decPt2, true );
-                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator + 
+                expl[0] = Format.getFormat( round1down, decPt1, true ) + " " + operator +
                         " " + Format.getFormat( round2down, decPt2, true );
             }
             //System.out.println("op decPt1 " + decPt1 + " decPt2 " + decPt2 + " decPtAct " + decPtAct);
@@ -1461,7 +1457,7 @@
             if( isNeg2 != isNeg1 ) {
                 long tmp = round2down;
                 round2down = round2up;
-                round2up = tmp; 
+                round2up = tmp;
                 actualInt[1] = -actualInt[1];
             }
 
@@ -1476,18 +1472,19 @@
                 actualInt[2] = -actualInt[2];
             }
             if( isNeg2 ) {
+
                 round2down = -round2down;
                 round2up = -round2up;
-            } 
+            }
             if( isNeg2 ) {
-                expl[0] = Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                expl[0] = Format.getFormat( operand1, decPt1, true ) + " " + operator +
                         " ( " + Format.getFormat( round2up, decPt2, true ) + " ) ";
-                expl[2] =  Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                expl[2] =  Format.getFormat( operand1, decPt1, true ) + " " + operator +
                         " ( " + Format.getFormat( round2down, decPt2, true ) + " ) ";
             } else {
-                expl[0] = Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                expl[0] = Format.getFormat( operand1, decPt1, true ) + " " + operator +
                         " " + Format.getFormat( round2up, decPt2, true );
-                expl[2] =  Format.getFormat( operand1, decPt1, true ) + " " + operator + 
+                expl[2] =  Format.getFormat( operand1, decPt1, true ) + " " + operator +
                         " " + Format.getFormat( round2down, decPt2, true );
             }
         }
@@ -1508,3 +1505,34 @@
 %>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

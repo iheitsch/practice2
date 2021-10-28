@@ -66,7 +66,9 @@ th {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
 }
-
+.invisible {
+    border: none;
+}
 .left {
   transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
@@ -155,6 +157,9 @@ th {
 
 .num{
     border-bottom: 2px solid #005511;
+}
+.score{
+	text-align: right;
 }
 /* table cell with space, carry, or decimal point */
 .t2 {

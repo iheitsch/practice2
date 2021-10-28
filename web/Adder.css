@@ -52,6 +52,9 @@ td {
     min-height: 8em;
     text-align: left;
 }
+.score{
+	text-align: center;
+}
 .tbl {
   border: 2px solid black;
   background-color: white;

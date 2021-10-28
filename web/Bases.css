@@ -142,6 +142,9 @@ th{
 .rightsd{
 	float: right;
 }
+.score{
+	text-align: center;
+}
 .shortbox {
   width: 4em;
   min-width: 4em;

@@ -652,35 +652,35 @@ for( int row = 0; row < maxrow; ++row ) { %>
 <tr>    
     <td><label>Sets Attempted</label></td>
     <td>
-    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
-           class="blackbox">
+    <input type="hidden" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox"><%=numAttmptdV%>
     </td>
 </tr>
 <tr>
     <td><label>Completed Without Error</label></td>   
     <td>
-    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
-           class="blackbox">
+    <input type="hidden" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox"><%=numWoErr%>
     </td>
 </tr>
 <tr>
     <td><label>Consecutive Without Error</label></td>   
     <td>
-    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
-           class="blackbox">
+    <input type="hidden" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox"><%=consWoErr%>
     </td>
 </tr>
 <tr>
     <td><label>Correct Per Hour</label></td>   
     <td>
-    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
-           class="blackbox">
+    <input type="hidden" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox"><%=corrPerHr%>
     </td>
 </tr>
 <tr>
     <td><label>Errors This Set</label></td>
     <td><input type="text" id="errs" name="errs" value="<%=errs%>"
-               class="blackbox"></td>
+               class="blackbox" disabled></td>
 </tr>
 <tr>
 <td>

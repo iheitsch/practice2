@@ -61,6 +61,9 @@ button {
     text-align: left;
     /* background-color: green; */
 }
+.score{
+	text-align: center;
+}
 .tbl {
   border: 2px solid black;
   margin-top: 0.2em;

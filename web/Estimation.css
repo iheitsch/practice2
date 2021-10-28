@@ -62,6 +62,9 @@ td {
 .red{
     color: red;
 }
+.score{
+	text-align: center;
+}
 .xc{
     min-width: 2em;
 }

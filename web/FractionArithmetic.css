@@ -49,6 +49,10 @@ td{
     border-width: 2px;
     background-color: #7c6a6a;
 }
+.darkbk{
+	color: #dcd6d6;
+	text-align: right;
+}
 .right {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
