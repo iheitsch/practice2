@@ -173,6 +173,31 @@ window.onload = function() {
 	xygraph.innerHTML += htmseg;
 	htmseg = '<line x1="22" y1="222" x2="422" y2="222" style="stroke:rgb(255,200,200);stroke-width:2" />';
 	xygraph.innerHTML += htmseg;
+	htmseg = '<polygon points="424,222 422,212 444,222 422,232" ';
+	htmseg += 'style="fill:rgb(255,230,179);stroke:rgb(179,143,0);stroke-width:1" />';
+	xygraph.innerHTML += htmseg;
+	htmseg = '<polygon points="222,18 232,22 222,0 212,22" ';
+	htmseg += 'style="fill:rgb(255,230,179);stroke:rgb(179,143,0);stroke-width:1" />';
+	xygraph.innerHTML += htmseg;
+	htmseg = '<text x="428" y="214" fill="rgb(179,143,0)" >X</text>';
+	xygraph.innerHTML += htmseg;
+	htmseg = '<text x="228" y="16" fill="rgb(179,143,0)" >Y</text>';
+	xygraph.innerHTML += htmseg;
+	var offs = 62;
+	for( var i = 8; i > -10; i -= 2 ) {
+		htmseg = '<text x="222" y="' + offs + '" fill="rgb(255,200,200)" >' + i + '</text>';
+		xygraph.innerHTML += htmseg;
+		offs += 40;
+	}
+	offs = 45;
+	for( var i = -8; i < 10; i += 2 ) {
+		if( i=== 0 ) {
+			offs += 7;
+		}
+		htmseg = '<text x="' + offs + '" y="234" fill="rgb(255,200,200)" >' + i + '</text>';
+		xygraph.innerHTML += htmseg;
+		offs += 40;
+	}
 	lastPt = Number(doc.getElementById("lastPt").value);
 	if( doc.getElementById("initlzd").value === "true" && nextI < lastPt ) {
 		doc.getElementById("consWoErr").value = '0';
