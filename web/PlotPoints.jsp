@@ -50,7 +50,7 @@ int [] ypoints = new int[MAXPTS]; %>
 <% 	try{
 		connection = DriverManager.getConnection(connectionUrl+database, userid, password);
 		statement=connection.createStatement();
-		String sql ="SELECT table_name FROM information_schema.tables WHERE table_schema = 'dot2dots'";
+		String sql ="SELECT table_name, table_rows FROM information_schema.tables WHERE table_schema = 'dot2dots' order by table_rows";
 		resultSet = statement.executeQuery(sql);
 		while(resultSet.next()){
 			slctopts[jdx] = resultSet.getString("table_name");

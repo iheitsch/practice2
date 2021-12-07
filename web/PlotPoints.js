@@ -184,17 +184,21 @@ window.onload = function() {
 	htmseg = '<text x="228" y="16" fill="rgb(179,143,0)" >Y</text>';
 	xygraph.innerHTML += htmseg;
 	var offs = 62;
+	offs = 67;
 	for( var i = 8; i > -10; i -= 2 ) {
-		htmseg = '<text x="222" y="' + offs + '" fill="rgb(255,200,200)" >' + i + '</text>';
+		//htmseg = '<text x="222" y="' + offs + '" fill="rgb(255,200,200)" >' + i + '</text>';
+		htmseg = '<text x="222" y="' + offs + '" fill="rgb(255,102,102)" >' + i + '</text>';
 		xygraph.innerHTML += htmseg;
 		offs += 40;
 	}
 	offs = 45;
+	offs = 50;
 	for( var i = -8; i < 10; i += 2 ) {
 		if( i=== 0 ) {
 			offs += 7;
 		}
-		htmseg = '<text x="' + offs + '" y="234" fill="rgb(255,200,200)" >' + i + '</text>';
+		//htmseg = '<text x="' + offs + '" y="234" fill="rgb(255,200,200)" >' + i + '</text>';
+		htmseg = '<text x="' + offs + '" y="234" fill="rgb(255,102,102)" >' + i + '</text>';
 		xygraph.innerHTML += htmseg;
 		offs += 40;
 	}
