@@ -39,7 +39,7 @@ int yval = xsign*(int)(MAXPT*Math.random());
 int idx = 0;
 int jdx = 0;
 int kdx = 0;
-String [] slctopts = new String[20];
+String [] slctopts = new String[30];
 int [] xpoints = new int[MAXPTS];
 int [] ypoints = new int[MAXPTS]; %>
 
