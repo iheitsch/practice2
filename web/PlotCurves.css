@@ -1,0 +1,108 @@
+@charset "UTF-8";
+a{
+	color: #f9f2ec;
+}
+body
+{
+	/* background: #ecf0f8; */
+	background: #663300;
+	position:absolute;
+	padding:0;
+	margin:0;
+	font-family: Copperplate, Copperplate Gothic Light, fantasy;
+	color: #f9f2ec;
+}
+button{
+	font: inherit;
+}
+
+input{
+	width: 2em;
+	font: inherit;
+}
+table{
+	border: 1px solid 	#4e4c32;
+}
+.c0{
+	background: #68e514;
+	color: #4e4c32;
+	/* green */
+}
+.c1{
+	background: #ffdb4d;
+	color: #4e4c32;
+	/* yellow*/
+}
+.c2{
+	background: #ff6600;
+	color: #f9f2ec;
+	/* orange */
+}
+.c3{
+	background: #cc3300;
+	color: #f9f2ec;
+	/* background: #e60000; burgundy */
+}
+.invisible{
+	border: none;
+	text-align: right;
+	color: #663300;
+}
+.line
+{
+	position:absolute;
+}
+.rightsd{
+	float: right;
+}
+.slct{
+	font: inherit;
+	border: none;
+	width: 9em;
+	min-width: 9em;
+	max-width: 9em;
+	text-align: center;
+	position: fixed;
+	left: 50px;
+	top: 35px;
+}
+.title{
+		border: 2px solid #ffcc00;
+		/* 4e4c32; */
+}
+#bottomleft{
+	position: fixed;
+	left: 2px;
+	bottom: 5px;
+}
+#instr2{
+	position: fixed;
+	left: 220px;
+	top: 35px;
+}
+#instrs{
+	position: fixed;
+	left: 50px;
+	top: 15px;
+}
+#preload {
+	height:0;
+	overflow:hidden;
+}
+#score{
+	position: fixed;
+	top: 5em;
+	right: 2px;
+}
+#whatpts{
+	position: absolute;
+	top: 90px;
+	left: 10px;
+}
+#xygraph{
+	position: absolute;
+	top: 90px;
+	left: 80px;
+	width: 444px;
+	height: 444px;
+}
