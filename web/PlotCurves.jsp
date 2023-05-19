@@ -122,6 +122,7 @@ if(( tmp = request.getParameter("chs")) != null) {
         }
 	}
     System.out.println("whatTable: " + whatTable);
+    currline = 0;
     if( whatTable.equals("Lines") ) {
     	whatlines = Integer.parseInt(whatcurves);
     	currline = Integer.parseInt(currcurve);
@@ -142,9 +143,18 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    		// generate all the lines at once and store in arrays
 	    		for( idx = 1; idx < totlines; idx++ ) {
 		    		sign = 2*Math.random() > 1? 1 : -1;
-	   				rise = 1 + (int)(9*Math.random());
-	   				run = 1 + (int)(9*Math.random());
-	   				slope[idx] = sign*rise/run;
+		    		boolean duplicate = true;
+		    		while( duplicate ) {
+		    			duplicate = false;
+		   				rise = 1 + (int)(9*Math.random());
+		   				run = 1 + (int)(9*Math.random());
+		   				slope[idx] = sign*rise/run;
+		   				for( int i = 0; i < idx; ++i ) {
+		   					if( slope[i] == slope[idx] ) {
+		   						duplicate = true;
+		   					}
+		   				}
+		    		}
 	   				intercept[idx] = intercept[idx-1];
 	    		}
 	    	} else if( whatlines == 2 ) {
@@ -152,7 +162,16 @@ if(( tmp = request.getParameter("chs")) != null) {
 	   			totlines = MAXCURVES;
 	   			for( idx = 1; idx < totlines; idx++ ) {
 		   			slope[idx] = slope[idx-1];
-	    			intercept[idx] = (int)(20*Math.random()) - 10;
+		   			boolean duplicate = true;
+		    		while( duplicate ) {
+		    			duplicate = false;
+	    				intercept[idx] = (int)(20*Math.random()) - 10;
+	    				for( int i = 0; i < idx; ++i ) {
+		   					if( intercept[i] == intercept[idx] ) {
+		   						duplicate = true;
+		   					}
+		   				}
+		    		}
 	   			}
 	   		} else {
 	   			// perpendicular
@@ -212,7 +231,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 
 <span>
 
-<select id="chs" name="chs" class="slct" onchange="startAgain()" >   
+<select id="chs" name="chs" class="slct" onclick="startAgain()" >   
 	<option <%=isSelected%> >Select</option>
 <% 	for( kdx = 0; kdx < jdx; ++kdx ) { 
 		String sel = slctopts[kdx]; %>

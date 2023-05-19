@@ -13,8 +13,9 @@ var lastPt;
 var curvetype;
 var whichcurve;
 // these are too light fixit
-//var colors = ["#68e514", "#ffdb4d", "#ff6600", "#cc3300", "#663300", "red"];
-var colors = ["#58d504", "#ffcc00", "#ef5600", "#bc2300", "#562300", "red"];
+//var colors = ["#68e514", "#ffb31a", "#ff6600", "#cc0000", "#663300", "red"];
+///////////////green	gold		orange		burgundy	chocolate
+var colors = ["#33cc33", "#ffbf80", "#ef5600", "#cc0000", "#562300", "red"];
 
 function skip() {
      document.getElementById("errct").value = 1;
@@ -30,6 +31,7 @@ function drawLine( x1, y1, x2, y2 ) {
 	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += htmseg;
 }
+// needs to count correct if you click anywhere along the line or if you drag the mouse along the line fixit
 function checkPt( ev ){
 	ev = ev || window.event;
 	var mousePos = mouseCoords( ev );
@@ -74,6 +76,7 @@ function checkPt( ev ){
 			doc.getElementById("instr2").innerHTML = "";
 			expXBx.type = "hidden";
 			expYBx.type = "hidden";
+			doc.getElementById("whichcurves").value = "0";
 			var e = document.getElementById("chs");
 			var curvetype = e.options[e.selectedIndex].text;
 			//alert("whichcurve: " + whichcurve + " curvetype: " + curvetype);
@@ -89,8 +92,7 @@ function checkPt( ev ){
 				param2 = doc.getElementById(id).value;
 				//alert("param1,2[ "  + i + " ]: " + param1 + ", " + param2)
 				drawcurve( curvetype, num(param1), num(param2), i );
-			}
-			
+			}			
 		} else {
 			startAgain();
 		}
@@ -198,6 +200,7 @@ function drawcurve( type, par1, par2, cls ) {
 	//htmseg += '" x2="242" y2="202" style="stroke:rgb(255, 0, 0);stroke-width:1" />';			
 	//xygraph.innerHTML += htmseg;
 }
+//if someone clicks the select in the middle of a set, it gets hosed fixit
 function startAgain() {
     var doc = document;
     var Num = Number;
