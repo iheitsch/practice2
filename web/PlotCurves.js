@@ -2,13 +2,19 @@
  * 
  */
 
-var orgX = 302;
-var orgY = 282;
+var orgX = 302; // xygraph left + 1/2*width
+var orgY = 312; // xygraph top + 1/2 height
 var nextI = 0;
 var prevX;
 var prevY;
 var allgood = true;
 var lastPt;
+// store curve type and parameters for redrawing
+var curvetype;
+var whichcurve;
+// these are too light fixit
+//var colors = ["#68e514", "#ffdb4d", "#ff6600", "#cc3300", "#663300", "red"];
+var colors = ["#58d504", "#ffcc00", "#ef5600", "#bc2300", "#562300", "red"];
 
 function skip() {
      document.getElementById("errct").value = 1;
@@ -31,12 +37,14 @@ function checkPt( ev ){
 	var num = Number;	
 	var pct = 0.05;
 	var pxlsprsq = 20;
-	var nomX = doc.getElementById("expX").value;
-	var nomY = doc.getElementById("expY").value;
+	var expXBx = doc.getElementById("expX");
+	var expYBx = doc.getElementById("expY");
+	var nomX = expXBx.value;
+	var nomY = expYBx.value;
 	var dotX = 222+num(nomX)*pxlsprsq;
 	var dotY = 222-num(nomY)*pxlsprsq;
-	var expX = num(doc.getElementById("expX").value)*pxlsprsq + orgX;
-	var expY = -num(doc.getElementById("expY").value)*pxlsprsq + orgY;		
+	var expX = num(nomX)*pxlsprsq + orgX;
+	var expY = -num(nomY)*pxlsprsq + orgY;		
 	var lowX = expX - pct*expX;
 	var highX = expX + pct*expX;
 	var lowY = expY - pct*expY;
@@ -56,14 +64,35 @@ function checkPt( ev ){
 			var parent = hbar[i].parentNode;
 			parent.removeChild(hbar[i]);
 		}
+
 		if( nextI < lastPt ) {
-			doc.getElementById("expX").value = doc.getElementById("x" + nextI).value;
-			doc.getElementById("expY").value = doc.getElementById("y" + nextI).value;
-		} else {
+			expXBx.value = doc.getElementById("x" + nextI).innerHTML;
+			expYBx.value = doc.getElementById("y" + nextI).innerHTML;
+		} else if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ){
+			// what if you want to keep doing the same kind of problem fixit
 			doc.getElementById("instrs").innerHTML = "Choose another";
 			doc.getElementById("instr2").innerHTML = "";
-			doc.getElementById("expX").type = "hidden";
-			doc.getElementById("expY").type = "hidden";
+			expXBx.type = "hidden";
+			expYBx.type = "hidden";
+			var e = document.getElementById("chs");
+			var curvetype = e.options[e.selectedIndex].text;
+			//alert("whichcurve: " + whichcurve + " curvetype: " + curvetype);
+			var param1;
+			var param2;
+			var id;
+			for( var i = 0; i <= whichcurve; i += 1 ) {
+				id = "whichparam1_" + i;
+				//alert("getElement ID " + id);
+				param1 = doc.getElementById(id).value;
+				id = "whichparam2_" + i;
+				//alert("getElement ID " + id);
+				param2 = doc.getElementById(id).value;
+				//alert("param1,2[ "  + i + " ]: " + param1 + ", " + param2)
+				drawcurve( curvetype, num(param1), num(param2), i );
+			}
+			
+		} else {
+			startAgain();
 		}
 	} else {
 		var errct = Number(doc.getElementById("errct").value);
@@ -115,10 +144,65 @@ function mouseCoords(ev){
 		y:ev.clientY + doc.body.scrollTop  - doc.body.clientTop
     }; 
 } 
+// draw smoothed, extended and labelled curve
+function drawcurve( type, par1, par2, cls ) {
+    var num = Number;
+	var mat = Math;
+	//alert("type: " + type + "  param1: " + par1 + " param2 " + par2);
+	var xygraph = document.getElementById("xygraph");
+	var graphxo = 222;
+	var graphyo = 222;
+	var gridspace = 20;
+	var xstart = -10;
+	var xstop = 10;
+	var slope = num(par1);
+	var intercept = num(par2);
+	var ystart = slope*xstart + intercept;
+	var ystop = slope*xstop + intercept;
+	//alert("xstart: " + xstart + " ystart: " + ystart + " xstop: " + xstop + " ystop: " + ystop);
+	// make sure endpoints are on the graph
+	if( ystart < -10 ) {
+		ystart = -10;
+		xstart = (ystart - intercept)/slope;
+	}
+	if( ystart > 10 ) {
+		ystart = 10;
+		xstart = (ystart - intercept)/slope;
+	}
+	if( ystop < -10 ) {
+		ystop = -10;
+		xstop = (ystop - intercept)/slope;
+	}
+	if( ystop > 10 ) {
+		ystop = 10;
+		xstop = (ystop - intercept)/slope;
+	}
+	//alert("limiting -10 to +10 xstart: " + xstart + " ystart: " + ystart + " xstop: " + xstop + " ystop: " + ystop);
+
+	
+	// convert to location on window
+	xstart = graphxo + mat.round(xstart*gridspace);
+	xstop = graphxo + mat.round(xstop*gridspace);
+	ystart = graphyo - mat.round(ystart*gridspace);
+	ystop = graphyo - mat.round(ystop*gridspace);
+	//alert("on graph xstart: " + xstart + " ystart: " + ystart + " xstop: " + xstop + " ystop: " + ystop);
+
+	cls = cls%colors.length;
+	//alert("color: " + colors[cls]);
+	var htmseg = '<line x1="' + xstart + '" y1="' + ystart;
+	htmseg += '" x2="' + xstop + '" y2="' + ystop;
+	htmseg += '" style="stroke:' + colors[cls] + ';stroke-width:2" />';			
+	xygraph.innerHTML += htmseg;
+	
+	//htmseg = '<line x1="' + graphxo + '" y1="' + graphyo;
+	//htmseg += '" x2="242" y2="202" style="stroke:rgb(255, 0, 0);stroke-width:1" />';			
+	//xygraph.innerHTML += htmseg;
+}
 function startAgain() {
     var doc = document;
     var Num = Number;
     var nitBx = doc.getElementById("initlzd");
+	//alert("nitBx value: " + nitBx.value );
 	if( nitBx.value === "true" ) {
 	    var errCt = Num(doc.getElementById("errct").value);
 	    var numAttmptd = Num(doc.getElementById("numAttmptd").value);
@@ -141,26 +225,31 @@ function startAgain() {
 	        doc.getElementById("corrPerHr").value = 
 	        Math.floor(3600000*Num(doc.getElementById("numWoErr").value)/timediff);
 	    }
+
 	} else {
 		nitBx.value = "true";
 	}
+		
     if( allgood ) {
         var whatForm = doc.getElementById('plots');
         whatForm.submit();
         return false;
     }
 }
+
 window.onload = function() {
 	var doc = document;
+	var num = Number;
 	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
 	xygraph.innerHTML += '<rect x="18" y="18" width="408" height="408" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="20" y="20" width="404" height="404" style="fill:rgb(255,255,255);" />';
+	// draw horizontal and vertical stripes to make a grid
 	for( var y = 22; y < 424; y += 20 ) {
 		var htmseg = '<line x1="22" y1="' + y;
 		htmseg += '" x2="422" y2="' + y;
-		htmseg += '" style="stroke:rgb(0,0,255);stroke-width:1" />';
+		htmseg += '" style="stroke:rgb(0,0,255);stroke-width:1" />';			
 		xygraph.innerHTML += htmseg;
 	}
 	for( var x = 22; x < 424; x += 20 ) {
@@ -202,8 +291,26 @@ window.onload = function() {
 		xygraph.innerHTML += htmseg;
 		offs += 40;
 	}
+	whichcurve = num(doc.getElementById("whichcurve").value);
+	var e = document.getElementById("chs");
+	var curvetype = e.options[e.selectedIndex].text;
+	//alert("whichcurve: " + whichcurve);
+	var param1;
+	var param2;
+	var id;
+	for( var i = 0; i < whichcurve; i += 1 ) {
+		id = "whichparam1_" + i;
+		//alert("getElement ID " + id);
+		param1 = doc.getElementById(id).value;
+		id = "whichparam2_" + i;
+		//alert("getElement ID " + id);
+		param2 = doc.getElementById(id).value;
+		//alert("param1,2[ "  + i + " ]: " + param1 + ", " + param2)
+		drawcurve( curvetype, num(param1), num(param2), i );
+	}
+	
 	lastPt = Number(doc.getElementById("lastPt").value);
 	if( doc.getElementById("initlzd").value === "true" && nextI < lastPt ) {
-		doc.getElementById("consWoErr").value = '0';
+		doc.getElementById("consWoErr").value = '0';		
 	}
 }
