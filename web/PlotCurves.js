@@ -2,7 +2,7 @@
  * 
  */
 
-var orgX = 382; // xygraph left + 1/2*width
+var orgX = 432; // xygraph left + 1/2*width
 var orgY = 312; // xygraph top + 1/2 height
 var nextI = 0;
 var prevX;
@@ -12,7 +12,10 @@ var lastPt;
 // store curve type and parameters for redrawing
 var curvetype;
 var whichcurve;
-var outline;
+//var outline;
+var instr3;
+var whatrow = new Array;
+yindex = 1;
 
 ///////////////green	gold		orange		burgundy	chocolate
 var colors = ["#33cc33", "#ffbf80", "#ef5600", "#cc0000", "#562300", "red"];
@@ -40,10 +43,10 @@ function checkPt( ev ){
 	var pct = 0.05;
 	var pxlsprsq = 20;
 	var cellheight = 23;
-	var expXBx = doc.getElementById("expX");
-	var expYBx = doc.getElementById("expY");
-	var nomX = expXBx.value;
-	var nomY = expYBx.value;
+	var expXBx = whatrow[0];
+	var expYBx = whatrow[yindex]; //doc.getElementById("expY");
+	var nomX = expXBx.innerHTML;
+	var nomY = expYBx.innerHTML;
 	var dotX = 222+num(nomX)*pxlsprsq;
 	var dotY = 222-num(nomY)*pxlsprsq;
 	var expX = num(nomX)*pxlsprsq + orgX;
@@ -61,15 +64,26 @@ function checkPt( ev ){
 		prevX = dotX;
 		prevY = dotY;
 		++nextI;
+		// remove remnants of showclick
 		var hbar = doc.getElementsByClassName("hbar");
 		var len = hbar.length;
 		for( var i = len - 1; i >= 0; --i  ) {
 			var parent = hbar[i].parentNode;
 			parent.removeChild(hbar[i]);
 		}
-
+		var styles; // = whatrow[0].getAttribute("style"); may want to strip out border and replace fixit
+			//if( styles ) {
+			//	styles += "border: none;";
+			//} else {
+				styles = "border: none;";
+			//}
+		var len = whatrow.length;
+		for( var i = 0; i < len; ++i ) {
+			whatrow[i].setAttribute("style", styles);
+		}
 		if( nextI < lastPt ) {
-			var stylewas = outline.getAttribute("style");
+			/* outline.setAttribute("style", styles); */
+			var stylewas = instr3.getAttribute("style");
 			//alert("stylewas: " + stylewas);
 			var strt = stylewas.indexOf("top");
 			var frstpart = stylewas.substring(0,strt);
@@ -81,15 +95,35 @@ function checkPt( ev ){
 			var newpos = num(wherewas) + cellheight;
 			//alert("wherewas: |" + wherewas + "| newpos: " + newpos);
 			var styles = frstpart + "top: " + newpos + "px;" + lastpart;
-			//alert("styles: " + styles);
-			outline.setAttribute("style", styles);
-			expXBx.value = doc.getElementById("x" + nextI).innerHTML;
-			expYBx.value = doc.getElementById("y" + nextI).innerHTML;
+			instr3.setAttribute("style", styles);
+			whatrow = doc.getElementsByClassName("r" + nextI);
+			styles = whatrow[0].getAttribute("style");
+			if( styles ) {
+				styles += "border: 2px solid white;";
+			} else {
+				styles = "border: 2px solid white;";
+			}
+			var len = whatrow.length;
+			for( var i = 0; i < len; ++i ) {
+				whatrow[i].setAttribute("style", styles);
+			}
+			
+			//expXBx.value = doc.getElementById("x" + nextI).innerHTML;
+			//expYBx.value = doc.getElementById("y" + nextI).innerHTML;
 		} else if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ){
 			doc.getElementById("instrs").innerHTML = "Choose another";
 			doc.getElementById("instr2").innerHTML = "";
-			expXBx.type = "hidden";
-			expYBx.type = "hidden";
+			var styles = "color: #663300;"
+				+ "border: none;"
+				+ "background-color: #663300;";
+			var removables = doc.getElementsByClassName("rem");
+			var len = removables.length;
+			
+			for( var i = 0; i < len; ++i ) {
+				removables[i].setAttribute("style", styles);
+			}
+			//expXBx.type = "hidden";
+			//expYBx.type = "hidden";
 			doc.getElementById("whichcurves").value = "0";
 			var e = document.getElementById("chs");
 			var curvetype = e.options[e.selectedIndex].text;
@@ -110,8 +144,10 @@ function checkPt( ev ){
 				param3 = doc.getElementById(id).value;
 				//alert("param1,2[ "  + i + " ]: " + param1 + ", " + param2)
 				drawcurve( curvetype, num(param1), num(param2), num(param3), i );
-			}			
-		} else {
+			}
+			var form = doc.getElementById("plots");
+  			form.removeChild( instr3 );			
+		} else { // plotted one curve, start another similar
 			startAgain();
 		}
 	} else {
@@ -333,20 +369,39 @@ window.onload = function() {
 		drawcurve( curvetype, num(param1), num(param2), num(param3), i );
 	}
 	
-	lastPt = Number(doc.getElementById("lastPt").value);
-	var howwide = doc.getElementById("whatpts").getAttribute("style");
-	//alert("howwide: " + howwide);
-	outline = doc.createElement("p");
-    outline.setAttribute("id", "outline");
-    var styles = "border: 2px solid white;"
-	    + "position: absolute;"
-	    + "top: 100px;"
-	    + "left: 78px;"
-	    + "height: 20px;"
-	    + "width: 60px;";
-    outline.setAttribute("style", styles);
-    var form = doc.getElementById("plots");
-  	form.appendChild( outline );
+	if( curvetype !== "Select") {
+		lastPt = Number(doc.getElementById("lastPt").value);
+		whatrow = doc.getElementsByClassName("r0");
+		var styles = whatrow[0].getAttribute("style");
+		if( styles ) {
+			styles += "border: 2px solid white;";
+		} else {
+			styles = "border: 2px solid white;";
+		}
+		var len = whatrow.length;
+		for( var i = 0; i < len; ++i ) {
+			whatrow[i].setAttribute("style", styles);
+		}
+	    instr3 = doc.createElement("label");
+	    styles = "position: absolute;"
+		    + "top: 103px;"
+		    + "left: 7px;"
+		    + "width: 120px;";
+		instr3.setAttribute("style", styles);
+		instr3.innerHTML = "Click on this point &#x2192;";
+	    var form = doc.getElementById("plots");
+	  	form.appendChild( instr3 );
+	} else {
+		var styles = "color: #663300;"
+			+ "border: none;"
+			+ "background-color: #663300;";
+		var removables = doc.getElementsByClassName("rem");
+		var len = removables.length;
+		
+		for( var i = 0; i < len; ++i ) {
+			removables[i].setAttribute("style", styles);
+		}
+	}
 
 	if( doc.getElementById("initlzd").value === "true" && nextI < lastPt ) {
 		doc.getElementById("consWoErr").value = '0';		

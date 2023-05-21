@@ -84,7 +84,7 @@ table{
 #instr2{
 	position: fixed;
 	left: 50px;
-	top: 55px;
+	top: 65px;
 }
 #instrs{
 	position: fixed;
@@ -104,12 +104,12 @@ table{
 #whatpts{
 	position: absolute;
 	top: 90px;
-	left: 80px;
+	left: 130px;
 }
 #xygraph{
 	position: absolute;
 	top: 90px;
-	left: 160px;
+	left: 210px;
 	width: 444px;
 	height: 444px;
 }

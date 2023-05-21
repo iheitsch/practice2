@@ -48,7 +48,7 @@ String isSelected = "selected";
 String itype = "hidden";
 String dbtype = "hidden";
 String instr2 = "";
-String comma = "";
+//String comma = "";
 jdx = 6;
 String [] slctopts = { "Lines", "Circles", " Ellipses", "Parabolas", "Hyperbolas", "Quadratics" };
 String [] isNowSelected = { "Lines", "Circles", " Ellipses", "Parabolas", "Hyperbolas", "Quadratics" };
@@ -123,7 +123,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 			isNowSelected[kdx] = "selected";
         	itype = "text";
 
-        	comma = ",";
+        	//comma = ",";
         	break;
         }
 	}
@@ -153,7 +153,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		   				rise[idx] = sign*(1 + (int)(9*Math.random()));
 		   				run[idx] = 1 + (int)(9*Math.random());
 		   				for( int i = 0; i < idx; ++i ) {
-		   					if( rise[i] == rise[idx] && run[i] == run[idx]) {
+		   					if( (double)rise[i]/run[i] == (double)rise[idx]/run[idx]) {
 		   						duplicate = true;
 		   					}
 		   				}
@@ -217,15 +217,24 @@ if(( tmp = request.getParameter("chs")) != null) {
 				rerun = rerun/pfactors[i];
 	   		}
    		}
-   		instr2 = "Y = ";
+   		String intermed = "";
+   		if( !(rerise ==1 && rerun == 1) ) { 
+   			intermed += rerise;
+   		}
+		if( rerun != 1 ) {
+   			intermed = "(" + intermed;
+   		}
    		if( rise[currline]*run[currline] < 0 ) {
-	    	instr2 += "-";
+	    	intermed = "-" + intermed;
 	    }
-	    instr2 += "(" + rerise;
+   		
 	    if( rerun != 1 ) {
-	    	instr2 += "/" + rerun;
+	    	intermed += "/" + rerun + ")";
 	    }
-	    instr2 += ")X";
+   		instr2 = "Plot the line: Y = ";
+   		
+	    instr2 += intermed;
+	    instr2 += "X";
 	    if( intercept[currline] != 0 ) {
 		    if( intercept[currline] < 0 ) {
 		    	instr2 += " - ";
@@ -246,18 +255,19 @@ if(( tmp = request.getParameter("chs")) != null) {
 <form id="plots">
 <table id="whatpts">
 <tr>
-<th class="title">X</th>
-<th class="title">Y</th>
+<th class="title rem">X</th>
+<th class="title rem">Y</th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	String bkClr = "c" + i%nClrs; 
 	//int x = (int)(10*Math.random());
 	//int y = (int)(10*Math.random());
+	String rclass = "r" + i;
 	String xid = "x" + i; 
 	String yid = "y" + i; %>
 <tr>
-<td class="<%=bkClr%>" id="<%=xid%>"><%=xpoints[i]%></td>
-<td class="<%=bkClr%>" id="<%=yid%>"><%=ypoints[i]%></td>
+<td class="<%=bkClr%> <%=rclass%> rem" id="<%=xid%>"><%=xpoints[i]%></td>
+<td class="<%=bkClr%> <%=rclass%> rem" id="<%=yid%>"><%=ypoints[i]%></td>
 </tr>
 <% } %>
 </table>
@@ -275,9 +285,6 @@ if(( tmp = request.getParameter("chs")) != null) {
 
 <div id="instr2" >
 <%=instr2%>
-<input type="<%=itype%>" id="expX" disabled value="<%=xpoints[0]%>">
-<%=comma%> 
-<input type="<%=itype%>" id="expY" disabled value="<%=ypoints[0]%>">
 </div>
 <div id="frame">
 <svg id="xygraph" onclick="checkPt( event )" ></svg>
