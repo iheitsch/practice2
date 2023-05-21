@@ -83,14 +83,15 @@ table{
 }
 #instr2{
 	position: fixed;
-	left: 220px;
-	top: 35px;
+	left: 50px;
+	top: 55px;
 }
 #instrs{
 	position: fixed;
 	left: 50px;
 	top: 15px;
 }
+
 #preload {
 	height:0;
 	overflow:hidden;
@@ -103,12 +104,12 @@ table{
 #whatpts{
 	position: absolute;
 	top: 90px;
-	left: 10px;
+	left: 80px;
 }
 #xygraph{
 	position: absolute;
 	top: 90px;
-	left: 80px;
+	left: 160px;
 	width: 444px;
 	height: 444px;
 }

@@ -30,13 +30,15 @@ int nClrs = 4;
 int whatlines = 0;
 int currline = 0;
 int totlines = 0;
-double [] slope = new double[MAXCURVES];
+int [] rise = new int[MAXCURVES];
+int [] run = new int[MAXCURVES];
 int [] intercept = new int[MAXCURVES];
 String whatcurves = "0";
 String currcurve = "0";
 String totcurves = "0";
 String [] param1 = new String[MAXCURVES];
 String [] param2 = new String[MAXCURVES];
+String [] param3 = new String[MAXCURVES];
 
 String whatTable = "";
 String tmp = "";    // temporary storage for newly gotten 
@@ -106,6 +108,10 @@ for( idx = 0; idx <totlines; ++idx ) {
 	if(( tmp = request.getParameter(tmpStr)) != null) {
 		param2[idx] = tmp.toString();
 	}
+	tmpStr = "whichparam3_" + idx;
+	if(( tmp = request.getParameter(tmpStr)) != null) {
+		param3[idx] = tmp.toString();
+	}
 }
 
 //retrieves the value of the DOM object with name="chs"
@@ -116,7 +122,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		if( slctopts[kdx].equals(whatTable) ) {
 			isNowSelected[kdx] = "selected";
         	itype = "text";
-        	instr2 = "Click this point: ";
+
         	comma = ",";
         	break;
         }
@@ -124,44 +130,43 @@ if(( tmp = request.getParameter("chs")) != null) {
     System.out.println("whatTable: " + whatTable);
     currline = 0;
     if( whatTable.equals("Lines") ) {
+		int sign = 2*Math.random() > 1? 1 : -1; 
     	whatlines = Integer.parseInt(whatcurves);
-    	currline = Integer.parseInt(currcurve);
-    	
+    	currline = Integer.parseInt(currcurve);    	
     	System.out.println("read from page and converted whatlines: " + whatlines + " currline: " + currline);
     	if( whatlines == 0 ) {
     		whatlines = 1 + (int)(3*Math.random());
     		currline = 0;
-    		double sign = 2*Math.random() > 1? 1 : -1;
-			int rise = 1 + (int)(9*Math.random());
-			int run = 1 + (int)(9*Math.random());
-			slope[0] = sign*rise/run;
+    		rise[0] = sign*(1 + (int)(9*Math.random()));
+    		run[0] = 1 + (int)(9*Math.random()); 
     		intercept[0] = (int)(20*Math.random()) - 10;
-    		//make sure you don't generate repeats fixit
 	    	if( whatlines == 1 ) {
 	   			// same intercept
 	    		totlines = 4;
 	    		// generate all the lines at once and store in arrays
 	    		for( idx = 1; idx < totlines; idx++ ) {
 		    		sign = 2*Math.random() > 1? 1 : -1;
+		    		//make sure you don't generate repeats
 		    		boolean duplicate = true;
 		    		while( duplicate ) {
 		    			duplicate = false;
-		   				rise = 1 + (int)(9*Math.random());
-		   				run = 1 + (int)(9*Math.random());
-		   				slope[idx] = sign*rise/run;
+		   				rise[idx] = sign*(1 + (int)(9*Math.random()));
+		   				run[idx] = 1 + (int)(9*Math.random());
 		   				for( int i = 0; i < idx; ++i ) {
-		   					if( slope[i] == slope[idx] ) {
+		   					if( rise[i] == rise[idx] && run[i] == run[idx]) {
 		   						duplicate = true;
 		   					}
 		   				}
 		    		}
-	   				intercept[idx] = intercept[idx-1];
+	   				intercept[idx] = intercept[idx-1];   				
 	    		}
 	    	} else if( whatlines == 2 ) {
 	    		// same slope
 	   			totlines = MAXCURVES;
 	   			for( idx = 1; idx < totlines; idx++ ) {
-		   			slope[idx] = slope[idx-1];
+		   			rise[idx] = rise[idx-1];
+		   			run[idx] = run[idx-1];
+		    		//make sure you don't generate repeats
 		   			boolean duplicate = true;
 		    		while( duplicate ) {
 		    			duplicate = false;
@@ -177,7 +182,8 @@ if(( tmp = request.getParameter("chs")) != null) {
 	   			// perpendicular
 	    		totlines = 2;
 	    		for( idx = 1; idx < totlines; idx++ ) {
-	    			slope[idx] = -(1/slope[idx-1]);
+	    			rise[idx] = -run[idx-1];
+	    			run[idx] = rise[idx-1];
 	   				intercept[idx] = (int)(20*Math.random()) - 10;	    			
 	    		}
 	   		}
@@ -185,8 +191,9 @@ if(( tmp = request.getParameter("chs")) != null) {
     		currline += 1;
     		for( idx = 0; idx < totlines; idx++ ) {
     			// read all the slopes and intercepts so you can write them again		
-    			slope[idx] = Double.parseDouble(param1[idx]);
-    			intercept[idx] = Integer.parseInt(param2[idx]);
+    			rise[idx] = Integer.parseInt(param1[idx]);
+    			run[idx] = Integer.parseInt(param2[idx]);
+    			intercept[idx] = Integer.parseInt(param3[idx]);
     		}
    		}
   		//need to make these all integers, check for yval < -10 or > 10
@@ -194,17 +201,44 @@ if(( tmp = request.getParameter("chs")) != null) {
    		nPts = 0; 
    		for( int i = 0; i < MAXPTS && currline < totlines; i += 1 ) {
     		xpoints[nPts] = (int)(i - 10);
-   			ypt = slope[currline]*xpoints[nPts] + intercept[currline];
+   			ypt = rise[currline]*xpoints[nPts]/(double)run[currline] + intercept[currline];
    			ypoints[nPts] = (int)ypt;
    			if( ypoints[nPts] >= -10 && ypoints[nPts] <= 10 && (double)ypoints[nPts] == ypt ) {
    				nPts += 1;
    			}
 		}
+   		int rerise = Math.abs(rise[currline]);
+   		int rerun = Math.abs(run[currline]);
+   		int [] pfactors = {2, 3, 5, 7};
+   		for( int i = 0; i < pfactors.length; ++i ) {
+   			System.out.println("rerise: " + rerise + " rerun: " + rerun + " pfactors[" + i + "]: " + pfactors[i]);
+	   		while( rerise%pfactors[i] == 0 && rerun%pfactors[i] == 0 ) {
+		   		rerise = rerise/pfactors[i];
+				rerun = rerun/pfactors[i];
+	   		}
+   		}
+   		instr2 = "Y = ";
+   		if( rise[currline]*run[currline] < 0 ) {
+	    	instr2 += "-";
+	    }
+	    instr2 += "(" + rerise;
+	    if( rerun != 1 ) {
+	    	instr2 += "/" + rerun;
+	    }
+	    instr2 += ")X";
+	    if( intercept[currline] != 0 ) {
+		    if( intercept[currline] < 0 ) {
+		    	instr2 += " - ";
+		    } else if( intercept[currline] > 0 ){
+		    	instr2 += " + ";
+		    }
+	    	instr2 += Math.abs(intercept[currline]);
+	    }
    		//whatcurves = Integer.toString(whatlines);
    		//currcurve = Integer.toString(currline);
    		//param1 = Double.toString(slope);
    		//param2 = Integer.toString(intercept);
-    	System.out.println("after setting totlines: " + totlines + " whatlines: " + whatlines + " slope: " + slope[currline] + " intercept: " + intercept[currline]);
+    	System.out.println("after setting totlines: " + totlines + " whatlines: " + whatlines + " rise: " + rise[currline] + " run: " + run[currline] + " intercept: " + intercept[currline]);
     	//System.out.println("whatcurves: " + whatcurves + " curcurve: " + currcurve + " param1: " + param1 + " param2: " + param2);
     } 
 } %>
@@ -229,8 +263,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 </table>
 <span id="instrs">Choose Curve Type</span>
 
-<span>
-
+<div>
 <select id="chs" name="chs" class="slct" onclick="startAgain()" >   
 	<option <%=isSelected%> >Select</option>
 <% 	for( kdx = 0; kdx < jdx; ++kdx ) { 
@@ -238,14 +271,14 @@ if(( tmp = request.getParameter("chs")) != null) {
 		<option <%=isNowSelected[kdx]%> ><%=sel%></option>
 <% 	} %>
 </select>
-</span>
+</div>
 
-<span id="instr2" >
+<div id="instr2" >
 <%=instr2%>
 <input type="<%=itype%>" id="expX" disabled value="<%=xpoints[0]%>">
 <%=comma%> 
 <input type="<%=itype%>" id="expY" disabled value="<%=ypoints[0]%>">
-</span>
+</div>
 <div id="frame">
 <svg id="xygraph" onclick="checkPt( event )" ></svg>
 </div>
@@ -331,9 +364,11 @@ if(( tmp = request.getParameter("chs")) != null) {
 <input type="<%=dbtype%>" id="allcurves" name="allcurves" value=<%=totlines%>>
 <% for( jdx = 0; jdx < totlines; jdx++ ) {
 	String id1 = "whichparam1_" + jdx;
-	String id2 = "whichparam2_" + jdx; %>
-	<input type="<%=dbtype%>" id="<%=id1%>" name="<%=id1%>" value=<%=slope[jdx]%>>
-	<input type="<%=dbtype%>" id="<%=id2%>" name="<%=id2%>" value=<%=intercept[jdx]%>>
+	String id2 = "whichparam2_" + jdx;
+	String id3 = "whichparam3_" + jdx; %>
+	<input type="<%=dbtype%>" id="<%=id1%>" name="<%=id1%>" value=<%=rise[jdx]%>>
+	<input type="<%=dbtype%>" id="<%=id2%>" name="<%=id2%>" value=<%=run[jdx]%>>
+	<input type="<%=dbtype%>" id="<%=id3%>" name="<%=id3%>" value=<%=intercept[jdx]%>>
 <% } %>
 </span>
 </form>
