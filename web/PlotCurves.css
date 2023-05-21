@@ -19,6 +19,8 @@ button{
 input{
 	width: 2em;
 	font: inherit;
+  	background-color : inherit;
+  	color: inherit;
 }
 table{
 	border: 1px solid 	#4e4c32;
@@ -101,6 +103,11 @@ table{
 	top: 5em;
 	right: 2px;
 }
+#statustable{
+	position: fixed;
+	bottom: 5em;
+	right: 300px;
+}
 #whatpts{
 	position: absolute;
 	top: 90px;
@@ -109,7 +116,7 @@ table{
 #xygraph{
 	position: absolute;
 	top: 90px;
-	left: 210px;
+	left: 215px;
 	width: 444px;
 	height: 444px;
 }

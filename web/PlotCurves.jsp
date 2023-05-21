@@ -267,7 +267,8 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String yid = "y" + i; %>
 <tr>
 <td class="<%=bkClr%> <%=rclass%> rem" id="<%=xid%>"><%=xpoints[i]%></td>
-<td class="<%=bkClr%> <%=rclass%> rem" id="<%=yid%>"><%=ypoints[i]%></td>
+<td class="<%=bkClr%> <%=rclass%> rem" >
+<input id="<%=yid%>" class="nput" type="hidden" onkeyup="checkY()" ></td>
 </tr>
 <% } %>
 </table>
@@ -311,7 +312,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 </table>
 </span>
 <span class=rightsd>
-<div>
+<div id="statustable" >
 	<table>
 	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 

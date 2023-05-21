@@ -1,8 +1,8 @@
 /**
  * 
  */
-
-var orgX = 432; // xygraph left + 1/2*width
+// clicking all over the page generates a random line on the graph fixit
+var orgX = 437; // xygraph left + 1/2*width
 var orgY = 312; // xygraph top + 1/2 height
 var nextI = 0;
 var prevX;
@@ -15,7 +15,9 @@ var whichcurve;
 //var outline;
 var instr3;
 var whatrow = new Array;
-yindex = 1;
+var yindex = 1; // will need to change when you add intermediate inputs fixit
+var x = 0;
+var maxbx = 10; // should be the same as loop test for statusBox on jsp page
 
 ///////////////green	gold		orange		burgundy	chocolate
 var colors = ["#33cc33", "#ffbf80", "#ef5600", "#cc0000", "#562300", "red"];
@@ -34,6 +36,63 @@ function drawLine( x1, y1, x2, y2 ) {
 	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += htmseg;
 }
+function checkY( ev ) {
+	ev = ev || window.event;
+	// have to make sure it was entered, not just any keyup
+	if (ev.which === 13 || ev.keyCode === 13) {
+		var ansBx = ev.target;
+		var doc = document;
+		var num = Number;
+		
+		var yid = ansBx.id;
+		var n = yid.substr(1);
+		var currx = num(doc.getElementById("x" + n).innerHTML);
+		var par1 = doc.getElementById("whichparam1_" + whichcurve).value;
+		var par2 = doc.getElementById("whichparam2_" + whichcurve).value;
+		var par3 = doc.getElementById("whichparam3_" + whichcurve).value;
+		var rise = num(par1);
+		var run = num(par2);
+		var intercept = num(par3);
+		//document.getElementById("statusBox" + x).innerHTML ="rise: " + rise + " run: " + run + " b: " + intercept;
+		//x = (x + 1)%maxbx;
+		//document.getElementById("statusBox" + x).innerHTML ="currX[" + n + "]: " + currx;
+		//x = (x + 1)%maxbx;
+		var expY = rise*currx;
+		//document.getElementById("statusBox" + x).innerHTML ="rise*currx: " + expY;
+		//x = (x + 1)%maxbx;
+		expY = expY/run;
+		//document.getElementById("statusBox" + x).innerHTML ="rise*currx/run: " + expY;
+		//x = (x + 1)%maxbx;
+		expY = expY + intercept;
+		//document.getElementById("statusBox" + x).innerHTML ="expY[" + n + "]: " + expY;
+		//x = (x + 1)%maxbx;
+		if( num(ansBx.value) === expY ) {
+			nextN = num(n) + 1;
+			if( nextN < lastPt ) {
+				yid = "y" + nextN;
+				doc.getElementById(yid).focus();
+			} else {
+				ansBx.blur();
+				whatrow = doc.getElementsByClassName("r0");
+				var styles = whatrow[0].getAttribute("style");
+				if( styles ) {
+					styles += "border: 2px solid white;";
+				} else {
+					styles = "border: 2px solid white;";
+				}
+				var len = whatrow.length;
+				for( var i = 0; i < len; ++i ) {
+					whatrow[i].setAttribute("style", styles);
+				}
+				instr3.innerHTML = "Click on this point &#x2192;";
+			}
+		} else {
+			ansBx.style.color = "red";
+			var errct = Number(doc.getElementById("errct").value);
+		   	doc.getElementById("errct").value = errct + 1;
+		}
+	}
+}
 // needs to count correct if you click anywhere along the line or if you drag the mouse along the line fixit
 function checkPt( ev ){
 	ev = ev || window.event;
@@ -42,11 +101,12 @@ function checkPt( ev ){
 	var num = Number;	
 	var pct = 0.05;
 	var pxlsprsq = 20;
-	var cellheight = 23;
+	var cellheight = 28;
 	var expXBx = whatrow[0];
-	var expYBx = whatrow[yindex]; //doc.getElementById("expY");
+	var ndx = num(expXBx.id.substr(1));
+	var expYBx = doc.getElementById("y" + ndx);
 	var nomX = expXBx.innerHTML;
-	var nomY = expYBx.innerHTML;
+	var nomY = expYBx.value;
 	var dotX = 222+num(nomX)*pxlsprsq;
 	var dotY = 222-num(nomY)*pxlsprsq;
 	var expX = num(nomX)*pxlsprsq + orgX;
@@ -55,6 +115,10 @@ function checkPt( ev ){
 	var highX = expX + pct*expX;
 	var lowY = expY - pct*expY;
 	var highY = expY + pct*expY;
+	//document.getElementById("statusBox" + x).innerHTML ="low: " + lowX + " mousX: " + mousePos.x + " high: " + highX;
+	//x = (x + 1)%maxbx;
+	//document.getElementById("statusBox" + x).innerHTML ="low: " + lowY + " mousY: " + mousePos.y + " high: " + highY;
+	//x = (x + 1)%maxbx;
 	if( lowX < mousePos.x && mousePos.x < highX && 
 		lowY < mousePos.y && mousePos.y < highY ) {
 		putDot( dotX, dotY );
@@ -106,48 +170,42 @@ function checkPt( ev ){
 			var len = whatrow.length;
 			for( var i = 0; i < len; ++i ) {
 				whatrow[i].setAttribute("style", styles);
-			}
-			
-			//expXBx.value = doc.getElementById("x" + nextI).innerHTML;
-			//expYBx.value = doc.getElementById("y" + nextI).innerHTML;
+			}			
 		} else if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ){
 			doc.getElementById("instrs").innerHTML = "Choose another";
 			doc.getElementById("instr2").innerHTML = "";
+			var nputBxs = doc.getElementsByClassName("nput");
+		  	len = nputBxs.length;
+		  	for( var i = 0; i < len; ++i ) {
+		  		nputBxs[i].type = "hidden";
+		  	}
 			var styles = "color: #663300;"
 				+ "border: none;"
 				+ "background-color: #663300;";
 			var removables = doc.getElementsByClassName("rem");
-			var len = removables.length;
-			
+			var len = removables.length;			
 			for( var i = 0; i < len; ++i ) {
 				removables[i].setAttribute("style", styles);
 			}
-			//expXBx.type = "hidden";
-			//expYBx.type = "hidden";
 			doc.getElementById("whichcurves").value = "0";
 			var e = document.getElementById("chs");
 			var curvetype = e.options[e.selectedIndex].text;
-			//alert("whichcurve: " + whichcurve + " curvetype: " + curvetype);
 			var param1;
 			var param2;
 			var param3;
 			var id;
 			for( var i = 0; i <= whichcurve; i += 1 ) {
 				id = "whichparam1_" + i;
-				//alert("getElement ID " + id);
 				param1 = doc.getElementById(id).value;
 				id = "whichparam2_" + i;
-				//alert("getElement ID " + id);
 				param2 = doc.getElementById(id).value;
 				id = "whichparam3_" + i;
-				//alert("getElement ID " + id);
 				param3 = doc.getElementById(id).value;
-				//alert("param1,2[ "  + i + " ]: " + param1 + ", " + param2)
 				drawcurve( curvetype, num(param1), num(param2), num(param3), i );
 			}
 			var form = doc.getElementById("plots");
   			form.removeChild( instr3 );			
-		} else { // plotted one curve, start another similar
+		} else { // plotted one curve, start another similar one
 			startAgain();
 		}
 	} else {
@@ -371,26 +429,23 @@ window.onload = function() {
 	
 	if( curvetype !== "Select") {
 		lastPt = Number(doc.getElementById("lastPt").value);
-		whatrow = doc.getElementsByClassName("r0");
-		var styles = whatrow[0].getAttribute("style");
-		if( styles ) {
-			styles += "border: 2px solid white;";
-		} else {
-			styles = "border: 2px solid white;";
-		}
-		var len = whatrow.length;
-		for( var i = 0; i < len; ++i ) {
-			whatrow[i].setAttribute("style", styles);
-		}
+
 	    instr3 = doc.createElement("label");
-	    styles = "position: absolute;"
+	    var styles = "position: absolute;"
 		    + "top: 103px;"
 		    + "left: 7px;"
 		    + "width: 120px;";
 		instr3.setAttribute("style", styles);
-		instr3.innerHTML = "Click on this point &#x2192;";
+
+		instr3.innerHTML = "what is y?";
 	    var form = doc.getElementById("plots");
-	  	form.appendChild( instr3 );
+	  	form.appendChild( instr3 );  	
+	  	var nputBxs = doc.getElementsByClassName("nput");
+	  	len = nputBxs.length;
+	  	for( var i = 0; i < len; ++i ) {
+	  		nputBxs[i].type = "text";
+	  	}
+	  	doc.getElementById("y0").focus();
 	} else {
 		var styles = "color: #663300;"
 			+ "border: none;"
