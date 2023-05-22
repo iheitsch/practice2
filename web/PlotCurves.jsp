@@ -132,13 +132,22 @@ if(( tmp = request.getParameter("chs")) != null) {
     if( whatTable.equals("Lines") ) {
 		int sign = 2*Math.random() > 1? 1 : -1; 
     	whatlines = Integer.parseInt(whatcurves);
-    	currline = Integer.parseInt(currcurve);    	
+    	currline = Integer.parseInt(currcurve); 
+    	int [] pfactors = {2, 3, 5, 7};
+    	int plength = pfactors.length;
     	System.out.println("read from page and converted whatlines: " + whatlines + " currline: " + currline);
     	if( whatlines == 0 ) {
     		whatlines = 1 + (int)(3*Math.random());
     		currline = 0;
     		rise[0] = sign*(1 + (int)(9*Math.random()));
     		run[0] = 1 + (int)(9*Math.random()); 
+       		// reduce
+       		for( int i = 0; i < plength; ++i ) {
+    	   		while( rise[0]%pfactors[i] == 0 && run[0]%pfactors[i] == 0 ) {
+    	   			rise[0] = rise[0]/pfactors[i];
+    	   			run[0] = run[0]/pfactors[i];
+    	   		}
+       		}
     		intercept[0] = (int)(20*Math.random()) - 10;
 	    	if( whatlines == 1 ) {
 	   			// same intercept
@@ -152,6 +161,13 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    			duplicate = false;
 		   				rise[idx] = sign*(1 + (int)(9*Math.random()));
 		   				run[idx] = 1 + (int)(9*Math.random());
+		   				// reduce
+		   	       		for( int i = 0; i < plength; ++i ) {
+		   	    	   		while( rise[idx]%pfactors[i] == 0 && run[idx]%pfactors[i] == 0 ) {
+		   	    	   			rise[idx] = rise[idx]/pfactors[i];
+		   	    	   			run[idx] = run[idx]/pfactors[i];
+		   	    	   		}
+		   	       		}
 		   				for( int i = 0; i < idx; ++i ) {
 		   					if( (double)rise[i]/run[i] == (double)rise[idx]/run[idx]) {
 		   						duplicate = true;
@@ -207,29 +223,22 @@ if(( tmp = request.getParameter("chs")) != null) {
    				nPts += 1;
    			}
 		}
-   		int rerise = Math.abs(rise[currline]);
-   		int rerun = Math.abs(run[currline]);
-   		int [] pfactors = {2, 3, 5, 7};
-   		for( int i = 0; i < pfactors.length; ++i ) {
-   			System.out.println("rerise: " + rerise + " rerun: " + rerun + " pfactors[" + i + "]: " + pfactors[i]);
-	   		while( rerise%pfactors[i] == 0 && rerun%pfactors[i] == 0 ) {
-		   		rerise = rerise/pfactors[i];
-				rerun = rerun/pfactors[i];
-	   		}
-   		}
+   		int arise = Math.abs(rise[currline]);
+   		int arun = Math.abs(run[currline]);
+
    		String intermed = "";
-   		if( !(rerise ==1 && rerun == 1) ) { 
-   			intermed += rerise;
+   		if( !(arise ==1 && arun == 1) ) { 
+   			intermed += arise;
    		}
-		if( rerun != 1 ) {
+		if( arun != 1 ) {
    			intermed = "(" + intermed;
    		}
    		if( rise[currline]*run[currline] < 0 ) {
 	    	intermed = "-" + intermed;
 	    }
    		
-	    if( rerun != 1 ) {
-	    	intermed += "/" + rerun + ")";
+	    if( arun != 1 ) {
+	    	intermed += "/" + arun + ")";
 	    }
    		instr2 = "Plot the line: Y = ";
    		
@@ -275,7 +284,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <span id="instrs">Choose Curve Type</span>
 
 <div>
-<select id="chs" name="chs" class="slct" onclick="startAgain()" >   
+<select id="chs" name="chs" class="slct" >   
 	<option <%=isSelected%> >Select</option>
 <% 	for( kdx = 0; kdx < jdx; ++kdx ) { 
 		String sel = slctopts[kdx]; %>

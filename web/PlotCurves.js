@@ -18,9 +18,8 @@ var whatrow = new Array;
 var yindex = 1; // will need to change when you add intermediate inputs fixit
 var x = 0;
 var maxbx = 10; // should be the same as loop test for statusBox on jsp page
-
-///////////////green	gold		orange		burgundy	chocolate
-var colors = ["#33cc33", "#ffbf80", "#ef5600", "#cc0000", "#562300", "red"];
+var nmins = 0;
+var nmaxes = 0;
 
 function skip() {
      document.getElementById("errct").value = 1;
@@ -213,6 +212,8 @@ function checkPt( ev ){
 			var param2;
 			var param3;
 			var id;
+			nmins = 0;
+			nmaxes = 0;
 			for( var i = 0; i <= whichcurve; i += 1 ) {
 				id = "whichparam1_" + i;
 				param1 = doc.getElementById(id).value;
@@ -281,18 +282,27 @@ function mouseCoords(ev){
 function drawcurve( type, par1, par2, par3, cls ) {
     var num = Number;
 	var mat = Math;
+	var doc = document;
 	//alert("type: " + type + "  param1: " + par1 + " param2 " + par2);
-	var xygraph = document.getElementById("xygraph");
+	var xygraph = doc.getElementById("xygraph");
 	var graphxo = 222;
 	var graphyo = 222;
 	var gridspace = 20;
 	var xstart = -10;
 	var xstop = 10;
-	var slope = num(par1)/num(par2);
+	var rise = num(par1);
+	var run = num(par2);
+	var slope = rise/run;
 	var intercept = num(par3);
 	var ystart = slope*xstart + intercept;
 	var ystop = slope*xstop + intercept;
-	//alert("xstart: " + xstart + " ystart: " + ystart + " xstop: " + xstop + " ystop: " + ystop);
+	var ymax;
+	var ymin;
+	var hitsleftedge = true;
+	///////////////green	gold		orange		burgundy	chocolate
+	var colors = ["#33cc33", "#ffbf80", "#ef5600", "#cc0000", "#ac7339", "red"];
+	var ltcols = [ "#68e514", "#ffdb4d", "#ffbb99", "#ff2da4", "#d2a679", "white" ];
+
 	// make sure endpoints are on the graph
 	if( ystart < -10 ) {
 		ystart = -10;
@@ -303,29 +313,79 @@ function drawcurve( type, par1, par2, par3, cls ) {
 		xstart = (ystart - intercept)/slope;
 	}
 	if( ystop < -10 ) {
+		ymin = ystop;
 		ystop = -10;
 		xstop = (ystop - intercept)/slope;
+		hitsleftedge = false;
+		nmins += 1;
 	}
+ 
 	if( ystop > 10 ) {
+		ymax = ystop;
 		ystop = 10;
 		xstop = (ystop - intercept)/slope;
+		hitsleftedge = false;
+		nmaxes += 1;
 	}
-	//alert("limiting -10 to +10 xstart: " + xstart + " ystart: " + ystart + " xstop: " + xstop + " ystop: " + ystop);
 	
 	// convert to location on window
 	xstart = graphxo + mat.round(xstart*gridspace);
 	xstop = graphxo + mat.round(xstop*gridspace);
 	ystart = graphyo - mat.round(ystart*gridspace);
 	ystop = graphyo - mat.round(ystop*gridspace);
-	//alert("on graph xstart: " + xstart + " ystart: " + ystart + " xstop: " + xstop + " ystop: " + ystop);
-
 	cls = cls%colors.length;
-	//alert("color: " + colors[cls]);
 	var htmseg = '<line x1="' + xstart + '" y1="' + ystart;
 	htmseg += '" x2="' + xstop + '" y2="' + ystop;
 	htmseg += '" style="stroke:' + colors[cls] + ';stroke-width:2" />';			
 	xygraph.innerHTML += htmseg;
 	
+	var cap = doc.createElement("label");
+	var intermed = "";
+	var absrise = mat.abs(rise);
+	var absrun = mat.abs(run);
+   	if( !(absrise == 1 && absrun == 1) ) { 
+   		intermed += absrise;
+   	}
+	if( absrun != 1 ) {
+	   	intermed = "(" + intermed;
+	}
+	if( rise*run < 0 ) {
+		intermed = "-" + intermed;
+	} 		
+	if( absrun != 1 ) {
+		intermed += "/" + absrun + ")";
+	}
+   	var rest = "";
+	if( intercept != 0 ) {
+		if( intercept < 0 ) {
+			rest = " - ";
+		} else {
+		    rest = " + ";
+		}
+	    rest += Math.abs(intercept);
+	}
+	cap.innerHTML = "y = " + intermed + "X" + rest;
+	var xp = 215 + xstop; // xyframe left + xstop
+	if( hitsleftedge ) {
+		xp += gridspace + 3;
+	}
+	var yp = 90;
+	if( ymax ) {
+		yp += ystop - (1 + nmaxes)*gridspace;
+	} else if( ymin ) {
+		yp += ystop + nmins*gridspace;
+	} else {
+		yp += ystop;
+	}
+	// colors are wrong, position is wrong fixit
+	var styles = "position: absolute;"
+		+ "width: 150px;"
+		+ "color: " + ltcols[cls] + ";"
+		+ "left: " + xp + "px;"
+		+ "top: " + yp + "px;";
+	cap.setAttribute("style", styles);
+	var form = doc.getElementById("plots");
+	form.appendChild( cap ); 
 	//htmseg = '<line x1="' + graphxo + '" y1="' + graphyo;
 	//htmseg += '" x2="242" y2="202" style="stroke:rgb(255, 0, 0);stroke-width:1" />';			
 	//xygraph.innerHTML += htmseg;
@@ -373,6 +433,8 @@ function startAgain() {
 window.onload = function() {
 	var doc = document;
 	var num = Number;
+	const selectDropdown = document.getElementById("chs");
+	selectDropdown.addEventListener('change', startAgain );
 	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
@@ -432,17 +494,15 @@ window.onload = function() {
 	var param2;
 	var param3;
 	var id;
+	nmins = 0;
+	nmaxes = 0;
 	for( var i = 0; i < whichcurve; i += 1 ) {
 		id = "whichparam1_" + i;
-		//alert("getElement ID " + id);
 		param1 = doc.getElementById(id).value;
 		id = "whichparam2_" + i;
-		//alert("getElement ID " + id);
 		param2 = doc.getElementById(id).value;
 		id = "whichparam3_" + i;
-		//alert("getElement ID " + id);
 		param3 = doc.getElementById(id).value;
-		//alert("param1,2[ "  + i + " ]: " + param1 + ", " + param2)
 		drawcurve( curvetype, num(param1), num(param2), num(param3), i );
 	}
 	
