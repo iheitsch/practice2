@@ -27,6 +27,22 @@ function skip() {
      allgood = true;
      startAgain(); 
 }
+function erase( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    if( ansBx.style.color === "red" ) {
+	    var ndx = Number(ansBx.id.substr(1));
+	    ansBx.value = "";
+	    var correct;
+	    if( ndx%4 < 2 ) {
+	    	correct = "#4e4c32"; // black
+	    } else {
+	    	correct = "#f9f2ec"; // white
+	    }
+	    ansBx.style.color = correct;
+	    ansBx.style.backgroundColor = "inherit";
+	}
+ }
 function drawLine( x1, y1, x2, y2 ) {
 	var htmseg = '<line x1="' + x1;
 	htmseg += '" y1="' + y1;
@@ -88,6 +104,9 @@ function checkY( ev ) {
 			}
 		} else {
 			ansBx.style.color = "red";
+			if( num(n)%4 > 1 ) {
+				ansBx.style.backgroundColor = "white";
+			}
 			var errct = Number(doc.getElementById("errct").value);
 		   	doc.getElementById("errct").value = errct + 1;
 		}

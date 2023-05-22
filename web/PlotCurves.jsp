@@ -268,7 +268,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <tr>
 <td class="<%=bkClr%> <%=rclass%> rem" id="<%=xid%>"><%=xpoints[i]%></td>
 <td class="<%=bkClr%> <%=rclass%> rem" >
-<input id="<%=yid%>" class="nput" type="hidden" onkeyup="checkY()" ></td>
+<input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" ></td>
 </tr>
 <% } %>
 </table>
