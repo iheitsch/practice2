@@ -275,7 +275,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String xid = "x" + i; 
 	String yid = "y" + i; %>
 <tr>
-<td class="<%=bkClr%> <%=rclass%> rem" id="<%=xid%>"><%=xpoints[i]%></td>
+<td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
 <td class="<%=bkClr%> <%=rclass%> rem" >
 <input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" ></td>
 </tr>
@@ -297,7 +297,8 @@ if(( tmp = request.getParameter("chs")) != null) {
 <%=instr2%>
 </div>
 <div id="frame">
-<svg id="xygraph" onclick="checkPt( event )" ></svg>
+<svg id="xygraph" onmousedown="setMouseDown()" onmouseup="clearMouseDown()" onmousemove="checkCurve( event)">
+</svg>
 </div>
 
 <table id="bottomleft">
@@ -319,7 +320,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 </tr>
 </table>
-</span>
+
 <span class=rightsd>
 <div id="statustable" >
 	<table>
