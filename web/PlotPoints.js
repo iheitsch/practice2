@@ -11,7 +11,9 @@ var allgood = true;
 var lastPt;
 
 function skip() {
-     document.getElementById("errct").value = 1;
+	if( nextI < lastPt ) {
+     	document.getElementById("errct").value = 1;
+     }
      allgood = true;
      startAgain(); 
 }
@@ -115,7 +117,7 @@ function mouseCoords(ev){
 		y:ev.clientY + doc.body.scrollTop  - doc.body.clientTop
     }; 
 } 
-function startAgain() {
+function startAgain() { // if you change select mid plot, it doesn't count as error fixit
     var doc = document;
     var Num = Number;
     var nitBx = doc.getElementById("initlzd");
@@ -126,7 +128,7 @@ function startAgain() {
 	    var consWoErr = Num(doc.getElementById("consWoErr").value);	
 	    // update problem counts
 	    doc.getElementById("numAttmptd").value = numAttmptd + 1;
-	    if( errCt === 0 ) {
+	    if( errCt === 0 && nextI === lastPt ) {
 	            doc.getElementById("numWoErr").value = numWoErr + 1;    
 	            doc.getElementById("consWoErr").value = consWoErr + 1;
 	    } else {
@@ -154,7 +156,7 @@ window.onload = function() {
 	var doc = document;
 	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(179,143,0);" />';
-	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(255,230,179);" />';
+	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(255, 230,179);" />';
 	xygraph.innerHTML += '<rect x="18" y="18" width="408" height="408" style="fill:rgb(179,143,0);" />';
 	xygraph.innerHTML += '<rect x="20" y="20" width="404" height="404" style="fill:rgb(255,255,255);" />';
 	for( var y = 22; y < 424; y += 20 ) {
@@ -203,7 +205,8 @@ window.onload = function() {
 		offs += 40;
 	}
 	lastPt = Number(doc.getElementById("lastPt").value);
-	if( doc.getElementById("initlzd").value === "true" && nextI < lastPt ) {
-		doc.getElementById("consWoErr").value = '0';
-	}
+	// nextI and is meaningless at this point
+	//if( doc.getElementById("initlzd").value === "true" && nextI < lastPt ) {
+	//	doc.getElementById("consWoErr").value = '0';
+	//}
 }

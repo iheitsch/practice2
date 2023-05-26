@@ -57,7 +57,6 @@ function clearMouseDown( ev ) {
 		checkPt( mousePos );
 	}
 	mouseIsDown = false;
-	// check if enough points were found
 	if( dragged && pointsfound < enoughPoints ) {
 		var doc = document;
 		var errct = Number(doc.getElementById("errct").value);
@@ -85,42 +84,18 @@ function checkCurve( ev ) {
 					pointsfound += 1;
 					captured[i] = true;
 					if( pointsfound >= enoughPoints ) {
+						nextI = lastPt; // don't need to track it any more
 						if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ){
 							clearpage();
-								var e = document.getElementById("chs");
-	var curvetype = e.options[e.selectedIndex].text;
-	nmins = 0;
-	nmaxes = 0;
-	if( whichcurve > 0 ) {
-		for( var i = 0; i <= whichcurve; i += 1 ) {
-			drawcurve( curvetype, i );
-		}
-	}
-							/* doc.getElementById("instrs").innerHTML = "Choose another";
-							doc.getElementById("instr2").innerHTML = "";
-							var nputBxs = doc.getElementsByClassName("nput");
-						  	len = nputBxs.length;
-						  	for( var i = 0; i < len; ++i ) {
-						  		nputBxs[i].type = "hidden";
-						  	}
-							var styles = "color: #663300;"
-								+ "border: none;"
-								+ "background-color: #663300;";
-							var removables = doc.getElementsByClassName("rem");
-							var len = removables.length;			
-							for( var i = 0; i < len; ++i ) {
-								removables[i].setAttribute("style", styles);
-							}
-							doc.getElementById("whichcurves").value = "0";
 							var e = document.getElementById("chs");
 							var curvetype = e.options[e.selectedIndex].text;
 							nmins = 0;
 							nmaxes = 0;
-							for( var i = 0; i <= whichcurve; i += 1 ) {
-								drawcurve( curvetype, i );
+							if( whichcurve > 0 ) {
+								for( var i = 0; i <= whichcurve; i += 1 ) {
+									drawcurve( curvetype, i );
+								}
 							}
-							var form = doc.getElementById("plots");
-				  			form.removeChild( instr3 ); */
 				  		} else {
 							drawcurve( curvetype, whichcurve );
 							startAgain();
@@ -134,7 +109,9 @@ function checkCurve( ev ) {
 
 function skip() { // need to clear whichcurve and erase instructions and removable boxes fixit
      clearpage();
-     document.getElementById("errct").value = 1;
+     if( nextI < lastPt ) {
+     	document.getElementById("errct").value = 1; // any way you could hit skip when you just finished? fixit
+     }
      allgood = true;
      startAgain(); 
 }
@@ -250,7 +227,6 @@ function checkY( ev ) {
 		}
 	}
 }
-// needs to count correct if you click anywhere along the line or if you drag the mouse along the line fixit
 function checkPt( mousePos ){
 	//ev = ev || window.event;
 	//var mousePos = mouseCoords( ev );
@@ -330,40 +306,15 @@ function checkPt( mousePos ){
 			}			
 		} else if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ){
 			clearpage();
-				var e = document.getElementById("chs");
-	var curvetype = e.options[e.selectedIndex].text;
-	nmins = 0;
-	nmaxes = 0;
-	if( whichcurve > 0 ) {
-		for( var i = 0; i <= whichcurve; i += 1 ) {
-			drawcurve( curvetype, i );
-		}
-	}
-			/* doc.getElementById("instrs").innerHTML = "Choose another";
-			doc.getElementById("instr2").innerHTML = "";
-			var nputBxs = doc.getElementsByClassName("nput");
-		  	len = nputBxs.length;
-		  	for( var i = 0; i < len; ++i ) {
-		  		nputBxs[i].type = "hidden";
-		  	}
-			var styles = "color: #663300;"
-				+ "border: none;"
-				+ "background-color: #663300;";
-			var removables = doc.getElementsByClassName("rem");
-			var len = removables.length;			
-			for( var i = 0; i < len; ++i ) {
-				removables[i].setAttribute("style", styles);
-			}
-			doc.getElementById("whichcurves").value = "0";
 			var e = document.getElementById("chs");
 			var curvetype = e.options[e.selectedIndex].text;
 			nmins = 0;
 			nmaxes = 0;
-			for( var i = 0; i <= whichcurve; i += 1 ) {
-				drawcurve( curvetype, i );
-			}
-			var form = doc.getElementById("plots");
-  			form.removeChild( instr3 );	*/		
+			if( whichcurve > 0 ) {
+				for( var i = 0; i <= whichcurve; i += 1 ) {
+					drawcurve( curvetype, i );
+				}
+			}		
 		} else { // plotted one curve, start another similar one
 			startAgain();
 		}
@@ -483,7 +434,7 @@ function drawcurve( type, cls ) {
 	xstop = halfwidth + mat.round(xstop*gridspace);
 	ystart = halfwidth - mat.round(ystart*gridspace);
 	ystop = halfwidth - mat.round(ystop*gridspace);
-	cls = cls%colors.length;
+	cls = cls%colors.length; // can you use drawline? fixit
 	var htmseg = '<line x1="' + xstart + '" y1="' + ystart;
 	htmseg += '" x2="' + xstop + '" y2="' + ystop;
 	htmseg += '" style="stroke:' + colors[cls] + ';stroke-width:2" />';			
@@ -539,7 +490,6 @@ function drawcurve( type, cls ) {
 	//htmseg += '" x2="242" y2="202" style="stroke:rgb(255, 0, 0);stroke-width:1" />';			
 	//xygraph.innerHTML += htmseg;
 }
-//if someone clicks the select in the middle of a set, it gets hosed fixit
 function startAgain() {
     var doc = document;
     var Num = Number;
@@ -599,6 +549,7 @@ function genpoints ( type, which) {
 	for( var i = 0; i < plen; ++i ) {
 		//read 
 		xp = num(xBxs[i].innerHTML);
+		// calculate
 		yp = (rise*xp)/run + intercept;
 		// and convert into position on page
 		xpts[i] = xygraphleft + halfwidth + xp*pxlsprsq;
@@ -609,15 +560,18 @@ function genpoints ( type, which) {
 	}
 }
 function restart() { // what happens to error count if in the middle of set? should be the same as skip fixit
-	clearpage(); // score in general is hosed, I attempt and complete 3 without error, yet consecutive w/o 
-	startAgain(); // error is 1 fixit
+	clearpage();
+	if( nextI < lastPt ) {
+		document.getElementById("errct").value = 1;		
+	}
+	startAgain();
 }
 window.onload = function() {
 	var doc = document;
 	var num = Number;
 	dragged = false;
 	const selectDropdown = document.getElementById("chs");
-	selectDropdown.addEventListener('click', restart );
+	selectDropdown.addEventListener('mouseup', restart );
 	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
@@ -636,16 +590,19 @@ window.onload = function() {
 		htmseg += '" y2="422" style="stroke:rgb(0,0,255);stroke-width:1" />';
 		xygraph.innerHTML += htmseg;
 	}
+	// draw vertical and horizontal axes
 	var htmseg = '<line x1="' + halfwidth + '" y1="22" x2="' + halfwidth + '" y2="422" style="stroke:rgb(255,200,200);stroke-width:2" />';
 	xygraph.innerHTML += htmseg;
 	htmseg = '<line x1="22" y1="' + halfwidth + '" x2="422" y2="' + halfwidth + '" style="stroke:rgb(255,200,200);stroke-width:2" />';
 	xygraph.innerHTML += htmseg;
+	// draw arrows
 	htmseg = '<polygon points="424,' + halfwidth + ' 422,212 444,' + halfwidth + ' 422,232" ';
 	htmseg += 'style="fill:rgb(230, 176, 138);stroke:rgb(78, 76, 50);stroke-width:1" />';
 	xygraph.innerHTML += htmseg;
 	htmseg = '<polygon points="' + halfwidth + ',18 232,22 ' + halfwidth + ',0 212,22" ';
 	htmseg += 'style="fill:rgb(230, 176, 138);stroke:rgb(78, 76, 50);stroke-width:1" />';
 	xygraph.innerHTML += htmseg;
+	// label axes
 	htmseg = '<text x="428" y="214" fill="rgb(249, 242, 236)" >X</text>';
 	xygraph.innerHTML += htmseg;
 	htmseg = '<text x="228" y="16" fill="rgb(249, 242, 236)" >Y</text>';
@@ -713,7 +670,8 @@ window.onload = function() {
 		}
 	}
 
-	if( doc.getElementById("initlzd").value === "true" && nextI < lastPt ) {
-		doc.getElementById("consWoErr").value = '0';		
-	}
+	// nextI is meaningless at this point
+	//if( doc.getElementById("initlzd").value === "true" && nextI < lastPt ) {
+	//	doc.getElementById("consWoErr").value = '0';		
+	//}
 }
