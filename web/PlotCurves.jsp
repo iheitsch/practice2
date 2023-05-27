@@ -50,7 +50,7 @@ String dbtype = "hidden";
 String instr2 = "";
 //String comma = "";
 jdx = 6;
-String [] slctopts = { "Lines", "Circles", " Ellipses", "Parabolas", "Hyperbolas", "Quadratics" };
+String [] slctopts = { "Line", "Circle", " Ellipse", "Parabola", "Hyperbola", "Quadratic" };
 String [] isNowSelected = { "Lines", "Circles", " Ellipses", "Parabolas", "Hyperbolas", "Quadratics" };
 String numAttmptdV = "0";
 String numWoErr = "0";
@@ -129,7 +129,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	}
     System.out.println("whatTable: " + whatTable);
     currline = 0;
-    if( whatTable.equals("Lines") ) {
+    if( whatTable.equals("Line") ) {
 		int sign = 2*Math.random() > 1? 1 : -1; 
     	whatlines = Integer.parseInt(whatcurves);
     	currline = Integer.parseInt(currcurve); 
@@ -314,7 +314,9 @@ if(( tmp = request.getParameter("chs")) != null) {
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 <td>
-            <button type="button" onclick="skip()" id="skpBx">Skip</button>
+<% if( !whatTable.equals("") ) { %>            
+	<button type="button" onclick="skip()" id="skpBx">Another <%=whatTable%></button>
+<% } %>
 </td>
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>
 <td class="invisible">_</td><td class="invisible">_</td><td class="invisible">_</td>

@@ -77,15 +77,14 @@ function checkCurve( ev ) {
 			if( !captured[i] && mat.abs( mousePos.x - xpts[i] ) < closenuff ) { 
 				if( mat.abs( mousePos.y - ypts[i] ) < closenuff ) {
 					var doc = document;
-					//doc.getElementById("statusBox" + x).innerHTML = "mouseDownPos: " + mouseDownPos.x + ", " + mouseDownPos.y;
-					//x = (x + 1)%maxbx;
-					//doc.getElementById("statusBox" + x).innerHTML = "y: " + mousePos.y + " ypts[" + i + "]: " + ypts[i];
-					//x = (x + 1)%maxbx;
 					pointsfound += 1;
 					captured[i] = true;
 					if( pointsfound >= enoughPoints ) {
 						nextI = lastPt; // don't need to track it any more
-						if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ){
+						if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ) {
+							var endinst = doc.getElementById("skpBx").innerHTML;
+							doc.getElementById("instrs").innerHTML = 'Choose another curve or click "' + endinst + '"';
+							doc.getElementById("instr2").innerHTML = "";
 							clearpage();
 							var e = document.getElementById("chs");
 							var curvetype = e.options[e.selectedIndex].text;
@@ -117,8 +116,6 @@ function skip() { // need to clear whichcurve and erase instructions and removab
 }
 function clearpage() {
 	var doc = document;
-	doc.getElementById("instrs").innerHTML = "Choose another";
-	doc.getElementById("instr2").innerHTML = "";
 	var nputBxs = doc.getElementsByClassName("nput");
 	len = nputBxs.length;
 	for( var i = 0; i < len; ++i ) {
@@ -304,7 +301,10 @@ function checkPt( mousePos ){
 			for( var i = 0; i < len; ++i ) {
 				whatrow[i].setAttribute("style", styles);
 			}			
-		} else if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ){
+		} else if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ) {
+				var endinst = doc.getElementById("skpBx").innerHTML;
+	doc.getElementById("instrs").innerHTML = "Choose another curve or click " + endinst;
+	doc.getElementById("instr2").innerHTML = "";
 			clearpage();
 			var e = document.getElementById("chs");
 			var curvetype = e.options[e.selectedIndex].text;
@@ -571,7 +571,7 @@ window.onload = function() {
 	var num = Number;
 	dragged = false;
 	const selectDropdown = document.getElementById("chs");
-	selectDropdown.addEventListener('mouseup', restart );
+	selectDropdown.addEventListener('change', restart );
 	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
