@@ -15,7 +15,20 @@ body
 button{
 	font: inherit;
 }
-
+div.num{
+	border-bottom: 1px solid;
+	text-align: center;
+	font-size: 0.8em;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+div.denom{
+	border-top: 1px solid;
+	text-align: center;
+	font-size: 0.8em;
+	margin-left: 2px;
+	margin-right: 2px;
+}
 input{
 	width: 2em;
 	font: inherit;
@@ -44,6 +57,9 @@ table{
 	background: #cc3300;
 	color: #f9f2ec;
 	/* background: #e60000; burgundy */
+}
+.hilite{
+	border: 2px solid white;
 }
 .invisible{
 	border: none;
@@ -85,9 +101,14 @@ table{
 }
 #instr2{
 	position: fixed;
-	left: 50px;
-	top: 65px;
+	left: 7px;
+	top: 70px;
 }
+/* #instr4{
+	position: fixed;
+	left: 50px;
+    top: 65px;
+} */
 #instrs{
 	position: fixed;
 	left: 50px;
@@ -111,12 +132,12 @@ table{
 #whatpts{
 	position: absolute;
 	top: 90px;
-	left: 130px;
+	left: 105px;
 }
 #xygraph{
 	position: absolute;
 	top: 90px;
-	left: 215px;
+	left: 315px;
 	width: 444px;
 	height: 444px;
 }

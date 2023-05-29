@@ -47,7 +47,9 @@ String isSelected = "selected";
 //String [] isNowSelected = new String[jdx];
 String itype = "hidden";
 String dbtype = "hidden";
+String instrs = "Choose Curve Type";
 String instr2 = "";
+//String instr4 = "";
 //String comma = "";
 jdx = 6;
 String [] slctopts = { "Line", "Circle", " Ellipse", "Parabola", "Hyperbola", "Quadratic" };
@@ -59,6 +61,12 @@ String corrPerHr = "0";
 String strtTime = String.valueOf(System.currentTimeMillis());
 String errct = "0";  
 String isinit = "false";
+String indvar = "X";
+String depvar = "Y";
+String ntermedstep = "";
+String ntermedstep2 = "";
+String nmratr = "X";
+
 
 //retrieves the value of the DOM object with name="numAttmptdP"
 if(( tmp = request.getParameter("numAttmptdP")) != null) {
@@ -227,23 +235,30 @@ if(( tmp = request.getParameter("chs")) != null) {
    		int arun = Math.abs(run[currline]);
 
    		String intermed = "";
-   		if( !(arise ==1 && arun == 1) ) { 
+   		if( !(arise == 1 && arun == 1) ) { 
    			intermed += arise;
+   			if( arise != 1 ) {
+   				ntermedstep = intermed;
+   			}
    		}
 		if( arun != 1 ) {
    			intermed = "(" + intermed;
    		}
    		if( rise[currline]*run[currline] < 0 ) {
 	    	intermed = "-" + intermed;
+	    	ntermedstep = "-" + ntermedstep;
 	    }
-   		
+   		if( !ntermedstep.equals("") ) {
+   			ntermedstep = ntermedstep + indvar;
+   		}
 	    if( arun != 1 ) {
 	    	intermed += "/" + arun + ")";
+   			ntermedstep2 = Integer.toString(arun);
 	    }
-   		instr2 = "Plot the line: Y = ";
+   		instr2 = "Plot the line: " + depvar + " = ";
    		
 	    instr2 += intermed;
-	    instr2 += "X";
+	    instr2 += indvar;
 	    if( intercept[currline] != 0 ) {
 		    if( intercept[currline] < 0 ) {
 		    	instr2 += " - ";
@@ -252,6 +267,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    }
 	    	instr2 += Math.abs(intercept[currline]);
 	    }
+	    instrs = "Fill out table 1st if neeeded, or just click and drag on graph.";
    		//whatcurves = Integer.toString(whatlines);
    		//currcurve = Integer.toString(currline);
    		//param1 = Double.toString(slope);
@@ -264,24 +280,51 @@ if(( tmp = request.getParameter("chs")) != null) {
 <form id="plots">
 <table id="whatpts">
 <tr>
-<th class="title rem">X</th>
-<th class="title rem">Y</th>
+<th class="title rem"><%=indvar%></th>
+<% if( !ntermedstep.equals("") && intercept[currline] != 0 ) { 
+		nmratr = ntermedstep; %>
+	<th class="title rem" id="hn"><%=ntermedstep%></th>
+<% } %>
+<% if( !ntermedstep2.equals("") && intercept[currline] != 0 ) { %>
+	<th id="on" class="title rem">
+	<table>
+	<tr>
+	<div class="num"><%=nmratr%></div>
+	<div class="denom" id="ht"><%=ntermedstep2%></div>
+	</tr>
+	</table>	
+	</th>
+<% } %>
+<th class="title rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	String bkClr = "c" + i%nClrs; 
 	//int x = (int)(10*Math.random());
 	//int y = (int)(10*Math.random());
 	String rclass = "r" + i;
-	String xid = "x" + i; 
+	String xid = "x" + i;
+	String nid = "n" + i;
+	String tid = "t" + i;
 	String yid = "y" + i; %>
 <tr>
 <td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
+<% 	if( !ntermedstep.equals("") && intercept[currline] != 0 ) { %>
+		<td class="<%=bkClr%> <%=rclass%> rem" >
+		<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
+	</td>
+<% } %>
+<% 	if( !ntermedstep2.equals("") && intercept[currline] != 0 ) { %>
+		<td class="<%=bkClr%> <%=rclass%> rem" >
+		<input id="<%=tid%>" class="nput tBx" type="hidden" onkeydown="erase( event )" onkeyup="checkT( event )" >
+	</td>
+<% } %>
 <td class="<%=bkClr%> <%=rclass%> rem" >
-<input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" ></td>
+<input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
+</td>
 </tr>
 <% } %>
 </table>
-<span id="instrs">Choose Curve Type</span>
+<span id="instrs"><%=instrs%></span>
 
 <div>
 <select id="chs" name="chs" class="slct" >   
