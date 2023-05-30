@@ -63,9 +63,11 @@ String errct = "0";
 String isinit = "false";
 String indvar = "X";
 String depvar = "Y";
-String ntermedstep = "";
-String ntermedstep2 = "";
-String nmratr = "X";
+//String ntermedstep = "";
+//String ntermedstep2 = "";
+String sgn = "";
+String nmratr = "";
+String dnmnatr = "";
 
 
 //retrieves the value of the DOM object with name="numAttmptdP"
@@ -238,7 +240,7 @@ if(( tmp = request.getParameter("chs")) != null) {
    		if( !(arise == 1 && arun == 1) ) { 
    			intermed += arise;
    			if( arise != 1 ) {
-   				ntermedstep = intermed;
+   				nmratr = Integer.toString(arise);
    			}
    		}
 		if( arun != 1 ) {
@@ -246,14 +248,14 @@ if(( tmp = request.getParameter("chs")) != null) {
    		}
    		if( rise[currline]*run[currline] < 0 ) {
 	    	intermed = "-" + intermed;
-	    	ntermedstep = "-" + ntermedstep;
+	    	sgn = "-";
 	    }
-   		if( !ntermedstep.equals("") ) {
-   			ntermedstep = ntermedstep + indvar;
-   		}
+   		//if( !ntermedstep.equals("") ) {
+   		//	ntermedstep = ntermedstep + indvar;
+   		//}
 	    if( arun != 1 ) {
 	    	intermed += "/" + arun + ")";
-   			ntermedstep2 = Integer.toString(arun);
+   			dnmnatr = Integer.toString(arun);
 	    }
    		instr2 = "Plot the line: " + depvar + " = ";
    		
@@ -281,19 +283,29 @@ if(( tmp = request.getParameter("chs")) != null) {
 <table id="whatpts">
 <tr>
 <th class="title rem"><%=indvar%></th>
-<% if( !ntermedstep.equals("") && intercept[currline] != 0 ) { 
-		nmratr = ntermedstep; %>
-	<th class="title rem" id="hn"><%=ntermedstep%></th>
-<% } %>
-<% if( !ntermedstep2.equals("") && intercept[currline] != 0 ) { %>
-	<th id="on" class="title rem">
-	<table>
-	<tr>
-	<div class="num"><%=nmratr%></div>
-	<div class="denom" id="ht"><%=ntermedstep2%></div>
-	</tr>
-	</table>	
-	</th>
+<% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { %>
+			<th class="title rem" id="on">
+			<table>
+			<tr>
+			<div class="num" id="hn"><%=sgn%><%=indvar%></div>
+			<div class="denom" id="ht"><%=dnmnatr%></div>
+			</tr>
+			</table>	
+			</th>
+
+<% 		if( !nmratr.equals("") && intercept[currline] != 0 ) { %>
+			<th class="title rem" id="om">
+			<table>
+			<tr>
+			<div class="num" id="hm"><%=sgn%><%=nmratr%><%=indvar%></div>
+			<div class="denom"><%=dnmnatr%></div>
+			</tr>
+			</table>	
+			</th>
+<% 		} %>
+<% } 
+	if( dnmnatr.equals("") && !nmratr.equals("") && intercept[currline] != 0 ) { %>
+	<th class="title rem" id="hn"><%=sgn%><%=nmratr%><%=indvar%></th>
 <% } %>
 <th class="title rem"><%=depvar%></th>
 </tr>
@@ -308,15 +320,20 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String yid = "y" + i; %>
 <tr>
 <td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
-<% 	if( !ntermedstep.equals("") && intercept[currline] != 0 ) { %>
-		<td class="<%=bkClr%> <%=rclass%> rem" >
-		<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
-	</td>
-<% } %>
-<% 	if( !ntermedstep2.equals("") && intercept[currline] != 0 ) { %>
+<% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { %>
 		<td class="<%=bkClr%> <%=rclass%> rem" >
 		<input id="<%=tid%>" class="nput tBx" type="hidden" onkeydown="erase( event )" onkeyup="checkT( event )" >
-	</td>
+		</td>
+<%		if( !nmratr.equals("") && intercept[currline] != 0 ) { %>
+			<td class="<%=bkClr%> <%=rclass%> rem" >
+			<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
+			</td>
+<% 		} %>
+<% 	}
+	if( dnmnatr.equals("") && !nmratr.equals("") && intercept[currline] != 0 ) { %>
+		<td class="<%=bkClr%> <%=rclass%> rem" >
+		<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
+		</td>
 <% } %>
 <td class="<%=bkClr%> <%=rclass%> rem" >
 <input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
