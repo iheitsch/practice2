@@ -68,7 +68,7 @@ String depvar = "Y";
 String sgn = "";
 String nmratr = "";
 String dnmnatr = "";
-
+int col = 0;
 
 //retrieves the value of the DOM object with name="numAttmptdP"
 if(( tmp = request.getParameter("numAttmptdP")) != null) {
@@ -269,7 +269,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    }
 	    	instr2 += Math.abs(intercept[currline]);
 	    }
-	    instrs = "Fill out table 1st if neeeded, or just click and drag on graph.";
+	    instrs = "Fill out as much of table as needed";
    		//whatcurves = Integer.toString(whatlines);
    		//currcurve = Integer.toString(currline);
    		//param1 = Double.toString(slope);
@@ -282,32 +282,37 @@ if(( tmp = request.getParameter("chs")) != null) {
 <form id="plots">
 <table id="whatpts">
 <tr>
-<th class="title rem"><%=indvar%></th>
+	<td class="tmp"></td>
+	<th class="title rem"><%=indvar%></th>
 <% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { %>
+			<td class="tmp"></td>
 			<th class="title rem" id="on">
-			<table>
-			<tr>
-			<div class="num" id="hn"><%=sgn%><%=indvar%></div>
-			<div class="denom" id="ht"><%=dnmnatr%></div>
-			</tr>
-			</table>	
+				<table>
+				<tr>
+				<div class="num" id="hn"><%=sgn%><%=indvar%></div>
+				<div class="denom" id="ht"><%=dnmnatr%></div>
+				</tr>
+				</table>	
 			</th>
 
 <% 		if( !nmratr.equals("") && intercept[currline] != 0 ) { %>
+			<td class="tmp"></td>
 			<th class="title rem" id="om">
-			<table>
-			<tr>
-			<div class="num" id="hm"><%=sgn%><%=nmratr%><%=indvar%></div>
-			<div class="denom"><%=dnmnatr%></div>
-			</tr>
-			</table>	
+				<table>
+				<tr>
+				<div class="num" id="hm"><%=sgn%><%=nmratr%><%=indvar%></div>
+				<div class="denom"><%=dnmnatr%></div>
+				</tr>
+				</table>	
 			</th>
 <% 		} %>
 <% } 
 	if( dnmnatr.equals("") && !nmratr.equals("") && intercept[currline] != 0 ) { %>
-	<th class="title rem" id="hn"><%=sgn%><%=nmratr%><%=indvar%></th>
+		<td class="tmp"></td>
+		<th class="title rem" id="hn"><%=sgn%><%=nmratr%><%=indvar%></th>
 <% } %>
-<th class="title rem"><%=depvar%></th>
+	<td class="tmp"></td>
+	<th class="title rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	String bkClr = "c" + i%nClrs; 
@@ -317,26 +322,41 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String xid = "x" + i;
 	String nid = "n" + i;
 	String tid = "t" + i;
-	String yid = "y" + i; %>
+	String yid = "y" + i; 
+	col = 0;
+	String cid = "c" + i + "_" + col; %>
 <tr>
+<td class="tmp" id="<%=cid%>" ></td>
 <td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
-<% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { %>
+<% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { 
+		col += 1;
+		cid = "c" + i + "_" + col; %>
+		<td class="tmp" id="<%=cid%>"></td>
 		<td class="<%=bkClr%> <%=rclass%> rem" >
-		<input id="<%=tid%>" class="nput tBx" type="hidden" onkeydown="erase( event )" onkeyup="checkT( event )" >
+			<input id="<%=tid%>" class="nput tBx" type="hidden" onkeydown="erase( event )" onkeyup="checkT( event )" >
 		</td>
-<%		if( !nmratr.equals("") && intercept[currline] != 0 ) { %>
+<%		if( !nmratr.equals("") && intercept[currline] != 0 ) { 
+			col += 1;
+			cid = "c" + i + "_" + col; %>
+			<td class="tmp" id="<%=cid%>" ></td>
 			<td class="<%=bkClr%> <%=rclass%> rem" >
-			<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
+				<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
 			</td>
 <% 		} %>
 <% 	}
-	if( dnmnatr.equals("") && !nmratr.equals("") && intercept[currline] != 0 ) { %>
+	if( dnmnatr.equals("") && !nmratr.equals("") && intercept[currline] != 0 ) { 
+		col += 1;
+		cid = "c" + i + "_" + col;%>
+		<td class="tmp" id="<%=cid%>" ></td>
 		<td class="<%=bkClr%> <%=rclass%> rem" >
-		<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
+			<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
 		</td>
-<% } %>
+<%	} 
+	col += 1;
+	cid = "c" + i + "_" + col; %>
+<td class="tmp" id="<%=cid%>" ></td>
 <td class="<%=bkClr%> <%=rclass%> rem" >
-<input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
+	<input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
 </td>
 </tr>
 <% } %>

@@ -88,6 +88,13 @@ table{
 		border: 2px solid #ffcc00;
 		/* 4e4c32; */
 }
+.tmp{
+	margin: none;
+	border: none;
+	padding: none;
+	margin: none;
+	white-space: nowrap;
+}
 #bottomleft{
 	position: fixed;
 	left: 2px;
@@ -137,7 +144,7 @@ table{
 #xygraph{
 	position: absolute;
 	top: 90px;
-	left: 315px;
+	left: 400px; /* 315px; */
 	width: 444px;
 	height: 444px;
 }
