@@ -10,7 +10,7 @@
 // on clicking on any table input, disable all hints fixit
 
 var halfwidth = 222;
-var xygraphleft = 400; // 315; // copied from css
+var xygraphleft = 365; // copied from css
 var xygraphtop = 90;
 var orgX = xygraphleft + halfwidth; 
 var orgY = xygraphtop + halfwidth; 
@@ -23,11 +23,11 @@ var lastPt;
 // store curve type and parameters for redrawing
 var curvetype = "";
 var whichcurve = 0;
-//var outline;
+
 var instr3;
 var whatrow = new Array;
 var yindex = 1; // will need to change when you add intermediate inputs fixit
-var x = 0;
+var ndx = 0;
 var maxbx = 10; // should be the same as loop test for statusBox on jsp page
 var nmins = 0;
 var nmaxes = 0;
@@ -49,7 +49,7 @@ var par2;
 var par3;
 var mult = 1;
 var div = 1;
-var intercept;
+var bee;
 
 var nsign = 1;
 var op = "";
@@ -162,6 +162,7 @@ function checkN( ev ) {
 	ev = ev || window.event;
 	// have to make sure it was entered, not just any keyup
 	if (ev.which === 13 || ev.keyCode === 13) {
+		//alert("b: " + bee);
 		var ansBx = ev.target;
 		var doc = document;
 		var num = Number;
@@ -176,42 +177,23 @@ function checkN( ev ) {
 			expAns = nsign*mult*prevval/div;
 		}
 		if( num(ansBx.value) === expAns ) {
-			//alert("rowno: " + rowno + " nextN: " + nextN + " lastPt: " + lastPt);
+			instr3.innerHTML = "";
 			if( nextN < lastPt ) {
 				nextVal = nsign*num(doc.getElementById("x" + nextN).innerHTML)/div;
 				nid = "n" + nextN;
 				doc.getElementById(nid).focus();
-				/* var stylewas = instr3.getAttribute("style");
-				var strt = stylewas.indexOf("top");
-				var frstpart = stylewas.substring(0,strt);
-				var wherewas = stylewas.substring(strt + 5);
-				var stp = wherewas.indexOf("px");
-				var nextstrt = wherewas.indexOf(";") + 1;
-				var lastpart = wherewas.substring(nextstrt);
-				wherewas = wherewas.substring(0,stp);
-				var cellheight = 28;		
-				var newpos = num(wherewas) + cellheight;
-				var styles = frstpart + "top: " + newpos + "px;" + lastpart;
-				instr3.setAttribute("style", styles);
-				var smult = mult + "";
-				if( nsign < 0 && !t0 ) {
-					smult = "-" + smult;
-				} */
 				var curr = doc.getElementById("c" + rowno + "_" + colnum);
-				//alert("current cid: " + currCid);
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
 				curr.innerHTML = "";
-				//instr3.innerHTML = smult + " times " + nextVal;	
 			} else {
 				doc.getElementById("y0").focus();
 				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
 				colnum += 1;			
-				if( intercept ) {
-					doc.getElementById("c0_" + colnum).innerHTML = op + " " + intercept + " = ";
+				if( bee !== 0 ) {
+					doc.getElementById("c0_" + colnum).innerHTML = op + " " + bee + " = ";
 				} else {
-					doc.getElementById("c0_" + colnum).innerHTML = "What is Y?";
+					doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + mult + " = "; // times;
 				}			
-				//instr3.innerHTML = "What is Y?"
 			}
 		} else {
 			instr3.innerHTML = "Should be " + expAns;
@@ -228,6 +210,7 @@ function checkT( ev ) {
 	ev = ev || window.event;
 	// have to make sure it was entered, not just any keyup
 	if (ev.which === 13 || ev.keyCode === 13) {
+		//alert("b: " + bee);
 		var ansBx = ev.target;
 		var doc = document;
 		var num = Number;
@@ -239,35 +222,15 @@ function checkT( ev ) {
 			expAns = nsign*xval/div;
 		}
 		if( num(ansBx.value) === expAns ) {
+			instr3.innerHTML = "";
 			var nextN = num(rowno) + 1;
 			if( nextN < lastPt ) {
 				tid = "t" + nextN;
 				doc.getElementById(tid).focus();
-				/* var stylewas = instr3.getAttribute("style");
-				var strt = stylewas.indexOf("top");
-				var frstpart = stylewas.substring(0,strt);
-				var wherewas = stylewas.substring(strt + 5);
-				var stp = wherewas.indexOf("px");
-				var nextstrt = wherewas.indexOf(";") + 1;
-				var lastpart = wherewas.substring(nextstrt);
-				wherewas = wherewas.substring(0,stp);
-				var cellheight = 28;		
-				var newpos = num(wherewas) + cellheight;
-				var styles = frstpart + "top: " + newpos + "px;" + lastpart;
-				instr3.setAttribute("style", styles);
-				var nextVal = doc.getElementById("x" + nextN).innerHTML;
-				if( nsign < 0 && nextVal !== "0" ) {
-					if( nextVal.substr(0,1) == "-" ) {
-		  				nextVal = "-(" + nextVal + ")";
-		  			} else {
-		  				nextVal = "-" + nextVal;
-		  			}
-		  		} */
-				//instr3.innerHTML = nextVal + " divided by " + div;
 				var curr = doc.getElementById("c" + rowno + "_0");
-				//alert("curr cid = " + test);
 				var nextVal = doc.getElementById("x" + nextN).innerHTML;
-				if( nsign < 0 && nextVal !== 0 ) {
+				//alert("nsign: " + nsign + " nextVal: " + nextVal);
+				if( nsign < 0 && nextVal !== "0" ) {
 					doc.getElementById("c" + nextN + "_0").innerHTML = "-";
 				}
 				curr.innerHTML = "";
@@ -281,28 +244,16 @@ function checkT( ev ) {
 				doc.getElementById("c" + rowno + "_1").innerHTML = "";
 				if( n0 ) {	
 					nextBx = n0;	
-					//var nextVal = num(doc.getElementById("t0").value);
-					//var smult = mult + "";
-					//if( nsign < 0 && mult < 0 ) {
-					//		smult = "-(" + smult + ")";
-					//}	
 					doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + mult + " = ";
-					//instr3.innerHTML = smult + " &#xd7 " + nextVal; // times	
 				} else {
 					nextBx = doc.getElementById("y0");
-					if( intercept ) {
-						doc.getElementById("c0_" + colnum).innerHTML = op + " " + intercept + " = ";
+					if( bee !== 0 ) {
+						doc.getElementById("c0_" + colnum).innerHTML = op + " " + bee + " = ";
 					} else {
-						doc.getElementById("c0_" + colnum).innerHTML = "What is Y?";
+						doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + mult + " = "; // times;
 					}
-					//instr3.innerHTML = "What is Y?";
 				}
 				nextBx.focus();
-				//var styles = "position: absolute;"
-				  //  + "top: 103px;"
-				    //+ "left: 7px;"
-				  //  + "width: 100px;";
-				//instr3.setAttribute("style", styles);
 			}
 		} else {
 			instr3.innerHTML = "Should be " + expAns;
@@ -326,6 +277,7 @@ function checkY( ev ) {
 		var yid = ansBx.id;
 		var n = yid.substr(1);
 		var currx = num(doc.getElementById("x" + n).innerHTML);
+		// you did this in onload fixit
 		var par1 = doc.getElementById("whichparam1_" + whichcurve).value;
 		var par2 = doc.getElementById("whichparam2_" + whichcurve).value;
 		var par3 = doc.getElementById("whichparam3_" + whichcurve).value;
@@ -336,22 +288,11 @@ function checkY( ev ) {
 		expY = expY/run;
 		expY = expY + intercept;
 		if( num(ansBx.value) === expY ) {
+			instr3.innerHTML = "";
 			var nextN = num(n) + 1;
 			if( nextN < lastPt ) {
 				yid = "y" + nextN;
 				doc.getElementById(yid).focus();
-				/* var stylewas = instr3.getAttribute("style");
-				var strt = stylewas.indexOf("top");
-				var frstpart = stylewas.substring(0,strt);
-				var wherewas = stylewas.substring(strt + 5);
-				var stp = wherewas.indexOf("px");
-				var nextstrt = wherewas.indexOf(";") + 1;
-				var lastpart = wherewas.substring(nextstrt);
-				wherewas = wherewas.substring(0,stp);
-				var cellheight = 28;		
-				var newpos = num(wherewas) + cellheight;
-				var styles = frstpart + "top: " + newpos + "px;" + lastpart;
-				instr3.setAttribute("style", styles); */
 				if( nsign < 0 && !n0 && !t0 ) {
 					var nextVal = doc.getElementById("x" + nextN).innerHTML;
 					if( nextVal !== "0" ) {
@@ -362,13 +303,11 @@ function checkY( ev ) {
 				var curr = doc.getElementById("c" + n + "_" + colnum);
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
 				curr.innerHTML = "";
-				//instr3.innerHTML = "What is Y?";
 			} else {
 				ansBx.blur();
 				whatrow = doc.getElementsByClassName("r0");
 				var len = whatrow.length;
 				for( var i = 0; i < len; ++i ) {
-					//whatrow[i].setAttribute("style", styles);
 					whatrow[i].classList.add("hilite");
 				}
 				if( t0 ) {
@@ -406,15 +345,14 @@ function checkY( ev ) {
 						grandparent.removeChild(parent);
 					}
 				}
-				
-				//doc.getElementById("xygraph").addEventListener('click', checkPt );
-				//var styles = "position: absolute;"
-				  //  + "top: 103px;"
-				    //+ "left: 7px;"
-				    //+ "width: 100px;";
-				//instr3.setAttribute("style", styles);
-				//instr3.innerHTML = "Click this point &#x2192;"; // right arrow
-				col0.innerHTML = "Click this point &#x2192;"; // right arrow
+				var tmps = doc.getElementsByClassName("tmp");
+				len = tmps.length;
+				for( var i = len - 1; i >= 0; --i ) {
+					var parent = tmps[i].parentNode;
+					parent.removeChild(tmps[i]);
+				}
+				doc.getElementById("c-1_0").innerHTML = "Click this";
+				col0.innerHTML = "point &#x2192;"; // right arrow
 				doc.getElementById("c" + n + "_" + colnum).innerHTML = "";
 				doc.getElementById("instrs").innerHTML = "";
 			}
@@ -451,6 +389,7 @@ function checkPt( mousePos ){
 		var highY = expY + pct*expY;
 		if( lowX < mousePos.x && mousePos.x < highX && 
 			lowY < mousePos.y && mousePos.y < highY ) {
+			instr3.innerHTML = "";
 			putDot( dotX, dotY );
 			if( prevX && prevY ) {
 				drawLine( prevX, prevY, dotX, dotY );
@@ -466,44 +405,22 @@ function checkPt( mousePos ){
 				var parent = hbar[i].parentNode;
 				parent.removeChild(hbar[i]);
 			}
-			//var styles; // = whatrow[0].getAttribute("style"); may want to strip out border and replace fixit
-				//if( styles ) {
-				//	styles += "border: none;";
-				//} else {
-			//		styles = "border: none;";
-				//}
 			var len = whatrow.length;
 			for( var i = 0; i < len; ++i ) {
-				//whatrow[i].setAttribute("style", styles);
 				whatrow[i].classList.remove("hilite");
 			}
 			if( nextI < lastPt ) {
-				//var stylewas = instr3.getAttribute("style");
-				//var strt = stylewas.indexOf("top");
-				//var frstpart = stylewas.substring(0,strt);
-				//var wherewas = stylewas.substring(strt + 5);
-				//var stp = wherewas.indexOf("px");
-				//var nextstrt = wherewas.indexOf(";") + 1;
-				//var lastpart = wherewas.substring(nextstrt);
-				//wherewas = wherewas.substring(0,stp);		
-				//var newpos = num(wherewas) + cellheight;
-				//var styles = frstpart + "top: " + newpos + "px;" + lastpart;
-				//instr3.setAttribute("style", styles);
 				whatrow = doc.getElementsByClassName("r" + nextI);
-				//styles = whatrow[0].getAttribute("style");
-				//if( styles ) {
-				//	styles += "border: 2px solid white;";
-				//} else {
-				//	styles = "border: 2px solid white;";
-				//}
 				var len = whatrow.length;
 				for( var i = 0; i < len; ++i ) {
-					//whatrow[i].setAttribute("style", styles);
 					whatrow[i].classList.add("hilite");
 				}
+				var prevI = currI - 1;
+				var prev = doc.getElementById("c" + prevI + "_0");
 				var curr = doc.getElementById("c" + currI + "_0");
-				doc.getElementById("c" + nextI + "_0").innerHTML = curr.innerHTML; 
-				curr.innerHTML = "";			
+				doc.getElementById("c" + nextI + "_0").innerHTML = curr.innerHTML;
+				curr.innerHTML = prev.innerHTML; 
+				prev.innerHTML = "";			
 			} else if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ) {
 				var endinst = doc.getElementById("skpBx").innerHTML;
 				doc.getElementById("instrs").innerHTML = 'Choose another curve or click "' + endinst + '"';
@@ -524,7 +441,6 @@ function checkPt( mousePos ){
 		   	doc.getElementById("errct").value = errct + 1;
 			var hbarExists = doc.getElementsByClassName("hbar");
 			if( !hbarExists[0] ) {
-				//alert("dotX: " + dotX + " dotY: " + dotY + " nomX: " + nomX + " nomY: " + nomY);
 				showClick( dotX, dotY, nomX, nomY );
 			}
 		}
@@ -667,8 +583,9 @@ function drawCurve( cls ) {
 	}
 	var yp = xygraphtop;
 	var yspace = gridspace - 3;
+	var fudge = 3;
 	if( ymax ) {
-		yp += ystop - (1 + nmaxes)*yspace;
+		yp += ystop - fudge - (1 + nmaxes)*yspace;
 	} else if( ymin ) {
 		yp += ystop + nmins*yspace;
 	} else {
@@ -735,7 +652,7 @@ function genpoints ( type, which) {
 	plen = xBxs.length;
 	var xp;
 	var yp;
-	// should these be global, set in onload?
+	// should these be global, set in onload? fixit
 	var rise = par1;
 	var run = par2;
 	var intercept = par3;
@@ -761,6 +678,7 @@ function skip() {
 window.onload = function() {
 	var doc = document;
 	var num = Number;
+	var mat = Math;
 	dragged = false;
 	const selectDropdown = document.getElementById("chs");
 	selectDropdown.addEventListener('change', skip );
@@ -803,7 +721,6 @@ window.onload = function() {
 	var offs = 62;
 	offs = 67;
 	for( var i = 8; i > -10; i -= 2 ) {
-		//htmseg = '<text x="' + halfwidth + '" y="' + offs + '" fill="rgb(255,200,200)" >' + i + '</text>';
 		htmseg = '<text x="' + halfwidth + '" y="' + offs + '" fill="rgb(230, 0, 0)" >' + i + '</text>';
 		xygraph.innerHTML += htmseg;
 		offs += 40;
@@ -814,7 +731,6 @@ window.onload = function() {
 		if( i=== 0 ) {
 			offs += 7;
 		}
-		//htmseg = '<text x="' + offs + '" y="234" fill="rgb(255,200,200)" >' + i + '</text>';
 		htmseg = '<text x="' + offs + '" y="234" fill="rgb(230, 0, 0)" >' + i + '</text>';
 		xygraph.innerHTML += htmseg;
 		offs += 40;
@@ -833,9 +749,18 @@ window.onload = function() {
 
 	    instr3 = doc.createElement("label");
 	    var styles = "position: absolute;"
-		    + "top: 123px;"
-		    + "left: 7px;"
-		    + "width: 100px;";
+	    	+ "top: 123px;"
+		    + "left: 340px;"
+		    + "writing-mode: vertical-lr;"
+  			+ "display: inline-block;"
+  			+ "height: 350px;"
+ 			+ "width: 20px;"
+			+ "text-orientation: mixed;";
+
+	    //var styles = "position: absolute;"
+		  //  + "top: 123px;"
+		    //+ "left: 7px;"
+		//    + "width: 100px;";
 		instr3.setAttribute("style", styles);
 
 		
@@ -850,76 +775,71 @@ window.onload = function() {
 	  	t0 = doc.getElementById("t0");
 	  	col0 = doc.getElementById("c0_0");
 		var col1 = doc.getElementById("c0_1");
-		var eqn = doc.getElementById("instr2").innerHTML;
-		var aftereq = eqn.indexOf("=") + 2;
-	  	var afterX = eqn.indexOf("X") + 2;
-	  	var elen = eqn.length;
+		//var eqn = doc.getElementById("instr2").innerHTML;
+		//var aftereq = eqn.indexOf("=") + 2;
+	  	//var afterX = eqn.indexOf("X") + 2;
+	  	//var elen = eqn.length;
 	  	
-	  	var sign = eqn.substr(aftereq, 1);
-	  	if( sign === "-" ) {
+		// rise, run, intercept[currline] are all stored in page, no need to parse heading or instr2
+		var id = "whichparam1_" + whichcurve;
+		par1 = doc.getElementById(id).value;
+		id = "whichparam2_" + whichcurve;
+		par2 = doc.getElementById(id).value;
+		id = "whichparam3_" + whichcurve;
+		par3 = doc.getElementById(id).value;
+
+		var rise = num(par1);
+		var run = num(par2);
+		bee = num(par3);
+		if( bee < 0 ) {
+			op = "-";
+		} else {
+			op = "+";
+		}
+		bee = mat.abs(bee);
+
+	  	if( rise*run < 0 ) {
+	  		sign = "-";
 			nsign = -1;
 	  	} else {
-	  		sign = ""; // there is no -, you picked up something else
+	  		sign = "";
 	  	}
-	  	if( afterX < elen ) {
-	  		op = eqn.substr(afterX, 1);
-	  		intercept = eqn.substr(afterX+2, elen);
-	  	}
-	  	//alert("eqn: " + eqn + " afterX: " + afterX + " op: " + op + " intercept: " + intercept);
+		mult = mat.abs(rise);
+		div = mat.abs(run);
+		
+		//alert("sign: " + nsign + " rise: " + mult + " run: " + div + " op: " + op + " intercept: " + bee);
+		
 	  	if( !n0 && !t0 ) {
-	  		//instr3.innerHTML = "What is Y?"; // put better hints fixit
 	  		col0.innerHTML = sign;
-			if( intercept ) {
-				col1.innerHTML = op + " " + intercept + " = ";
+			if( bee !== 0 ) {
+				col1.innerHTML = op + " " + bee + " = ";
+			} else if( mult != 1 ) {
+				col1.innerHTML = " &#xd7 " + mult + " = "; // times
+			} else if( div != 1) {
+				col1.innerHTML = " &#xf7 " + div + " = "; // divided by
 			} else {
-				col1.innerHTML = "What is Y?";
+				col1.innerHTML = " = ";
 			}
 			colnum = 1;
 	  		doc.getElementById("y0").focus();
-	  	} else {
-	  		
-	  		var hn = doc.getElementById("hn").innerHTML; // this stuff can all be extracted from instr2 fixit
-			var len = hn.length - 1;
-			var npart = hn.substr(0,len);
-			
-			if( !isNaN(npart) ) {
-				mult = num(npart);
-				if( mult < 0 ) {
-					sign = "-";
-					nsign = -1;
-					mult = Math.abs(mult);
-				}
-			}
+	  	} else {	  		
 			var x0 = doc.getElementById("x0").innerHTML;  		  	
 		  	if( t0 ) {
-		  		div = num(doc.getElementById("ht").innerHTML);
-		  		/*if( x0 !== "0" ) {
-			  		if( sign === "-" && x0.substr(0,1) == "-" ) {
-			  			x0 = "-(" + x0 + ")";
-			  		} else {
-			  			x0 = sign + x0;
-			  		}
-			  	} */
 			  	if( x0 !== "0" ) {
 			  		col0.innerHTML = sign;
 			  	}
+			  	//doc.getElementById("statusBox" + ndx).innerHTML = "&#xf7 HEX CODE";
+			  	//ndx = (ndx+1)%maxbx;
+			  	//doc.getElementById("statusBox" + ndx).innerHTML = "&#247 HTML CODE ";
+			  	//ndx = (ndx+1)%maxbx;
+			  	//doc.getElementById("statusBox" + ndx).innerHTML = "&divide HTML ENTITY";
+			  	//ndx = (ndx+1)%maxbx;
 			  	col1.innerHTML = " &#xf7 " + div + " = "; // divided by
-		  		//instr3.innerHTML = x0 + " divided by " + div;
 		  		t0.focus();  		
 		  	} else {
 		  		colnum = 1;
-		  		col1.innerHTML = " &#xd7 " +sign + mult + " = "; // times
-		  		//instr3.innerHTML = sign + mult + " times " + x0;
+		  		col1.innerHTML = " &#xd7 " + sign + mult + " = "; // times
 		  		n0.focus();
-		  	}
-		  	var hm = doc.getElementById("hm");
-		  	if( hm ) {
-		  		hmcont = hm.innerHTML;
-		  		mult = num(hmcont.substr(0,hmcont.length-1));
-		  		if( mult < 0 ) {
-					nsign = -1;
-					mult = Math.abs(mult);
-		  		}
 		  	}
 	  	}
 	} else { // don't want to see the table until you select a curve

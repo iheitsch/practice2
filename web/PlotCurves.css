@@ -70,6 +70,14 @@ table{
 {
 	position:absolute;
 }
+.pre{
+	margin: none;
+	border: none;
+	padding: none;
+	margin: none;
+	text-align: right;
+	white-space: nowrap;
+}
 .rightsd{
 	float: right;
 }
@@ -139,12 +147,12 @@ table{
 #whatpts{
 	position: absolute;
 	top: 90px;
-	left: 105px;
+	left: 7px; /* 55px;  105px; */
 }
 #xygraph{
 	position: absolute;
 	top: 90px;
-	left: 400px; /* 315px; */
+	left: 365px;
 	width: 444px;
 	height: 444px;
 }

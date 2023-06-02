@@ -282,7 +282,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <form id="plots">
 <table id="whatpts">
 <tr>
-	<td class="tmp"></td>
+	<td class="pre" id="c-1_0"></td>
 	<th class="title rem"><%=indvar%></th>
 <% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { %>
 			<td class="tmp"></td>
@@ -326,7 +326,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	col = 0;
 	String cid = "c" + i + "_" + col; %>
 <tr>
-<td class="tmp" id="<%=cid%>" ></td>
+<td class="pre" id="<%=cid%>" ></td>
 <td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
 <% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { 
 		col += 1;
@@ -359,7 +359,26 @@ if(( tmp = request.getParameter("chs")) != null) {
 	<input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
 </td>
 </tr>
+
 <% } %>
+<tr>
+<td class="pre invisible">__________</td>
+<td class="tmp"></td>
+<% 	if( !dnmnatr.equals("") && (intercept[currline] != 0 || !nmratr.equals("")) ) { %>
+		<td class="tmp"></td>
+		<td class="tmp"></td>
+<%		if( !nmratr.equals("") && intercept[currline] != 0 ) { %>
+			<td class="tmp"></td>
+			<td class="tmp"></td>
+<% 		} %>
+<% 	}
+	if( dnmnatr.equals("") && !nmratr.equals("") && intercept[currline] != 0 ) { %>
+		<td class="tmp"></td>
+		<td class="tmp"></td>
+<%	} %>
+<td class="tmp"></td>
+<td class="tmp"></td>
+</tr>
 </table>
 <span id="instrs"><%=instrs%></span>
 
