@@ -1,10 +1,7 @@
 /**
  * 
  */
-// clicking all over the page generates a random line on the graph fixit
 // if slopes are close & small, intercepts identical, labels on right side written over one another fixit
-// sometimes grabs the line as if you clicked and dragged while you're clicking points fixit
-// add or take away a class rather than changing style when possible, it's faster as you dont have to redraw as much fixit
 // global variables are faster than doc.getElementById fixit
 // click on a valid point should either be ignored or counted correct if table is not filled out fixit
 // on clicking on any table input, disable all hints fixit
@@ -25,6 +22,8 @@ var curvetype = "";
 var whichcurve = 0;
 
 var errBx;
+var errCtBx;
+var xygraph;
 var whatrow = new Array;
 var yindex = 1; // will need to change when you add intermediate inputs fixit
 var ndx = 0;
@@ -73,8 +72,8 @@ function clearMouseDown( ev ) {
 		checkPt( mousePos );
 	} else if( dragged && pointsfound < enoughPoints ) {
 		var doc = document;
-		var errct = Number(doc.getElementById("errct").value);
-		doc.getElementById("errct").value = errct + 1;
+		var errct = Number(errCtBx.value);
+		errCtBx.value = errct + 1;
 	}
 	mouseIsDown = false;
 	dragged = false;
@@ -95,7 +94,6 @@ function checkCurve( ev ) {
 					pointsfound += 1;
 					captured[i] = true;
 					if( pointsfound >= enoughPoints ) {
-						//doc.getElementById("instr4").innerHTML = "";
 						nextI = lastPt; // don't need to track it any more
 						if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ) {
 							var endinst = doc.getElementById("skpBx").innerHTML;
@@ -155,7 +153,6 @@ function drawLine( x1, y1, x2, y2 ) {
 	htmseg += '" x2="' + x2;
 	htmseg += '" y2="' + y2;
 	htmseg += '" style="stroke:rgb(0,0,0);stroke-width:2" />';
-	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += htmseg;
 }
 function checkN( ev ) {
@@ -201,8 +198,8 @@ function checkN( ev ) {
 			if( num(rowno)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
 			}
-			var errct = Number(doc.getElementById("errct").value);
-		   	doc.getElementById("errct").value = errct + 1;
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
 		}
 	}
 }
@@ -261,8 +258,8 @@ function checkT( ev ) {
 			if( num(rowno)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
 			}
-			var errct = Number(doc.getElementById("errct").value);
-		   	doc.getElementById("errct").value = errct + 1;
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
 		}
 	}
 }
@@ -278,15 +275,20 @@ function checkY( ev ) {
 		var n = yid.substr(1);
 		var currx = num(doc.getElementById("x" + n).innerHTML);
 		// you did this in onload fixit
-		var par1 = doc.getElementById("whichparam1_" + whichcurve).value;
-		var par2 = doc.getElementById("whichparam2_" + whichcurve).value;
-		var par3 = doc.getElementById("whichparam3_" + whichcurve).value;
-		var rise = num(par1);
-		var run = num(par2);
-		var intercept = num(par3);
-		var expY = rise*currx;
-		expY = expY/run;
-		expY = expY + intercept;
+		//var par1 = doc.getElementById("whichparam1_" + whichcurve).value;
+		//var par2 = doc.getElementById("whichparam2_" + whichcurve).value;
+		//var par3 = doc.getElementById("whichparam3_" + whichcurve).value;
+		//var rise = num(par1);
+		//var run = num(par2);
+		//var intercept = num(par3);
+		var expY = nsign*mult*currx/div;
+		//expY = expY/run;
+		//expY = expY + intercept;
+		if( op === "+" ) {
+			expY += bee;
+		} else if( op === "-" ) {
+			expY -= bee;
+		}
 		if( num(ansBx.value) === expY ) {
 			errBx.innerHTML = "";
 			var nextN = num(n) + 1;
@@ -362,8 +364,8 @@ function checkY( ev ) {
 			if( num(n)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
 			}
-			var errct = Number(doc.getElementById("errct").value);
-		   	doc.getElementById("errct").value = errct + 1;
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
 		}
 	}
 }
@@ -437,8 +439,8 @@ function checkPt( mousePos ){
 				startAgain();
 			}
 		} else {
-			var errct = Number(doc.getElementById("errct").value);
-		   	doc.getElementById("errct").value = errct + 1;
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
 			var hbarExists = doc.getElementsByClassName("hbar");
 			if( !hbarExists[0] ) {
 				showClick( dotX, dotY, nomX, nomY );
@@ -450,7 +452,6 @@ function showClick( x, y, nomX, nomY ) {
 	var htmseg = '<line class="hbar" x1="22" y1="' + y;
 	htmseg += '" x2="422" y2="' + y;
 	htmseg += '" style="stroke:rgb(255,0,0);stroke-width:2" />';
-	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += htmseg;
 	htmseg = '<line class="hbar" x1="' + x;
 	htmseg += '" y1="22" x2="' + x;
@@ -473,7 +474,6 @@ function putDot( xX, xY) {
 	var htmseg = '<circle cx="' + xX;
 	htmseg += '" cy="' + xY;
 	htmseg += '" r="2" stroke="black" />';
-	var xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += htmseg;
 }
 function mouseCoords(ev){ 
@@ -498,7 +498,6 @@ function drawCurve( cls ) {
 	par2 = doc.getElementById(id).value;
 	id = "whichparam3_" + cls;
 	par3 = doc.getElementById(id).value;
-	var xygraph = doc.getElementById("xygraph");
 	var gridspace = 20;
 	var xstart = -10;
 	var xstop = 10;
@@ -607,7 +606,7 @@ function startAgain() {
     var Num = Number;
     var nitBx = doc.getElementById("initlzd");
 	if( nitBx.value === "true" ) {
-	    var errCt = Num(doc.getElementById("errct").value);
+	    var errCt = Num(errCtBx.value);
 	    var numAttmptd = Num(doc.getElementById("numAttmptd").value);
 	    var numWoErr = Num(doc.getElementById("numWoErr").value);
 	    var consWoErr = Num(doc.getElementById("consWoErr").value);	
@@ -701,7 +700,9 @@ window.onload = function() {
 	const selectDropdown = document.getElementById("chs");
 	selectDropdown.addEventListener('change', skip );
 	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text;
-	var xygraph = document.getElementById("xygraph");
+	errCtBx = doc.getElementById("errct");
+	
+	xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
 	xygraph.innerHTML += '<rect x="18" y="18" width="408" height="408" style="fill:rgb(78, 76, 50);" />';
