@@ -24,7 +24,7 @@ var lastPt;
 var curvetype = "";
 var whichcurve = 0;
 
-var instr3;
+var errBx;
 var whatrow = new Array;
 var yindex = 1; // will need to change when you add intermediate inputs fixit
 var ndx = 0;
@@ -125,8 +125,8 @@ function clearpage() {
 	doc.getElementById("whichcurves").value = "0";
 	doc.getElementById("instr2").innerHTML = "";
 	var form = doc.getElementById("plots");
-	if( form.contains(instr3) ) {
-  		form.removeChild( instr3 );
+	if( form.contains(errBx) ) {
+  		form.removeChild( errBx );
   	}
   	var whatpts = doc.getElementById("whatpts");
   	if( form.contains(whatpts) ) {
@@ -166,8 +166,8 @@ function checkN( ev ) {
 		var ansBx = ev.target;
 		var doc = document;
 		var num = Number;
-		var nid = ansBx.id; // use global nextI fixit
-		rowno = nid.substr(1,nid.length);
+		var nid = ansBx.id; // use global nextI
+		rowno = nid.substr(1,nid.length); // should be declared global fixit
 		var nextN = num(rowno) + 1;
 		var prevval;
 		var nextVal;
@@ -177,7 +177,7 @@ function checkN( ev ) {
 			expAns = nsign*mult*prevval/div;
 		}
 		if( num(ansBx.value) === expAns ) {
-			instr3.innerHTML = "";
+			errBx.innerHTML = "";
 			if( nextN < lastPt ) {
 				nextVal = nsign*num(doc.getElementById("x" + nextN).innerHTML)/div;
 				nid = "n" + nextN;
@@ -196,7 +196,7 @@ function checkN( ev ) {
 				}			
 			}
 		} else {
-			instr3.innerHTML = "Should be " + expAns;
+			errBx.innerHTML = "Should be " + expAns;
 			ansBx.style.color = "red";
 			if( num(rowno)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
@@ -222,7 +222,7 @@ function checkT( ev ) {
 			expAns = nsign*xval/div;
 		}
 		if( num(ansBx.value) === expAns ) {
-			instr3.innerHTML = "";
+			errBx.innerHTML = "";
 			var nextN = num(rowno) + 1;
 			if( nextN < lastPt ) {
 				tid = "t" + nextN;
@@ -256,7 +256,7 @@ function checkT( ev ) {
 				nextBx.focus();
 			}
 		} else {
-			instr3.innerHTML = "Should be " + expAns;
+			errBx.innerHTML = "Should be " + expAns;
 			ansBx.style.color = "red";
 			if( num(rowno)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
@@ -288,7 +288,7 @@ function checkY( ev ) {
 		expY = expY/run;
 		expY = expY + intercept;
 		if( num(ansBx.value) === expY ) {
-			instr3.innerHTML = "";
+			errBx.innerHTML = "";
 			var nextN = num(n) + 1;
 			if( nextN < lastPt ) {
 				yid = "y" + nextN;
@@ -357,7 +357,7 @@ function checkY( ev ) {
 				doc.getElementById("instrs").innerHTML = "";
 			}
 		} else {
-			instr3.innerHTML = "Should be " + expY;
+			errBx.innerHTML = "Should be " + expY;
 			ansBx.style.color = "red";
 			if( num(n)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
@@ -389,7 +389,7 @@ function checkPt( mousePos ){
 		var highY = expY + pct*expY;
 		if( lowX < mousePos.x && mousePos.x < highX && 
 			lowY < mousePos.y && mousePos.y < highY ) {
-			instr3.innerHTML = "";
+			errBx.innerHTML = "";
 			putDot( dotX, dotY );
 			if( prevX && prevY ) {
 				drawLine( prevX, prevY, dotX, dotY );
@@ -642,6 +642,7 @@ function startAgain() {
 function genpoints ( type, which) {
 	var doc = document;
 	var num = Number;
+	var mat = Math;
 	var id = "whichparam1_" + which;
 	par1 = num(doc.getElementById(id).value);
 	id = "whichparam2_" + which;
@@ -666,11 +667,28 @@ function genpoints ( type, which) {
 		ypts[i] = xygraphtop + halfwidth - yp*pxlsprsq;
 		captured[i] = false;
 	}
+	// set global variables for intermediate instructions
+	if( intercept < 0 ) {
+		op = "-";
+	} else {
+		op = "+";
+	}
+	bee = mat.abs(intercept);
+
+	if( rise*run < 0 ) {
+	  	sign = "-";
+		nsign = -1;
+	} else {
+	  	sign = "";
+	 }
+	mult = mat.abs(rise);
+	div = mat.abs(run);
+	return sign;
 }
 function skip() {
      clearpage();
      if( nextI < lastPt ) {
-     	document.getElementById("errct").value = 1; // any way you could hit skip when you just finished? fixit
+     	document.getElementById("errct").value = 1;
      }
      allgood = true;
      startAgain(); 
@@ -735,19 +753,10 @@ window.onload = function() {
 		xygraph.innerHTML += htmseg;
 		offs += 40;
 	}
-	whichcurve = num(doc.getElementById("whichcurve").value);
-	nmins = 0;
-	nmaxes = 0;
-	for( var i = 0; i < whichcurve; i += 1 ) {
-		drawCurve( i );
-	}
+
 
 	if( curvetype !== "Select") {
-		whatrow = doc.getElementsByClassName("r0");
-		genpoints( curvetype, whichcurve );
-		lastPt = Number(doc.getElementById("lastPt").value);
-
-	    instr3 = doc.createElement("label");
+		errBx = doc.createElement("label");
 	    var styles = "position: absolute;"
 	    	+ "top: 123px;"
 		    + "left: 340px;"
@@ -755,60 +764,36 @@ window.onload = function() {
   			+ "display: inline-block;"
   			+ "height: 350px;"
  			+ "width: 20px;"
+ 			+ "color: white;"
+ 			+ "text-shadow: 0 0 1px #000000, 0 0 5px #FF0000;"
 			+ "text-orientation: mixed;";
-
-	    //var styles = "position: absolute;"
-		  //  + "top: 123px;"
-		    //+ "left: 7px;"
-		//    + "width: 100px;";
-		instr3.setAttribute("style", styles);
-
+		errBx.setAttribute("style", styles);
 		
 	    var form = doc.getElementById("plots");
-	  	form.appendChild( instr3 );  	
+	  	form.appendChild( errBx );  	
 	  	var nputBxs = doc.getElementsByClassName("nput");
 	  	len = nputBxs.length;
 	  	for( var i = 0; i < len; ++i ) {
 	  		nputBxs[i].type = "text";
-	  	}
+	  	} 
+	  	
+		// draw all the curves generated to date in this set
+	  	whichcurve = num(doc.getElementById("whichcurve").value);
+		nmins = 0;
+		nmaxes = 0;
+		for( var i = 0; i < whichcurve; i += 1 ) {
+			drawCurve( i );
+		}
+		whatrow = doc.getElementsByClassName("r0");
+		sign = genpoints( curvetype, whichcurve );
+		lastPt = Number(doc.getElementById("lastPt").value);
+
+
 	  	n0 = doc.getElementById("n0");
 	  	t0 = doc.getElementById("t0");
 	  	col0 = doc.getElementById("c0_0");
 		var col1 = doc.getElementById("c0_1");
-		//var eqn = doc.getElementById("instr2").innerHTML;
-		//var aftereq = eqn.indexOf("=") + 2;
-	  	//var afterX = eqn.indexOf("X") + 2;
-	  	//var elen = eqn.length;
-	  	
-		// rise, run, intercept[currline] are all stored in page, no need to parse heading or instr2
-		var id = "whichparam1_" + whichcurve;
-		par1 = doc.getElementById(id).value;
-		id = "whichparam2_" + whichcurve;
-		par2 = doc.getElementById(id).value;
-		id = "whichparam3_" + whichcurve;
-		par3 = doc.getElementById(id).value;
-
-		var rise = num(par1);
-		var run = num(par2);
-		bee = num(par3);
-		if( bee < 0 ) {
-			op = "-";
-		} else {
-			op = "+";
-		}
-		bee = mat.abs(bee);
-
-	  	if( rise*run < 0 ) {
-	  		sign = "-";
-			nsign = -1;
-	  	} else {
-	  		sign = "";
-	  	}
-		mult = mat.abs(rise);
-		div = mat.abs(run);
-		
-		//alert("sign: " + nsign + " rise: " + mult + " run: " + div + " op: " + op + " intercept: " + bee);
-		
+	  			
 	  	if( !n0 && !t0 ) {
 	  		col0.innerHTML = sign;
 			if( bee !== 0 ) {
@@ -828,12 +813,6 @@ window.onload = function() {
 			  	if( x0 !== "0" ) {
 			  		col0.innerHTML = sign;
 			  	}
-			  	//doc.getElementById("statusBox" + ndx).innerHTML = "&#xf7 HEX CODE";
-			  	//ndx = (ndx+1)%maxbx;
-			  	//doc.getElementById("statusBox" + ndx).innerHTML = "&#247 HTML CODE ";
-			  	//ndx = (ndx+1)%maxbx;
-			  	//doc.getElementById("statusBox" + ndx).innerHTML = "&divide HTML ENTITY";
-			  	//ndx = (ndx+1)%maxbx;
 			  	col1.innerHTML = " &#xf7 " + div + " = "; // divided by
 		  		t0.focus();  		
 		  	} else {
@@ -842,6 +821,7 @@ window.onload = function() {
 		  		n0.focus();
 		  	}
 	  	}
+	  	
 	} else { // don't want to see the table until you select a curve
 		var styles = "color: #663300;"
 			+ "border: none;"
@@ -853,5 +833,4 @@ window.onload = function() {
 			removables[i].setAttribute("style", styles);
 		}
 	}
-
 }
