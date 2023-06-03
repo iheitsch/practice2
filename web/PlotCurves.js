@@ -2,7 +2,6 @@
  * 
  */
 // if slopes are close & small, intercepts identical, labels on right side written over one another fixit
-// global variables are faster than doc.getElementById fixit
 // click on a valid point should either be ignored or counted correct if table is not filled out fixit
 // on clicking on any table input, disable all hints fixit
 
@@ -10,7 +9,9 @@ var halfwidth = 222;
 var xygraphleft = 365; // copied from css
 var xygraphtop = 90;
 var orgX = xygraphleft + halfwidth; 
-var orgY = xygraphtop + halfwidth; 
+var orgY = xygraphtop + halfwidth;
+var graphstart = 22;
+var graphstop = 422;
 var pxlsprsq = 20;
 var nextI = 0;
 var prevX;
@@ -21,11 +22,11 @@ var lastPt;
 var curvetype = "";
 var whichcurve = 0;
 
+var form;
 var errBx;
 var errCtBx;
 var xygraph;
 var whatrow = new Array;
-var yindex = 1; // will need to change when you add intermediate inputs fixit
 var ndx = 0;
 var maxbx = 10; // should be the same as loop test for statusBox on jsp page
 var nmins = 0;
@@ -122,7 +123,6 @@ function clearpage() {
 	var doc = document;
 	doc.getElementById("whichcurves").value = "0";
 	doc.getElementById("instr2").innerHTML = "";
-	var form = doc.getElementById("plots");
 	if( form.contains(errBx) ) {
   		form.removeChild( errBx );
   	}
@@ -147,19 +147,24 @@ function erase( ev ) {
 	    ansBx.style.backgroundColor = "inherit";
 	}
  }
-function drawLine( x1, y1, x2, y2 ) {
-	var htmseg = '<line x1="' + x1;
+function drawLine( x1, y1, x2, y2, width, color, clas ) {
+	var htmseg = '<line ';
+	if( clas ) {
+		htmseg += 'class="' + clas;
+	}
+	htmseg += '" x1="' + x1;
 	htmseg += '" y1="' + y1;
 	htmseg += '" x2="' + x2;
 	htmseg += '" y2="' + y2;
-	htmseg += '" style="stroke:rgb(0,0,0);stroke-width:2" />';
+	htmseg += '" style="stroke:' + color;
+	htmseg += ';stroke-width:' + width;
+	htmseg += ';" />';
 	xygraph.innerHTML += htmseg;
 }
 function checkN( ev ) {
 	ev = ev || window.event;
 	// have to make sure it was entered, not just any keyup
 	if (ev.which === 13 || ev.keyCode === 13) {
-		//alert("b: " + bee);
 		var ansBx = ev.target;
 		var doc = document;
 		var num = Number;
@@ -274,16 +279,7 @@ function checkY( ev ) {
 		var yid = ansBx.id;
 		var n = yid.substr(1);
 		var currx = num(doc.getElementById("x" + n).innerHTML);
-		// you did this in onload fixit
-		//var par1 = doc.getElementById("whichparam1_" + whichcurve).value;
-		//var par2 = doc.getElementById("whichparam2_" + whichcurve).value;
-		//var par3 = doc.getElementById("whichparam3_" + whichcurve).value;
-		//var rise = num(par1);
-		//var run = num(par2);
-		//var intercept = num(par3);
 		var expY = nsign*mult*currx/div;
-		//expY = expY/run;
-		//expY = expY + intercept;
 		if( op === "+" ) {
 			expY += bee;
 		} else if( op === "-" ) {
@@ -328,7 +324,7 @@ function checkY( ev ) {
 						var parent = el.parentNode;
 						parent.removeChild(el);
 						var nBxs = doc.getElementsByClassName("nBx");
-						len = nBxs.length; // shouldn't be any different from whatrow.length fixit
+						len = nBxs.length;
 						for( var i = len - 1; i >= 0; --i ) {
 							parent = nBxs[i].parentNode;
 							var grandparent = parent.parentNode;
@@ -340,7 +336,7 @@ function checkY( ev ) {
 					var parent = el.parentNode;
 					parent.removeChild(el);
 					var nBxs = doc.getElementsByClassName("nBx");
-					len = nBxs.length; // shouldn't be any different from whatrow.length fixit
+					len = nBxs.length;
 					for( var i = len - 1; i >= 0; --i ) {
 						parent = nBxs[i].parentNode;
 						var grandparent = parent.parentNode;
@@ -355,7 +351,7 @@ function checkY( ev ) {
 				}
 				doc.getElementById("c-1_0").innerHTML = "Click this";
 				col0.innerHTML = "point &#x2192;"; // right arrow
-				doc.getElementById("c" + n + "_" + colnum).innerHTML = "";
+				//doc.getElementById("c" + n + "_" + colnum).innerHTML = ""; // you removed it when you removed tmps
 				doc.getElementById("instrs").innerHTML = "";
 			}
 		} else {
@@ -394,7 +390,7 @@ function checkPt( mousePos ){
 			errBx.innerHTML = "";
 			putDot( dotX, dotY );
 			if( prevX && prevY ) {
-				drawLine( prevX, prevY, dotX, dotY );
+				drawLine( prevX, prevY, dotX, dotY, 2, "black", null );
 			}
 			prevX = dotX;
 			prevY = dotY;
@@ -449,15 +445,9 @@ function checkPt( mousePos ){
 	}
 }
 function showClick( x, y, nomX, nomY ) {
-	var htmseg = '<line class="hbar" x1="22" y1="' + y;
-	htmseg += '" x2="422" y2="' + y;
-	htmseg += '" style="stroke:rgb(255,0,0);stroke-width:2" />';
-	xygraph.innerHTML += htmseg;
-	htmseg = '<line class="hbar" x1="' + x;
-	htmseg += '" y1="22" x2="' + x;
-	htmseg += '" y2="422" style="stroke:rgb(255,0,0);stroke-width:2" />';
-	xygraph.innerHTML += htmseg;
-	htmseg = '<circle cx="' + x;
+	drawLine( graphstart, y, graphstop, y, 2, "red", "hbar" );
+	drawLine( x, graphstart, x, graphstop, 2, "red", "hbar" );
+	var htmseg = '<circle cx="' + x;
 	htmseg += '" cy="' + y;
 	htmseg += '" r="2" stroke="red" />';
 	xygraph.innerHTML += htmseg;
@@ -545,10 +535,7 @@ function drawCurve( cls ) {
 	ystart = halfwidth - mat.round(ystart*gridspace);
 	ystop = halfwidth - mat.round(ystop*gridspace);
 	cls = cls%colors.length; // can you use drawline? fixit
-	var htmseg = '<line x1="' + xstart + '" y1="' + ystart;
-	htmseg += '" x2="' + xstop + '" y2="' + ystop;
-	htmseg += '" style="stroke:' + colors[cls] + ';stroke-width:2" />';			
-	xygraph.innerHTML += htmseg;
+	drawLine( xstart, ystart, xstop, ystop, 2, colors[cls], null );
 	
 	var cap = doc.createElement("label");
 	var intermed = "";
@@ -598,7 +585,6 @@ function drawCurve( cls ) {
 		+ "font-family: Monaco;"
 		+ "font-size: 0.8em;";
 	cap.setAttribute("style", styles);
-	var form = doc.getElementById("plots");
 	form.appendChild( cap ); 
 }
 function startAgain() {
@@ -652,7 +638,6 @@ function genpoints ( type, which) {
 	plen = xBxs.length;
 	var xp;
 	var yp;
-	// should these be global, set in onload? fixit
 	var rise = par1;
 	var run = par2;
 	var intercept = par3;
@@ -666,7 +651,9 @@ function genpoints ( type, which) {
 		ypts[i] = xygraphtop + halfwidth - yp*pxlsprsq;
 		captured[i] = false;
 	}
-	// set global variables for intermediate instructions
+	
+	// set global variables for intermediate instructions 
+	// since you already looked up the parameters
 	if( intercept < 0 ) {
 		op = "-";
 	} else {
@@ -700,31 +687,27 @@ window.onload = function() {
 	const selectDropdown = document.getElementById("chs");
 	selectDropdown.addEventListener('change', skip );
 	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text;
-	errCtBx = doc.getElementById("errct");
+	form = doc.getElementById("plots");
 	
+	if( curvetype !== "Select") {	
 	xygraph = document.getElementById("xygraph");
 	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
 	xygraph.innerHTML += '<rect x="18" y="18" width="408" height="408" style="fill:rgb(78, 76, 50);" />';
 	xygraph.innerHTML += '<rect x="20" y="20" width="404" height="404" style="fill:rgb(255,255,255);" />';
+	
 	// draw horizontal and vertical stripes to make a grid
-	for( var y = 22; y < 424; y += 20 ) {
-		var htmseg = '<line x1="22" y1="' + y;
-		htmseg += '" x2="422" y2="' + y;
-		htmseg += '" style="stroke:rgb(0,0,255);stroke-width:1" />';			
-		xygraph.innerHTML += htmseg;
+	for( var y = graphstart; y <= graphstop; y += 20 ) {
+		drawLine( graphstart, y, graphstop, y, 1, "rgb(0,0,255)", null );
 	}
-	for( var x = 22; x < 424; x += 20 ) {
-		var htmseg = '<line x1="' + x;
-		htmseg += '" y1="22" x2="' +x;
-		htmseg += '" y2="422" style="stroke:rgb(0,0,255);stroke-width:1" />';
-		xygraph.innerHTML += htmseg;
+	for( var x = graphstart; x <= graphstop; x += 20 ) {
+		drawLine( x, graphstart, x, graphstop, 1, "rgb(0,0,255)", null );
 	}
+	
 	// draw vertical and horizontal axes
-	var htmseg = '<line x1="' + halfwidth + '" y1="22" x2="' + halfwidth + '" y2="422" style="stroke:rgb(255,200,200);stroke-width:2" />';
-	xygraph.innerHTML += htmseg;
-	htmseg = '<line x1="22" y1="' + halfwidth + '" x2="422" y2="' + halfwidth + '" style="stroke:rgb(255,200,200);stroke-width:2" />';
-	xygraph.innerHTML += htmseg;
+	drawLine( halfwidth, graphstart, halfwidth, graphstop, 2, "rgb(255,200,200)", null );
+	drawLine( graphstart, halfwidth, graphstop, halfwidth, 2, "rgb(255,200,200)", null );
+	
 	// draw arrows
 	htmseg = '<polygon points="424,' + halfwidth + ' 422,212 444,' + halfwidth + ' 422,232" ';
 	htmseg += 'style="fill:rgb(230, 176, 138);stroke:rgb(78, 76, 50);stroke-width:1" />';
@@ -756,7 +739,7 @@ window.onload = function() {
 	}
 
 
-	if( curvetype !== "Select") {
+		errCtBx = doc.getElementById("errct");
 		errBx = doc.createElement("label");
 	    var styles = "position: absolute;"
 	    	+ "top: 123px;"
@@ -770,8 +753,8 @@ window.onload = function() {
 			+ "text-orientation: mixed;";
 		errBx.setAttribute("style", styles);
 		
-	    var form = doc.getElementById("plots");
-	  	form.appendChild( errBx );  	
+	  	form.appendChild( errBx );
+	  		
 	  	var nputBxs = doc.getElementsByClassName("nput");
 	  	len = nputBxs.length;
 	  	for( var i = 0; i < len; ++i ) {
@@ -788,7 +771,6 @@ window.onload = function() {
 		whatrow = doc.getElementsByClassName("r0");
 		sign = genpoints( curvetype, whichcurve );
 		lastPt = Number(doc.getElementById("lastPt").value);
-
 
 	  	n0 = doc.getElementById("n0");
 	  	t0 = doc.getElementById("t0");
@@ -824,14 +806,15 @@ window.onload = function() {
 	  	}
 	  	
 	} else { // don't want to see the table until you select a curve
-		var styles = "color: #663300;"
-			+ "border: none;"
-			+ "background-color: #663300;";
 		var removables = doc.getElementsByClassName("rem");
 		var len = removables.length;
 		
-		for( var i = 0; i < len; ++i ) {
-			removables[i].setAttribute("style", styles);
+		for( var i = len-1; i >= 0; --i ) {
+			var classList = removables[i].classList;
+			while (classList.length > 0) {
+			   classList.remove(classList.item(0));
+			}
+			classList.add("invisible");
 		}
 	}
 }
