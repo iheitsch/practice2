@@ -356,7 +356,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	cid = "c" + i + "_" + col; %>
 <td class="tmp" id="<%=cid%>" ></td>
 <td class="<%=bkClr%> <%=rclass%> rem" >
-	<input id="<%=yid%>" class="nput" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
+	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
 </td>
 </tr>
 

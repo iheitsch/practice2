@@ -32,7 +32,7 @@ var maxbx = 10; // should be the same as loop test for statusBox on jsp page
 var nmins = 0;
 var nmaxes = 0;
 var plen;
-var xpts = new Array(21); // MAXPTS can you use these anywhere besides checkCurve? fixit
+var xpts = new Array(21);
 var ypts = new Array(21);
 var captured = new Array(21);
 var pointsfound = 0;
@@ -57,6 +57,7 @@ var n0;
 var t0;
 var col0;
 var colnum = 0;
+var tblFilld = false;
 
 function setMouseDown( ev ) { 
 	ev = ev || window.event;
@@ -68,7 +69,8 @@ function clearMouseDown( ev ) {
 	var 	mousePos = mouseCoords( ev );
 	var mat = Math;
 	var closenuff = 20;
-	if( mat.abs(mousePos.x - mouseDownPos.x) < closenuff && 
+	if( tblFilld &&
+		mat.abs(mousePos.x - mouseDownPos.x) < closenuff && 
 		mat.abs(mousePos.y - mouseDownPos.y) < closenuff ) {
 		checkPt( mousePos );
 	} else if( dragged && pointsfound < enoughPoints ) {
@@ -169,10 +171,9 @@ function checkN( ev ) {
 		var doc = document;
 		var num = Number;
 		var nid = ansBx.id; // use global nextI
-		rowno = nid.substr(1,nid.length); // should be declared global fixit
+		rowno = nid.substr(1,nid.length);
 		var nextN = num(rowno) + 1;
 		var prevval;
-		var nextVal;
 		prevval = num(doc.getElementById("x" + rowno).innerHTML);
 		var expAns;
 		if( curvetype === "Line" ) {
@@ -212,7 +213,6 @@ function checkT( ev ) {
 	ev = ev || window.event;
 	// have to make sure it was entered, not just any keyup
 	if (ev.which === 13 || ev.keyCode === 13) {
-		//alert("b: " + bee);
 		var ansBx = ev.target;
 		var doc = document;
 		var num = Number;
@@ -279,11 +279,14 @@ function checkY( ev ) {
 		var yid = ansBx.id;
 		var n = yid.substr(1);
 		var currx = num(doc.getElementById("x" + n).innerHTML);
-		var expY = nsign*mult*currx/div;
-		if( op === "+" ) {
-			expY += bee;
-		} else if( op === "-" ) {
-			expY -= bee;
+		var expY;
+		if( curvetype === "Line" ) {
+			expY = nsign*mult*currx/div;
+			if( op === "+" ) {
+				expY += bee;
+			} else if( op === "-" ) {
+				expY -= bee;
+			}
 		}
 		if( num(ansBx.value) === expY ) {
 			errBx.innerHTML = "";
@@ -303,8 +306,17 @@ function checkY( ev ) {
 				curr.innerHTML = "";
 			} else {
 				ansBx.blur();
+				var ypts = doc.getElementsByClassName("ypts");
+				var len = ypts.length;
+				tblFilld = true;
+				for( var i = 0; i < len; ++i ) {
+					if( ypts[i].value === "") {
+						tblFilld = false;
+						//alert("ypts[" + i + "]: " + ypts[i] + tbl
+					}
+				}
 				whatrow = doc.getElementsByClassName("r0");
-				var len = whatrow.length;
+				len = whatrow.length;
 				for( var i = 0; i < len; ++i ) {
 					whatrow[i].classList.add("hilite");
 				}
@@ -372,7 +384,6 @@ function checkPt( mousePos ){
 		var pct = 0.05;
 		var cellheight = 28;
 		var expXBx = whatrow[0];
-		//var ndx = num(expXBx.id.substr(1));
 		var expYBx = doc.getElementById("y" + nextI);
 		var nomX = expXBx.innerHTML;
 		var nomY = expYBx.value;
@@ -491,78 +502,81 @@ function drawCurve( cls ) {
 	var gridspace = 20;
 	var xstart = -10;
 	var xstop = 10;
-	var rise = num(par1);
-	var run = num(par2);
-	var slope = rise/run;
-	var intercept = num(par3);
-	var ystart = slope*xstart + intercept;
-	var ystop = slope*xstop + intercept;
 	var ymax;
 	var ymin;
 	var hitsleftedge = true;
 	///////////////green	gold		orange		burgundy	chocolate
 	var colors = ["#33cc33", "#ffbf80", "#ef5600", "#cc0000", "#ac7339", "red"];
 	var ltcols = [ "#68e514", "#ffdb4d", "#ffbb99", "#ff2da4", "#d2a679", "white" ];
-
-	// make sure endpoints are on the graph
-	if( ystart < -10 ) {
-		ystart = -10;
-		xstart = (ystart - intercept)/slope;
-	}
-	if( ystart > 10 ) {
-		ystart = 10;
-		xstart = (ystart - intercept)/slope;
-	}
-	if( ystop < -10 ) {
-		ymin = ystop;
-		ystop = -10;
-		xstop = (ystop - intercept)/slope;
-		hitsleftedge = false;
-		nmins += 1;
-	}
- 
-	if( ystop > 10 ) {
-		ymax = ystop;
-		ystop = 10;
-		xstop = (ystop - intercept)/slope;
-		hitsleftedge = false;
-		nmaxes += 1;
-	}
-	
-	// convert to location on window
-	xstart = halfwidth + mat.round(xstart*gridspace);
-	xstop = halfwidth + mat.round(xstop*gridspace);
-	ystart = halfwidth - mat.round(ystart*gridspace);
-	ystop = halfwidth - mat.round(ystop*gridspace);
-	cls = cls%colors.length; // can you use drawline? fixit
-	drawLine( xstart, ystart, xstop, ystop, 2, colors[cls], null );
-	
+	cls = cls%colors.length;
 	var cap = doc.createElement("label");
-	var intermed = "";
-	var absrise = mat.abs(rise);
-	var absrun = mat.abs(run);
-   	if( !(absrise == 1 && absrun == 1) ) { 
-   		intermed += absrise;
-   	}
-	if( absrun != 1 ) {
-	   	intermed = "(" + intermed;
-	}
-	if( rise*run < 0 ) {
-		intermed = "-" + intermed;
-	} 		
-	if( absrun != 1 ) {
-		intermed += "/" + absrun + ")";
-	}
-   	var rest = "";
-	if( intercept != 0 ) {
-		if( intercept < 0 ) {
-			rest = " - ";
-		} else {
-		    rest = " + ";
+	
+	if( curvetype === "Line" ) {
+		var rise = num(par1);
+		var run = num(par2);
+		var slope = rise/run;
+		var intercept = num(par3);
+		var ystart = slope*xstart + intercept;
+		var ystop = slope*xstop + intercept;
+
+		// make sure endpoints are on the graph
+		if( ystart < -10 ) {
+			ystart = -10;
+			xstart = (ystart - intercept)/slope;
 		}
-	    rest += Math.abs(intercept);
+		if( ystart > 10 ) {
+			ystart = 10;
+			xstart = (ystart - intercept)/slope;
+		}
+		if( ystop < -10 ) {
+			ymin = ystop;
+			ystop = -10;
+			xstop = (ystop - intercept)/slope;
+			hitsleftedge = false;
+			nmins += 1;
+		}
+		if( ystop > 10 ) {
+			ymax = ystop;
+			ystop = 10;
+			xstop = (ystop - intercept)/slope;
+			hitsleftedge = false;
+			nmaxes += 1;
+		}
+	
+		// convert to location on window
+		xstart = halfwidth + mat.round(xstart*gridspace);
+		xstop = halfwidth + mat.round(xstop*gridspace);
+		ystart = halfwidth - mat.round(ystart*gridspace);
+		ystop = halfwidth - mat.round(ystop*gridspace);
+		drawLine( xstart, ystart, xstop, ystop, 2, colors[cls], null );
+	
+		// re-create equation
+		var intermed = "";
+		var absrise = mat.abs(rise);
+		var absrun = mat.abs(run);
+	   	if( !(absrise == 1 && absrun == 1) ) { 
+	   		intermed += absrise;
+	   	}
+		if( absrun != 1 ) {
+		   	intermed = "(" + intermed;
+		}
+		if( rise*run < 0 ) {
+			intermed = "-" + intermed;
+		} 		
+		if( absrun != 1 ) {
+			intermed += "/" + absrun + ")";
+		}
+	   	var rest = "";
+		if( intercept != 0 ) {
+			if( intercept < 0 ) {
+				rest = " - ";
+			} else {
+			    rest = " + ";
+			}
+		    rest += Math.abs(intercept);
+		}
+		cap.innerHTML = "Y = " + intermed + "X" + rest;
 	}
-	cap.innerHTML = "Y = " + intermed + "X" + rest;
 	var xp = xygraphleft + xstop; // xyframe left + xstop
 	if( hitsleftedge ) {
 		xp += gridspace + 3;
@@ -638,37 +652,39 @@ function genpoints ( type, which) {
 	plen = xBxs.length;
 	var xp;
 	var yp;
-	var rise = par1;
-	var run = par2;
-	var intercept = par3;
-	for( var i = 0; i < plen; ++i ) {
-		//read 
-		xp = num(xBxs[i].innerHTML);
-		// calculate
-		yp = (rise*xp)/run + intercept;
-		// and convert into position on page
-		xpts[i] = xygraphleft + halfwidth + xp*pxlsprsq;
-		ypts[i] = xygraphtop + halfwidth - yp*pxlsprsq;
-		captured[i] = false;
-	}
+	if( curvetype === "Line" ) {
+		var rise = par1;
+		var run = par2;
+		var intercept = par3;
+		for( var i = 0; i < plen; ++i ) {
+			//read 
+			xp = num(xBxs[i].innerHTML);
+			// calculate
+			yp = (rise*xp)/run + intercept;
+			// and convert into position on page
+			xpts[i] = xygraphleft + halfwidth + xp*pxlsprsq;
+			ypts[i] = xygraphtop + halfwidth - yp*pxlsprsq;
+			captured[i] = false;
+		}
+		
+		// set global variables for intermediate instructions 
+		// since you already looked up the parameters
+		if( intercept < 0 ) {
+			op = "-";
+		} else {
+			op = "+";
+		}
+		bee = mat.abs(intercept);
 	
-	// set global variables for intermediate instructions 
-	// since you already looked up the parameters
-	if( intercept < 0 ) {
-		op = "-";
-	} else {
-		op = "+";
+		if( rise*run < 0 ) {
+		  	sign = "-";
+			nsign = -1;
+		} else {
+		  	sign = "";
+		 }
+		mult = mat.abs(rise);
+		div = mat.abs(run);
 	}
-	bee = mat.abs(intercept);
-
-	if( rise*run < 0 ) {
-	  	sign = "-";
-		nsign = -1;
-	} else {
-	  	sign = "";
-	 }
-	mult = mat.abs(rise);
-	div = mat.abs(run);
 	return sign;
 }
 function skip() {
