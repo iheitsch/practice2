@@ -27,7 +27,7 @@ var errBx;
 var errCtBx;
 var xygraph;
 var whatrow = new Array;
-var ndx = 0;
+var pdx = 0;
 var maxbx = 10; // should be the same as loop test for statusBox on jsp page
 var nmins = 0;
 var nmaxes = 0;
@@ -58,6 +58,7 @@ var t0;
 var col0;
 var colnum = 0;
 var tblFilld = false;
+var ystops = new Array();
 
 function setMouseDown( ev ) { 
 	ev = ev || window.event;
@@ -98,6 +99,7 @@ function checkCurve( ev ) {
 					captured[i] = true;
 					if( pointsfound >= enoughPoints ) {
 						nextI = lastPt; // don't need to track it any more
+						drawCurve( whichcurve );
 						if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ) {
 							var endinst = doc.getElementById("skpBx").innerHTML;
 							doc.getElementById("instrs").innerHTML = 'Choose another curve or click "' + endinst + '"';
@@ -105,13 +107,13 @@ function checkCurve( ev ) {
 							clearpage();
 							nmins = 0;
 							nmaxes = 0;
-							if( whichcurve > 0 ) {
-								for( var i = 0; i <= whichcurve; i += 1 ) {
-									drawCurve( i );
-								}
-							}
+							//if( whichcurve > 0 ) {
+							//	for( var i = 0; i <= whichcurve; i += 1 ) {
+							//		drawCurve( i );
+							//	}
+							//}
 				  		} else {
-							drawCurve( whichcurve );
+							//drawCurve( whichcurve );
 							startAgain();
 						}
 					}
@@ -438,9 +440,10 @@ function checkPt( mousePos ){
 				nmins = 0;
 				nmaxes = 0;
 				if( whichcurve > 0 ) {
-					for( var i = 0; i <= whichcurve; i += 1 ) {
-						drawCurve( i );
-					}
+					drawCurve( whichcurve );
+					//for( var i = 0; i <= whichcurve; i += 1 ) {
+					//	drawCurve( i );
+					//}
 				}		
 			} else { // plotted one curve, start another similar one
 				startAgain();
@@ -493,6 +496,7 @@ function drawCurve( cls ) {
     var num = Number;
 	var mat = Math;
 	var doc = document;
+	//alert("drawCurve: " + cls);
 	var id = "whichparam1_" + cls;
 	par1 = doc.getElementById(id).value;
 	id = "whichparam2_" + cls;
@@ -504,13 +508,20 @@ function drawCurve( cls ) {
 	var xstop = 10;
 	var ymax;
 	var ymin;
-	var hitsleftedge = true;
+	var hitsrightedge = true;
 	///////////////green	gold		orange		burgundy	chocolate
-	var colors = ["#33cc33", "#ffbf80", "#ef5600", "#cc0000", "#ac7339", "red"];
-	var ltcols = [ "#68e514", "#ffdb4d", "#ffbb99", "#ff2da4", "#d2a679", "white" ];
+	var colors = ["#33cc33", "#ffbf80", "#ff6600", "#cc0000", "#ac7339", "red"];
+	var ltcols = [ "#68e514", "#ffe680", "#ffbb99", "#ff3dd4", "#d2a679", "white" ];
 	cls = cls%colors.length;
 	var cap = doc.createElement("label");
-	
+	var styles = "position: absolute;"
+		+ "width: 150px;"
+		+ "color: " + ltcols[cls] + ";"
+		+ "text-shadow: 0 0 1px #FFFFFF;"
+
+		+ "font-family: Monaco;"
+		+ "font-size: 0.8em;";
+		
 	if( curvetype === "Line" ) {
 		var rise = num(par1);
 		var run = num(par2);
@@ -532,14 +543,14 @@ function drawCurve( cls ) {
 			ymin = ystop;
 			ystop = -10;
 			xstop = (ystop - intercept)/slope;
-			hitsleftedge = false;
+			hitsrightedge = false;
 			nmins += 1;
 		}
 		if( ystop > 10 ) {
 			ymax = ystop;
 			ystop = 10;
 			xstop = (ystop - intercept)/slope;
-			hitsleftedge = false;
+			hitsrightedge = false;
 			nmaxes += 1;
 		}
 	
@@ -576,28 +587,57 @@ function drawCurve( cls ) {
 		    rest += Math.abs(intercept);
 		}
 		cap.innerHTML = "Y = " + intermed + "X" + rest;
-	}
+	} // curvetype === "Line"
 	var xp = xygraphleft + xstop; // xyframe left + xstop
-	if( hitsleftedge ) {
-		xp += gridspace + 3;
-	}
 	var yp = xygraphtop;
-	var yspace = gridspace - 3;
-	var fudge = 3;
-	if( ymax ) {
-		yp += ystop - fudge - (1 + nmaxes)*yspace;
-	} else if( ymin ) {
-		yp += ystop + nmins*yspace;
-	} else {
-		yp += ystop;
+	var yspace = gridspace - 4;
+	var aboveframe = 6;
+	var belowframe = 4;
+	var centerline = yspace/2;
+	if( hitsrightedge ) {
+		xp += gridspace + 3;
+
+		// find the smallest upper and lower difference, if both combined doesn't have room for another
+		// push it right. if there is room move it up or down
+		var lowerdiff = 2*yspace;
+		var higherdiff = 2*yspace;
+		for( var i = 0; i < ystops.length; ++i ) {
+			if( ystop >= ystops[i] ) {
+				var diff = ystop - ystops[i];
+				if( diff < higherdiff ) {
+					higherdiff = diff;
+				}
+			} else {
+				var diff = ystops[i] - ystop;
+				if( diff < lowerdiff ) {
+					lowerdiff = diff;
+				}
+			}
+		}
+		//doc.getElementById("statusBox" + pdx).innerHTML = "c: " + cls + " hd: " + higherdiff + " ld: " + lowerdiff;
+		//pdx = (pdx + 1)%maxbx;
+		if( higherdiff + lowerdiff < 1.7*yspace ) { // in very rare cases with 3 consecutive close lines, a previous
+			xp += 140;								// line label may be pushed to the point where the last is out of
+			styles += "background: white;";			// order not worth it to fixit ?
+		} else {
+			if( lowerdiff < yspace ) {
+				ystop -= yspace - lowerdiff;
+			} else if( higherdiff < yspace ) {
+				ystop += yspace - higherdiff;
+			}
+		}
+		ystops.push(ystop);
 	}
-	var styles = "position: absolute;"
-		+ "width: 150px;"
-		+ "color: " + ltcols[cls] + ";"
-		+ "left: " + xp + "px;"
-		+ "top: " + yp + "px;"
-		+ "font-family: Monaco;"
-		+ "font-size: 0.8em;";
+	if( ymax ) {
+		yp += ystop - aboveframe - (1 + nmaxes)*yspace;
+	} else if( ymin ) {
+		yp += ystop + belowframe + nmins*yspace;
+	} else {
+		yp += ystop - centerline;
+	}
+	styles += "left: " + xp + "px;"
+			+ "top: " + yp + "px;";
+
 	cap.setAttribute("style", styles);
 	form.appendChild( cap ); 
 }
