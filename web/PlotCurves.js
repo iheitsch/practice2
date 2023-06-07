@@ -1,8 +1,6 @@
 /**
  * 
  */
-// if slopes are close & small, intercepts identical, labels on right side written over one another fixit
-// click on a valid point should either be ignored or counted correct if table is not filled out fixit
 // on clicking on any table input, disable all hints fixit
 
 var halfwidth = 222;
@@ -41,7 +39,9 @@ var Coords = function( xp, yp ) {
     this.x = xp;
     this.y = yp;
 };
-var mouseDownPos = new Coords(-1, -3);
+//var mouseDownPos = new Coords(-1, -3);
+var mouseDownX;
+var mouseDownY;
 var dragged = false;
 var enoughPoints = 2; // needs to be more for anything but straight lines fixit
 var par1;
@@ -50,6 +50,9 @@ var par3;
 var mult = 1;
 var div = 1;
 var bee;
+var kay; 
+var ache;
+var aye;
 
 var nsign = 1;
 var op = "";
@@ -62,23 +65,28 @@ var ystops = new Array();
 
 function setMouseDown( ev ) { 
 	ev = ev || window.event;
-	mouseDownPos = mouseCoords( ev );
+	var mouseDownPos = mouseCoords( ev );
+	mouseDownX = mouseDownPos.x;
+	mouseDownY = mouseDownPos.y;
 	mouseIsDown = true;		
 }
 function clearMouseDown( ev ) { 
 	ev = ev || window.event;
-	var 	mousePos = mouseCoords( ev );
+	var mousePos = mouseCoords( ev );
+	var mouseUpX = mousePos.x;
+	var mouseUpY = mousePos.y;
 	var mat = Math;
 	var closenuff = 20;
 	if( tblFilld &&
-		mat.abs(mousePos.x - mouseDownPos.x) < closenuff && 
-		mat.abs(mousePos.y - mouseDownPos.y) < closenuff ) {
-		checkPt( mousePos );
+		mat.abs(mouseUpX - mouseDownX) < closenuff && 
+		mat.abs(mouseUpY - mouseDownY) < closenuff ) {
+		checkPt( mouseUpX, mouseUpY );	
 	} else if( dragged && pointsfound < enoughPoints ) {
 		var doc = document;
 		var errct = Number(errCtBx.value);
 		errCtBx.value = errct + 1;
 	}
+	
 	mouseIsDown = false;
 	dragged = false;
 }
@@ -107,13 +115,7 @@ function checkCurve( ev ) {
 							clearpage();
 							nmins = 0;
 							nmaxes = 0;
-							//if( whichcurve > 0 ) {
-							//	for( var i = 0; i <= whichcurve; i += 1 ) {
-							//		drawCurve( i );
-							//	}
-							//}
 				  		} else {
-							//drawCurve( whichcurve );
 							startAgain();
 						}
 					}
@@ -133,7 +135,14 @@ function clearpage() {
   	var whatpts = doc.getElementById("whatpts");
   	if( form.contains(whatpts) ) {
   		form.removeChild( whatpts );
-  	} 
+  	}
+  	// remove marked dots of last curve
+  	var mrx = doc.getElementsByClassName("mrx");
+  	var len = mrx.length;
+  	for( var i = len-1; i >= 0; --i ) {
+  		var parent = mrx[i].parentNode;
+		parent.removeChild(mrx[i]);
+  	}
 }
 function erase( ev ) {
     ev = ev || window.event;
@@ -154,9 +163,9 @@ function erase( ev ) {
 function drawLine( x1, y1, x2, y2, width, color, clas ) {
 	var htmseg = '<line ';
 	if( clas ) {
-		htmseg += 'class="' + clas;
+		htmseg += 'class="' + clas + '"';
 	}
-	htmseg += '" x1="' + x1;
+	htmseg += ' x1="' + x1;
 	htmseg += '" y1="' + y1;
 	htmseg += '" x2="' + x2;
 	htmseg += '" y2="' + y2;
@@ -233,7 +242,6 @@ function checkT( ev ) {
 				doc.getElementById(tid).focus();
 				var curr = doc.getElementById("c" + rowno + "_0");
 				var nextVal = doc.getElementById("x" + nextN).innerHTML;
-				//alert("nsign: " + nsign + " nextVal: " + nextVal);
 				if( nsign < 0 && nextVal !== "0" ) {
 					doc.getElementById("c" + nextN + "_0").innerHTML = "-";
 				}
@@ -277,11 +285,14 @@ function checkY( ev ) {
 		var ansBx = ev.target;
 		var doc = document;
 		var num = Number;
+		var mat = Math;
 		
+		var ansVal = num(ansBx.value);
 		var yid = ansBx.id;
 		var n = yid.substr(1);
 		var currx = num(doc.getElementById("x" + n).innerHTML);
 		var expY;
+		var expY2;
 		if( curvetype === "Line" ) {
 			expY = nsign*mult*currx/div;
 			if( op === "+" ) {
@@ -289,8 +300,12 @@ function checkY( ev ) {
 			} else if( op === "-" ) {
 				expY -= bee;
 			}
+			expY2 = expY;
+		} else if( curvetype === "Circle" || curvetype === "Elipse" ) {
+			expY = kay + bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
+			expY = kay - bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
 		}
-		if( num(ansBx.value) === expY ) {
+		if( ansVal === expY || ansVal === expY2 ) {
 			errBx.innerHTML = "";
 			var nextN = num(n) + 1;
 			if( nextN < lastPt ) {
@@ -314,7 +329,6 @@ function checkY( ev ) {
 				for( var i = 0; i < len; ++i ) {
 					if( ypts[i].value === "") {
 						tblFilld = false;
-						//alert("ypts[" + i + "]: " + ypts[i] + tbl
 					}
 				}
 				whatrow = doc.getElementsByClassName("r0");
@@ -379,7 +393,7 @@ function checkY( ev ) {
 		}
 	}
 }
-function checkPt( mousePos ){
+function checkPt( mousePosx, mousePosy ){
 	if( !dragged ) {
 		var doc = document;
 		var num = Number;	
@@ -398,12 +412,12 @@ function checkPt( mousePos ){
 		var highX = expX + pct*expX;
 		var lowY = expY - pct*expY;
 		var highY = expY + pct*expY;
-		if( lowX < mousePos.x && mousePos.x < highX && 
-			lowY < mousePos.y && mousePos.y < highY ) {
+		if( lowX < mousePosx && mousePosx < highX && 
+			lowY < mousePosy && mousePosy < highY ) {
 			errBx.innerHTML = "";
 			putDot( dotX, dotY );
 			if( prevX && prevY ) {
-				drawLine( prevX, prevY, dotX, dotY, 2, "black", null );
+				drawLine( prevX, prevY, dotX, dotY, 2, "black", "mrx" );
 			}
 			prevX = dotX;
 			prevY = dotY;
@@ -439,11 +453,8 @@ function checkPt( mousePos ){
 
 				nmins = 0;
 				nmaxes = 0;
-				if( whichcurve > 0 ) {
+				if( whichcurve > 0 ) { // debug
 					drawCurve( whichcurve );
-					//for( var i = 0; i <= whichcurve; i += 1 ) {
-					//	drawCurve( i );
-					//}
 				}		
 			} else { // plotted one curve, start another similar one
 				startAgain();
@@ -453,6 +464,7 @@ function checkPt( mousePos ){
 		   	errCtBx.value = errct + 1;
 			var hbarExists = doc.getElementsByClassName("hbar");
 			if( !hbarExists[0] ) {
+				//alert("dotX: " + dotX + " dotY: " + dotY + " nomX: " + nomX + " nomY: " + nomY);
 				showClick( dotX, dotY, nomX, nomY );
 			}
 		}
@@ -475,7 +487,7 @@ function showClick( x, y, nomX, nomY ) {
 	xygraph.innerHTML += htmseg;
 }
 function putDot( xX, xY) {
-	var htmseg = '<circle cx="' + xX;
+	var htmseg = '<circle class="mrx" cx="' + xX;
 	htmseg += '" cy="' + xY;
 	htmseg += '" r="2" stroke="black" />';
 	xygraph.innerHTML += htmseg;
@@ -496,13 +508,14 @@ function drawCurve( cls ) {
     var num = Number;
 	var mat = Math;
 	var doc = document;
-	//alert("drawCurve: " + cls);
 	var id = "whichparam1_" + cls;
 	par1 = doc.getElementById(id).value;
 	id = "whichparam2_" + cls;
 	par2 = doc.getElementById(id).value;
 	id = "whichparam3_" + cls;
 	par3 = doc.getElementById(id).value;
+	id = "whichparam4_" + cls;
+	par4 = doc.getElementById(id).value;
 	var gridspace = 20;
 	var xstart = -10;
 	var xstop = 10;
@@ -587,7 +600,44 @@ function drawCurve( cls ) {
 		    rest += Math.abs(intercept);
 		}
 		cap.innerHTML = "Y = " + intermed + "X" + rest;
-	} // curvetype === "Line"
+	} else if( curvetype === "Circle" || curvetype === "Ellipse" ) {
+		//alert("drawing ellipse");
+		//var xcent = halfwidth + mat.round(ache*gridspace);
+		//var ycent = halfwidth - mat.round(kay*gridspace);
+		//var xrad = mat.round(aye*gridspace);
+		//var yrad = mat.round(bee*gridspace);
+		var htmseg = '<polyline points=" ';
+		var h = num(par2);
+		var k = num(par3);
+		var a = num(par1);
+		var b = num(par4);
+		for( var xp = h - a; xp <= a + h; xp += 0.1 ) {
+			var yp = k + b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
+			var px = halfwidth + mat.round(xp*gridspace);
+			var py = halfwidth - mat.round(yp*gridspace);
+			htmseg += px + ', ' + py + ' '; 
+		}
+		var lastbx = maxbx-1;
+		//doc.getElementById("statusBox" + lastbx).innerHTML = "a: " + a + " h: " + h + " k: " + k + " b: " + b;
+		for( var xp = a + h; xp >= h - a; xp -= 0.1) {
+			var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));		
+			var px = halfwidth + mat.round(xp*gridspace);
+			var py = halfwidth - mat.round(yp*gridspace);
+			var newseg = px + ', ' + py + ' '; 
+			htmseg += newseg; 
+			//doc.getElementById("statusBox" + pdx).innerHTML = "xp: " + xp + " yp: " + yp + " newseg: " + newseg;
+			//pdx = (pdx + 1)%(maxbx-1);
+		}
+		htmseg += '" style="stroke:' + colors[cls];
+		htmseg += ';stroke-width:2; fill:none';
+		htmseg += ';" />';
+		xygraph.innerHTML += htmseg; 
+		//htmseg = '<polyline points=" 200,150 175,300 50, 350 ';
+		//htmseg += '" style="stroke:' + "blue";
+		//htmseg += ';stroke-width:2; fill:none';
+		//htmseg += ';" />';
+		//xygraph.innerHTML += htmseg; 
+	}
 	var xp = xygraphleft + xstop; // xyframe left + xstop
 	var yp = xygraphtop;
 	var yspace = gridspace - 4;
@@ -614,8 +664,7 @@ function drawCurve( cls ) {
 				}
 			}
 		}
-		//doc.getElementById("statusBox" + pdx).innerHTML = "c: " + cls + " hd: " + higherdiff + " ld: " + lowerdiff;
-		//pdx = (pdx + 1)%maxbx;
+
 		if( higherdiff + lowerdiff < 1.7*yspace ) { // in very rare cases with 3 consecutive close lines, a previous
 			xp += 140;								// line label may be pushed to the point where the last is out of
 			styles += "background: white;";			// order not worth it to fixit ?
@@ -645,6 +694,7 @@ function startAgain() {
     var doc = document;
     var Num = Number;
     var nitBx = doc.getElementById("initlzd");
+    //alert("starting again");
 	if( nitBx.value === "true" ) {
 	    var errCt = Num(errCtBx.value);
 	    var numAttmptd = Num(doc.getElementById("numAttmptd").value);
@@ -692,6 +742,8 @@ function genpoints ( type, which) {
 	plen = xBxs.length;
 	var xp;
 	var yp;
+	var sign = "";
+	
 	if( curvetype === "Line" ) {
 		var rise = par1;
 		var run = par2;
@@ -719,8 +771,6 @@ function genpoints ( type, which) {
 		if( rise*run < 0 ) {
 		  	sign = "-";
 			nsign = -1;
-		} else {
-		  	sign = "";
 		 }
 		mult = mat.abs(rise);
 		div = mat.abs(run);
@@ -746,121 +796,134 @@ window.onload = function() {
 	form = doc.getElementById("plots");
 	
 	if( curvetype !== "Select") {	
-	xygraph = document.getElementById("xygraph");
-	xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
-	xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
-	xygraph.innerHTML += '<rect x="18" y="18" width="408" height="408" style="fill:rgb(78, 76, 50);" />';
-	xygraph.innerHTML += '<rect x="20" y="20" width="404" height="404" style="fill:rgb(255,255,255);" />';
-	
-	// draw horizontal and vertical stripes to make a grid
-	for( var y = graphstart; y <= graphstop; y += 20 ) {
-		drawLine( graphstart, y, graphstop, y, 1, "rgb(0,0,255)", null );
-	}
-	for( var x = graphstart; x <= graphstop; x += 20 ) {
-		drawLine( x, graphstart, x, graphstop, 1, "rgb(0,0,255)", null );
-	}
-	
-	// draw vertical and horizontal axes
-	drawLine( halfwidth, graphstart, halfwidth, graphstop, 2, "rgb(255,200,200)", null );
-	drawLine( graphstart, halfwidth, graphstop, halfwidth, 2, "rgb(255,200,200)", null );
-	
-	// draw arrows
-	htmseg = '<polygon points="424,' + halfwidth + ' 422,212 444,' + halfwidth + ' 422,232" ';
-	htmseg += 'style="fill:rgb(230, 176, 138);stroke:rgb(78, 76, 50);stroke-width:1" />';
-	xygraph.innerHTML += htmseg;
-	htmseg = '<polygon points="' + halfwidth + ',18 232,22 ' + halfwidth + ',0 212,22" ';
-	htmseg += 'style="fill:rgb(230, 176, 138);stroke:rgb(78, 76, 50);stroke-width:1" />';
-	xygraph.innerHTML += htmseg;
-	// label axes
-	htmseg = '<text x="428" y="214" fill="rgb(249, 242, 236)" >X</text>';
-	xygraph.innerHTML += htmseg;
-	htmseg = '<text x="228" y="16" fill="rgb(249, 242, 236)" >Y</text>';
-	xygraph.innerHTML += htmseg;
-	var offs = 62;
-	offs = 67;
-	for( var i = 8; i > -10; i -= 2 ) {
-		htmseg = '<text x="' + halfwidth + '" y="' + offs + '" fill="rgb(230, 0, 0)" >' + i + '</text>';
-		xygraph.innerHTML += htmseg;
-		offs += 40;
-	}
-	offs = 45;
-	offs = 50;
-	for( var i = -8; i < 10; i += 2 ) {
-		if( i=== 0 ) {
-			offs += 7;
+		xygraph = document.getElementById("xygraph");
+		xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
+		xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
+		xygraph.innerHTML += '<rect x="18" y="18" width="408" height="408" style="fill:rgb(78, 76, 50);" />';
+		xygraph.innerHTML += '<rect x="20" y="20" width="404" height="404" style="fill:rgb(255,255,255);" />';
+		
+		// draw horizontal and vertical stripes to make a grid
+		for( var y = graphstart; y <= graphstop; y += 20 ) {
+			drawLine( graphstart, y, graphstop, y, 1, "rgb(0,0,255)", null );
 		}
-		htmseg = '<text x="' + offs + '" y="234" fill="rgb(230, 0, 0)" >' + i + '</text>';
+		for( var x = graphstart; x <= graphstop; x += 20 ) {
+			drawLine( x, graphstart, x, graphstop, 1, "rgb(0,0,255)", null );
+		}
+		
+		// draw vertical and horizontal axes
+		drawLine( halfwidth, graphstart, halfwidth, graphstop, 2, "rgb(255,200,200)", null );
+		drawLine( graphstart, halfwidth, graphstop, halfwidth, 2, "rgb(255,200,200)", null );
+		
+		// draw arrows
+		htmseg = '<polygon points="424,' + halfwidth + ' 422,212 444,' + halfwidth + ' 422,232" ';
+		htmseg += 'style="fill:rgb(230, 176, 138);stroke:rgb(78, 76, 50);stroke-width:1" />';
 		xygraph.innerHTML += htmseg;
-		offs += 40;
-	}
-
+		htmseg = '<polygon points="' + halfwidth + ',18 232,22 ' + halfwidth + ',0 212,22" ';
+		htmseg += 'style="fill:rgb(230, 176, 138);stroke:rgb(78, 76, 50);stroke-width:1" />';
+		xygraph.innerHTML += htmseg;
+		// label axes
+		htmseg = '<text x="428" y="214" fill="rgb(249, 242, 236)" >X</text>';
+		xygraph.innerHTML += htmseg;
+		htmseg = '<text x="228" y="16" fill="rgb(249, 242, 236)" >Y</text>';
+		xygraph.innerHTML += htmseg;
+		var offs = 62;
+		offs = 67;
+		for( var i = 8; i > -10; i -= 2 ) {
+			htmseg = '<text x="' + halfwidth + '" y="' + offs + '" fill="rgb(230, 0, 0)" >' + i + '</text>';
+			xygraph.innerHTML += htmseg;
+			offs += 40;
+		}
+		offs = 45;
+		offs = 50;
+		for( var i = -8; i < 10; i += 2 ) {
+			if( i=== 0 ) {
+				offs += 7;
+			}
+			htmseg = '<text x="' + offs + '" y="234" fill="rgb(230, 0, 0)" >' + i + '</text>';
+			xygraph.innerHTML += htmseg;
+			offs += 40;
+		}
 
 		errCtBx = doc.getElementById("errct");
 		errBx = doc.createElement("label");
-	    var styles = "position: absolute;"
+		var styles = "position: absolute;"
 	    	+ "top: 123px;"
-		    + "left: 340px;"
+			+ "left: 340px;"
 		    + "writing-mode: vertical-lr;"
-  			+ "display: inline-block;"
-  			+ "height: 350px;"
- 			+ "width: 20px;"
- 			+ "color: white;"
- 			+ "text-shadow: 0 0 1px #000000, 0 0 5px #FF0000;"
+	  		+ "display: inline-block;"
+	 		+ "height: 350px;"
+	 		+ "width: 20px;"
+	 		+ "color: white;"
+	 		+ "text-shadow: 0 0 1px #000000, 0 0 5px #FF0000;"
 			+ "text-orientation: mixed;";
 		errBx.setAttribute("style", styles);
-		
-	  	form.appendChild( errBx );
-	  		
+			
+		form.appendChild( errBx );
+		  		
 	  	var nputBxs = doc.getElementsByClassName("nput");
-	  	len = nputBxs.length;
+		len = nputBxs.length;
 	  	for( var i = 0; i < len; ++i ) {
-	  		nputBxs[i].type = "text";
-	  	} 
+		  	nputBxs[i].type = "text";
+		} 
 	  	
+		whichcurve = num(doc.getElementById("whichcurve").value);
+		whatrow = doc.getElementsByClassName("r0");
+		sign = genpoints( curvetype, whichcurve );
+		lastPt = Number(doc.getElementById("lastPt").value);
+	
+		if( curvetype === "Line" ) {
+		  	n0 = doc.getElementById("n0");
+		  	t0 = doc.getElementById("t0");
+		  	col0 = doc.getElementById("c0_0");
+			var col1 = doc.getElementById("c0_1");
+		  			
+		  	if( !n0 && !t0 ) {
+		  		col0.innerHTML = sign;
+				if( bee !== 0 ) {
+					col1.innerHTML = op + " " + bee + " = ";
+				} else if( mult != 1 ) {
+					col1.innerHTML = " &#xd7 " + mult + " = "; // times
+				} else if( div != 1) {
+					col1.innerHTML = " &#xf7 " + div + " = "; // divided by
+				} else {
+					col1.innerHTML = " = ";
+				}
+				colnum = 1;
+		  		doc.getElementById("y0").focus();
+		  	} else {	  		
+				var x0 = doc.getElementById("x0").innerHTML;  		  	
+			  	if( t0 ) {
+				  	if( x0 !== "0" ) {
+				  		col0.innerHTML = sign;
+				  	}
+				  	col1.innerHTML = " &#xf7 " + div + " = "; // divided by
+			  		t0.focus();  		
+			  	} else {
+			  		colnum = 1;
+			  		col1.innerHTML = " &#xd7 " + sign + mult + " = "; // times
+			  		n0.focus();
+			  	}
+		  	}
+		} else if( curvetype === "Circle" || curvetype === "Ellipse" ) {
+			tblFilld = true; // fixit
+			var id = "whichparam1_" + whichcurve;
+			aye = num(doc.getElementById(id).value);
+			id = "whichparam2_" + whichcurve;
+			ache = num(doc.getElementById(id).value);
+			id = "whichparam3_" + whichcurve;
+			kay = num(doc.getElementById(id).value);
+			id = "whichparam4_" + whichcurve;
+			bee = num(doc.getElementById(id).value);
+			//doc.getElementById("statusBox" + pdx).innerHTML = "ache: " + ache + " kay: " + kay + " aye: " + aye + " bee: " + bee;
+			//pdx = (pdx + 1)%maxbx;
+		}
 		// draw all the curves generated to date in this set
-	  	whichcurve = num(doc.getElementById("whichcurve").value);
+	  	
 		nmins = 0;
 		nmaxes = 0;
 		for( var i = 0; i < whichcurve; i += 1 ) {
 			drawCurve( i );
 		}
-		whatrow = doc.getElementsByClassName("r0");
-		sign = genpoints( curvetype, whichcurve );
-		lastPt = Number(doc.getElementById("lastPt").value);
-
-	  	n0 = doc.getElementById("n0");
-	  	t0 = doc.getElementById("t0");
-	  	col0 = doc.getElementById("c0_0");
-		var col1 = doc.getElementById("c0_1");
-	  			
-	  	if( !n0 && !t0 ) {
-	  		col0.innerHTML = sign;
-			if( bee !== 0 ) {
-				col1.innerHTML = op + " " + bee + " = ";
-			} else if( mult != 1 ) {
-				col1.innerHTML = " &#xd7 " + mult + " = "; // times
-			} else if( div != 1) {
-				col1.innerHTML = " &#xf7 " + div + " = "; // divided by
-			} else {
-				col1.innerHTML = " = ";
-			}
-			colnum = 1;
-	  		doc.getElementById("y0").focus();
-	  	} else {	  		
-			var x0 = doc.getElementById("x0").innerHTML;  		  	
-		  	if( t0 ) {
-			  	if( x0 !== "0" ) {
-			  		col0.innerHTML = sign;
-			  	}
-			  	col1.innerHTML = " &#xf7 " + div + " = "; // divided by
-		  		t0.focus();  		
-		  	} else {
-		  		colnum = 1;
-		  		col1.innerHTML = " &#xd7 " + sign + mult + " = "; // times
-		  		n0.focus();
-		  	}
-	  	}
-	  	
 	} else { // don't want to see the table until you select a curve
 		var removables = doc.getElementsByClassName("rem");
 		var len = removables.length;
