@@ -128,6 +128,9 @@ for( idx = 0; idx <numcurves; ++idx ) {
 		param4[idx] = tmp.toString();
 	}
 }
+boolean isLine = false;
+boolean isCircle = false;
+boolean isEllipse = false;
 
 //retrieves the value of the DOM object with name="chs"
 if(( tmp = request.getParameter("chs")) != null) {
@@ -147,7 +150,10 @@ if(( tmp = request.getParameter("chs")) != null) {
     variation = Integer.parseInt(whatcurves);
 	currentc = Integer.parseInt(currcurve);
 	System.out.println("whatTable: " + whatTable + " variation: " + variation + " currentc: " + currentc);
-    if( whatTable.equals("Line") ) {
+	isLine = whatTable.equals("Line");
+	isCircle = whatTable.equals("Circle");
+	isEllipse = whatTable.equals("Ellipse");
+	if( isLine ) {
 		int sign = 2*Math.random() > 1? 1 : -1; 
     	 
     	int [] pfactors = {2, 3, 5, 7};
@@ -275,33 +281,53 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    }
 	    instrs = "Fill out as much of table as needed";
     	System.out.println("after setting totlines: " + numcurves + " variation: " + variation + " rise: " + par1[currentc] + " run: " + par2[currentc] + " intercept: " + par3[currentc]);
-    } else if( whatTable.equals("Circle") || whatTable.equals("Ellipse") ) { // end whatTable.equals("Line") 
+    } else if( isCircle || isEllipse ) { // end isLine 
     	//sometimes hangs fixit
     	// sometimes only generates two points fixit
-    	int maxvar = whatTable.equals("Circle")? 2 : 3;
+    	int maxvar = isCircle? 2 : 3;
     	if( variation == 0 ) {
     		numcurves = 4;
-    		variation = 1 + (int)(maxvar*Math.random());
+    		variation = (int)(1 + maxvar*Math.random());
     		currentc = 0;
 			
-    		par1[0] = (int)(1 + (MAXPT-1)*Math.random()); // radius try making it a multiple of five, no need to keep it 1/2 on the graph fixit
-			par4[0] = par1[0]; 
-    		if( whatTable.equals("Ellipse") ) { // other radius for ellipse
-    			par4[0] = (int)(1 + (MAXPT-1)*Math.random());
+    		int maxrad = 1;
+    		int minrad = 2;
+    		int diff = 0;
+    		int maxyc = 0;
+    		while( maxrad <= minrad ) {
+	    		par1[0] = (int)(1 + (MAXPT-1)*Math.random()); // radius try making it a multiple of five, no need to keep it 1/2 on the graph fixit
+				par4[0] = par1[0]; 
+	    		if( isEllipse ) { // other radius for ellipse
+	    			par4[0] = (int)(1 + (MAXPT-1)*Math.random());
+	    		}
+	    		//double ratio = par1[0]/par4[0];
+	    		diff = par4[0] - par1[0];
+    			minrad = diff < 0? -diff + 1 : 1; // keeps radius from being 0 or negative
+				par2[0] = (int)(1 + (MAXPTS-1)*Math.random()) - MAXPT; // x center coordinate
+				// need at least 3 point to specify a circle. Sine you're restricting points to integers
+				// there needs to be at least half a circle or ellipse on the graph fixit
+				//int max1 = Math.abs(par2[0]) + par1[0] > MAXPT? MAXPT - par1[0]: MAXPT;
+				//int max4 = Math.abs(par2[0]) + par4[0] > MAXPT? MAXPT - par4[0]: MAXPT;
+				maxyc = Math.abs(par2[0]) + par4[0] > MAXPT? MAXPT - par4[0]: MAXPT;
+				par3[0] = (int)(1 + (maxyc-1)*Math.random()) - maxyc/2; // y center coordinate
+				// center coordinate plus radius cannot be off the graph for both x and y
+				int minxdist = MAXPT - Math.abs(par2[0]);
+				int minydist = MAXPT - Math.abs(par3[0]) - diff;
+				// for diff < 0, 1st and 2nd smallest distance may both be distance to left or right edge
+				int minodist = MAXPT + Math.abs(par3[0]) - diff;
+				if( diff < 0 ) {
+					minodist = MAXPT + Math.abs(par2[0]);
+				}
+				int frstsmallest = minxdist < minydist? minxdist : minydist;
+				// find second smallest
+				if( frstsmallest == minxdist ) {
+					maxrad = minodist < minydist? minodist : minydist;
+				} else {
+					maxrad = minodist < minxdist? minodist : minxdist; 
+				}
+				// maxrad = minxdist < minydist? minydist : minxdist; // for varying radii currentc 1 thru numcurves
     		}
-			par2[0] = (int)(1 + (MAXPTS-1)*Math.random()) - MAXPT; // x center coordinate
-			// need at least 3 point to specify a circle. Sine you're restricting points to integers
-			// there needs to be at least half a circle or ellipse on the graph fixit
-			//int max1 = Math.abs(par2[0]) + par1[0] > MAXPT? MAXPT - par1[0]: MAXPT;
-			//int max4 = Math.abs(par2[0]) + par4[0] > MAXPT? MAXPT - par4[0]: MAXPT;
-			int maxyc = Math.abs(par2[0]) + par4[0] > MAXPT? MAXPT - par4[0]: MAXPT;
-			par3[0] = (int)(1 + (maxyc-1)*Math.random()) - maxyc/2; // y center coordinate
-			// center coordinate plus radius cannot be off the graph for both x and y
-			int minxdist = par2[0] < 0? MAXPT + par2[0] : MAXPT - par2[0];
-			int minydist = par3[0] < 0? MAXPT + par3[0] : MAXPT - par3[0];
-			int maxrad = minxdist < minydist? minydist : minxdist; // for varying radii currentc 1 thru numcurves
-			
-    		System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0]);
+			System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0] + " maxrad: " + maxrad + " minrad: " + minrad);
     		if( variation == 1 ) { // vary x or y position
 	    		numcurves = 4;
 	    		// generate all the parameters at once and store in arrays
@@ -327,13 +353,14 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    		}
 	    		// this turns ellipses into circles not what you want to demonstrate fixit
 			} else if( variation == 2 ) { // vary radius	
-				numcurves = numcurves > maxrad? maxrad : numcurves;
+				numcurves = numcurves > maxrad - minrad? maxrad - minrad + 1: numcurves;
 				for( idx = 1; idx < numcurves; idx++ ) {					
 					// if numcurves > maxrad, this will infinite loop			
 		    		boolean duplicate = true;
 		    		while( duplicate ) { // fixit?
 		    			duplicate = false;
-		    			par1[idx] = (int)(1 + (maxrad-1)*Math.random());
+		    			par1[idx] = (int)(minrad + (1+maxrad-minrad)*Math.random());
+		    			System.out.println("par1[" + idx + "]: " + par1[idx]);
 		   				for( int i = 0; i < idx; ++i ) {
 		   					if( par1[i] == par1[idx] ) {
 		   						duplicate = true;
@@ -342,10 +369,10 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    		}
 	    			par2[idx] = par2[idx-1];
 	    			par3[idx] = par3[idx-1];
-	    			par4[idx] = par1[idx]; 
+	    			par4[idx] = diff + par1[idx]; // sometimes generates lines or switches semimajor and semimior axes fixit
 	    		}
 			} else { // vary other radius
-				numcurves = numcurves > maxrad? maxrad : numcurves;
+				numcurves = numcurves > maxrad - minrad? maxrad - minrad : numcurves;
 				boolean varya = (int)(11*Math.random()) > 5; 
 	    		
 	    		for( idx = 1; idx < numcurves; idx++ ) {
@@ -368,7 +395,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    			par1[idx] = par1[idx-1];
 			    		while( duplicate ) {
 			    			duplicate = false;
-			    			double rnum = (maxrad-1)*Math.random();
+			    			double rnum = (maxrad+diff-1)*Math.random();
 					    	par4[idx] = (int)(1 + rnum);
 					    	//System.out.println("rnum: " + rnum + " rady[" + idx + "]: " + par4[idx]);
 			   				for( int i = 0; i < idx; ++i ) {
@@ -442,7 +469,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 } %>
 <body>
 <form id="plots">
-<%	if( whatTable.equals("Line") ) { %>
+<%	if( isLine ) { %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
@@ -541,7 +568,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <td class="tmp"></td>
 </tr>
 </table>
-<% } else if( whatTable.equals("Circle") ) { %>
+<% } else if( isCircle ) { %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
@@ -567,7 +594,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <tr>
 <td class="pre invisible">__________</td><td></td><td></td>
 </table>
-<% } else if( whatTable.equals("Ellipse") ) { %>
+<% } else if( isEllipse ) { %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>

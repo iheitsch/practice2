@@ -2,6 +2,7 @@
  * 
  */
 // on clicking on any table input, disable all hints fixit
+// don't draw lines between points for anything but lines, it makes triangles fixit
 
 var halfwidth = 222;
 var xygraphleft = 365; // copied from css
@@ -453,9 +454,9 @@ function checkPt( mousePosx, mousePosy ){
 
 				nmins = 0;
 				nmaxes = 0;
-				if( whichcurve > 0 ) { // debug
+				//if( whichcurve > 0 ) { // debug
 					drawCurve( whichcurve );
-				}		
+				//}		
 			} else { // plotted one curve, start another similar one
 				startAgain();
 			}
@@ -502,7 +503,8 @@ function mouseCoords(ev){
 		x:ev.clientX + doc.body.scrollLeft - doc.body.clientLeft, 
 		y:ev.clientY + doc.body.scrollTop  - doc.body.clientTop
     }; 
-} 
+}
+// last section of ellipse doesn't graph if it's too steep fixit
 // draw smoothed, extended and labelled curve
 function drawCurve( cls ) {
     var num = Number;
@@ -721,7 +723,9 @@ function startAgain() {
 	} else {
 		nitBx.value = "true";
 	}
-		
+	const selectDropdown = document.getElementById("chs");
+	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text; //debug
+	//alert("startAgain curvetype: " + curvetype);	
     if( allgood ) {
         var whatForm = doc.getElementById('plots');
         whatForm.submit();
@@ -778,12 +782,15 @@ function genpoints ( type, which) {
 	return sign;
 }
 function skip() {
-     clearpage();
-     if( nextI < lastPt ) {
-     	document.getElementById("errct").value = 1;
-     }
-     allgood = true;
-     startAgain(); 
+	clearpage();
+	if( nextI < lastPt ) {
+		document.getElementById("errct").value = 1;
+	}
+	allgood = true;
+	const selectDropdown = document.getElementById("chs");
+	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text; //debug
+	//alert("skip curvetype: " + curvetype);
+	startAgain(); 
 }
 window.onload = function() {
 	var doc = document;
@@ -795,6 +802,7 @@ window.onload = function() {
 	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text;
 	form = doc.getElementById("plots");
 	
+	//alert("onload curvetype: " + curvetype);
 	if( curvetype !== "Select") {	
 		xygraph = document.getElementById("xygraph");
 		xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
