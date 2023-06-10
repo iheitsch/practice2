@@ -171,7 +171,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     	   			par2[0] = par2[0]/pfactors[i];
     	   		}
        		}
-    		par3[0] = (int)(MAXPTS*Math.random()) - MAXPT;
+       		par3[0] = (int)(MAXPTS*Math.random()) - MAXPT;
 	    	if( variation == 1 ) {
 	   			// same intercept
 	    		numcurves = 4;
@@ -329,7 +329,8 @@ if(( tmp = request.getParameter("chs")) != null) {
     		}
 			System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0] + " maxrad: " + maxrad + " minrad: " + minrad);
     		if( variation == 1 ) { // vary x or y position
-	    		numcurves = 4;
+	    		numcurves = 4; // sometimes generates only 2 points fixit xc0 -8 yc0 1 xr0 3 yr0 9
+	    		// xr: 3 xc: -8 yc: 3 yr: 9 currentc: 2
 	    		// generate all the parameters at once and store in arrays
 	    		for( idx = 1; idx < numcurves; idx++ ) {
 		    		//make sure you don't generate repeats
@@ -568,33 +569,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <td class="tmp"></td>
 </tr>
 </table>
-<% } else if( isCircle ) { %>
-<table id="whatpts">
-<tr>
-	<td class="pre" id="c-1_0"></td>
-	<th class="title rem"><%=indvar%></th>
-	<th class="title rem"><%=depvar%></th>
-</tr>
-<% for( int i = 0; i < nPts; ++i ) { 
-	String bkClr = "c" + i%nClrs; 
-	String rclass = "r" + i;
-	String xid = "x" + i;
-	String yid = "y" + i; 
-	col = 0;
-	String cid = "c" + i + "_" + col; %>
-<tr>
-	<td class="pre" id="<%=cid%>" ></td>
-	<td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
-	<td class="<%=bkClr%> <%=rclass%> rem" >
-	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkE( event )" 
-	value="<%=ypoints[i]%>">
-	</td>
-</tr>
-<% } %>
-<tr>
-<td class="pre invisible">__________</td><td></td><td></td>
-</table>
-<% } else if( isEllipse ) { %>
+<% } else if( isCircle || isEllipse ) { %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
@@ -637,7 +612,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <%=instr2%>
 </div>
 <div id="frame">
-<svg id="xygraph" onmousedown="setMouseDown()" onmouseup="clearMouseDown()" onmousemove="checkCurve( event)">
+<svg id="xygraph" onmousedown="setMouseDown()" onmouseup="clearMouseDown()">
 </svg>
 </div>
 

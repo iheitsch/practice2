@@ -18,7 +18,10 @@ var prevY;
 var allgood = true;
 var lastPt;
 // store curve type and parameters for redrawing
-var curvetype = "";
+var isNotSelect = true;
+var isLine = false;
+var isCircle = false;
+var isEllipse = false;
 var whichcurve = 0;
 
 var form;
@@ -63,37 +66,43 @@ var col0;
 var colnum = 0;
 var tblFilld = false;
 var ystops = new Array();
+var done = false;
 
 function setMouseDown( ev ) { 
 	ev = ev || window.event;
-	var mouseDownPos = mouseCoords( ev );
-	mouseDownX = mouseDownPos.x;
-	mouseDownY = mouseDownPos.y;
-	mouseIsDown = true;		
+	if( !done ) {
+		var mouseDownPos = mouseCoords( ev );
+		mouseDownX = mouseDownPos.x;
+		mouseDownY = mouseDownPos.y;
+		mouseIsDown = true;
+		xygraph.addEventListener('mousemove', checkCurve );
+	}	
 }
 function clearMouseDown( ev ) { 
 	ev = ev || window.event;
-	var mousePos = mouseCoords( ev );
-	var mouseUpX = mousePos.x;
-	var mouseUpY = mousePos.y;
-	var mat = Math;
-	var closenuff = 20;
-	if( tblFilld &&
-		mat.abs(mouseUpX - mouseDownX) < closenuff && 
-		mat.abs(mouseUpY - mouseDownY) < closenuff ) {
-		checkPt( mouseUpX, mouseUpY );	
-	} else if( dragged && pointsfound < enoughPoints ) {
-		var doc = document;
-		var errct = Number(errCtBx.value);
-		errCtBx.value = errct + 1;
+	if( !done ) {
+		var mousePos = mouseCoords( ev );
+		var mouseUpX = mousePos.x;
+		var mouseUpY = mousePos.y;
+		var mat = Math;
+		var closenuff = 20;
+		if( tblFilld &&
+			mat.abs(mouseUpX - mouseDownX) < closenuff && 
+			mat.abs(mouseUpY - mouseDownY) < closenuff ) {
+			checkPt( mouseUpX, mouseUpY );	
+		} else if( dragged && pointsfound < enoughPoints ) {
+			var doc = document;
+			var errct = Number(errCtBx.value);
+			errCtBx.value = errct + 1;
+		}
+		xygraph.removeEventListener('mouseMove', checkCurve );
 	}
-	
 	mouseIsDown = false;
 	dragged = false;
 }
 function checkCurve( ev ) {
 	ev = ev || window.event;
-	if( mouseIsDown ) {
+	if( mouseIsDown && !done) {
 		var mat = Math;
 		dragged = true;
 		var mousePos;
@@ -107,15 +116,19 @@ function checkCurve( ev ) {
 					pointsfound += 1;
 					captured[i] = true;
 					if( pointsfound >= enoughPoints ) {
-						nextI = lastPt; // don't need to track it any more
-						drawCurve( whichcurve );
+						done = true;
+						nextI = lastPt; // don't need to track it any more						
 						if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ) {
+							//alert("checkCurve drawCurve(" + whichcurve + ")");
+							//doc.getElementById("statusBox" + pdx).innerHTML = "checkCurve drawCurve(" + whichcurve + ")";
+							//pdx = (pdx + 1)%(maxbx-1);
+							drawCurve( whichcurve );
 							var endinst = doc.getElementById("skpBx").innerHTML;
 							doc.getElementById("instrs").innerHTML = 'Choose another curve or click "' + endinst + '"';
-							
+							xygraph.removeEventListener('mouseMove', checkCurve );
 							clearpage();
-							nmins = 0;
-							nmaxes = 0;
+							//nmins = 0;
+							//nmaxes = 0;
 				  		} else {
 							startAgain();
 						}
@@ -188,7 +201,7 @@ function checkN( ev ) {
 		var prevval;
 		prevval = num(doc.getElementById("x" + rowno).innerHTML);
 		var expAns;
-		if( curvetype === "Line" ) {
+		if( isLine ) {
 			expAns = nsign*mult*prevval/div;
 		}
 		if( num(ansBx.value) === expAns ) {
@@ -232,7 +245,7 @@ function checkT( ev ) {
 		rowno = tid.substr(1,tid.length);
 		var xval = num(doc.getElementById("x" + rowno).innerHTML);
 		var expAns;
-		if( curvetype === "Line" ) {
+		if( isLine ) {
 			expAns = nsign*xval/div;
 		}
 		if( num(ansBx.value) === expAns ) {
@@ -294,7 +307,7 @@ function checkY( ev ) {
 		var currx = num(doc.getElementById("x" + n).innerHTML);
 		var expY;
 		var expY2;
-		if( curvetype === "Line" ) {
+		if( isLine ) {
 			expY = nsign*mult*currx/div;
 			if( op === "+" ) {
 				expY += bee;
@@ -302,7 +315,7 @@ function checkY( ev ) {
 				expY -= bee;
 			}
 			expY2 = expY;
-		} else if( curvetype === "Circle" || curvetype === "Elipse" ) {
+		} else if( isCircle || isElipse ) {
 			expY = kay + bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
 			expY = kay - bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
 		}
@@ -417,7 +430,7 @@ function checkPt( mousePosx, mousePosy ){
 			lowY < mousePosy && mousePosy < highY ) {
 			errBx.innerHTML = "";
 			putDot( dotX, dotY );
-			if( prevX && prevY ) {
+			if( isLine && prevX && prevY ) {
 				drawLine( prevX, prevY, dotX, dotY, 2, "black", "mrx" );
 			}
 			prevX = dotX;
@@ -454,9 +467,10 @@ function checkPt( mousePosx, mousePosy ){
 
 				nmins = 0;
 				nmaxes = 0;
-				//if( whichcurve > 0 ) { // debug
-					drawCurve( whichcurve );
-				//}		
+				//alert("checkPt drawCurve(" + whichcurve + ")");
+				//doc.getElementById("statusBox" + pdx).innerHTML = "checkPt drawCurve(" + whichcurve + ")";
+				//pdx = (pdx + 1)%(maxbx-1);
+				drawCurve( whichcurve ); // draw last curve of the set
 			} else { // plotted one curve, start another similar one
 				startAgain();
 			}
@@ -506,8 +520,9 @@ function mouseCoords(ev){
 }
 // last section of ellipse doesn't graph if it's too steep fixit
 // draw smoothed, extended and labelled curve
-function drawCurve( cls ) {
-    var num = Number;
+function drawCurve( cls ) { // perpendicular lines with both labels on right side sometimes pring 2 of second label fixit
+    // double labels for slope +/- 1
+    var num = Number; 
 	var mat = Math;
 	var doc = document;
 	var id = "whichparam1_" + cls;
@@ -533,11 +548,10 @@ function drawCurve( cls ) {
 		+ "width: 150px;"
 		+ "color: " + ltcols[cls] + ";"
 		+ "text-shadow: 0 0 1px #FFFFFF;"
-
 		+ "font-family: Monaco;"
 		+ "font-size: 0.8em;";
 		
-	if( curvetype === "Line" ) {
+	if( isLine ) {
 		var rise = num(par1);
 		var run = num(par2);
 		var slope = rise/run;
@@ -602,12 +616,7 @@ function drawCurve( cls ) {
 		    rest += Math.abs(intercept);
 		}
 		cap.innerHTML = "Y = " + intermed + "X" + rest;
-	} else if( curvetype === "Circle" || curvetype === "Ellipse" ) {
-		//alert("drawing ellipse");
-		//var xcent = halfwidth + mat.round(ache*gridspace);
-		//var ycent = halfwidth - mat.round(kay*gridspace);
-		//var xrad = mat.round(aye*gridspace);
-		//var yrad = mat.round(bee*gridspace);
+	} else if( isCircle || isEllipse ) {
 		var htmseg = '<polyline points=" ';
 		var h = num(par2);
 		var k = num(par3);
@@ -634,11 +643,6 @@ function drawCurve( cls ) {
 		htmseg += ';stroke-width:2; fill:none';
 		htmseg += ';" />';
 		xygraph.innerHTML += htmseg; 
-		//htmseg = '<polyline points=" 200,150 175,300 50, 350 ';
-		//htmseg += '" style="stroke:' + "blue";
-		//htmseg += ';stroke-width:2; fill:none';
-		//htmseg += ';" />';
-		//xygraph.innerHTML += htmseg; 
 	}
 	var xp = xygraphleft + xstop; // xyframe left + xstop
 	var yp = xygraphtop;
@@ -722,17 +726,14 @@ function startAgain() {
 
 	} else {
 		nitBx.value = "true";
-	}
-	const selectDropdown = document.getElementById("chs");
-	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text; //debug
-	//alert("startAgain curvetype: " + curvetype);	
+	}	
     if( allgood ) {
         var whatForm = doc.getElementById('plots');
         whatForm.submit();
         return false;
     }
 }
-function genpoints ( type, which) {
+function genpoints ( which ) {
 	var doc = document;
 	var num = Number;
 	var mat = Math;
@@ -748,7 +749,7 @@ function genpoints ( type, which) {
 	var yp;
 	var sign = "";
 	
-	if( curvetype === "Line" ) {
+	if( isLine ) {
 		var rise = par1;
 		var run = par2;
 		var intercept = par3;
@@ -787,9 +788,6 @@ function skip() {
 		document.getElementById("errct").value = 1;
 	}
 	allgood = true;
-	const selectDropdown = document.getElementById("chs");
-	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text; //debug
-	//alert("skip curvetype: " + curvetype);
 	startAgain(); 
 }
 window.onload = function() {
@@ -799,11 +797,14 @@ window.onload = function() {
 	dragged = false;
 	const selectDropdown = document.getElementById("chs");
 	selectDropdown.addEventListener('change', skip );
-	curvetype = selectDropdown.options[selectDropdown.selectedIndex].text;
+	var curvetype = selectDropdown.options[selectDropdown.selectedIndex].text;
+	isNotSelect = curvetype !== "Select";
+	isLine = curvetype === "Line";
+	isCircle = curvetype === "Circle";
+	isEllipse = curvetype === "Ellipse";
 	form = doc.getElementById("plots");
 	
-	//alert("onload curvetype: " + curvetype);
-	if( curvetype !== "Select") {	
+	if( isNotSelect ) {	
 		xygraph = document.getElementById("xygraph");
 		xygraph.innerHTML += '<rect width="444" height="444" style="fill:rgb(78, 76, 50);" />';
 		xygraph.innerHTML += '<rect x="2" y="2" width="440" height="440" style="fill:rgb(191, 128, 64);" />';
@@ -876,10 +877,10 @@ window.onload = function() {
 	  	
 		whichcurve = num(doc.getElementById("whichcurve").value);
 		whatrow = doc.getElementsByClassName("r0");
-		sign = genpoints( curvetype, whichcurve );
+		sign = genpoints( whichcurve );
 		lastPt = Number(doc.getElementById("lastPt").value);
 	
-		if( curvetype === "Line" ) {
+		if( isLine ) {
 		  	n0 = doc.getElementById("n0");
 		  	t0 = doc.getElementById("t0");
 		  	col0 = doc.getElementById("c0_0");
@@ -912,7 +913,7 @@ window.onload = function() {
 			  		n0.focus();
 			  	}
 		  	}
-		} else if( curvetype === "Circle" || curvetype === "Ellipse" ) {
+		} else if( isCircle || isEllipse ) {
 			tblFilld = true; // fixit
 			var id = "whichparam1_" + whichcurve;
 			aye = num(doc.getElementById(id).value);
@@ -925,11 +926,14 @@ window.onload = function() {
 			//doc.getElementById("statusBox" + pdx).innerHTML = "ache: " + ache + " kay: " + kay + " aye: " + aye + " bee: " + bee;
 			//pdx = (pdx + 1)%maxbx;
 		}
+		
 		// draw all the curves generated to date in this set
-	  	
 		nmins = 0;
 		nmaxes = 0;
 		for( var i = 0; i < whichcurve; i += 1 ) {
+			//alert("onload drawCurve(" + i + ")");
+			//doc.getElementById("statusBox" + pdx).innerHTML = "onload drawCurve(" + i + ")";
+			//pdx = (pdx + 1)%(maxbx-1);
 			drawCurve( i );
 		}
 	} else { // don't want to see the table until you select a curve
