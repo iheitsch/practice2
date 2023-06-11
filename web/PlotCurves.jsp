@@ -294,6 +294,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     		int minrad = 2;
     		int diff = 0;
     		int maxyc = 0;
+    		int maxxc = 0;
     		while( maxrad <= minrad ) {
 	    		par1[0] = (int)(1 + (MAXPT-1)*Math.random()); // radius try making it a multiple of five, no need to keep it 1/2 on the graph fixit
 				par4[0] = par1[0]; 
@@ -303,7 +304,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    		//double ratio = par1[0]/par4[0];
 	    		diff = par4[0] - par1[0];
     			minrad = diff < 0? -diff + 1 : 1; // keeps radius from being 0 or negative
-				par2[0] = (int)(1 + (MAXPTS-1)*Math.random()) - MAXPT; // x center coordinate
+				par2[0] = (int)(MAXPTS*Math.random()) - MAXPT; // x center coordinate
 				// need at least 3 point to specify a circle. Sine you're restricting points to integers
 				// there needs to be at least half a circle or ellipse on the graph fixit
 				//int max1 = Math.abs(par2[0]) + par1[0] > MAXPT? MAXPT - par1[0]: MAXPT;
@@ -337,17 +338,29 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    		boolean duplicate = true;
 		    		while( duplicate ) { // fixit?
 		    			duplicate = false;
-		    			par2[idx] = (int)(1 * MAXPTS*Math.random()) - MAXPT; // x center coordinate
-		    			// need at least 3 point to specify a circle. Sine you're restricting points to integers
-		    			// there needs to be at least half a circle or ellipse on the graph. need to restrict center for option 1 fixit
-		    			maxyc = Math.abs(par2[idx]) + par1[0] > MAXPT? MAXPT - par1[0]: MAXPT;
-		    			par3[idx] = (int)(1 + (maxyc-1)*Math.random()) - maxyc/2; // y center coordinate
-		   				for( int i = 0; i < idx; ++i ) {
-		   					if( par2[i] == par2[idx] && par3[i] == par3[idx] ) {
-		   						duplicate = true;
-		   						break;
-		   					}
-		   				}
+		    			if( par4[0] <= par1[0] ) {
+			    			par2[idx] = (int)(MAXPTS*Math.random()) - MAXPT; // x center coordinate
+			    			// need at least 3 point to specify a circle. Sine you're restricting points to integers
+			    			// there needs to be at least half a circle or ellipse on the graph. need to restrict center for option 1 fixit
+			    			maxyc = Math.abs(par2[idx]) + par1[0] > MAXPT? MAXPT - par4[0]: MAXPT;
+			    			par3[idx] = (int)(1 + (maxyc-1)*Math.random()) - maxyc/2; // y center coordinate
+			   				for( int i = 0; i < idx; ++i ) {
+			   					if( par2[i] == par2[idx] && par3[i] == par3[idx] ) {
+			   						duplicate = true;
+			   						break;
+			   					}
+			   				}
+		    			} else {
+		    				par3[idx] = (int)(MAXPTS*Math.random()) - MAXPT;
+		    				maxxc = Math.abs(par3[idx]) + par4[0] > MAXPT? MAXPT - par1[0]: MAXPT;
+			    			par2[idx] = (int)(1 + (maxxc-1)*Math.random()) - maxxc/2;
+		    				for( int i = 0; i < idx; ++i ) {
+			   					if( par2[i] == par2[idx] && par3[i] == par3[idx] ) {
+			   						duplicate = true;
+			   						break;
+			   					}
+			   				}
+		    			}
 		    		}
 	    			par1[idx] = par1[idx-1];
 	    			par4[idx] = par4[idx-1]; 
