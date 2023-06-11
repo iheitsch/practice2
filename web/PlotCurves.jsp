@@ -180,7 +180,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    		sign = 2*Math.random() > 1? 1 : -1;
 		    		//make sure you don't generate repeats
 		    		boolean duplicate = true;
-		    		while( par2[idx] == 0 || duplicate ) { // fixit?
+		    		while( par2[idx] == 0 || duplicate ) {
 		    			duplicate = false;
 		   				par1[idx] = sign*(1 + (int)(9*Math.random()));
 		   				par2[idx] = 1 + (int)((MAXPT-1)*Math.random());
@@ -268,7 +268,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    	intermed += "/" + arun + ")";
    			dnmnatr = Integer.toString(arun);
 	    }
-   		instr2 = "Plot the line: " + depvar + " = "; 		
+   		instr2 = "Plot the Line: " + depvar + " = "; 		
 	    instr2 += intermed;
 	    instr2 += indvar;
 	    if( par3[currentc] != 0 ) {
@@ -306,9 +306,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     			minrad = diff < 0? -diff + 1 : 1; // keeps radius from being 0 or negative
 				par2[0] = (int)(MAXPTS*Math.random()) - MAXPT; // x center coordinate
 				// need at least 3 point to specify a circle. Sine you're restricting points to integers
-				// there needs to be at least half a circle or ellipse on the graph fixit
-				//int max1 = Math.abs(par2[0]) + par1[0] > MAXPT? MAXPT - par1[0]: MAXPT;
-				//int max4 = Math.abs(par2[0]) + par4[0] > MAXPT? MAXPT - par4[0]: MAXPT;
+				// there needs to be at least half a circle or ellipse on the graph
 				maxyc = Math.abs(par2[0]) + par4[0] > MAXPT? MAXPT - par4[0]: MAXPT;
 				par3[0] = (int)(1 + (maxyc-1)*Math.random()) - maxyc/2; // y center coordinate
 				// center coordinate plus radius cannot be off the graph for both x and y
@@ -326,7 +324,6 @@ if(( tmp = request.getParameter("chs")) != null) {
 				} else {
 					maxrad = minodist < minxdist? minodist : minxdist; 
 				}
-				// maxrad = minxdist < minydist? minydist : minxdist; // for varying radii currentc 1 thru numcurves
     		}
 			System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0] + " maxrad: " + maxrad + " minrad: " + minrad);
     		if( variation == 1 ) { // vary x or y position
@@ -336,12 +333,12 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    		for( idx = 1; idx < numcurves; idx++ ) {
 		    		//make sure you don't generate repeats
 		    		boolean duplicate = true;
-		    		while( duplicate ) { // fixit?
+		    		while( duplicate ) {
 		    			duplicate = false;
 		    			if( par4[0] <= par1[0] ) {
 			    			par2[idx] = (int)(MAXPTS*Math.random()) - MAXPT; // x center coordinate
 			    			// need at least 3 point to specify a circle. Sine you're restricting points to integers
-			    			// there needs to be at least half a circle or ellipse on the graph. need to restrict center for option 1 fixit
+			    			// there needs to be at least half a circle or ellipse on the graph.
 			    			maxyc = Math.abs(par2[idx]) + par1[0] > MAXPT? MAXPT - par4[0]: MAXPT;
 			    			par3[idx] = (int)(1 + (maxyc-1)*Math.random()) - maxyc/2; // y center coordinate
 			   				for( int i = 0; i < idx; ++i ) {
@@ -365,13 +362,12 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    			par1[idx] = par1[idx-1];
 	    			par4[idx] = par4[idx-1]; 
 	    		}
-	    		// this turns ellipses into circles not what you want to demonstrate fixit
 			} else if( variation == 2 ) { // vary radius	
 				numcurves = numcurves > maxrad - minrad? maxrad - minrad + 1: numcurves;
 				for( idx = 1; idx < numcurves; idx++ ) {					
 					// if numcurves > maxrad, this will infinite loop			
 		    		boolean duplicate = true;
-		    		while( duplicate ) { // fixit?
+		    		while( duplicate ) {
 		    			duplicate = false;
 		    			par1[idx] = (int)(minrad + (1+maxrad-minrad)*Math.random());
 		    			System.out.println("par1[" + idx + "]: " + par1[idx]);
@@ -383,7 +379,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    		}
 	    			par2[idx] = par2[idx-1];
 	    			par3[idx] = par3[idx-1];
-	    			par4[idx] = diff + par1[idx]; // sometimes generates lines or switches semimajor and semimior axes fixit
+	    			par4[idx] = diff + par1[idx];
 	    		}
 			} else { // vary other radius
 				numcurves = numcurves > maxrad - minrad? maxrad - minrad : numcurves;
@@ -393,7 +389,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    			boolean duplicate = true;
 		    		if( varya ) {
 			    		par4[idx] = par4[idx-1];
-		    			while( duplicate ) { // fixit?
+		    			while( duplicate ) {
 				    		duplicate = false;
 			    			double rnum = (maxrad-1)*Math.random();
 					    	par1[idx] = (int)(1 + rnum);
@@ -436,8 +432,8 @@ if(( tmp = request.getParameter("chs")) != null) {
     			par4[idx] = Integer.parseInt(param4[idx]);
     		}
     	}
-   		// go left to right accross top of circle, thenright to left accross bottom fixit
-   		//need to make these all integers, check for yval < -10 or > 10
+   		// go left to right accross top of circle, then right to left accross bottom
+   		// need to make these all integers, check for yval < -10 or > 10
    		nPts = 0;
     	for( int i = 0; i < MAXPTS && currentc < numcurves; i += 1 ) {	
     		xpoints[nPts] = (int)(i - MAXPT);
@@ -478,6 +474,27 @@ if(( tmp = request.getParameter("chs")) != null) {
    		for( int i = 0; i < nPts; ++i ) {
    			System.out.println("xpoints[" + i + "]: " + xpoints[i] + " ypoints[" + i + "]: " + ypoints[i]);
    		}
+		String xcent = "X";
+		if( par2[currentc] < 0 ) {
+			xcent = "( X " + " + " + Math.abs(par2[currentc]) + " )";
+		} else if (par2[currentc] > 0 ) {
+			xcent = "( X " + " - " + Math.abs(par2[currentc]) + " )";
+		}
+		String ycent = "Y";
+		if( par3[currentc] < 0 ) {
+			ycent = "( Y " + " + " + Math.abs(par3[currentc]) + ")";
+		} else if (par3[currentc] > 0 ) {
+			ycent = "( Y " + " - " + Math.abs(par3[currentc]) + ")";
+		}
+		String rst = "";
+		if( isCircle ) {
+			rst = xcent + "<sup>2</sup> + " + ycent + "<sup>2</sup> = " + par1[currentc] + "<sup>2</sup>";
+		} else {
+			rst = "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> ";
+			rst += "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> = 1";
+		}
+		instr2 = "Plot the " + whatTable + ": " + rst;
+		instrs = "Fill out as much of table as needed";
     }
     System.out.println("user chose: " + whatTable + " numcurves: " + numcurves + " currentc: " + currentc);
 } %>
@@ -525,6 +542,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String nid = "n" + i;
 	String tid = "t" + i;
 	String yid = "y" + i; 
+	String hid = "h" + i;
 	col = 0;
 	String cid = "c" + i + "_" + col; %>
 <tr>
@@ -560,6 +578,9 @@ if(( tmp = request.getParameter("chs")) != null) {
 <td class="<%=bkClr%> <%=rclass%> rem" >
 	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
 </td>
+<td <%=rclass%> rem" >
+	<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
+</td>
 </tr>
 
 <% } %>
@@ -580,6 +601,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <%	} %>
 <td class="tmp"></td>
 <td class="tmp"></td>
+<td class="tmp"></td>
 </tr>
 </table>
 <% } else if( isCircle || isEllipse ) { %>
@@ -593,20 +615,23 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String bkClr = "c" + i%nClrs; 
 	String rclass = "r" + i;
 	String xid = "x" + i;
-	String yid = "y" + i; 
+	String yid = "y" + i;
+	String hid = "h" + i;
 	col = 0;
 	String cid = "c" + i + "_" + col; %>
 <tr>
 	<td class="pre" id="<%=cid%>" ></td>
 	<td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
 	<td class="<%=bkClr%> <%=rclass%> rem" >
-	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkE( event )" 
-	value="<%=ypoints[i]%>">
+	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
+	</td>
+	<td <%=rclass%> rem" >
+	<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
 	</td>
 </tr>
 <% } %>
 <tr>
-<td class="pre invisible">__________</td><td></td><td></td>
+<td class="pre invisible">__________</td><td></td><td></td><td></td>
 </table>
 <% } %>
 <span id="instrs"><%=instrs%></span>

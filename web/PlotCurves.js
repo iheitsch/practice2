@@ -30,12 +30,13 @@ var errCtBx;
 var xygraph;
 var whatrow = new Array;
 var pdx = 0;
-var maxbx = 10; // should be the same as loop test for statusBox on jsp page
+var maxbx = 12; // should be the same as loop test for statusBox on jsp page fixit
 var nmins = 0;
 var nmaxes = 0;
 var plen;
 var xpts = new Array(21);
 var ypts = new Array(21);
+var yvals = new Array(21);
 var captured = new Array(21);
 var pointsfound = 0;
 var mouseIsDown = false;
@@ -108,7 +109,8 @@ function checkCurve( ev ) {
 		var mousePos;
 		var mousePos = mouseCoords( ev );
 		var closenuff = 10; // pixels
-
+		//document.getElementById("statusBox11").innerHTML = "mouseX: " + mousePos.x + " mouseY: " + mousePos.y;
+							//pdx = (pdx + 1)%(maxbx-1);
 		for( var i = 0; i < plen; ++i ) {
 			if( !captured[i] && mat.abs( mousePos.x - xpts[i] ) < closenuff ) { 
 				if( mat.abs( mousePos.y - ypts[i] ) < closenuff ) {
@@ -304,10 +306,10 @@ function checkY( ev ) {
 		var ansVal = num(ansBx.value);
 		var yid = ansBx.id;
 		var n = yid.substr(1);
-		var currx = num(doc.getElementById("x" + n).innerHTML);
-		var expY;
-		var expY2;
-		if( isLine ) {
+		//var currx = num(doc.getElementById("x" + n).innerHTML);
+		var expY = num(doc.getElementById("h" + n).value);
+		//var expY2;
+		/* if( isLine ) {
 			expY = nsign*mult*currx/div;
 			if( op === "+" ) {
 				expY += bee;
@@ -317,9 +319,10 @@ function checkY( ev ) {
 			expY2 = expY;
 		} else if( isCircle || isElipse ) {
 			expY = kay + bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
-			expY = kay - bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
-		}
-		if( ansVal === expY || ansVal === expY2 ) {
+			expY2 = kay - bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
+		} */
+		
+		if( ansVal === expY ) { // || ansVal === expY2 ) {
 			errBx.innerHTML = "";
 			var nextN = num(n) + 1;
 			if( nextN < lastPt ) {
@@ -414,7 +417,7 @@ function checkPt( mousePosx, mousePosy ){
 		var pct = 0.05;
 		var cellheight = 28;
 		var expXBx = whatrow[0];
-		var expYBx = doc.getElementById("y" + nextI);
+		var expYBx = doc.getElementById("h" + nextI);
 		var nomX = expXBx.innerHTML;
 		var nomY = expYBx.value;
 		var expX = orgX + num(nomX)*pxlsprsq;
@@ -520,7 +523,7 @@ function mouseCoords(ev){
 }
 // last section of ellipse doesn't graph if it's too steep fixit
 // draw smoothed, extended and labelled curve
-function drawCurve( cls ) { // perpendicular lines with both labels on right side sometimes pring 2 of second label fixit
+function drawCurve( cls ) {
     // double labels for slope +/- 1
     var num = Number; 
 	var mat = Math;
@@ -746,26 +749,26 @@ function genpoints ( which ) {
 	var xBxs = doc.getElementsByClassName("xpts");
 	plen = xBxs.length;
 	var xp;
-	var yp;
 	var sign = "";
 	
+	
+	for( var i = 0; i < plen; ++i ) {
+		//read 
+		xp = num(xBxs[i].innerHTML);
+		yvals[i] = num(doc.getElementById("h" + i).value);
+		// and convert into position on page
+		xpts[i] = xygraphleft + halfwidth + xp*pxlsprsq;
+		ypts[i] = xygraphtop + halfwidth - yvals[i]*pxlsprsq;
+		//doc.getElementById("statusBox" + pdx).innerHTML = "x[" + i + "]: " + xpts[i] + " y[" + i + "]: " + ypts[i];
+		//pdx = (pdx + 1)%(maxbx-1);
+		captured[i] = false;
+	}
+		
+	// set global variables for intermediate instructions 
 	if( isLine ) {
 		var rise = par1;
 		var run = par2;
 		var intercept = par3;
-		for( var i = 0; i < plen; ++i ) {
-			//read 
-			xp = num(xBxs[i].innerHTML);
-			// calculate
-			yp = (rise*xp)/run + intercept;
-			// and convert into position on page
-			xpts[i] = xygraphleft + halfwidth + xp*pxlsprsq;
-			ypts[i] = xygraphtop + halfwidth - yp*pxlsprsq;
-			captured[i] = false;
-		}
-		
-		// set global variables for intermediate instructions 
-		// since you already looked up the parameters
 		if( intercept < 0 ) {
 			op = "-";
 		} else {
@@ -914,7 +917,7 @@ window.onload = function() {
 			  	}
 		  	}
 		} else if( isCircle || isEllipse ) {
-			tblFilld = true; // fixit
+			//tblFilld = true; // fixit
 			var id = "whichparam1_" + whichcurve;
 			aye = num(doc.getElementById(id).value);
 			id = "whichparam2_" + whichcurve;
@@ -923,6 +926,7 @@ window.onload = function() {
 			kay = num(doc.getElementById(id).value);
 			id = "whichparam4_" + whichcurve;
 			bee = num(doc.getElementById(id).value);
+			enoughPoints = 3;
 			//doc.getElementById("statusBox" + pdx).innerHTML = "ache: " + ache + " kay: " + kay + " aye: " + aye + " bee: " + bee;
 			//pdx = (pdx + 1)%maxbx;
 		}
