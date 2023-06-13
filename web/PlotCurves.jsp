@@ -476,21 +476,21 @@ if(( tmp = request.getParameter("chs")) != null) {
    		}
 		String xcent = "X";
 		if( par2[currentc] < 0 ) {
-			xcent = "( X " + " + " + Math.abs(par2[currentc]) + " )";
+			xcent = "( X" + "+" + Math.abs(par2[currentc]) + " )";
 		} else if (par2[currentc] > 0 ) {
-			xcent = "( X " + " - " + Math.abs(par2[currentc]) + " )";
+			xcent = "( X" + "-" + Math.abs(par2[currentc]) + " )";
 		}
 		String ycent = "Y";
 		if( par3[currentc] < 0 ) {
-			ycent = "( Y " + " + " + Math.abs(par3[currentc]) + ")";
+			ycent = "( Y" + "+" + Math.abs(par3[currentc]) + " )";
 		} else if (par3[currentc] > 0 ) {
-			ycent = "( Y " + " - " + Math.abs(par3[currentc]) + ")";
+			ycent = "( Y" + "-" + Math.abs(par3[currentc]) + " )";
 		}
 		String rst = "";
 		if( isCircle ) {
 			rst = xcent + "<sup>2</sup> + " + ycent + "<sup>2</sup> = " + par1[currentc] + "<sup>2</sup>";
 		} else {
-			rst = "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> ";
+			rst = "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> + ";
 			rst += "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> = 1";
 		}
 		instr2 = "Plot the " + whatTable + ": " + rst;

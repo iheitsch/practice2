@@ -67,6 +67,7 @@ var col0;
 var colnum = 0;
 var tblFilld = false;
 var ystops = new Array();
+var taken = new Array(5);
 var done = false;
 
 function setMouseDown( ev ) { 
@@ -109,8 +110,6 @@ function checkCurve( ev ) {
 		var mousePos;
 		var mousePos = mouseCoords( ev );
 		var closenuff = 10; // pixels
-		//document.getElementById("statusBox11").innerHTML = "mouseX: " + mousePos.x + " mouseY: " + mousePos.y;
-							//pdx = (pdx + 1)%(maxbx-1);
 		for( var i = 0; i < plen; ++i ) {
 			if( !captured[i] && mat.abs( mousePos.x - xpts[i] ) < closenuff ) { 
 				if( mat.abs( mousePos.y - ypts[i] ) < closenuff ) {
@@ -121,16 +120,11 @@ function checkCurve( ev ) {
 						done = true;
 						nextI = lastPt; // don't need to track it any more						
 						if( whichcurve === Number(doc.getElementById("allcurves").value) - 1 ) {
-							//alert("checkCurve drawCurve(" + whichcurve + ")");
-							//doc.getElementById("statusBox" + pdx).innerHTML = "checkCurve drawCurve(" + whichcurve + ")";
-							//pdx = (pdx + 1)%(maxbx-1);
 							drawCurve( whichcurve );
 							var endinst = doc.getElementById("skpBx").innerHTML;
 							doc.getElementById("instrs").innerHTML = 'Choose another curve or click "' + endinst + '"';
 							xygraph.removeEventListener('mouseMove', checkCurve );
 							clearpage();
-							//nmins = 0;
-							//nmaxes = 0;
 				  		} else {
 							startAgain();
 						}
@@ -306,21 +300,7 @@ function checkY( ev ) {
 		var ansVal = num(ansBx.value);
 		var yid = ansBx.id;
 		var n = yid.substr(1);
-		//var currx = num(doc.getElementById("x" + n).innerHTML);
 		var expY = num(doc.getElementById("h" + n).value);
-		//var expY2;
-		/* if( isLine ) {
-			expY = nsign*mult*currx/div;
-			if( op === "+" ) {
-				expY += bee;
-			} else if( op === "-" ) {
-				expY -= bee;
-			}
-			expY2 = expY;
-		} else if( isCircle || isElipse ) {
-			expY = kay + bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
-			expY2 = kay - bee*mat.sqrt(1 - mat.pow((currx - ache)/aye, 2));
-		} */
 		
 		if( ansVal === expY ) { // || ansVal === expY2 ) {
 			errBx.innerHTML = "";
@@ -396,7 +376,6 @@ function checkY( ev ) {
 				}
 				doc.getElementById("c-1_0").innerHTML = "Click this";
 				col0.innerHTML = "point &#x2192;"; // right arrow
-				//doc.getElementById("c" + n + "_" + colnum).innerHTML = ""; // you removed it when you removed tmps
 				doc.getElementById("instrs").innerHTML = "";
 			}
 		} else {
@@ -470,9 +449,6 @@ function checkPt( mousePosx, mousePosy ){
 
 				nmins = 0;
 				nmaxes = 0;
-				//alert("checkPt drawCurve(" + whichcurve + ")");
-				//doc.getElementById("statusBox" + pdx).innerHTML = "checkPt drawCurve(" + whichcurve + ")";
-				//pdx = (pdx + 1)%(maxbx-1);
 				drawCurve( whichcurve ); // draw last curve of the set
 			} else { // plotted one curve, start another similar one
 				startAgain();
@@ -482,7 +458,6 @@ function checkPt( mousePosx, mousePosy ){
 		   	errCtBx.value = errct + 1;
 			var hbarExists = doc.getElementsByClassName("hbar");
 			if( !hbarExists[0] ) {
-				//alert("dotX: " + dotX + " dotY: " + dotY + " nomX: " + nomX + " nomY: " + nomY);
 				showClick( dotX, dotY, nomX, nomY );
 			}
 		}
@@ -524,7 +499,6 @@ function mouseCoords(ev){
 // last section of ellipse doesn't graph if it's too steep fixit
 // draw smoothed, extended and labelled curve
 function drawCurve( cls ) {
-    // double labels for slope +/- 1
     var num = Number; 
 	var mat = Math;
 	var doc = document;
@@ -539,6 +513,7 @@ function drawCurve( cls ) {
 	var gridspace = 20;
 	var xstart = -10;
 	var xstop = 10;
+	var lw = 150;
 	var ymax;
 	var ymin;
 	var hitsrightedge = true;
@@ -548,11 +523,10 @@ function drawCurve( cls ) {
 	cls = cls%colors.length;
 	var cap = doc.createElement("label");
 	var styles = "position: absolute;"
-		+ "width: 150px;"
-		+ "color: " + ltcols[cls] + ";"
-		+ "text-shadow: 0 0 1px #FFFFFF;"
-		+ "font-family: Monaco;"
-		+ "font-size: 0.8em;";
+		+ " color: " + ltcols[cls] + ";"
+		+ " text-shadow: 0 0 1px #FFFFFF;"
+		+ " font-family: Monaco;"
+		+ " font-size: 0.8em;";
 		
 	if( isLine ) {
 		var rise = num(par1);
@@ -645,7 +619,87 @@ function drawCurve( cls ) {
 		htmseg += '" style="stroke:' + colors[cls];
 		htmseg += ';stroke-width:2; fill:none';
 		htmseg += ';" />';
-		xygraph.innerHTML += htmseg; 
+		xygraph.innerHTML += htmseg;
+		var xcent = "X";
+		if( h < 0 ) {
+			xcent = "( X" + "+" + mat.abs(h) + " )";
+		} else if ( h > 0 ) {
+			xcent = "( X" + "-" + mat.abs(h) + " )";
+		}
+		var ycent = "Y";
+		if( k < 0 ) {
+			ycent = "( Y" + "+" + mat.abs(k) + " )";
+		} else if ( k > 0 ) {
+			ycent = "( Y" + "-" + mat.abs(k) + " )";
+		}
+		var rst = "";
+		if( isCircle ) {
+			rst = xcent + "<sup>2</sup> + " + ycent + "<sup>2</sup> = " + a + "<sup>2</sup>";
+		} else {
+			rst = "( " + xcent + "/" + a + " )" +  "<sup>2</sup> + ";
+			rst += "( " + ycent + "/" + b + " )" +  "<sup>2</sup> = 1";
+		}
+		cap.innerHTML = rst;
+		lw = halfwidth + 5*gridspace;
+		var spot = 5;
+		if( k > 0 ) {
+			if( h > 0 ) {
+				spot = 1;
+			} else {
+				spot = 0;
+			}
+		} else {
+			if( h > 0 ) {
+				spot = 2;
+			} else {
+				spot = 3;
+			}
+		}
+		//alert("xc: " + h + " yc: " + k + " spot: " + spot + " taken: " + taken[spot]);
+		var len = taken.length;
+		if( taken[spot] ) { // try the one counter clockwise
+			spot = (spot + len - 2)%(len - 1); // spot -> spot - 1 except 0-> 3
+			if( taken[spot] ) { // try the one clockwise
+				spot = spot + 2;
+			}
+			if( taken[spot] ) { // use the default
+				spot = len - 1;
+			}
+		}
+		taken[spot] = true;		
+			
+		switch( spot ) {
+			case 0:
+				xstop = halfwidth;
+				ystop = -gridspace;
+				hitsrightedge = false;
+				//alert("final spot: 0 " + "xs: " + xstop + " ys: " + ystop);
+		    	break;
+			case 1:
+				xstop = graphstop;
+				ystop = halfwidth;
+				hitsrightedge = true;
+				//alert("final spot: 1 " + "xs: " + xstop + " ys: " + ystop);
+				break;
+			case 2:
+				xstop = halfwidth;
+				ystop = graphstop + 2*gridspace;
+				hitsrightedge = false;
+				//alert("final spot: 2 " + "xs: " + xstop + " ys: " + ystop);
+				break;
+			case 3:				
+				xstop = 0;
+				ystop = graphstop + 3*gridspace;
+				hitsrightedge = false;
+				//alert("final spot: 3 " + "xs: " + xstop + " ys: " + ystop);
+				break;
+			default:
+				xstop = graphstop;
+				ystop = halfwidth + 4*gridspace;
+				hitsrightedge = true;
+				//alert("final spot: " + spot + "xs: " + xstop + " ys: " + ystop);				
+		}
+
 	}
 	var xp = xygraphleft + xstop; // xyframe left + xstop
 	var yp = xygraphtop;
@@ -676,7 +730,7 @@ function drawCurve( cls ) {
 
 		if( higherdiff + lowerdiff < 1.7*yspace ) { // in very rare cases with 3 consecutive close lines, a previous
 			xp += 140;								// line label may be pushed to the point where the last is out of
-			styles += "background: white;";			// order not worth it to fixit ?
+			styles += " background: white;";			// order not worth it to fixit ?
 		} else {
 			if( lowerdiff < yspace ) {
 				ystop -= yspace - lowerdiff;
@@ -693,8 +747,9 @@ function drawCurve( cls ) {
 	} else {
 		yp += ystop - centerline;
 	}
-	styles += "left: " + xp + "px;"
-			+ "top: " + yp + "px;";
+	styles += " left: " + xp + "px;"
+			+ " top: " + yp + "px;"
+			+ " width: " + lw + "px;";
 
 	cap.setAttribute("style", styles);
 	form.appendChild( cap ); 
@@ -703,7 +758,6 @@ function startAgain() {
     var doc = document;
     var Num = Number;
     var nitBx = doc.getElementById("initlzd");
-    //alert("starting again");
 	if( nitBx.value === "true" ) {
 	    var errCt = Num(errCtBx.value);
 	    var numAttmptd = Num(doc.getElementById("numAttmptd").value);
@@ -726,7 +780,6 @@ function startAgain() {
 	        doc.getElementById("corrPerHr").value = 
 	        Math.floor(3600000*Num(doc.getElementById("numWoErr").value)/timediff);
 	    }
-
 	} else {
 		nitBx.value = "true";
 	}	
@@ -759,8 +812,6 @@ function genpoints ( which ) {
 		// and convert into position on page
 		xpts[i] = xygraphleft + halfwidth + xp*pxlsprsq;
 		ypts[i] = xygraphtop + halfwidth - yvals[i]*pxlsprsq;
-		//doc.getElementById("statusBox" + pdx).innerHTML = "x[" + i + "]: " + xpts[i] + " y[" + i + "]: " + ypts[i];
-		//pdx = (pdx + 1)%(maxbx-1);
 		captured[i] = false;
 	}
 		
@@ -917,7 +968,6 @@ window.onload = function() {
 			  	}
 		  	}
 		} else if( isCircle || isEllipse ) {
-			//tblFilld = true; // fixit
 			var id = "whichparam1_" + whichcurve;
 			aye = num(doc.getElementById(id).value);
 			id = "whichparam2_" + whichcurve;
@@ -927,17 +977,16 @@ window.onload = function() {
 			id = "whichparam4_" + whichcurve;
 			bee = num(doc.getElementById(id).value);
 			enoughPoints = 3;
-			//doc.getElementById("statusBox" + pdx).innerHTML = "ache: " + ache + " kay: " + kay + " aye: " + aye + " bee: " + bee;
-			//pdx = (pdx + 1)%maxbx;
+			var len = taken.length;
+			for( var i = 0; i < len; ++i ) {
+				taken[i] = false;
+			}
 		}
 		
 		// draw all the curves generated to date in this set
 		nmins = 0;
 		nmaxes = 0;
 		for( var i = 0; i < whichcurve; i += 1 ) {
-			//alert("onload drawCurve(" + i + ")");
-			//doc.getElementById("statusBox" + pdx).innerHTML = "onload drawCurve(" + i + ")";
-			//pdx = (pdx + 1)%(maxbx-1);
 			drawCurve( i );
 		}
 	} else { // don't want to see the table until you select a curve
