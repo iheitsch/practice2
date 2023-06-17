@@ -71,6 +71,9 @@ table{
 {
 	position:absolute;
 }
+.oline{
+	text-decoration: overline;
+}
 .pre{
 	margin: none;
 	border: none;
@@ -94,14 +97,17 @@ table{
 	top: 35px;
 }
 .title{
-		border: 2px solid #ffcc00;
-		/* 4e4c32; */
+	border: 2px solid #ffcc00;
 }
 .tmp{
 	margin: none;
 	border: none;
 	padding: none;
 	margin: none;
+	white-space: nowrap;
+}
+.wide{
+	border: 2px solid #ffcc00;
 	white-space: nowrap;
 }
 #bottomleft{
@@ -152,8 +158,9 @@ table{
 }
 #xygraph{
 	position: absolute;
-	top: 90px;
+	top:  90px;
 	left: 365px;
 	width: 444px;
 	height: 444px;
+	z-index: -10;
 }

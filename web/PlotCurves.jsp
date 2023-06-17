@@ -149,7 +149,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     currentc = 0;
     variation = Integer.parseInt(whatcurves);
 	currentc = Integer.parseInt(currcurve);
-	System.out.println("whatTable: " + whatTable + " variation: " + variation + " currentc: " + currentc);
+	//System.out.println("whatTable: " + whatTable + " variation: " + variation + " currentc: " + currentc);
 	isLine = whatTable.equals("Line");
 	isCircle = whatTable.equals("Circle");
 	isEllipse = whatTable.equals("Ellipse");
@@ -158,7 +158,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     	 
     	int [] pfactors = {2, 3, 5, 7};
     	int plength = pfactors.length;
-    	System.out.println("read from page and converted variation: " + variation + " currentc: " + currentc);
+    	//System.out.println("read from page and converted variation: " + variation + " currentc: " + currentc);
     	if( variation == 0 ) {
     		variation = 1 + (int)(3*Math.random());
     		currentc = 0;
@@ -280,7 +280,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    	instr2 += Math.abs(par3[currentc]);
 	    }
 	    instrs = "Fill out as much of table as needed";
-    	System.out.println("after setting totlines: " + numcurves + " variation: " + variation + " rise: " + par1[currentc] + " run: " + par2[currentc] + " intercept: " + par3[currentc]);
+    	//System.out.println("after setting totlines: " + numcurves + " variation: " + variation + " rise: " + par1[currentc] + " run: " + par2[currentc] + " intercept: " + par3[currentc]);
     } else if( isCircle || isEllipse ) { // end isLine 
     	//sometimes hangs fixit
     	// sometimes only generates two points fixit
@@ -325,7 +325,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 					maxrad = minodist < minxdist? minodist : minxdist; 
 				}
     		}
-			System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0] + " maxrad: " + maxrad + " minrad: " + minrad);
+			//System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0] + " maxrad: " + maxrad + " minrad: " + minrad);
     		if( variation == 1 ) { // vary x or y position
 	    		numcurves = 4; // sometimes generates only 2 points fixit xc0 -8 yc0 1 xr0 3 yr0 9
 	    		// xr: 3 xc: -8 yc: 3 yr: 9 currentc: 2
@@ -370,7 +370,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    		while( duplicate ) {
 		    			duplicate = false;
 		    			par1[idx] = (int)(minrad + (1+maxrad-minrad)*Math.random());
-		    			System.out.println("par1[" + idx + "]: " + par1[idx]);
+		    			//System.out.println("par1[" + idx + "]: " + par1[idx]);
 		   				for( int i = 0; i < idx; ++i ) {
 		   					if( par1[i] == par1[idx] ) {
 		   						duplicate = true;
@@ -418,10 +418,10 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    		}
 		    		par2[idx] = par2[idx-1];
 	    			par3[idx] = par3[idx-1];
-	    			System.out.println("xrad[" + idx + "]: " + par1[idx] + " yrad: " + par4[idx]);
+	    			//System.out.println("xrad[" + idx + "]: " + par1[idx] + " yrad: " + par4[idx]);
 				}
 			}
-    		System.out.println("numcurves: " + numcurves + " maxrad: " + maxrad + " vratn: " + variation); 
+    		//System.out.println("numcurves: " + numcurves + " maxrad: " + maxrad + " vratn: " + variation); 
     	} else {
 	    	currentc += 1;
     		for( idx = 0; idx < numcurves; idx++ ) {
@@ -442,13 +442,13 @@ if(( tmp = request.getParameter("chs")) != null) {
     		ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
    			ypt = par3[currentc] + ypt;
    			ypoints[nPts] = ypt > 0? (int)((1000*ypt + 5)/1000) : (int)((1000*ypt - 5)/1000);
-   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - ypt) < .00001 ) {
    				nPts += 1;	   				
    			}
 		}
 		//boolean firstinst = true;
-		System.out.println("xr: " + par1[currentc] + " xc: " + par2[currentc] + " yc: " + par3[currentc] + " yr: " + par4[currentc]);
+		//System.out.println("xr: " + par1[currentc] + " xc: " + par2[currentc] + " yc: " + par3[currentc] + " yr: " + par4[currentc]);
     	for( int i = MAXPTS - 1; i >= 0  && currentc < numcurves; i -= 1 ) {
     		xpoints[nPts] = (int)(i - MAXPT);
     		double ypt = (double)(xpoints[nPts]-par2[currentc])/(double)par1[currentc];
@@ -456,7 +456,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     		ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
     		double npt = par3[currentc] - ypt;
    			ypoints[nPts] = npt > 0? (int)((1000*npt + 5)/1000) : (int)((1000*npt - 5)/1000);
-   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - npt) < TOL ) {
 	   			boolean duplicate = false;
 	   			for( int j = nPts-1; j >= 0; --j ) {
@@ -470,10 +470,10 @@ if(( tmp = request.getParameter("chs")) != null) {
 	   			}
    			}
 		}
-   		System.out.println("done generating " + nPts + " points");
-   		for( int i = 0; i < nPts; ++i ) {
-   			System.out.println("xpoints[" + i + "]: " + xpoints[i] + " ypoints[" + i + "]: " + ypoints[i]);
-   		}
+   		//System.out.println("done generating " + nPts + " points");
+   		//for( int i = 0; i < nPts; ++i ) {
+   			//System.out.println("xpoints[" + i + "]: " + xpoints[i] + " ypoints[" + i + "]: " + ypoints[i]);
+   		//}
 		String xcent = "X";
 		if( par2[currentc] < 0 ) {
 			xcent = "( X" + "+" + Math.abs(par2[currentc]) + " )";
@@ -496,7 +496,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		instr2 = "Plot the " + whatTable + ": " + rst;
 		instrs = "Fill out as much of table as needed";
     }
-    System.out.println("user chose: " + whatTable + " numcurves: " + numcurves + " currentc: " + currentc);
+    //System.out.println("user chose: " + whatTable + " numcurves: " + numcurves + " currentc: " + currentc);
 } %>
 <body>
 <form id="plots">
@@ -504,10 +504,10 @@ if(( tmp = request.getParameter("chs")) != null) {
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
-	<th class="title rem"><%=indvar%></th>
+	<th class="hdr rem"><%=indvar%></th>
 <% 	if( !dnmnatr.equals("") && (par3[currentc] != 0 || !nmratr.equals("")) ) { %>
 			<td class="tmp"></td>
-			<th class="title rem" id="on">
+			<th class="hdr rem" id="on">
 				<table>
 				<tr>
 				<div class="num" id="hn"><%=sgn%><%=indvar%></div>
@@ -518,7 +518,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 
 <% 		if( !nmratr.equals("") && par3[currentc] != 0 ) { %>
 			<td class="tmp"></td>
-			<th class="title rem" id="om">
+			<th class="hdr rem" id="om">
 				<table>
 				<tr>
 				<div class="num" id="hm"><%=sgn%><%=nmratr%><%=indvar%></div>
@@ -530,13 +530,13 @@ if(( tmp = request.getParameter("chs")) != null) {
 <% } 
 	if( dnmnatr.equals("") && !nmratr.equals("") && par3[currentc] != 0 ) { %>
 		<td class="tmp"></td>
-		<th class="title rem" id="hn"><%=sgn%><%=nmratr%><%=indvar%></th>
+		<th class="hdr rem" id="hn"><%=sgn%><%=nmratr%><%=indvar%></th>
 <% } %>
 	<td class="tmp"></td>
-	<th class="title rem"><%=depvar%></th>
+	<th class="hdr rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
-	String bkClr = "c" + i%nClrs; 
+	//String bkClr = "c" + i%nClrs; 
 	String rclass = "r" + i;
 	String xid = "x" + i;
 	String nid = "n" + i;
@@ -547,19 +547,19 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String cid = "c" + i + "_" + col; %>
 <tr>
 <td class="pre" id="<%=cid%>" ></td>
-<td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
+<td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
 <% 	if( !dnmnatr.equals("") && (par3[currentc] != 0 || !nmratr.equals("")) ) { 
 		col += 1;
 		cid = "c" + i + "_" + col; %>
 		<td class="tmp" id="<%=cid%>"></td>
-		<td class="<%=bkClr%> <%=rclass%> rem" >
+		<td class=" <%=rclass%> rem" >
 			<input id="<%=tid%>" class="nput tBx" type="hidden" onkeydown="erase( event )" onkeyup="checkT( event )" >
 		</td>
 <%		if( !nmratr.equals("") && par3[currentc] != 0 ) { 
 			col += 1;
 			cid = "c" + i + "_" + col; %>
 			<td class="tmp" id="<%=cid%>" ></td>
-			<td class="<%=bkClr%> <%=rclass%> rem" >
+			<td class=" <%=rclass%> rem" >
 				<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
 			</td>
 <% 		} %>
@@ -568,14 +568,14 @@ if(( tmp = request.getParameter("chs")) != null) {
 		col += 1;
 		cid = "c" + i + "_" + col;%>
 		<td class="tmp" id="<%=cid%>" ></td>
-		<td class="<%=bkClr%> <%=rclass%> rem" >
+		<td class=" <%=rclass%> rem" >
 			<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
 		</td>
 <%	} 
 	col += 1;
 	cid = "c" + i + "_" + col; %>
 <td class="tmp" id="<%=cid%>" ></td>
-<td class="<%=bkClr%> <%=rclass%> rem" >
+<td class=" <%=rclass%> rem" >
 	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
 </td>
 <td <%=rclass%> rem" >
@@ -604,12 +604,137 @@ if(( tmp = request.getParameter("chs")) != null) {
 <td class="tmp"></td>
 </tr>
 </table>
-<% } else if( isCircle || isEllipse ) { %>
+<% } else if( isCircle ) {
+		String cclass = "c0";
+		int cindx = 0;
+		String nm = indvar;
+		int xOffs = par2[currentc];
+		boolean XisOff = xOffs != 0;
+		if( XisOff ) {			
+			String sin = " - ";
+			if( xOffs < 0 ) {
+				xOffs = Math.abs(xOffs);
+				sin = " + ";
+			}
+			nm = indvar + sin + xOffs;
+		} 		 
+		String iid = "";
+		String tid = ""; %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
-	<th class="title rem"><%=indvar%></th>
-	<th class="title rem"><%=depvar%></th>
+	<th class="hdr rem"><%=indvar%></th>	
+<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		tid = "t" + cindx; %>
+		<td class="tmp <%=cclass%>"></td>
+		<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+		<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
+<%		nm = "( " + nm + " )";
+	} 
+	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	tid = "t" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%><sup>2</sup>">
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	tid = "t" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=par1[currentc]%><sup>2</sup> - <%=nm%><sup>2</sup>">
+<% 	if( par3[currentc] != 0 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		tid = "t" + cindx; 
+		String ival = "+/- &#x221A <span class='oline'>";
+		ival += par1[currentc];
+		ival += "<sup>2</sup> - " + nm + "<sup>2</sup></span>"; %>
+		<td class="tmp"></td>
+		<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+		<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
+<%	} %>
+	<td class="tmp"></td>
+	<th class="hdr rem"><%=depvar%></th>
+</tr>
+<% for( int i = 0; i < nPts; ++i ) { 
+	String bkClr = "c" + i%nClrs; 
+	String rclass = "r" + i; // for highlighting current row
+	String xid = "x" + i;
+	String yid = "y" + i;
+	String hid = "h" + i;
+	String mid = "m" + i;
+	String sid = "s" + i;
+	String did = "d" + i;
+	String rid = "r" + i;
+	col = 0;	 
+	cindx = 0;
+	String iclass = "i" + cindx;
+	String cid = "c" + i + "_" + cindx;
+	cclass = "l" + cindx; %>
+<tr>
+	<td class="pre" id="<%=cid%>" ></td>
+	<td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
+	<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; %>
+		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+		<td class="rem <%=iclass%>  <%=rclass%>" id="<%=tid%>">
+			<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkM( event)">
+		</td>
+<%	} 
+	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx;%>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkS( event)">
+	</td>
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkD( event)">
+	</td>
+<% 	if( par3[currentc] != 0 ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; %>
+		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+		<td class="rem <%=iclass%>  <%=rclass%>">
+			<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkR( event )">
+		</td>
+<%	} 
+	cindx += 1;
+	cid = "c" + i + "_" + cindx; %>
+	<td  id="<%=cid%>" class="rem tmp" >
+	<td class=" <%=rclass%> rem" >
+		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >		
+		<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
+	</td>
+</tr>
+<% } %>
+<tr>
+<td class="pre invisible">__________</td><td></td><td></td><td></td>
+</table>
+<% } else if( isEllipse ) { %>
+<table id="whatpts">
+<tr>
+	<td class="pre" id="c-1_0"></td>
+	<th class="hdr rem"><%=indvar%></th>
+	<th class="hdr rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	String bkClr = "c" + i%nClrs; 
@@ -621,8 +746,8 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String cid = "c" + i + "_" + col; %>
 <tr>
 	<td class="pre" id="<%=cid%>" ></td>
-	<td class="<%=bkClr%> <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
-	<td class="<%=bkClr%> <%=rclass%> rem" >
+	<td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
+	<td class=" <%=rclass%> rem" >
 	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
 	</td>
 	<td <%=rclass%> rem" >

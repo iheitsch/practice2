@@ -63,6 +63,7 @@ var nsign = 1;
 var op = "";
 var n0;
 var t0;
+var x0val;
 var col0;
 var colnum = 0;
 var tblFilld = false;
@@ -184,6 +185,286 @@ function drawLine( x1, y1, x2, y2, width, color, clas ) {
 	htmseg += ';" />';
 	xygraph.innerHTML += htmseg;
 }
+function checkR( ev ) {
+	ev = ev || window.event;
+	// have to make sure it was entered, not just any keyup
+	if (ev.which === 13 || ev.keyCode === 13) {
+		var ansBx = ev.target;
+		var doc = document;
+		var num = Number;
+		var rid = ansBx.id;
+		rowno = rid.substr(1,rid.length);
+		var nextN = num(rowno) + 1;
+		var prevval;
+		prevval = num(doc.getElementById("x" + rowno).innerHTML);
+		var expAns;
+		// need to figure out sign fixit
+		var sn = 1;
+		var yval = num(doc.getElementById("h" + rowno).value);
+		if( yval < kay ) {
+			sn = -1;
+		}
+		expAns = sn*Math.sqrt(bee*bee - (prevval - ache)*(prevval - ache));
+		if( num(ansBx.value) === expAns ) {
+			errBx.innerHTML = "";
+			var prevcol = colnum - 1;
+			if( nextN < lastPt ) {
+				rid = "r" + nextN;
+				doc.getElementById(rid).focus();
+				var curr = doc.getElementById("c" + rowno + "_" + colnum);
+				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = " = ";
+				curr.innerHTML = "";				
+				var sgn = " ";
+				var yval = num(doc.getElementById("h" + nextN).value);
+				if( yval < kay ) {
+					sgn = " -";
+				}
+				doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = sgn + "&#x221A";
+				doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
+			} else {
+				doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
+				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
+				colnum += 1;
+				var sin = " + ";
+				var absk = kay;
+				if( kay < 1 ) {
+					sin = " - ";
+					absk = -kay;
+				}		
+				doc.getElementById("c0_" + colnum).innerHTML =  sin + absk + " = ";
+				var oldcols = doc.getElementsByClassName("l" + prevcol);
+				len = oldcols.length;
+				for( var i = len - 1; i >= 0; --i ) {
+					var parent = oldcols[i].parentNode;
+					parent.removeChild(oldcols[i]);
+				}
+				oldcols = doc.getElementsByClassName("i" + prevcol);
+				len = oldcols.length;
+				for( var i = len - 1; i >= 0; --i ) {
+					var parent = oldcols[i].parentNode;
+					parent.removeChild(oldcols[i]);
+				}
+				doc.getElementById("y0").focus();
+			}
+		} else {
+			errBx.innerHTML = "Should be " + expAns;
+			ansBx.style.color = "red";
+			if( num(rowno)%4 > 1 ) {
+				ansBx.style.backgroundColor = "white";
+			}
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
+		}
+	}
+}
+function checkD( ev ) {
+	ev = ev || window.event;
+	// have to make sure it was entered, not just any keyup
+	if (ev.which === 13 || ev.keyCode === 13) {
+		var ansBx = ev.target;
+		var doc = document;
+		var num = Number;
+		var did = ansBx.id;
+		rowno = did.substr(1,did.length);
+		var nextN = num(rowno) + 1;
+		var prevval;
+		prevval = num(doc.getElementById("x" + rowno).innerHTML);
+		var expAns;
+		expAns = bee*bee - (prevval - ache)*(prevval - ache);
+		var prevcol = colnum - 1;
+		if( num(ansBx.value) === expAns ) {
+			errBx.innerHTML = "";
+			if( nextN < lastPt ) {
+				did = "d" + nextN;
+				doc.getElementById(did).focus();
+				var curr = doc.getElementById("c" + rowno + "_" + colnum);
+				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = " = ";
+				curr.innerHTML = "";			
+				doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = 
+					doc.getElementById("c" + rowno + "_" + prevcol).innerHTML;
+				doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
+			} else {
+				var oldcols = doc.getElementsByClassName("l" + prevcol);
+				len = oldcols.length;
+				for( var i = len - 1; i >= 0; --i ) {
+					var parent = oldcols[i].parentNode;
+					parent.removeChild(oldcols[i]);
+				}
+				oldcols = doc.getElementsByClassName("i" + prevcol);
+				len = oldcols.length;
+				for( var i = len - 1; i >= 0; --i ) {
+					var parent = oldcols[i].parentNode;
+					parent.removeChild(oldcols[i]);
+				}
+				//var prevcol = colnum - 1;
+				//doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
+				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
+				var sgn = " ";
+				var yval = num(doc.getElementById("h0").value);
+				if( yval < kay ) {
+					sgn = " -";
+				}
+				doc.getElementById("c0_" + colnum).innerHTML = sgn + "&#x221A"; // sqrt
+				colnum += 1;
+				doc.getElementById("c0_" + colnum).innerHTML =  " = ";	
+				if( kay !== 0 ) {
+					var hdr = doc.getElementById("t" + colnum);
+					hdr.classList.add("wide");
+					hdr.innerHTML = doc.getElementById("i" + colnum).value;
+					var colBxs = doc.getElementsByClassName("i" + colnum);
+					var len = colBxs.length - 1;
+					var nClrs = 4; // copied from jsp
+					for( var i = 0; i < len; ++i ) {
+						var clr = "c" + i%nClrs;
+						colBxs[i+1].classList.add(clr);
+					}
+					var scndBxs = doc.getElementsByClassName("rBx");
+					len = scndBxs.length;
+					for( var i = 0; i < len; ++i ) {
+						scndBxs[i].type = "text";
+					}		
+					doc.getElementById("r0").focus();		
+				} else { // y not offset
+					doc.getElementById("y0").focus();
+				}
+			}
+		} else {
+			errBx.innerHTML = "Should be " + expAns;
+			ansBx.style.color = "red";
+			if( num(rowno)%4 > 1 ) {
+				ansBx.style.backgroundColor = "white";
+			}
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
+		}
+	}
+}
+function checkS( ev ) {
+	ev = ev || window.event;
+	// have to make sure it was entered, not just any keyup
+	if (ev.which === 13 || ev.keyCode === 13) {
+		var ansBx = ev.target;
+		var doc = document;
+		var num = Number;
+		var sid = ansBx.id;
+		rowno = sid.substr(1,sid.length);
+		var nextN = num(rowno) + 1;
+		var prevval;
+		prevval = num(doc.getElementById("x" + rowno).innerHTML);
+		var expAns;
+		expAns = (prevval - ache)*(prevval - ache);
+		if( num(ansBx.value) === expAns ) {
+			errBx.innerHTML = "";
+			if( nextN < lastPt ) {
+				sid = "s" + nextN;		
+				var curr = doc.getElementById("c" + rowno + "_" + colnum);
+				var xma = num(doc.getElementById("x" + nextN).innerHTML) - ache;
+				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = " &#xd7 " + xma + " = ";
+				curr.innerHTML = "";
+				doc.getElementById(sid).focus();
+			} else {
+				if( ache !== 0 ) {
+					var oldcols = doc.getElementsByClassName("l1");
+					len = oldcols.length;
+					for( var i = len - 1; i >= 0; --i ) {
+						var parent = oldcols[i].parentNode;
+						parent.removeChild(oldcols[i]);
+					}
+					var oldcols = doc.getElementsByClassName("i1");
+					len = oldcols.length;
+					for( var i = len - 1; i >= 0; --i ) {
+						var parent = oldcols[i].parentNode;
+						parent.removeChild(oldcols[i]);
+					}
+				}		
+				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
+				doc.getElementById("c0_" + colnum).innerHTML = aye + "<sup>2</sup> - ";
+				colnum += 1;
+				var hdr = doc.getElementById("t" + colnum);
+				hdr.classList.add("wide");
+				hdr.innerHTML = doc.getElementById("i" + colnum).value;
+				var colBxs = doc.getElementsByClassName("i" + colnum);
+				var len = colBxs.length - 1;
+				var nClrs = 4; // copied from jsp
+				for( var i = 0; i < len; ++i ) {
+					var clr = "c" + i%nClrs;
+					colBxs[i+1].classList.add(clr);
+				}
+				var scndBxs = doc.getElementsByClassName("dBx");
+				len = scndBxs.length;
+				for( var i = 0; i < len; ++i ) {
+					scndBxs[i].type = "text";
+				}			
+				doc.getElementById("c0_" + colnum).innerHTML =  " = ";
+				doc.getElementById("d0").focus();	
+			}
+		} else {
+			errBx.innerHTML = "Should be " + expAns;
+			ansBx.style.color = "red";
+			if( num(rowno)%4 > 1 ) {
+				ansBx.style.backgroundColor = "white";
+			}
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
+		}
+	}
+}
+function checkM( ev ) {
+	ev = ev || window.event;
+	// have to make sure it was entered, not just any keyup
+	if (ev.which === 13 || ev.keyCode === 13) {
+		var ansBx = ev.target;
+		var doc = document;
+		var num = Number;
+		var mid = ansBx.id;
+		rowno = mid.substr(1,mid.length);
+		var nextN = num(rowno) + 1;
+		var prevval;
+
+		prevval = num(doc.getElementById("x" + rowno).innerHTML);
+		var expAns;
+		expAns = prevval - ache;
+		if( num(ansBx.value) === expAns ) {
+			errBx.innerHTML = "";
+			if( nextN < lastPt ) {
+				mid = "m" + nextN;
+				doc.getElementById(mid).focus();
+				var curr = doc.getElementById("c" + rowno + "_" + colnum);
+				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
+				curr.innerHTML = "";
+			} else {
+				var hdr = doc.getElementById("t2");
+				hdr.classList.add("wide");
+				hdr.innerHTML = doc.getElementById("i2").value;
+				var colBxs = doc.getElementsByClassName("i2");
+				var len = colBxs.length-1;
+				var nClrs = 4; // copied from jsp
+				for( var i = 0; i < len; ++i ) {
+					var clr = "c" + i%nClrs;
+					colBxs[i+1].classList.add(clr);
+				}
+				var scndBxs = doc.getElementsByClassName("sBx");
+				len = scndBxs.length;
+				for( var i = 0; i < len; ++i ) {
+					scndBxs[i].type = "text";
+				}
+				doc.getElementById("s0").focus();
+				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
+				colnum += 1;
+				var xma = x0val - ache;	
+				doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + xma + " = "; // times;			
+			}
+		} else {
+			errBx.innerHTML = "Should be " + expAns;
+			ansBx.style.color = "red";
+			if( num(rowno)%4 > 1 ) {
+				ansBx.style.backgroundColor = "white";
+			}
+			var errct = Number(errCtBx.value);
+		   	errCtBx.value = errct + 1;
+		}
+	}
+}
 function checkN( ev ) {
 	ev = ev || window.event;
 	// have to make sure it was entered, not just any keyup
@@ -203,7 +484,6 @@ function checkN( ev ) {
 		if( num(ansBx.value) === expAns ) {
 			errBx.innerHTML = "";
 			if( nextN < lastPt ) {
-				nextVal = nsign*num(doc.getElementById("x" + nextN).innerHTML)/div;
 				nid = "n" + nextN;
 				doc.getElementById(nid).focus();
 				var curr = doc.getElementById("c" + rowno + "_" + colnum);
@@ -295,16 +575,17 @@ function checkY( ev ) {
 		var ansBx = ev.target;
 		var doc = document;
 		var num = Number;
-		var mat = Math;
 		
 		var ansVal = num(ansBx.value);
 		var yid = ansBx.id;
-		var n = yid.substr(1);
-		var expY = num(doc.getElementById("h" + n).value);
+		var rowno = yid.substr(1);
+		var expY = num(doc.getElementById("h" + rowno).value);
 		
 		if( ansVal === expY ) { // || ansVal === expY2 ) {
 			errBx.innerHTML = "";
-			var nextN = num(n) + 1;
+			var nextN = num(rowno) + 1;
+			var prevcol = colnum - 1;
+			//alert("checkY colnum: " + colnum);
 			if( nextN < lastPt ) {
 				yid = "y" + nextN;
 				doc.getElementById(yid).focus();
@@ -314,10 +595,20 @@ function checkY( ev ) {
 						doc.getElementById("c" + nextN + "_0").innerHTML = "-";
 					}
 				}
-				doc.getElementById("c" + n + "_0").innerHTML = "";
-				var curr = doc.getElementById("c" + n + "_" + colnum);
+				doc.getElementById("c" + rowno + "_0").innerHTML = "";
+				var curr = doc.getElementById("c" + rowno + "_" + colnum);
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
 				curr.innerHTML = "";
+				if( kay === 0 ) {
+					var sgn = " ";
+					var yval = num(doc.getElementById("h" + nextN).value);
+					if( yval < kay ) {
+						sgn = " -";
+					}
+					
+					doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = sgn + "&#x221A";
+					doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
+				}
 			} else {
 				ansBx.blur();
 				var ypts = doc.getElementsByClassName("ypts");
@@ -368,6 +659,18 @@ function checkY( ev ) {
 						grandparent.removeChild(parent);
 					}
 				}
+				var oldcols = doc.getElementsByClassName("l" + prevcol);
+				len = oldcols.length;
+				for( var i = len - 1; i >= 0; --i ) {
+					var parent = oldcols[i].parentNode;
+					parent.removeChild(oldcols[i]);
+				}
+				oldcols = doc.getElementsByClassName("i" + prevcol); // shouldn't these be covered by tmps? fixit
+				len = oldcols.length;
+				for( var i = len - 1; i >= 0; --i ) {
+					var parent = oldcols[i].parentNode;
+					parent.removeChild(oldcols[i]);
+				}
 				var tmps = doc.getElementsByClassName("tmp");
 				len = tmps.length;
 				for( var i = len - 1; i >= 0; --i ) {
@@ -381,7 +684,7 @@ function checkY( ev ) {
 		} else {
 			errBx.innerHTML = "Should be " + expY;
 			ansBx.style.color = "red";
-			if( num(n)%4 > 1 ) {
+			if( num(rowno)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
 			}
 			var errct = Number(errCtBx.value);
@@ -799,6 +1102,8 @@ function genpoints ( which ) {
 	par2 = num(doc.getElementById(id).value);
 	id = "whichparam3_" + which;
 	par3 = num(doc.getElementById(id).value);
+	id = "whichparam4_" + which;
+	par4 = num(doc.getElementById(id).value);
 	var xBxs = doc.getElementsByClassName("xpts");
 	plen = xBxs.length;
 	var xp;
@@ -833,6 +1138,16 @@ function genpoints ( which ) {
 		 }
 		mult = mat.abs(rise);
 		div = mat.abs(run);
+	} else if( isCircle || isEllipse ) {
+		aye = par1;
+		ache = par2;
+		kay = par3;
+		bee = par4;
+		enoughPoints = 3;
+		var len = taken.length;
+		for( var i = 0; i < len; ++i ) {
+			taken[i] = false;
+		}
 	}
 	return sign;
 }
@@ -919,25 +1234,41 @@ window.onload = function() {
 	 		+ "color: white;"
 	 		+ "text-shadow: 0 0 1px #000000, 0 0 5px #FF0000;"
 			+ "text-orientation: mixed;";
-		errBx.setAttribute("style", styles);
-			
+		errBx.setAttribute("style", styles);			
 		form.appendChild( errBx );
-		  		
-	  	var nputBxs = doc.getElementsByClassName("nput");
-		len = nputBxs.length;
-	  	for( var i = 0; i < len; ++i ) {
-		  	nputBxs[i].type = "text";
-		} 
-	  	
+		  			
 		whichcurve = num(doc.getElementById("whichcurve").value);
 		whatrow = doc.getElementsByClassName("r0");
 		sign = genpoints( whichcurve );
 		lastPt = Number(doc.getElementById("lastPt").value);
-	
+		col0 = doc.getElementById("c0_0");
+
+
+		
 		if( isLine ) {
+			// add title borders and background colors for entire whatpts table
+			var hdr = doc.getElementsByClassName("hdr");
+			var len = hdr.length;
+			for( var i = 0; i < len; ++i ) {
+				hdr[i].classList.add("wide");
+			}
+			var tblhgt = doc.getElementsByClassName("xpts").length;
+			var nClrs = 4; // copied from jsp
+			for( var i = 0; i < tblhgt; ++i ) {
+				var clr = "c" + i%nClrs;
+				var whatrow = doc.getElementsByClassName("r" + i);
+				len = whatrow.length;
+				for( var j = 0; j < len; ++j ) {
+					whatrow[j].classList.add(clr);
+				}
+			}
+			var nputBxs = doc.getElementsByClassName("nput");
+			len = nputBxs.length;
+		  	for( var i = 0; i < len; ++i ) {
+			  	nputBxs[i].type = "text";
+			}
 		  	n0 = doc.getElementById("n0");
-		  	t0 = doc.getElementById("t0");
-		  	col0 = doc.getElementById("c0_0");
+		  	t0 = doc.getElementById("t0");		  	
 			var col1 = doc.getElementById("c0_1");
 		  			
 		  	if( !n0 && !t0 ) {
@@ -954,9 +1285,9 @@ window.onload = function() {
 				colnum = 1;
 		  		doc.getElementById("y0").focus();
 		  	} else {	  		
-				var x0 = doc.getElementById("x0").innerHTML;  		  	
+				x0val = num(doc.getElementById("x0").innerHTML);  		  	
 			  	if( t0 ) {
-				  	if( x0 !== "0" ) {
+				  	if( x0val !== 0 ) {
 				  		col0.innerHTML = sign;
 				  	}
 				  	col1.innerHTML = " &#xf7 " + div + " = "; // divided by
@@ -968,19 +1299,84 @@ window.onload = function() {
 			  	}
 		  	}
 		} else if( isCircle || isEllipse ) {
-			var id = "whichparam1_" + whichcurve;
-			aye = num(doc.getElementById(id).value);
-			id = "whichparam2_" + whichcurve;
-			ache = num(doc.getElementById(id).value);
-			id = "whichparam3_" + whichcurve;
-			kay = num(doc.getElementById(id).value);
-			id = "whichparam4_" + whichcurve;
-			bee = num(doc.getElementById(id).value);
-			enoughPoints = 3;
-			var len = taken.length;
-			for( var i = 0; i < len; ++i ) {
-				taken[i] = false;
+			// add title borders and background colors for 1st 2nd & last whatpts table
+			var hdr = doc.getElementsByClassName("hdr");
+			var len = hdr.length - 1;
+			hdr[0].classList.add("wide");
+			hdr[1].classList.add("wide");
+			hdr[len].classList.add("wide");
+			var tblhgt = doc.getElementsByClassName("xpts").length;
+			var nClrs = 4; // copied from jsp
+			for( var i = 0; i < tblhgt; ++i ) {
+				var clr = "c" + i%nClrs;
+				var whatrow = doc.getElementsByClassName("r" + i);
+				len = whatrow.length - 1;
+				whatrow[0].classList.add(clr);
+				whatrow[1].classList.add(clr);
+				whatrow[len].classList.add(clr);
 			}
+			var nputBxs = doc.getElementsByClassName("ypts");
+			len = nputBxs.length;
+		  	for( var i = 0; i < len; ++i ) {
+			  	nputBxs[i].type = "text";
+			}
+			if( ache !== 0 ) {
+				var frstBxs = doc.getElementsByClassName("mBx");
+				len = frstBxs.length;
+				for( var i = 0; i < len; ++i ) {
+					frstBxs[i].type = "text";
+				}
+			} else {
+				var frstBxs = doc.getElementsByClassName("sBx");
+				len = frstBxs.length;
+				for( var i = 0; i < len; ++i ) {
+					frstBxs[i].type = "text";
+				}
+			}
+			/* var othrBxs = doc.getElementsByClassName("dBx");
+			len = othrBxs.length;
+			for( var i = 0; i < len; ++i ) {
+				othrBxs[i].type = "hidden";
+			}
+			var othrBxs = doc.getElementsByClassName("rBx");
+			len = othrBxs.length;
+			for( var i = 0; i < len; ++i ) {
+				othrBxs[i].type = "hidden";
+			}
+			len = doc.getElementsByClassName("r0").length - 1;
+			for( var j = 2; j < len; ++j ) {
+				var removables = doc.getElementsByClassName("i" + j);
+				var len = removables.length;		
+				for( var i = len-1; i >= 0; --i ) {
+					var classList = removables[i].classList;
+					while (classList.length > 0) {
+					   classList.remove(classList.item(0));
+					}
+					classList.add("invisible");
+				}
+			} */
+			// copy hidden input to 2nd heading column
+			doc.getElementById("t1").innerHTML = doc.getElementById("i1").value;
+			var col1 = doc.getElementById("c0_1");
+			var x0st = doc.getElementById("x0").innerHTML;
+			x0val = num(x0st);	
+			if( ache !== 0 ) {
+				var sin = " - ";
+				var xOffs = ache;
+				if( ache < 0 ) {
+					xOffs = -ache;
+					sin = " + ";
+				}
+				col1.innerHTML = sin + xOffs + " = ";
+				doc.getElementById("m0").focus();
+			} else {
+				if( x0val < 0 ) {
+					x0st = "(" + x0st + ")";
+				}
+				col1.innerHTML = " &#xd7 " + x0st + " = ";
+				doc.getElementById("s0").focus();
+			}
+			colnum = 1;
 		}
 		
 		// draw all the curves generated to date in this set
@@ -989,7 +1385,7 @@ window.onload = function() {
 		for( var i = 0; i < whichcurve; i += 1 ) {
 			drawCurve( i );
 		}
-	} else { // don't want to see the table until you select a curve
+	} /* else { // don't want to see the table until you select a curve
 		var removables = doc.getElementsByClassName("rem");
 		var len = removables.length;
 		
@@ -1000,5 +1396,5 @@ window.onload = function() {
 			}
 			classList.add("invisible");
 		}
-	}
+	} */
 }
