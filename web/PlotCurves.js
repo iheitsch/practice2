@@ -2,7 +2,7 @@
  * 
  */
 // on clicking on any table input, disable all hints fixit
-// don't draw lines between points for anything but lines, it makes triangles fixit
+// you can skip column if either radius of an ellipse is one fixit
 
 var halfwidth = 222;
 var xygraphleft = 365; // copied from css
@@ -44,7 +44,6 @@ var Coords = function( xp, yp ) {
     this.x = xp;
     this.y = yp;
 };
-//var mouseDownPos = new Coords(-1, -3);
 var mouseDownX;
 var mouseDownY;
 var dragged = false;
@@ -198,13 +197,16 @@ function checkR( ev ) {
 		var prevval;
 		prevval = num(doc.getElementById("x" + rowno).innerHTML);
 		var expAns;
-		// need to figure out sign fixit
 		var sn = 1;
 		var yval = num(doc.getElementById("h" + rowno).value);
 		if( yval < kay ) {
 			sn = -1;
 		}
-		expAns = sn*Math.sqrt(bee*bee - (prevval - ache)*(prevval - ache));
+		if( isCircle ){
+			expAns = sn*Math.sqrt(bee*bee - (prevval - ache)*(prevval - ache));
+		} else if( isEllipse ){
+			expAns = sn*Math.sqrt(1 - (prevval - ache)*(prevval - ache)/(aye*aye));
+		}
 		if( num(ansBx.value) === expAns ) {
 			errBx.innerHTML = "";
 			var prevcol = colnum - 1;
@@ -219,19 +221,44 @@ function checkR( ev ) {
 				if( yval < kay ) {
 					sgn = " -";
 				}
-				doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = sgn + "&#x221A";
+				doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = sgn + "&#x221A"; // sqrt
 				doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
 			} else {
 				doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
 				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
 				colnum += 1;
-				var sin = " + ";
-				var absk = kay;
-				if( kay < 1 ) {
-					sin = " - ";
-					absk = -kay;
-				}		
-				doc.getElementById("c0_" + colnum).innerHTML =  sin + absk + " = ";
+				var focusBx = doc.getElementById("y0");
+				if( isCircle ){
+					var sin = " + ";
+					var absk = kay;
+					if( kay < 1 ) {
+						sin = " - ";
+						absk = -kay;
+					}		
+					doc.getElementById("c0_" + colnum).innerHTML =  sin + absk + " = ";
+				} else if( isEllipse ){
+					doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + bee + " = "; // times
+					if( kay !== 0 ) {
+						focusBx = doc.getElementById("n0");
+						var hdr = doc.getElementById("q" + colnum);
+						hdr.classList.add("wide");
+						hdr.innerHTML = doc.getElementById("i" + colnum).value;
+						var colBxs = doc.getElementsByClassName("i" + colnum);
+						var len = colBxs.length - 1;
+						var nClrs = 4; // copied from jsp
+						for( var i = 0; i < len; ++i ) {
+							var clr = "c" + i%nClrs;
+							colBxs[i+1].classList.add(clr);
+						}
+						var scndBxs = doc.getElementsByClassName("nBx");
+						len = scndBxs.length;
+						for( var i = 0; i < len; ++i ) {
+							scndBxs[i].type = "text";
+						}		
+						doc.getElementById("n0").focus(); // may have a problem with assumptions that n0 is line
+						// definition of n0 fixit
+					}
+				}
 				var oldcols = doc.getElementsByClassName("l" + prevcol);
 				len = oldcols.length;
 				for( var i = len - 1; i >= 0; --i ) {
@@ -244,7 +271,7 @@ function checkR( ev ) {
 					var parent = oldcols[i].parentNode;
 					parent.removeChild(oldcols[i]);
 				}
-				doc.getElementById("y0").focus();
+				focusBx.focus();
 			}
 		} else {
 			errBx.innerHTML = "Should be " + expAns;
@@ -270,19 +297,23 @@ function checkD( ev ) {
 		var prevval;
 		prevval = num(doc.getElementById("x" + rowno).innerHTML);
 		var expAns;
-		expAns = bee*bee - (prevval - ache)*(prevval - ache);
+		if( isCircle ){
+			expAns = bee*bee - (prevval - ache)*(prevval - ache);
+		} else if( isEllipse ){
+			expAns = 1 - (prevval - ache)*(prevval - ache)/(aye*aye);
+		}
 		var prevcol = colnum - 1;
 		if( num(ansBx.value) === expAns ) {
 			errBx.innerHTML = "";
 			if( nextN < lastPt ) {
-				did = "d" + nextN;
-				doc.getElementById(did).focus();
+				did = "d" + nextN;	
 				var curr = doc.getElementById("c" + rowno + "_" + colnum);
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = " = ";
 				curr.innerHTML = "";			
 				doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = 
 					doc.getElementById("c" + rowno + "_" + prevcol).innerHTML;
 				doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
+				doc.getElementById(did).focus();
 			} else {
 				var oldcols = doc.getElementsByClassName("l" + prevcol);
 				len = oldcols.length;
@@ -296,8 +327,6 @@ function checkD( ev ) {
 					var parent = oldcols[i].parentNode;
 					parent.removeChild(oldcols[i]);
 				}
-				//var prevcol = colnum - 1;
-				//doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
 				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
 				var sgn = " ";
 				var yval = num(doc.getElementById("h0").value);
@@ -307,8 +336,8 @@ function checkD( ev ) {
 				doc.getElementById("c0_" + colnum).innerHTML = sgn + "&#x221A"; // sqrt
 				colnum += 1;
 				doc.getElementById("c0_" + colnum).innerHTML =  " = ";	
-				if( kay !== 0 ) {
-					var hdr = doc.getElementById("t" + colnum);
+				if( kay !== 0 || isEllipse) {
+					var hdr = doc.getElementById("q" + colnum);
 					hdr.classList.add("wide");
 					hdr.innerHTML = doc.getElementById("i" + colnum).value;
 					var colBxs = doc.getElementsByClassName("i" + colnum);
@@ -352,17 +381,24 @@ function checkS( ev ) {
 		var prevval;
 		prevval = num(doc.getElementById("x" + rowno).innerHTML);
 		var expAns;
-		expAns = (prevval - ache)*(prevval - ache);
+		if( isCircle ) {
+			expAns = (prevval - ache)*(prevval - ache);
+		} else if( isEllipse ) {
+			expAns = (prevval - ache)*(prevval - ache)/(aye*aye);
+		}
 		if( num(ansBx.value) === expAns ) {
 			errBx.innerHTML = "";
 			if( nextN < lastPt ) {
 				sid = "s" + nextN;		
 				var curr = doc.getElementById("c" + rowno + "_" + colnum);
 				var xma = num(doc.getElementById("x" + nextN).innerHTML) - ache;
+				if( isEllipse ) {
+					xma = xma/aye;
+				}
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = " &#xd7 " + xma + " = ";
 				curr.innerHTML = "";
 				doc.getElementById(sid).focus();
-			} else {
+			} else { // start next column
 				if( ache !== 0 ) {
 					var oldcols = doc.getElementsByClassName("l1");
 					len = oldcols.length;
@@ -376,11 +412,28 @@ function checkS( ev ) {
 						var parent = oldcols[i].parentNode;
 						parent.removeChild(oldcols[i]);
 					}
-				}		
+				}
+				var inst = " " + aye + "<sup>2</sup> - ";
+				if( isEllipse ) {
+					var prevcol = colnum - 1;
+					var oldcols = doc.getElementsByClassName("l" + prevcol);
+					len = oldcols.length;
+					for( var i = len - 1; i >= 0; --i ) {
+						var parent = oldcols[i].parentNode;
+						parent.removeChild(oldcols[i]);
+					}
+					var oldcols = doc.getElementsByClassName("i" + prevcol);
+					len = oldcols.length;
+					for( var i = len - 1; i >= 0; --i ) {
+						var parent = oldcols[i].parentNode;
+						parent.removeChild(oldcols[i]);
+					}
+					inst = " 1 - ";
+				}			
 				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
-				doc.getElementById("c0_" + colnum).innerHTML = aye + "<sup>2</sup> - ";
+				doc.getElementById("c0_" + colnum).innerHTML = inst;
 				colnum += 1;
-				var hdr = doc.getElementById("t" + colnum);
+				var hdr = doc.getElementById("q" + colnum);
 				hdr.classList.add("wide");
 				hdr.innerHTML = doc.getElementById("i" + colnum).value;
 				var colBxs = doc.getElementsByClassName("i" + colnum);
@@ -433,7 +486,7 @@ function checkM( ev ) {
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
 				curr.innerHTML = "";
 			} else {
-				var hdr = doc.getElementById("t2");
+				var hdr = doc.getElementById("q2");
 				hdr.classList.add("wide");
 				hdr.innerHTML = doc.getElementById("i2").value;
 				var colBxs = doc.getElementsByClassName("i2");
@@ -444,15 +497,23 @@ function checkM( ev ) {
 					colBxs[i+1].classList.add(clr);
 				}
 				var scndBxs = doc.getElementsByClassName("sBx");
+				var focusBx = doc.getElementById("s0");
+				var xma = x0val - ache;
+				var inst = " &#xd7 " + xma + " = "; // times;
+				if( isEllipse ) {
+					scndBxs = doc.getElementsByClassName("tBx");
+					focusBx = doc.getElementById("t0");
+					inst = " &#xf7 " + aye + " = "; // divide
+				}
 				len = scndBxs.length;
 				for( var i = 0; i < len; ++i ) {
 					scndBxs[i].type = "text";
 				}
-				doc.getElementById("s0").focus();
+				
 				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
-				colnum += 1;
-				var xma = x0val - ache;	
-				doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + xma + " = "; // times;			
+				colnum += 1;				
+				doc.getElementById("c0_" + colnum).innerHTML = inst;
+				focusBx.focus();			
 			}
 		} else {
 			errBx.innerHTML = "Should be " + expAns;
@@ -480,6 +541,13 @@ function checkN( ev ) {
 		var expAns;
 		if( isLine ) {
 			expAns = nsign*mult*prevval/div;
+		} else if( isEllipse ) {
+			var sn = 1;
+			var yval = num(doc.getElementById("h" + rowno).value);
+			if( yval < kay ) {
+				sn = -1;
+			}
+			expAns = sn*bee*Math.sqrt(1 - (prevval - ache)*(prevval - ache)/(aye*aye));
 		}
 		if( num(ansBx.value) === expAns ) {
 			errBx.innerHTML = "";
@@ -489,15 +557,34 @@ function checkN( ev ) {
 				var curr = doc.getElementById("c" + rowno + "_" + colnum);
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
 				curr.innerHTML = "";
-			} else {
-				doc.getElementById("y0").focus();
-				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
-				colnum += 1;			
-				if( bee !== 0 ) {
-					doc.getElementById("c0_" + colnum).innerHTML = op + " " + bee + " = ";
-				} else {
-					doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + mult + " = "; // times;
-				}			
+			} else {								
+				if( isLine ) {
+					doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
+					colnum += 1;		
+					if( bee !== 0 ) {
+						doc.getElementById("c0_" + colnum).innerHTML = op + " " + bee + " = ";
+					} else {
+						doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + mult + " = "; // times;
+					}
+				} else if( isEllipse ) {
+					doc.getElementById("c" + rowno + "_" + colnum).innerHTML = "";
+					var prevcol = colnum - 1;
+					var oldcols = doc.getElementsByClassName("l" + prevcol);
+					len = oldcols.length;
+					for( var i = len - 1; i >= 0; --i ) {
+						var parent = oldcols[i].parentNode;
+						parent.removeChild(oldcols[i]);
+					}
+					oldcols = doc.getElementsByClassName("i" + prevcol);
+					len = oldcols.length;
+					for( var i = len - 1; i >= 0; --i ) {
+						var parent = oldcols[i].parentNode;
+						parent.removeChild(oldcols[i]);
+					}
+					colnum += 1;
+					doc.getElementById("c0_" + colnum).innerHTML = " + " + kay + " = ";
+				}
+				doc.getElementById("y0").focus();		
 			}
 		} else {
 			errBx.innerHTML = "Should be " + expAns;
@@ -523,32 +610,73 @@ function checkT( ev ) {
 		var expAns;
 		if( isLine ) {
 			expAns = nsign*xval/div;
+		} else if( isEllipse ) {
+			expAns = (xval - ache)/aye;
 		}
 		if( num(ansBx.value) === expAns ) {
 			errBx.innerHTML = "";
 			var nextN = num(rowno) + 1;
-			if( nextN < lastPt ) {
-				tid = "t" + nextN;
-				doc.getElementById(tid).focus();
+			if( nextN < lastPt ) {	
 				var curr = doc.getElementById("c" + rowno + "_0");
 				var nextVal = doc.getElementById("x" + nextN).innerHTML;
 				if( nsign < 0 && nextVal !== "0" ) {
 					doc.getElementById("c" + nextN + "_0").innerHTML = "-";
 				}
 				curr.innerHTML = "";
-				curr = doc.getElementById("c" + rowno + "_1");
-				doc.getElementById("c" + nextN + "_1").innerHTML = curr.innerHTML;
+				//var nextcol = colnum + 1;
+				//alert("checkT colnum: " + colnum + " rowno: " + rowno + " nextN: " + nextN);
+				curr = doc.getElementById("c" + rowno + "_" + colnum);
+				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
 				curr.innerHTML = "";
+				tid = "t" + nextN;
+				doc.getElementById(tid).focus();
 			} else {
-				var nextBx;
-				colnum += 2;
+				var nextBx;		
 				doc.getElementById("c" + rowno + "_0").innerHTML = "";
-				doc.getElementById("c" + rowno + "_1").innerHTML = "";
+				doc.getElementById("c" + rowno + "_" + colnum).innerHTML = ""; // ellipse
+				var xma = (x0val - ache)/aye;			
 				if( n0 ) {	
-					nextBx = n0;	
+					nextBx = n0;
+					colnum += 1;
+					doc.getElementById("c" + rowno + "_" + colnum).innerHTML = ""; // line
 					doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + mult + " = ";
+				} else if( isEllipse ) {
+					colnum += 1;
+					var hdr = doc.getElementById("q" + colnum);
+					hdr.classList.add("wide");
+					hdr.innerHTML = doc.getElementById("i" + colnum).value;
+					var colBxs = doc.getElementsByClassName("i" + colnum);
+					var len = colBxs.length-1;
+					var nClrs = 4; // copied from jsp
+					for( var i = 0; i < len; ++i ) {
+						var clr = "c" + i%nClrs;
+						colBxs[i+1].classList.add(clr);
+					}
+					var sBxs = doc.getElementsByClassName("sBx");
+					len = sBxs.length;
+					for( var i = 0; i < len; ++i ) {
+						sBxs[i].type = "text";
+					}
+					if( ache !== 0 ) {
+						var oldcols = doc.getElementsByClassName("l1");
+						len = oldcols.length;
+						for( var i = len - 1; i >= 0; --i ) {
+							var parent = oldcols[i].parentNode;
+							parent.removeChild(oldcols[i]);
+						}
+						var oldcols = doc.getElementsByClassName("i1");
+						len = oldcols.length;
+						for( var i = len - 1; i >= 0; --i ) {
+							var parent = oldcols[i].parentNode;
+							parent.removeChild(oldcols[i]);
+						}
+					}
+					nextBx = doc.getElementById("s0");
+					doc.getElementById("c0_" + colnum).innerHTML = " &#xd7 " + xma + " = "; // times;
 				} else {
 					nextBx = doc.getElementById("y0");
+					colnum += 1;
+					doc.getElementById("c" + rowno + "_" + colnum).innerHTML = ""; // line
 					if( bee !== 0 ) {
 						doc.getElementById("c0_" + colnum).innerHTML = op + " " + bee + " = ";
 					} else {
@@ -585,7 +713,6 @@ function checkY( ev ) {
 			errBx.innerHTML = "";
 			var nextN = num(rowno) + 1;
 			var prevcol = colnum - 1;
-			//alert("checkY colnum: " + colnum);
 			if( nextN < lastPt ) {
 				yid = "y" + nextN;
 				doc.getElementById(yid).focus();
@@ -599,14 +726,13 @@ function checkY( ev ) {
 				var curr = doc.getElementById("c" + rowno + "_" + colnum);
 				doc.getElementById("c" + nextN + "_" + colnum).innerHTML = curr.innerHTML;
 				curr.innerHTML = "";
-				if( kay === 0 ) {
+				if( kay === 0 && isCircle ) {
 					var sgn = " ";
 					var yval = num(doc.getElementById("h" + nextN).value);
 					if( yval < kay ) {
 						sgn = " -";
 					}
-					
-					doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = sgn + "&#x221A";
+					doc.getElementById("c" + nextN + "_" + prevcol).innerHTML = sgn + "&#x221A"; // sqrt
 					doc.getElementById("c" + rowno + "_" + prevcol).innerHTML = "";
 				}
 			} else {
@@ -715,7 +841,7 @@ function checkPt( mousePosx, mousePosy ){
 			lowY < mousePosy && mousePosy < highY ) {
 			errBx.innerHTML = "";
 			putDot( dotX, dotY );
-			if( isLine && prevX && prevY ) {
+			if( isLine && prevX && prevY ) { // don't connect dots for circles & ellipses, points not in order
 				drawLine( prevX, prevY, dotX, dotY, 2, "black", "mrx" );
 			}
 			prevX = dotX;
@@ -908,8 +1034,6 @@ function drawCurve( cls ) {
 			var py = halfwidth - mat.round(yp*gridspace);
 			htmseg += px + ', ' + py + ' '; 
 		}
-		var lastbx = maxbx-1;
-		//doc.getElementById("statusBox" + lastbx).innerHTML = "a: " + a + " h: " + h + " k: " + k + " b: " + b;
 		for( var xp = a + h; xp >= h - a; xp -= 0.1) {
 			var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));		
 			var px = halfwidth + mat.round(xp*gridspace);
@@ -958,7 +1082,6 @@ function drawCurve( cls ) {
 				spot = 3;
 			}
 		}
-		//alert("xc: " + h + " yc: " + k + " spot: " + spot + " taken: " + taken[spot]);
 		var len = taken.length;
 		if( taken[spot] ) { // try the one counter clockwise
 			spot = (spot + len - 2)%(len - 1); // spot -> spot - 1 except 0-> 3
@@ -976,31 +1099,26 @@ function drawCurve( cls ) {
 				xstop = halfwidth;
 				ystop = -gridspace;
 				hitsrightedge = false;
-				//alert("final spot: 0 " + "xs: " + xstop + " ys: " + ystop);
 		    	break;
 			case 1:
 				xstop = graphstop;
 				ystop = halfwidth;
 				hitsrightedge = true;
-				//alert("final spot: 1 " + "xs: " + xstop + " ys: " + ystop);
 				break;
 			case 2:
 				xstop = halfwidth;
 				ystop = graphstop + 2*gridspace;
 				hitsrightedge = false;
-				//alert("final spot: 2 " + "xs: " + xstop + " ys: " + ystop);
 				break;
 			case 3:				
 				xstop = 0;
 				ystop = graphstop + 3*gridspace;
 				hitsrightedge = false;
-				//alert("final spot: 3 " + "xs: " + xstop + " ys: " + ystop);
 				break;
 			default:
 				xstop = graphstop;
 				ystop = halfwidth + 4*gridspace;
 				hitsrightedge = true;
-				//alert("final spot: " + spot + "xs: " + xstop + " ys: " + ystop);				
 		}
 
 	}
@@ -1108,8 +1226,7 @@ function genpoints ( which ) {
 	plen = xBxs.length;
 	var xp;
 	var sign = "";
-	
-	
+		
 	for( var i = 0; i < plen; ++i ) {
 		//read 
 		xp = num(xBxs[i].innerHTML);
@@ -1242,9 +1359,7 @@ window.onload = function() {
 		sign = genpoints( whichcurve );
 		lastPt = Number(doc.getElementById("lastPt").value);
 		col0 = doc.getElementById("c0_0");
-
-
-		
+	
 		if( isLine ) {
 			// add title borders and background colors for entire whatpts table
 			var hdr = doc.getElementsByClassName("hdr");
@@ -1328,35 +1443,16 @@ window.onload = function() {
 				}
 			} else {
 				var frstBxs = doc.getElementsByClassName("sBx");
+				if( isEllipse ) {
+					frstBxs = doc.getElementsByClassName("tBx");
+				}
 				len = frstBxs.length;
 				for( var i = 0; i < len; ++i ) {
 					frstBxs[i].type = "text";
 				}
 			}
-			/* var othrBxs = doc.getElementsByClassName("dBx");
-			len = othrBxs.length;
-			for( var i = 0; i < len; ++i ) {
-				othrBxs[i].type = "hidden";
-			}
-			var othrBxs = doc.getElementsByClassName("rBx");
-			len = othrBxs.length;
-			for( var i = 0; i < len; ++i ) {
-				othrBxs[i].type = "hidden";
-			}
-			len = doc.getElementsByClassName("r0").length - 1;
-			for( var j = 2; j < len; ++j ) {
-				var removables = doc.getElementsByClassName("i" + j);
-				var len = removables.length;		
-				for( var i = len-1; i >= 0; --i ) {
-					var classList = removables[i].classList;
-					while (classList.length > 0) {
-					   classList.remove(classList.item(0));
-					}
-					classList.add("invisible");
-				}
-			} */
 			// copy hidden input to 2nd heading column
-			doc.getElementById("t1").innerHTML = doc.getElementById("i1").value;
+			doc.getElementById("q1").innerHTML = doc.getElementById("i1").value;
 			var col1 = doc.getElementById("c0_1");
 			var x0st = doc.getElementById("x0").innerHTML;
 			x0val = num(x0st);	
@@ -1370,14 +1466,19 @@ window.onload = function() {
 				col1.innerHTML = sin + xOffs + " = ";
 				doc.getElementById("m0").focus();
 			} else {
-				if( x0val < 0 ) {
-					x0st = "(" + x0st + ")";
+				if( isCircle ) {
+					if( x0val < 0 ) {
+						x0st = "(" + x0st + ")";
+					}
+					col1.innerHTML = " &#xd7 " + x0st + " = ";  // times
+					doc.getElementById("s0").focus();
+				} else if( isEllipse ) {
+					col1.innerHTML = " &#xf7 " + aye + " = "; // divide
+					doc.getElementById("t0").focus();
 				}
-				col1.innerHTML = " &#xd7 " + x0st + " = ";
-				doc.getElementById("s0").focus();
-			}
-			colnum = 1;
+			}		
 		}
+		colnum = 1;
 		
 		// draw all the curves generated to date in this set
 		nmins = 0;
@@ -1385,16 +1486,5 @@ window.onload = function() {
 		for( var i = 0; i < whichcurve; i += 1 ) {
 			drawCurve( i );
 		}
-	} /* else { // don't want to see the table until you select a curve
-		var removables = doc.getElementsByClassName("rem");
-		var len = removables.length;
-		
-		for( var i = len-1; i >= 0; --i ) {
-			var classList = removables[i].classList;
-			while (classList.length > 0) {
-			   classList.remove(classList.item(0));
-			}
-			classList.add("invisible");
-		}
-	} */
+	}
 }

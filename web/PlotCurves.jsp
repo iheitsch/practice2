@@ -605,7 +605,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 </tr>
 </table>
 <% } else if( isCircle ) {
-		String cclass = "c0";
+		String cclass = "l0";
 		int cindx = 0;
 		String nm = indvar;
 		int xOffs = par2[currentc];
@@ -619,7 +619,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 			nm = indvar + sin + xOffs;
 		} 		 
 		String iid = "";
-		String tid = ""; %>
+		String qid = ""; %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
@@ -628,36 +628,36 @@ if(( tmp = request.getParameter("chs")) != null) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
-		tid = "t" + cindx; %>
+		qid = "q" + cindx; %>
 		<td class="tmp <%=cclass%>"></td>
-		<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+		<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 		<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
 <%		nm = "( " + nm + " )";
 	} 
 	cindx += 1;
 	cclass = "l" + cindx;
 	iid = "i" + cindx; 
-	tid = "t" + cindx; %>
+	qid = "q" + cindx; %>
 	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=nm%><sup>2</sup>">
 <%	cindx += 1;
 	cclass = "l" + cindx;
 	iid = "i" + cindx; 
-	tid = "t" + cindx; %>
+	qid = "q" + cindx; %>
 	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=par1[currentc]%><sup>2</sup> - <%=nm%><sup>2</sup>">
 <% 	if( par3[currentc] != 0 ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
-		tid = "t" + cindx; 
+		qid = "q" + cindx; 
 		String ival = "+/- &#x221A <span class='oline'>";
 		ival += par1[currentc];
 		ival += "<sup>2</sup> - " + nm + "<sup>2</sup></span>"; %>
 		<td class="tmp"></td>
-		<th class="hdr rem  <%=iid%>" id="<%=tid%>"></th>
+		<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 		<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
 <%	} %>
 	<td class="tmp"></td>
@@ -687,7 +687,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		iclass = "i" + cindx;
 		cid = "c" + i + "_" + cindx; %>
 		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-		<td class="rem <%=iclass%>  <%=rclass%>" id="<%=tid%>">
+		<td class="rem <%=iclass%>  <%=rclass%>">
 			<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkM( event)">
 		</td>
 <%	} 
@@ -729,34 +729,167 @@ if(( tmp = request.getParameter("chs")) != null) {
 <tr>
 <td class="pre invisible">__________</td><td></td><td></td><td></td>
 </table>
-<% } else if( isEllipse ) { %>
+<% } else if( isEllipse ) {
+		String cclass = "l0";
+		int cindx = 0;
+		String nm = indvar;
+		int xOffs = par2[currentc];
+		boolean XisOff = xOffs != 0;
+		if( XisOff ) {			
+			String sin = " - ";
+			if( xOffs < 0 ) {
+				xOffs = Math.abs(xOffs);
+				sin = " + ";
+			}
+			nm = indvar + sin + xOffs;
+		} 		 
+		String iid = "";
+		String qid = ""; %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
-	<th class="hdr rem"><%=indvar%></th>
+	<th class="hdr rem"><%=indvar%></th>	
+<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
+<%		nm = "( " + nm + " )";
+	}
+	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%>/<%=par1[currentc]%>">
+<% 	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="(<%=nm%>/<%=par1[currentc]%>)<sup>2</sup>">
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; 
+	String ival = nm + "/" + par1[currentc];
+	ival = "(" + ival + ")";
+	ival = ival + "<sup>2</sup>";
+	ival = "1 - " + ival;
+	%>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
+<% 	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; 		
+	ival = "+/- &#x221A <span class='oline'>" + ival + "</span>"; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
+<% 	if( par3[currentc] != 0 ) { // y is offset
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; 
+		ival = "+/-" + par4[currentc] + " &#x221A <span class='oline'>" + ival + "</span>"; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
+<%	} %>
+	<td class="tmp"></td>
 	<th class="hdr rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	String bkClr = "c" + i%nClrs; 
-	String rclass = "r" + i;
+	String rclass = "r" + i; // for highlighting current row
 	String xid = "x" + i;
 	String yid = "y" + i;
 	String hid = "h" + i;
-	col = 0;
-	String cid = "c" + i + "_" + col; %>
+	String mid = "m" + i;
+	String tid = "t" + i;
+	String sid = "s" + i;
+	String did = "d" + i;
+	String rid = "r" + i;
+	String nid = "n" + i;
+	col = 0;	 
+	cindx = 0;
+	String iclass = "i" + cindx;
+	String cid = "c" + i + "_" + cindx;
+	cclass = "l" + cindx; %>
 <tr>
 	<td class="pre" id="<%=cid%>" ></td>
 	<td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
-	<td class=" <%=rclass%> rem" >
-	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
+<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkM( event)">
 	</td>
-	<td <%=rclass%> rem" >
-	<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
+<%	} 
+	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkT( event)">
+	</td>
+<% 	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkS( event)">
+	</td>
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkD( event)">
+	</td>
+<% 	 
+	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkR( event )">
+	</td>
+<%	if( par3[currentc] != 0 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=nid%>" class="nBx" onkeydown="erase( event )" onkeyup="checkN( event)">
+	</td>
+<%	}
+	cindx += 1;
+	cid = "c" + i + "_" + cindx; %>
+	<td  id="<%=cid%>" class="rem tmp" >
+	<td class=" <%=rclass%> rem" >
+		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >		
+		<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
 	</td>
 </tr>
 <% } %>
 <tr>
-<td class="pre invisible">__________</td><td></td><td></td><td></td>
+	<td class="pre invisible">__________</td><td></td><td></td><td></td>
 </table>
 <% } %>
 <span id="instrs"><%=instrs%></span>

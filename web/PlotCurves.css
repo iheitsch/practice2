@@ -152,6 +152,7 @@ table{
 	right: 300px;
 }
 #whatpts{
+	background: #663300;
 	position: absolute;
 	top: 90px;
 	left: 7px; /* 55px;  105px; */
