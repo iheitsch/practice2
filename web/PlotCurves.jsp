@@ -823,12 +823,12 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String yid = "y" + i;
 	String hid = "h" + i;
 	cindx = 0;
-	String mid = "m" + cindx + "_" + i;
-	String tid = "t" + cindx + "_" + i;
-	String sid = "s" + cindx + "_" + i;
-	String did = "d" + cindx + "_" + i;
-	String rid = "r" + cindx + "_" + i;
-	String nid = "n" + cindx + "_" + i;	 
+	String mid;
+	String tid;
+	String sid;
+	String did;
+	String rid;
+	String nid;	 
 	String iclass = "i" + cindx;
 	String cid = "c" + i + "_" + cindx;
 	cclass = "l" + cindx; %>
