@@ -539,6 +539,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	//String bkClr = "c" + i%nClrs; 
 	String rclass = "r" + i;
 	String xid = "x" + i;
+	col = 0;
 	String nid = "n" + i;
 	String tid = "t" + i;
 	String yid = "y" + i; 
@@ -550,33 +551,37 @@ if(( tmp = request.getParameter("chs")) != null) {
 <td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
 <% 	if( !dnmnatr.equals("") && (par3[currentc] != 0 || !nmratr.equals("")) ) { 
 		col += 1;
-		cid = "c" + i + "_" + col; %>
+		cid = "c" + i + "_" + col;
+		tid = "t" + col + "_" + i; %>
 		<td class="tmp" id="<%=cid%>"></td>
 		<td class=" <%=rclass%> rem" >
-			<input id="<%=tid%>" class="nput tBx" type="hidden" onkeydown="erase( event )" onkeyup="checkT( event )" >
+			<input id="<%=tid%>" class="nput tBx" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >
 		</td>
 <%		if( !nmratr.equals("") && par3[currentc] != 0 ) { 
 			col += 1;
-			cid = "c" + i + "_" + col; %>
+			cid = "c" + i + "_" + col;
+			nid = "n" + col + "_" + i;  %>
 			<td class="tmp" id="<%=cid%>" ></td>
 			<td class=" <%=rclass%> rem" >
-				<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
+				<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >
 			</td>
 <% 		} %>
 <% 	}
 	if( dnmnatr.equals("") && !nmratr.equals("") && par3[currentc] != 0 ) { 
 		col += 1;
-		cid = "c" + i + "_" + col;%>
+		cid = "c" + i + "_" + col;
+		nid = "n" + col + "_" + i; %>
 		<td class="tmp" id="<%=cid%>" ></td>
 		<td class=" <%=rclass%> rem" >
-			<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkN( event )" >
+			<input id="<%=nid%>" class="nput nBx" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >
 		</td>
 <%	} 
 	col += 1;
-	cid = "c" + i + "_" + col; %>
+	cid = "c" + i + "_" + col; 
+	yid = "y" + col + "_" + i; %>
 <td class="tmp" id="<%=cid%>" ></td>
 <td class=" <%=rclass%> rem" >
-	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >
+	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >
 </td>
 <td <%=rclass%> rem" >
 	<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
@@ -685,43 +690,48 @@ if(( tmp = request.getParameter("chs")) != null) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
-		cid = "c" + i + "_" + cindx; %>
+		cid = "c" + i + "_" + cindx; 
+		mid = "m" + cindx + "_" + i; %>
 		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 		<td class="rem <%=iclass%>  <%=rclass%>">
-			<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkM( event)">
+			<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 		</td>
 <%	} 
 	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx;%>
+	cid = "c" + i + "_" + cindx;
+	sid = "s" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkS( event)">
+		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <%	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx; %>
+	cid = "c" + i + "_" + cindx;
+	did = "d" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkD( event)">
+		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <% 	if( par3[currentc] != 0 ) { 
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
-		cid = "c" + i + "_" + cindx; %>
+		cid = "c" + i + "_" + cindx;
+		rid = "r" + cindx + "_" + i; %>
 		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 		<td class="rem <%=iclass%>  <%=rclass%>">
-			<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkR( event )">
+			<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
 		</td>
 <%	} 
 	cindx += 1;
-	cid = "c" + i + "_" + cindx; %>
+	cid = "c" + i + "_" + cindx; 
+	yid = "y" + cindx + "_" + i; %>
 	<td  id="<%=cid%>" class="rem tmp" >
 	<td class=" <%=rclass%> rem" >
-		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >		
+		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >		
 		<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
 	</td>
 </tr>
@@ -812,14 +822,13 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String xid = "x" + i;
 	String yid = "y" + i;
 	String hid = "h" + i;
-	String mid = "m" + i;
-	String tid = "t" + i;
-	String sid = "s" + i;
-	String did = "d" + i;
-	String rid = "r" + i;
-	String nid = "n" + i;
-	col = 0;	 
 	cindx = 0;
+	String mid = "m" + cindx + "_" + i;
+	String tid = "t" + cindx + "_" + i;
+	String sid = "s" + cindx + "_" + i;
+	String did = "d" + cindx + "_" + i;
+	String rid = "r" + cindx + "_" + i;
+	String nid = "n" + cindx + "_" + i;	 
 	String iclass = "i" + cindx;
 	String cid = "c" + i + "_" + cindx;
 	cclass = "l" + cindx; %>
@@ -830,60 +839,67 @@ if(( tmp = request.getParameter("chs")) != null) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
-		cid = "c" + i + "_" + cindx; %>
+		cid = "c" + i + "_" + cindx; 
+		mid = "m" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkM( event)">
+		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <%	} 
 	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx; %>
+	cid = "c" + i + "_" + cindx; 
+	tid = "t" + cindx + "_" + i;%>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkT( event)">
+		<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <% 	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx; %>
+	cid = "c" + i + "_" + cindx;
+	sid = "s" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkS( event)">
+		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <%	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx; %>
+	cid = "c" + i + "_" + cindx; 
+	did = "d" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkD( event)">
+		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <% 	 
 	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx; %>
+	cid = "c" + i + "_" + cindx;
+	rid = "r" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkR( event )">
+		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
 	</td>
 <%	if( par3[currentc] != 0 ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
-		cid = "c" + i + "_" + cindx; %>
+		cid = "c" + i + "_" + cindx; 
+		nid = "n" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=nid%>" class="nBx" onkeydown="erase( event )" onkeyup="checkN( event)">
+		<input type="hidden" id="<%=nid%>" class="nBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <%	}
 	cindx += 1;
-	cid = "c" + i + "_" + cindx; %>
+	cid = "c" + i + "_" + cindx;
+	yid = "y" + cindx + "_" + i; %>
 	<td  id="<%=cid%>" class="rem tmp" >
 	<td class=" <%=rclass%> rem" >
-		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkY( event )" >		
+		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >		
 		<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
 	</td>
 </tr>
@@ -937,7 +953,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <span class=rightsd>
 <div id="statustable" >
 	<table>
-	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 10; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
