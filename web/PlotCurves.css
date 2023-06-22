@@ -41,21 +41,25 @@ table{
 .c0{
 	background: #68e514;
 	color: #4e4c32;
+	text-align: right;
 	/* green */
 }
 .c1{
 	background: #ffdb4d;
 	color: #4e4c32;
+	text-align: right;
 	/* yellow*/
 }
 .c2{
 	background: #ff6600;
 	color: #f9f2ec;
+	text-align: right;	
 	/* orange */
 }
 .c3{
 	background: #cc3300;
 	color: #f9f2ec;
+	text-align: right;	
 	/* background: #e60000; burgundy */
 }
 .hilite{

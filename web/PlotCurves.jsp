@@ -797,15 +797,17 @@ if(( tmp = request.getParameter("chs")) != null) {
 	<td class="tmp <%=cclass%>"></td>
 	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
-<% 	cindx += 1;
-	cclass = "l" + cindx;
-	iid = "i" + cindx; 
-	qid = "q" + cindx; 		
-	ival = "+/- &#x221A <span class='oline'>" + ival + "</span>"; %>
+<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) {  // radius is significant and y is offset 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; 		
+		ival = "+/- &#x221A <span class='oline'>" + ival + "</span>"; %>
 	<td class="tmp <%=cclass%>"></td>
 	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
-<% 	if( par3[currentc] != 0 && par4[currentc] != 1 ) { // y is offset and yradius is significant
+<% 	}
+if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset 
 		cindx += 1;
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
@@ -877,17 +879,18 @@ if(( tmp = request.getParameter("chs")) != null) {
 	<td class="rem <%=iclass%>  <%=rclass%>">
 		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
-<% 	 
-	cindx += 1;
-	cclass = "l" + cindx;
-	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx;
-	rid = "r" + cindx + "_" + i; %>
+<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx;
+		rid = "r" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
 		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
 	</td>
-<%	if( par3[currentc] != 0 && par4[currentc] != 1 ) {
+<%	}
+	if( par4[currentc] != 1 && par3[currentc] != 0 ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;

@@ -449,9 +449,13 @@ function checkA( ev ) {
 						}
 						preinst = sgn + "&#x221A"; // sqrt
 						sufinst = " = ";
-						newBxs = doc.getElementsByClassName("rBx");
 						oldBxs = 1;
-						fcsBx = doc.getElementById("r" + colnum + "_0");	
+						if( bee == 1 && kay == 0 ) {	
+							fcsBx = doc.getElementById("y" + colnum + "_0");
+						} else { 							
+							newBxs = doc.getElementsByClassName("rBx");
+							fcsBx = doc.getElementById("r" + colnum + "_0");
+						}	
 					}
 			    	break;
 			     case "r":
@@ -469,7 +473,11 @@ function checkA( ev ) {
 						oldBxs = 1;
 						if( kay == 0 || bee == 1 ) {
 							if( bee == 1 ) {
-								sufinst = " + " + kay + " = ";
+								if( kay < 0 ) {
+									sufinst = " + (" + kay + ") = ";
+								} else {
+									sufinst = " + " + kay + " = ";
+								}
 							}
 							fcsBx = doc.getElementById("y" + colnum + "_0");
 						} else {							
@@ -488,8 +496,12 @@ function checkA( ev ) {
 					} else {
 						colnum = precol + 1;
 						nextpre = doc.getElementById("c0_" + precol);
-						nextsuf = doc.getElementById("c0_" + colnum);					
-						sufinst = " + " + kay + " = ";
+						nextsuf = doc.getElementById("c0_" + colnum);
+						if( kay < 0 ) {
+							sufinst = " + (" + kay + ") = ";
+						} else {		
+							sufinst = " + " + kay + " = ";
+						}
 						oldBxs = 1;
 						fcsBx = doc.getElementById("y" + colnum + "_0");
 					}
@@ -497,7 +509,9 @@ function checkA( ev ) {
 			    default:
 			    	expAns = num(doc.getElementById("h" + rowno).value);
 			    	if( stillThisCol ) {
-				    	preinst = null;
+			    		if( kay === 0 && bee === 1 ) {
+				    		preinst = sgn + "&#x221A"; // sqrt
+				    	}
 						sufinst = currsuf.innerHTML;
 						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
 					} else {
