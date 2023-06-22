@@ -769,14 +769,16 @@ if(( tmp = request.getParameter("chs")) != null) {
 	<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
 <%		nm = "( " + nm + " )";
 	}
-	cindx += 1;
-	cclass = "l" + cindx;
-	iid = "i" + cindx; 
-	qid = "q" + cindx; %>
+	if( par1[currentc] != 1 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; %>
 	<td class="tmp <%=cclass%>"></td>
 	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=nm%>/<%=par1[currentc]%>">
-<% 	cindx += 1;
+<% 	}
+	cindx += 1;
 	cclass = "l" + cindx;
 	iid = "i" + cindx; 
 	qid = "q" + cindx; %>
@@ -803,7 +805,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	<td class="tmp <%=cclass%>"></td>
 	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
-<% 	if( par3[currentc] != 0 ) { // y is offset
+<% 	if( par3[currentc] != 0 && par4[currentc] != 1 ) { // y is offset and yradius is significant
 		cindx += 1;
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
@@ -845,17 +847,19 @@ if(( tmp = request.getParameter("chs")) != null) {
 	<td class="rem <%=iclass%>  <%=rclass%>">
 		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
-<%	} 
-	cindx += 1;
-	cclass = "l" + cindx;
-	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx; 
-	tid = "t" + cindx + "_" + i;%>
+<%	}
+	if( par1[currentc] != 1 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; 
+		tid = "t" + cindx + "_" + i;%>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
 		<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
-<% 	cindx += 1;
+<% 	}
+	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
 	cid = "c" + i + "_" + cindx;
@@ -883,7 +887,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	<td class="rem <%=iclass%>  <%=rclass%>">
 		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
 	</td>
-<%	if( par3[currentc] != 0 ) {
+<%	if( par3[currentc] != 0 && par4[currentc] != 1 ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
@@ -953,7 +957,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <span class=rightsd>
 <div id="statustable" >
 	<table>
-	<% for( int i = 0, j = 1; i < 10; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>

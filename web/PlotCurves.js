@@ -269,7 +269,7 @@ function checkA( ev ) {
 			    default: // y
 			    	expAns = num(doc.getElementById("h" + rowno).value);
 			    	if( stillThisCol ) {
-				    	preinst = currpre.innerHTML;
+				    	preinst = currpre.innerHTML; // sometimes there are no intermediate steps
 						sufinst = currsuf.innerHTML;
 						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
 					} else {
@@ -290,8 +290,8 @@ function checkA( ev ) {
 						nextpre = doc.getElementById("c0_" + precol);
 						nextsuf = doc.getElementById("c0_" + colnum);
 						newBxs = doc.getElementsByClassName("sBx");
-						var xma = x0val - ache;
-						sufinst = " &#xd7 " + xma + " = "; // times;
+						//var xma = x0val - ache;
+						sufinst = " <sup>2</sup> = "; // squared
 						fcsBx = doc.getElementById("s" + colnum + "_0");	
 					}
 			    	break;
@@ -299,8 +299,8 @@ function checkA( ev ) {
 			    	expAns = (xval - ache)*(xval - ache);
 			    	if( stillThisCol ) {
 				    	preinst = null;
-				    	var xma = xNext - ache;
-						sufinst = " &#xd7 " + xma + " = "; // times
+				    	//var xma = xNext - ache;
+						sufinst = currsuf.innerHTML;
 						fcsBx = doc.getElementById(step + colnum + "_"  + nextro);
 					} else {
 						colnum = precol + 1;
@@ -383,9 +383,16 @@ function checkA( ev ) {
 						colnum = precol + 1;
 						nextpre = doc.getElementById("c0_" + precol);
 						nextsuf = doc.getElementById("c0_" + colnum);
-						newBxs = doc.getElementsByClassName("tBx");
-						sufinst = " &#xf7 " + aye + " = "; // divide
-						fcsBx = doc.getElementById("t" + colnum + "_0");
+						if( aye !== 1 ) {
+							newBxs = doc.getElementsByClassName("tBx");
+							sufinst = " / " + aye + " = "; // divide
+							fcsBx = doc.getElementById("t" + colnum + "_0");
+						} else {
+							newBxs = doc.getElementsByClassName("sBx");
+							//var xma = (x0val - ache);
+							sufinst = " <sup>2</sup> = "; // squared
+							fcsBx = doc.getElementById("s" + colnum + "_0")
+						}
 					}
 			    	break;
 			    case "t":
@@ -398,8 +405,8 @@ function checkA( ev ) {
 						colnum = precol + 1;
 						nextpre = doc.getElementById("c0_" + precol);
 						nextsuf = doc.getElementById("c0_" + colnum);
-						var xma = (x0val - ache)/aye;
-						sufinst = " &#xd7 " + xma + " = "; // times;
+						//var xma = (x0val - ache)/aye;
+						sufinst = " <sup>2</sup> = "; // squared
 						newBxs = doc.getElementsByClassName("sBx");
 						if( ache !== 0 ) {
 							oldBxs = 1;
@@ -411,8 +418,8 @@ function checkA( ev ) {
 			    	expAns = (xval - ache)*(xval - ache)/(aye*aye);
 			    	if( stillThisCol ) {
 				    	preinst = null;
-				    	var xma = (xNext - ache)/aye;
-						sufinst = " &#xd7 " + xma + " = "; // times
+				    	//var xma = (xNext - ache)/aye;
+						sufinst = currsuf.innerHTML;
 						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
 					} else {
 						colnum = precol + 1;
@@ -460,12 +467,15 @@ function checkA( ev ) {
 						preinst = null;
 						sufinst = " &#xd7 " + bee + " = "; // times
 						oldBxs = 1;
-						if( kay !== 0 ) {
+						if( kay == 0 || bee == 1 ) {
+							if( bee == 1 ) {
+								sufinst = " + " + kay + " = ";
+							}
+							fcsBx = doc.getElementById("y" + colnum + "_0");
+						} else {							
 							newBxs = doc.getElementsByClassName("nBx");
 							fcsBx = doc.getElementById("n" + colnum + "_0"); // may have a problem with assumptions that n0 is line
 							// definition of n0 fixit
-						} else {
-							fcsBx = doc.getElementById("y" + colnum + "_0");
 						}	
 					}
 			    	break;
@@ -500,8 +510,8 @@ function checkA( ev ) {
 		if( num(ansBx.value) === expAns ) {
 			errBx.innerHTML = "";
 			currpre.innerHTML = "";
-			doc.getElementById("statusBox" + pdx).innerHTML = "wc: " + whichcurve + " sp: " + step + " cn: " + colnum;
-			pdx = (pdx + 1)%maxbx;
+			//doc.getElementById("statusBox" + pdx).innerHTML = "wc: " + whichcurve + " sp: " + step + " cn: " + colnum;
+			//pdx = (pdx + 1)%maxbx;
 			if( preinst ) {			
 				nextpre.innerHTML = preinst;
 			}
@@ -1201,7 +1211,7 @@ window.onload = function() {
 				} else if( mult != 1 ) {
 					col1.innerHTML = " &#xd7 " + mult + " = "; // times
 				} else if( div != 1) {
-					col1.innerHTML = " &#xf7 " + div + " = "; // divided by
+					col1.innerHTML = " / " + div + " = "; // divided by
 				} else {
 					col1.innerHTML = " = ";
 				}
@@ -1213,7 +1223,7 @@ window.onload = function() {
 				  	if( x0val !== 0 ) {
 				  		col0.innerHTML = sign;
 				  	}
-				  	col1.innerHTML = " &#xf7 " + div + " = "; // divided by
+				  	col1.innerHTML = " / " + div + " = "; // divided by
 			  		t0.focus();  		
 			  	} else {
 			  		col1.innerHTML = " &#xd7 " + sign + mult + " = "; // times
@@ -1237,33 +1247,46 @@ window.onload = function() {
 				whatrow[1].classList.add(clr);
 				whatrow[len].classList.add(clr);
 			}
+			// copy hidden input to 2nd heading column
+			doc.getElementById("q1").innerHTML = doc.getElementById("i1").value;
+			var col1 = doc.getElementById("c0_1");
+			var x0st = doc.getElementById("x0").innerHTML;
+			x0val = num(x0st);
 			var nputBxs = doc.getElementsByClassName("ypts");
 			len = nputBxs.length;
 		  	for( var i = 0; i < len; ++i ) {
 			  	nputBxs[i].type = "text";
 			}
-			if( ache !== 0 ) {
-				var frstBxs = doc.getElementsByClassName("mBx");
-				len = frstBxs.length;
-				for( var i = 0; i < len; ++i ) {
-					frstBxs[i].type = "text";
+			var frstBxs;
+			var fcsBx;
+			if( ache !== 0 ) {	// minus the offset first	
+				var sin = " - ";
+				var xOffs = ache;
+				if( ache < 0 ) {
+					xOffs = -ache;
+					sin = " + ";
 				}
+				col1.innerHTML = sin + xOffs + " = ";
+				fcsBx = doc.getElementById("m1_0");
+				frstBxs = doc.getElementsByClassName("mBx");
 			} else {
-				var frstBxs = doc.getElementsByClassName("sBx");
-				if( isEllipse ) {
+				if( isCircle || aye === 1 ) { // no offset and either circle or ellipse with xradius 1, so 	
+					col1.innerHTML = " <sup>2</sup> = "; // go ahead and square	
+					fcsBx = doc.getElementById("s1_0");
+					frstBxs = doc.getElementsByClassName("sBx");
+				} else { // ellipse divide by xradius first
+					col1.innerHTML = " / " + aye + " = "; // divide
+					fcsBx = doc.getElementById("t1_0")
 					frstBxs = doc.getElementsByClassName("tBx");
 				}
-				len = frstBxs.length;
-				for( var i = 0; i < len; ++i ) {
-					frstBxs[i].type = "text";
-				}
 			}
-			// copy hidden input to 2nd heading column
-			doc.getElementById("q1").innerHTML = doc.getElementById("i1").value;
-			var col1 = doc.getElementById("c0_1");
-			var x0st = doc.getElementById("x0").innerHTML;
-			x0val = num(x0st);	
-			if( ache !== 0 ) {
+			len = frstBxs.length;
+			for( var i = 0; i < len; ++i ) {
+				frstBxs[i].type = "text";
+			}
+			fcsBx.focus();
+	
+			/* if( ache !== 0 ) {
 				var sin = " - ";
 				var xOffs = ache;
 				if( ache < 0 ) {
@@ -1277,13 +1300,18 @@ window.onload = function() {
 					if( x0val < 0 ) {
 						x0st = "(" + x0st + ")";
 					}
-					col1.innerHTML = " &#xd7 " + x0st + " = ";  // times
+					col1.innerHTML = " <sup>2</sup> = "; // squared
 					doc.getElementById("s1_0").focus();
 				} else if( isEllipse ) {
-					col1.innerHTML = " &#xf7 " + aye + " = "; // divide
-					doc.getElementById("t1_0").focus();
+					if( aye !== 1 ) {
+						col1.innerHTML = " / " + aye + " = "; // divide
+						doc.getElementById("t1_0").focus();
+					} else {
+						col1.innerHTML = " <sup>2</sup> = "; // squared
+						doc.getElementById("s1_0").focus();
+					}
 				}
-			}		
+			} */		
 		}
 		//colnum = 1;
 		
