@@ -71,6 +71,8 @@ String nmratr = "";
 String dnmnatr = "";
 int col = 0;
 
+// only generates 3 out of 4 x radius only variations fixit
+
 //retrieves the value of the DOM object with name="numAttmptdP"
 if(( tmp = request.getParameter("numAttmptdP")) != null) {
     numAttmptdV = tmp.toString();
@@ -182,8 +184,8 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    		boolean duplicate = true;
 		    		while( par2[idx] == 0 || duplicate ) {
 		    			duplicate = false;
-		   				par1[idx] = sign*(1 + (int)(9*Math.random()));
-		   				par2[idx] = 1 + (int)((MAXPT-1)*Math.random());
+		   				par1[idx] = sign*(int)(MAXPT*Math.random());
+		   				par2[idx] = (int)(1 + (MAXPT-1)*Math.random());
 		   				// reduce
 		   	       		for( int i = 0; i < plength; ++i ) {
 		   	    	   		while( par1[idx]%pfactors[i] == 0 && par2[idx]%pfactors[i] == 0 ) {
@@ -251,39 +253,42 @@ if(( tmp = request.getParameter("chs")) != null) {
    		int arun = Math.abs(par2[currentc]);
 
    		String intermed = "";
-   		if( !(arise == 1 && arun == 1) ) { 
-   			intermed += arise;
-   			if( arise != 1 ) {
-   				nmratr = Integer.toString(arise);
-   			}
-   		}
-		if( arun != 1 ) {
-   			intermed = "(" + intermed;
-   		}
-   		if( par1[currentc]*par2[currentc] < 0 ) {
-	    	intermed = "-" + intermed;
-	    	sgn = "-";
-	    }
-	    if( arun != 1 ) {
-	    	intermed += "/" + arun + ")";
-   			dnmnatr = Integer.toString(arun);
-	    }
-   		instr2 = "Plot the Line: " + depvar + " = "; 		
-	    instr2 += intermed;
-	    instr2 += indvar;
-	    if( par3[currentc] != 0 ) {
-		    if( par3[currentc] < 0 ) {
-		    	instr2 += " - ";
-		    } else if( par3[currentc] > 0 ){
+   		instr2 = "Plot the Line: " + depvar + " = "; 
+   		if( arise != 0 ) {
+	   		if( !(arise == 1 && arun == 1) ) { 
+	   			intermed += arise;
+	   			if( arise != 1 ) {
+	   				nmratr = Integer.toString(arise);
+	   			}
+	   		}
+			if( arun != 1 ) {
+	   			intermed = "(" + intermed;
+	   		}
+	   		if( par1[currentc]*par2[currentc] < 0 ) {
+		    	intermed = "-" + intermed;
+		    	sgn = "-";
+		    }
+		    if( arun != 1 ) {
+		    	intermed += "/" + arun + ")";
+	   			dnmnatr = Integer.toString(arun);
+		    }
+		    instr2 += intermed;
+		    instr2 += indvar;
+		    if( par3[currentc] > 0 ){
 		    	instr2 += " + ";
 		    }
+   		}
+   					    
+		if( par3[currentc] < 0 ) {
+			instr2 += " - ";
+		}
+		if( par3[currentc] != 0 ) {
 	    	instr2 += Math.abs(par3[currentc]);
-	    }
+		}
 	    instrs = "Fill out as much of table as needed";
     	//System.out.println("after setting totlines: " + numcurves + " variation: " + variation + " rise: " + par1[currentc] + " run: " + par2[currentc] + " intercept: " + par3[currentc]);
     } else if( isCircle || isEllipse ) { // end isLine 
     	//sometimes hangs fixit
-    	// sometimes only generates two points fixit
     	int maxvar = isCircle? 2 : 3;
     	if( variation == 0 ) {
     		numcurves = 4;

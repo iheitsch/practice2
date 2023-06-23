@@ -62,6 +62,10 @@ table{
 	text-align: right;	
 	/* background: #e60000; burgundy */
 }
+.err{
+	color: red;
+	background: white;
+}
 .hilite{
 	border: 2px solid white;
 }

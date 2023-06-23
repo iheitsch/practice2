@@ -157,16 +157,19 @@ function clearpage() {
 function erase( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
-    if( ansBx.style.color === "red" ) {
+    //if( ansBx.style.color === "red" ) { // this won't work if you add to classList fixit
+    if( ansBx.classList.contains("err") ) {
+    	ansBx.classList.remove("err");
 	    var ndx = Number(ansBx.id.substr(1));
 	    ansBx.value = "";
-	    var correct;
-	    if( ndx%4 < 2 ) {
-	    	correct = "#4e4c32"; // black
-	    } else {
-	    	correct = "#f9f2ec"; // white
-	    }
-	    ansBx.style.color = correct;
+	    //var correct;
+	    //if( ndx%4 < 2 ) { // this is not working fixit
+	    //	correct = "#4e4c32"; // black
+	    //} else {
+	    //	correct = "#f9f2ec"; // white
+	    //}
+	    //ansBx.style.color = correct;
+	    ansBx.style.color =  "inherit";
 	    ansBx.style.backgroundColor = "inherit";
 	}
  }
@@ -200,7 +203,7 @@ function checkA( ev ) {
 		if( yval < kay ) {
 			sn = -1;
 		}
-		var xNext;
+		//var xNext;
 		var yNext;
 		var sgn = " ";
 		var nextro = num(rowno) + 1;
@@ -521,11 +524,9 @@ function checkA( ev ) {
 			}
 		}
 		
-		if( num(ansBx.value) === expAns ) {
+		if( num(ansBx.value) === expAns ) {		
 			errBx.innerHTML = "";
 			currpre.innerHTML = "";
-			//doc.getElementById("statusBox" + pdx).innerHTML = "wc: " + whichcurve + " sp: " + step + " cn: " + colnum;
-			//pdx = (pdx + 1)%maxbx;
 			if( preinst ) {			
 				nextpre.innerHTML = preinst;
 			}
@@ -548,7 +549,7 @@ function checkA( ev ) {
 				}	
 			}
 			if( newBxs ) {
-				len = newBxs.length;
+				var len = newBxs.length;
 				for( var i = 0; i < len; ++i ) {
 					newBxs[i].type = "text";
 				}
@@ -556,8 +557,8 @@ function checkA( ev ) {
 				hdr.classList.add("wide");
 				hdr.innerHTML = doc.getElementById("i" + colnum).value;
 				var colBxs = doc.getElementsByClassName("i" + colnum);
-				var len = colBxs.length-1;
 				var nClrs = 4; // copied from jsp
+				len = colBxs.length-1;			
 				for( var i = 0; i < len; ++i ) {
 					var clr = "c" + i%nClrs;
 					colBxs[i+1].classList.add(clr);
@@ -641,10 +642,11 @@ function checkA( ev ) {
 			}
 		} else {
 			errBx.innerHTML = "Should be " + expAns;
-			ansBx.style.color = "red";
+			/* ansBx.style.color = "red";
 			if( num(rowno)%4 > 1 ) {
 				ansBx.style.backgroundColor = "white";
-			}
+			} */
+			ansBx.classList.add("err");
 			var errct = Number(errCtBx.value);
 		   	errCtBx.value = errct + 1;
 		}
@@ -830,30 +832,39 @@ function drawCurve( cls ) {
 	
 		// re-create equation
 		var intermed = "";
+		var rest = "";
 		var absrise = mat.abs(rise);
-		var absrun = mat.abs(run);
-	   	if( !(absrise == 1 && absrun == 1) ) { 
-	   		intermed += absrise;
-	   	}
-		if( absrun != 1 ) {
-		   	intermed = "(" + intermed;
+		if( absrise !== 0 ) {
+			var absrun = mat.abs(run);
+		   	if( !(absrise == 1 && absrun == 1) ) { 
+		   		intermed += absrise;
+		   	}
+			if( absrun != 1 ) {
+			   	intermed = "(" + intermed;
+			}
+			if( rise*run < 0 ) {
+				intermed = "-" + intermed;
+			} 		
+			if( absrun != 1 ) {
+				intermed += "/" + absrun + ")";
+			}
+			intermed += "X";
+			if( intercept > 0 ) {
+				rest = " + ";	
+			}
 		}
-		if( rise*run < 0 ) {
-			intermed = "-" + intermed;
-		} 		
-		if( absrun != 1 ) {
-			intermed += "/" + absrun + ")";
-		}
-	   	var rest = "";
+	   	
 		if( intercept != 0 ) {
 			if( intercept < 0 ) {
-				rest = " - ";
-			} else {
-			    rest = " + ";
+			    rest = " - ";
 			}
 		    rest += Math.abs(intercept);
+		} else {
+			if( intermed === "" ) {
+				rest = 0;
+			}
 		}
-		cap.innerHTML = "Y = " + intermed + "X" + rest;
+		cap.innerHTML = "Y = " + intermed + rest;
 	} else if( isCircle || isEllipse ) {
 		var htmseg = '<polyline points=" ';
 		var h = num(par2);
@@ -1220,14 +1231,16 @@ window.onload = function() {
 		  			
 		  	if( !n0 && !t0 ) {
 		  		col0.innerHTML = sign;
-				if( bee !== 0 ) {
+				if( bee !== 0 && mult !== 0 ) {
 					col1.innerHTML = op + " " + bee + " = ";
-				} else if( mult != 1 ) {
+				} else if( mult != 1 && mult !== 0 ) {
 					col1.innerHTML = " &#xd7 " + mult + " = "; // times
 				} else if( div != 1) {
 					col1.innerHTML = " / " + div + " = "; // divided by
-				} else {
+				} else if( mult === div ) {
 					col1.innerHTML = " = ";
+				} else if( mult === 0 ) {
+					col1.innerHTML = " &#xd7 " + mult + " " + op + " " + bee + " = ";
 				}
 		  		doc.getElementById("y1_0").focus();
 		  	} else {	  		
