@@ -70,6 +70,7 @@ String sgn = "";
 String nmratr = "";
 String dnmnatr = "";
 int col = 0;
+boolean constant = false;
 
 // only generates 3 out of 4 x radius only variations fixit
 
@@ -164,27 +165,33 @@ if(( tmp = request.getParameter("chs")) != null) {
     	if( variation == 0 ) {
     		variation = 1 + (int)(3*Math.random());
     		currentc = 0;
-    		par1[0] = sign*(1 + (int)((MAXPT-1)*Math.random()));
-    		par2[0] = 1 + (int)((MAXPT-1)*Math.random()); 
+    		par1[0] = sign*(int)((MAXPT)*Math.random());
+    		// need to make sure it has an intercept 
+    		par2[0] = variation == 1? (int)(1 + (MAXPT-1)*Math.random()) : (int)((MAXPT)*Math.random()); 
        		// reduce
        		for( int i = 0; i < plength; ++i ) {
-    	   		while( par1[0]%pfactors[i] == 0 && par2[0]%pfactors[i] == 0 ) {
+    	   		while( ( par1[0] == 0 && par2[0] == 0 )
+    	   				|| ( par1[0]%pfactors[i] == 0 && par2[0]%pfactors[i] == 0 ) ) {
     	   			par1[0] = par1[0]/pfactors[i];
     	   			par2[0] = par2[0]/pfactors[i];
+           			
     	   		}
        		}
        		par3[0] = (int)(MAXPTS*Math.random()) - MAXPT;
+       		System.out.println("iuy var: " + variation + " rise: " + par1[0] + " run: " + par2[0] + " b: " + par3[0]);
 	    	if( variation == 1 ) {
 	   			// same intercept
 	    		numcurves = 4;
 	    		// generate all the lines at once and store in arrays
 	    		for( idx = 1; idx < numcurves; idx++ ) {
 		    		sign = 2*Math.random() > 1? 1 : -1;
+	   				int loopcount = 0;
 		    		//make sure you don't generate repeats
 		    		boolean duplicate = true;
-		    		while( par2[idx] == 0 || duplicate ) {
+		    		while( duplicate ||  ( par1[idx] == 0 && par2[idx] == 0 ) ) {
 		    			duplicate = false;
 		   				par1[idx] = sign*(int)(MAXPT*Math.random());
+		   	    		// need to make sure it has an intercept, slope can't be infinite
 		   				par2[idx] = (int)(1 + (MAXPT-1)*Math.random());
 		   				// reduce
 		   	       		for( int i = 0; i < plength; ++i ) {
@@ -198,6 +205,11 @@ if(( tmp = request.getParameter("chs")) != null) {
 		   						duplicate = true;
 		   					}
 		   				}
+	    	   			loopcount += 1;
+	    	   			if( loopcount > 100 ) {
+	    	   				System.out.println("fty var 1 idx: " + idx + " numcurves: " + numcurves + " par1: " + par1[idx] + " par2: " + par2[idx]);
+	 						break;   	
+	    	   			}
 		    		}
 	   				par3[idx] = par3[idx-1];   				
 	    		}
@@ -207,6 +219,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	   			for( idx = 1; idx < numcurves; idx++ ) {
 		   			par1[idx] = par1[idx-1];
 		   			par2[idx] = par2[idx-1];
+		   			int loopcount = 0;
 		    		//make sure you don't generate repeats
 		   			boolean duplicate = true;
 		    		while( duplicate ) {
@@ -218,6 +231,11 @@ if(( tmp = request.getParameter("chs")) != null) {
 		   						break;
 		   					}
 		   				}
+	    	   			loopcount += 1;
+	    	   			if( loopcount > 100 ) {
+	    	   				System.out.println("ghj var 2 idx: " + idx + " numcurves: " + numcurves + " par3: " + par3[idx]);
+	 						break;   	
+	    	   			}
 		    		}
 	   			}
 	   		} else {
@@ -241,16 +259,29 @@ if(( tmp = request.getParameter("chs")) != null) {
   		//need to make these all integers, check for yval < -10 or > 10
    		double ypt;
    		nPts = 0; 
+  		double rise = (double)par1[currentc];
+  		double run = (double)par2[currentc];
+  		double intercept = (double)par3[currentc];		
+  		if( run == 0 ) { 
+  			depvar = "X";
+  			indvar = "Y";
+  			//intercept = -(intercept*run/rise); don't change intercept not defined for vertical line
+  			double tmp2 = run;
+  			run = rise;
+  			rise = tmp2;
+  		}
+  		constant = rise == 0;
+  		System.out.println("after rise: " + rise + " run: " + run + " constant: " + constant);
    		for( int i = 0; i < MAXPTS && currentc < numcurves; i += 1 ) {
-    		xpoints[nPts] = (int)(i - MAXPT);
-   			ypt = par1[currentc]*xpoints[nPts]/(double)par2[currentc] + par3[currentc];
+    		xpoints[nPts] = (i - MAXPT);
+   			ypt = rise*xpoints[nPts]/run + intercept;
    			ypoints[nPts] = (int)ypt;
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && (double)ypoints[nPts] == ypt ) {
    				nPts += 1;
    			}
 		}
-   		int arise = Math.abs(par1[currentc]);
-   		int arun = Math.abs(par2[currentc]);
+   		int arise = (int)Math.abs(rise);
+   		int arun = (int)Math.abs(run);
 
    		String intermed = "";
    		instr2 = "Plot the Line: " + depvar + " = "; 
@@ -264,7 +295,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 			if( arun != 1 ) {
 	   			intermed = "(" + intermed;
 	   		}
-	   		if( par1[currentc]*par2[currentc] < 0 ) {
+	   		if( rise*run < 0 ) {
 		    	intermed = "-" + intermed;
 		    	sgn = "-";
 		    }
@@ -274,16 +305,18 @@ if(( tmp = request.getParameter("chs")) != null) {
 		    }
 		    instr2 += intermed;
 		    instr2 += indvar;
-		    if( par3[currentc] > 0 ){
+		    if( intercept > 0 ){
 		    	instr2 += " + ";
 		    }
    		}
    					    
-		if( par3[currentc] < 0 ) {
+		if( intercept < 0 ) {
 			instr2 += " - ";
 		}
-		if( par3[currentc] != 0 ) {
-	    	instr2 += Math.abs(par3[currentc]);
+		
+		System.out.println("nji instr2: " + instr2 + " intercept: " + intercept + " run: " + run);
+		if( intercept != 0 || rise == 0 ) { // rise was formerly run
+	    	instr2 += Math.abs((int)intercept);
 		}
 	    instrs = "Fill out as much of table as needed";
     	//System.out.println("after setting totlines: " + numcurves + " variation: " + variation + " rise: " + par1[currentc] + " run: " + par2[currentc] + " intercept: " + par3[currentc]);
@@ -509,7 +542,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
-	<th class="hdr rem"><%=indvar%></th>
+	<th id="indvar" class="hdr rem"><%=indvar%></th>
 <% 	if( !dnmnatr.equals("") && (par3[currentc] != 0 || !nmratr.equals("")) ) { %>
 			<td class="tmp"></td>
 			<th class="hdr rem" id="on">
@@ -535,10 +568,10 @@ if(( tmp = request.getParameter("chs")) != null) {
 <% } 
 	if( dnmnatr.equals("") && !nmratr.equals("") && par3[currentc] != 0 ) { %>
 		<td class="tmp"></td>
-		<th class="hdr rem" id="hn"><%=sgn%><%=nmratr%><%=indvar%></th>
+		<th id="hn" class="hdr rem" ><%=sgn%><%=nmratr%><%=indvar%></th>
 <% } %>
 	<td class="tmp"></td>
-	<th class="hdr rem"><%=depvar%></th>
+	<th id="depvar" class="hdr rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	//String bkClr = "c" + i%nClrs; 
@@ -583,14 +616,22 @@ if(( tmp = request.getParameter("chs")) != null) {
 <%	} 
 	col += 1;
 	cid = "c" + i + "_" + col; 
-	yid = "y" + col + "_" + i; %>
-<td class="tmp" id="<%=cid%>" ></td>
-<td class=" <%=rclass%> rem" >
-	<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >
-</td>
-<td <%=rclass%> rem" >
-	<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
-</td>
+	yid = "y" + col + "_" + i; 
+	if( !constant ) { %>	
+		<td class="tmp" id="<%=cid%>" ></td>
+		<td class=" <%=rclass%> rem" >
+			<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >
+		</td>
+		<td <%=rclass%> rem" >
+			<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
+		</td>
+<%	} else { 
+		String wid = hid; // debug depvar.equals("Y")? hid : yid; %>
+		<td  id="<%=cid%>" class="rem tmp" ></td>
+		<td class=" <%=rclass%> rem" >
+			<input id="<%=wid%>" disabled value="<%=ypoints[i]%>" >
+		</td>
+<%	} %>
 </tr>
 
 <% } %>
@@ -633,7 +674,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
-	<th class="hdr rem"><%=indvar%></th>	
+	<th id="indvar" class="hdr rem"><%=indvar%></th>	
 <% 	if( XisOff ) { 
 		cindx += 1;
 		cclass = "l" + cindx;
@@ -671,7 +712,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
 <%	} %>
 	<td class="tmp"></td>
-	<th class="hdr rem"><%=depvar%></th>
+	<th id="depvar" class="hdr rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	String bkClr = "c" + i%nClrs; 
@@ -763,7 +804,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
-	<th class="hdr rem"><%=indvar%></th>	
+	<th id="indvar" class="hdr rem"><%=indvar%></th>	
 <% 	if( XisOff ) { 
 		cindx += 1;
 		cclass = "l" + cindx;
@@ -823,7 +864,7 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 	<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
 <%	} %>
 	<td class="tmp"></td>
-	<th class="hdr rem"><%=depvar%></th>
+	<th id="depvar" class="hdr rem"><%=depvar%></th>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	String bkClr = "c" + i%nClrs; 
