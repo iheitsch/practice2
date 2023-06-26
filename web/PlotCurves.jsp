@@ -542,6 +542,9 @@ if(( tmp = request.getParameter("chs")) != null) {
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
+<% 	if( constant && depvar.equals("X")) { %>
+		<th id="depvar" class="hdr rem"><%=depvar%></th>
+<%	} %>	
 	<th id="indvar" class="hdr rem"><%=indvar%></th>
 <% 	if( !dnmnatr.equals("") && (par3[currentc] != 0 || !nmratr.equals("")) ) { %>
 			<td class="tmp"></td>
@@ -569,9 +572,11 @@ if(( tmp = request.getParameter("chs")) != null) {
 	if( dnmnatr.equals("") && !nmratr.equals("") && par3[currentc] != 0 ) { %>
 		<td class="tmp"></td>
 		<th id="hn" class="hdr rem" ><%=sgn%><%=nmratr%><%=indvar%></th>
-<% } %>
-	<td class="tmp"></td>
-	<th id="depvar" class="hdr rem"><%=depvar%></th>
+<% } 
+	if( !(constant && depvar.equals("X")) ) { %>
+		<td class="tmp"></td>
+		<th id="depvar" class="hdr rem"><%=depvar%></th>
+<%	} %>
 </tr>
 <% for( int i = 0; i < nPts; ++i ) { 
 	//String bkClr = "c" + i%nClrs; 
@@ -586,6 +591,11 @@ if(( tmp = request.getParameter("chs")) != null) {
 	String cid = "c" + i + "_" + col; %>
 <tr>
 <td class="pre" id="<%=cid%>" ></td>
+<% 	if( constant && depvar.equals("X")) { %>
+		<td class=" <%=rclass%> rem" >
+			<input id="<%=hid%>" disabled value="<%=ypoints[i]%>" >
+		</td>
+<%	} %>
 <td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
 <% 	if( !dnmnatr.equals("") && (par3[currentc] != 0 || !nmratr.equals("")) ) { 
 		col += 1;
@@ -625,11 +635,10 @@ if(( tmp = request.getParameter("chs")) != null) {
 		<td <%=rclass%> rem" >
 			<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
 		</td>
-<%	} else { 
-		String wid = hid; // debug depvar.equals("Y")? hid : yid; %>
+<%	} else if( !depvar.equals("X") ) { %> 
 		<td  id="<%=cid%>" class="rem tmp" ></td>
 		<td class=" <%=rclass%> rem" >
-			<input id="<%=wid%>" disabled value="<%=ypoints[i]%>" >
+			<input id="<%=hid%>" disabled value="<%=ypoints[i]%>" >
 		</td>
 <%	} %>
 </tr>
@@ -637,22 +646,6 @@ if(( tmp = request.getParameter("chs")) != null) {
 <% } %>
 <tr>
 <td class="pre invisible">__________</td>
-<td class="tmp"></td>
-<% 	if( !dnmnatr.equals("") && (par3[currentc] != 0 || !nmratr.equals("")) ) { %>
-		<td class="tmp"></td>
-		<td class="tmp"></td>
-<%		if( !nmratr.equals("") && par3[currentc] != 0 ) { %>
-			<td class="tmp"></td>
-			<td class="tmp"></td>
-<% 		} %>
-<% 	}
-	if( dnmnatr.equals("") && !nmratr.equals("") && par3[currentc] != 0 ) { %>
-		<td class="tmp"></td>
-		<td class="tmp"></td>
-<%	} %>
-<td class="tmp"></td>
-<td class="tmp"></td>
-<td class="tmp"></td>
 </tr>
 </table>
 <% } else if( isCircle ) {

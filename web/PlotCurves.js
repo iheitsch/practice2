@@ -387,7 +387,6 @@ function checkA( ev ) {
 							fcsBx = doc.getElementById("t" + colnum + "_0");
 						} else {
 							newBxs = doc.getElementsByClassName("sBx");
-							//var xma = (x0val - ache);
 							sufinst = " <sup>2</sup> = "; // squared
 							fcsBx = doc.getElementById("s" + colnum + "_0")
 						}
@@ -403,7 +402,6 @@ function checkA( ev ) {
 						colnum = precol + 1;
 						nextpre = doc.getElementById("c0_" + precol);
 						nextsuf = doc.getElementById("c0_" + colnum);
-						//var xma = (x0val - ache)/aye;
 						sufinst = " <sup>2</sup> = "; // squared
 						newBxs = doc.getElementsByClassName("sBx");
 						if( ache !== 0 ) {
@@ -559,9 +557,6 @@ function checkA( ev ) {
 					colBxs[i+1].classList.add(clr);
 				}
 			}
-			//doc.getElementById("statusBox0").innerHTML = "prevcol: " + prevcol;
-			//doc.getElementById("statusBox2").innerHTML = "precol: " + precol;
-			//doc.getElementById("statusBox4").innerHTML = "colnum: " + colnum;
 			len = whatrow.length;
 			for( var i = 0; i < len; ++i ) {
 				whatrow[i].classList.remove("hilite");
@@ -670,7 +665,7 @@ function checkPt( mousePosx, mousePosy ){
 			nomY = expYBx.value;
 		} else {
 			nomX = expYBx.value;
-			nomY = expXBx.innerHTML;
+			nomY = whatrow[1].innerHTML;
 		}
 		var expX = orgX + num(nomX)*pxlsprsq;
 		var expY = orgY - num(nomY)*pxlsprsq;	
@@ -1109,9 +1104,6 @@ function genpoints ( which ) {
 		ypts[i] = xygraphtop + halfwidth - yvals[i]*pxlsprsq;
 		captured[i] = false;
 	}
-	//for( var i = 0; i < 5; i += 2 ) {
-	//	doc.getElementById("statusBox" + i).innerHTML = "xpt[" + i + "]: " + xpts[i] + " ypt[" + i + "]: " + ypts[i];
-	//}
 	
 	// set global variables for intermediate instructions 
 	if( isLine ) {
@@ -1153,7 +1145,6 @@ function genpoints ( which ) {
 			taken[i] = false;
 		}
 	}
-	//alert("op: " + op + " mult: " + mult + " div: " + div + " bee: " + bee + " sign: " + sign);
 	return sign;
 }
 function skip() {
@@ -1290,7 +1281,6 @@ window.onload = function() {
 						doc.getElementById("c-1_0").innerHTML = "Click this";
 						col0.innerHTML = "point &#x2192;"; // right arrow
 						doc.getElementById("instrs").innerHTML = "";
-					//	col1.innerHTML = " &#xd7 " + mult + " " + op + " " + bee + " = ";
 					}
 				} else { // x = intercept
 					tblFilld = true;
