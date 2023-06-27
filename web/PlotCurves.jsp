@@ -157,21 +157,23 @@ if(( tmp = request.getParameter("chs")) != null) {
 	isCircle = whatTable.equals("Circle");
 	isEllipse = whatTable.equals("Ellipse");
 	if( isLine ) {
-		int sign = 2*Math.random() > 1? 1 : -1; 
-    	 
+		int sign = 2*Math.random() > 1? 1 : -1;  	 
     	int [] pfactors = {2, 3, 5, 7};
     	int plength = pfactors.length;
     	//System.out.println("read from page and converted variation: " + variation + " currentc: " + currentc);
     	if( variation == 0 ) {
     		variation = 1 + (int)(3*Math.random());
     		currentc = 0;
-    		par1[0] = sign*(int)((MAXPT)*Math.random());
-    		// need to make sure it has an intercept 
-    		par2[0] = variation == 1? (int)(1 + (MAXPT-1)*Math.random()) : (int)((MAXPT)*Math.random()); 
+    		par1[0] = 0;
+    		par2[0] = 0;
+    		while( par1[0] == 0 && par2[0] == 0 ) {
+	    		par1[0] = sign*(int)((MAXPT)*Math.random());
+	    		// need to make sure it has an intercept 
+	    		par2[0] = variation == 1? (int)(1 + (MAXPT-1)*Math.random()) : (int)((MAXPT)*Math.random());
+    		}
        		// reduce
        		for( int i = 0; i < plength; ++i ) {
-    	   		while( ( par1[0] == 0 && par2[0] == 0 )
-    	   				|| ( par1[0]%pfactors[i] == 0 && par2[0]%pfactors[i] == 0 ) ) {
+    	   		while( ( par1[0]%pfactors[i] == 0 && par2[0]%pfactors[i] == 0 ) ) {
     	   			par1[0] = par1[0]/pfactors[i];
     	   			par2[0] = par2[0]/pfactors[i];
            			
