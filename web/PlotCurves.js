@@ -22,6 +22,8 @@ var isNotSelect = true;
 var isLine = false;
 var isCircle = false;
 var isEllipse = false;
+var isParabola = false;
+var isHyperbola = false;
 var whichcurve = 0;
 
 var form;
@@ -70,6 +72,7 @@ var tblFilld = false;
 var ystops = new Array();
 var taken = new Array(5);
 var done = false;
+var adj = 0;
 
 function setMouseDown( ev ) { 
 	ev = ev || window.event;
@@ -528,6 +531,8 @@ function checkA( ev ) {
 				nextsuf.innerHTML = sufinst;
 			}
 			if( oldBxs ) {
+				adj += 1;
+				//doc.getElementById("statusBox1").innerHTML = "oldBxs: " + oldBxs + " adj: " + adj;
 				var oldcols = doc.getElementsByClassName("l" + prevcol);
 				var len = oldcols.length;
 				for( var i = len - 1; i >= 0; --i ) {
@@ -563,7 +568,10 @@ function checkA( ev ) {
 			}
 			whatrow = doc.getElementsByClassName("r" + nextro);
 			len = whatrow.length;
-			for( var i = colnum-1; i <= colnum; ++i ) {
+			var strthi = colnum-1-adj;
+			var stphi = colnum + 1 - adj;
+			//doc.getElementById("statusBox0").innerHTML = "whatrowlen: " + len + " strthi: " + strthi + " stphi: " + stphi;
+			for( var i = strthi; i < stphi; ++i ) {
 				whatrow[i].classList.add("hilite");
 			}
 			if( fcsBx ) {
@@ -885,20 +893,32 @@ function drawCurve( cls ) {
 		ystop = halfwidth - mat.round(ystop*gridspace);
 		drawLine( xstart, ystart, xstop, ystop, 3, colors[cls], null );
 		
-	} else if( isCircle || isEllipse ) {
+	} else if( isCircle || isEllipse || isHyperbola ) {
 		var htmseg = '<polyline points=" ';
 		var h = num(par2);
 		var k = num(par3);
 		var a = num(par1);
 		var b = num(par4);
-		for( var xp = h - a; xp <= a + h; xp += 0.1 ) {
+		var lowx = h - a;
+		var uprx = a + h;
+		if( isHyperbola ) {
+			lowx = -10;
+			uprx = 10;
+		}
+		for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
 			var yp = k + b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
+			if( isHyperbola ) {
+				yp = k + b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
+			}
 			var px = halfwidth + mat.round(xp*gridspace);
 			var py = halfwidth - mat.round(yp*gridspace);
 			htmseg += px + ', ' + py + ' '; 
 		}
-		for( var xp = a + h; xp >= h - a; xp -= 0.1) {
-			var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));		
+		for( var xp = uprx; xp >= lowx; xp -= 0.1) {
+			var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
+			if( isHyperbola ) {
+				yp = k - b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
+			}		
 			var px = halfwidth + mat.round(xp*gridspace);
 			var py = halfwidth - mat.round(yp*gridspace);
 			var newseg = px + ', ' + py + ' '; 
@@ -925,9 +945,12 @@ function drawCurve( cls ) {
 		var rst = "";
 		if( isCircle ) {
 			rst = xcent + "<sup>2</sup> + " + ycent + "<sup>2</sup> = " + a + "<sup>2</sup>";
-		} else {
+		} else if( isEllipse ) {
 			rst = "( " + xcent + "/" + a + " )" +  "<sup>2</sup> + ";
 			rst += "( " + ycent + "/" + b + " )" +  "<sup>2</sup> = 1";
+		} else if( isHyperbola ) {
+			rst = "( " + ycent + "/" + b + " )" +  "<sup>2</sup> - ";
+			rst += "( " + xcent + "/" + a + " )" +  "<sup>2</sup> = 1";
 		}
 		cap.innerHTML = rst;
 		lw = halfwidth + 5*gridspace;
@@ -1134,7 +1157,7 @@ function genpoints ( which ) {
 		}
 		mult = mat.abs(rise);
 		div = mat.abs(run);
-	} else if( isCircle || isEllipse ) {
+	} else if( isCircle || isEllipse || isHyperbola ) {
 		aye = par1;
 		ache = par2;
 		kay = par3;
@@ -1167,6 +1190,8 @@ window.onload = function() {
 	isLine = curvetype === "Line";
 	isCircle = curvetype === "Circle";
 	isEllipse = curvetype === "Ellipse";
+	isParabola = curvetype === "Parabola";
+	isHyperbola = curvetype === "Hyperbola";
 	form = doc.getElementById("plots");
 	
 	if( isNotSelect ) {	
@@ -1308,7 +1333,8 @@ window.onload = function() {
 			  		n0.focus();
 			  	}
 		  	}
-		} else if( isCircle || isEllipse ) {
+		} else if( isCircle || isEllipse || isHyperbola ) {
+			tblFilld = true; // debug
 			// add title borders and background colors for 1st 2nd & last whatpts table
 			var hdr = doc.getElementsByClassName("hdr");
 			var len = hdr.length - 1;
@@ -1362,7 +1388,7 @@ window.onload = function() {
 			for( var i = 0; i < len; ++i ) {
 				frstBxs[i].type = "text";
 			}
-			fcsBx.focus();		
+			fcsBx.focus();
 		}
 
 		

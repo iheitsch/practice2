@@ -50,7 +50,7 @@ String tmp = "";    // temporary storage for newly gotten
 String isSelected = "selected";
 //String [] isNowSelected = new String[numsels];
 String itype = "hidden";
-String dbtype = "hidden";
+String dbtype = "hidden"; // "text"; //  
 String instrs = "Choose Curve Type";
 String instr2 = "";
 
@@ -134,6 +134,8 @@ for( idx = 0; idx <numcurves; ++idx ) {
 boolean isLine = false;
 boolean isCircle = false;
 boolean isEllipse = false;
+boolean isParabola = false;
+boolean isHyperbola = false;
 
 //retrieves the value of the DOM object with name="chs"
 if(( tmp = request.getParameter("chs")) != null) {
@@ -156,6 +158,9 @@ if(( tmp = request.getParameter("chs")) != null) {
 	isLine = whatTable.equals("Line");
 	isCircle = whatTable.equals("Circle");
 	isEllipse = whatTable.equals("Ellipse");
+	isParabola = whatTable.equals("Parabola");
+	isHyperbola = whatTable.equals("Hyperbola");
+
 	if( isLine ) {
 		int sign = 2*Math.random() > 1? 1 : -1;  	 
     	int [] pfactors = {2, 3, 5, 7};
@@ -322,7 +327,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		}
 	    instrs = "Fill out as much of table as needed";
     	//System.out.println("after setting totlines: " + numcurves + " variation: " + variation + " rise: " + par1[currentc] + " run: " + par2[currentc] + " intercept: " + par3[currentc]);
-    } else if( isCircle || isEllipse ) { // end isLine 
+    } else if( isCircle || isEllipse || isHyperbola) { // end isLine 
     	//sometimes hangs fixit
     	int maxvar = isCircle? 2 : 3;
     	if( variation == 0 ) {
@@ -340,6 +345,12 @@ if(( tmp = request.getParameter("chs")) != null) {
 				par4[0] = par1[0]; 
 	    		if( isEllipse ) { // other radius for ellipse
 	    			par4[0] = (int)(1 + (MAXPT-1)*Math.random());
+	    		} else if( isHyperbola ) {
+	    			if( par1[0] > 2 && par1[0]%2 == 0 ) {
+	    				par4[0] = par1[0]/2;
+	    			} else {
+	    				par4[0] = 2*par1[0];
+	    			}
 	    		}
 	    		//double ratio = par1[0]/par4[0];
 	    		diff = par4[0] - par1[0];
@@ -478,11 +489,18 @@ if(( tmp = request.getParameter("chs")) != null) {
     	for( int i = 0; i < MAXPTS && currentc < numcurves; i += 1 ) {	
     		xpoints[nPts] = (int)(i - MAXPT);
     		double ypt = (double)(xpoints[nPts]-par2[currentc])/(double)par1[currentc];
+    		System.out.println("x-h/a: " + ypt);
     		ypt = Math.pow(ypt, 2.);
-    		ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
+    		System.out.println("(x-h/a)^2: " + ypt);
+    		if( isCircle || isEllipse ) {
+    			ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
+    		} else if( isHyperbola ) {
+    			ypt = (double)par4[currentc]*Math.sqrt((1+ypt));
+    			System.out.println("sqrt(1+(x-h/a)^2): " + ypt);
+    		}
    			ypt = par3[currentc] + ypt;
    			ypoints[nPts] = ypt > 0? (int)((1000*ypt + 5)/1000) : (int)((1000*ypt - 5)/1000);
-   			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - ypt) < .00001 ) {
    				nPts += 1;	   				
    			}
@@ -493,10 +511,14 @@ if(( tmp = request.getParameter("chs")) != null) {
     		xpoints[nPts] = (int)(i - MAXPT);
     		double ypt = (double)(xpoints[nPts]-par2[currentc])/(double)par1[currentc];
     		ypt = Math.pow(ypt, 2.);
-    		ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
+    		if( isCircle || isEllipse ) {
+        		ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
+    		} else if( isHyperbola ) {
+    			ypt = (double)par4[currentc]*Math.sqrt((1+ypt));
+    		}
     		double npt = par3[currentc] - ypt;
    			ypoints[nPts] = npt > 0? (int)((1000*npt + 5)/1000) : (int)((1000*npt - 5)/1000);
-   			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - npt) < TOL ) {
 	   			boolean duplicate = false;
 	   			for( int j = nPts-1; j >= 0; --j ) {
@@ -529,9 +551,12 @@ if(( tmp = request.getParameter("chs")) != null) {
 		String rst = "";
 		if( isCircle ) {
 			rst = xcent + "<sup>2</sup> + " + ycent + "<sup>2</sup> = " + par1[currentc] + "<sup>2</sup>";
-		} else {
+		} else if( isEllipse ){
 			rst = "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> + ";
 			rst += "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> = 1";
+		} else if( isHyperbola ){
+			rst = "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> - ";
+			rst += "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> = 1";
 		}
 		instr2 = "Plot the " + whatTable + ": " + rst;
 		instrs = "Fill out as much of table as needed";
@@ -778,7 +803,8 @@ if(( tmp = request.getParameter("chs")) != null) {
 </tr>
 <% } %>
 <tr>
-<td class="pre invisible">__________</td><td></td><td></td><td></td>
+<td class="pre invisible">__________</td>
+</tr>
 </table>
 <% } else if( isEllipse ) {
 		String cclass = "l0";
@@ -953,7 +979,184 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 </tr>
 <% } %>
 <tr>
-	<td class="pre invisible">__________</td><td></td><td></td><td></td>
+	<td class="pre invisible">__________</td>
+</tr>
+</table>
+<% } else if( isHyperbola ) {
+		String cclass = "l0";
+		int cindx = 0;
+		String nm = indvar;
+		int xOffs = par2[currentc];
+		boolean XisOff = xOffs != 0;
+		if( XisOff ) {			
+			String sin = " - ";
+			if( xOffs < 0 ) {
+				xOffs = Math.abs(xOffs);
+				sin = " + ";
+			}
+			nm = indvar + sin + xOffs;
+		} 		 
+		String iid = "";
+		String qid = ""; %>
+<table id="whatpts">
+<tr>
+	<td class="pre" id="c-1_0"></td>
+	<th id="indvar" class="hdr rem"><%=indvar%></th>	
+<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
+<%		nm = "( " + nm + " )";
+	}
+	if( par1[currentc] != 1 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%>/<%=par1[currentc]%>">
+<% 	}
+	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="(<%=nm%>/<%=par1[currentc]%>)<sup>2</sup>">
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; 
+	String ival = nm + "/" + par1[currentc];
+	ival = "(" + ival + ")";
+	ival = ival + "<sup>2</sup>";
+	ival = "1 - " + ival;
+	%>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
+<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) {  // radius is significant and y is offset 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; 		
+		ival = "+/- &#x221A <span class='oline'>" + ival + "</span>"; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
+<% 	}
+if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; 
+		ival = "+/-" + par4[currentc] + " &#x221A <span class='oline'>" + ival + "</span>"; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
+<%	} %>
+	<td class="tmp"></td>
+	<th id="depvar" class="hdr rem"><%=depvar%></th>
+</tr>
+<% for( int i = 0; i < nPts; ++i ) { 
+	String bkClr = "c" + i%nClrs; 
+	String rclass = "r" + i; // for highlighting current row
+	String xid = "x" + i;
+	String yid = "y" + i;
+	String hid = "h" + i;
+	cindx = 0;
+	String mid;
+	String tid;
+	String sid;
+	String did;
+	String rid;
+	String nid;	 
+	String iclass = "i" + cindx;
+	String cid = "c" + i + "_" + cindx;
+	cclass = "l" + cindx; %>
+<tr>
+	<td class="pre" id="<%=cid%>" ></td>
+	<td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
+<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; 
+		mid = "m" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<%	}
+	if( par1[currentc] != 1 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; 
+		tid = "t" + cindx + "_" + i;%>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<% 	}
+	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx;
+	sid = "s" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx; 
+	did = "d" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx;
+		rid = "r" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
+	</td>
+<%	}
+	if( par4[currentc] != 1 && par3[currentc] != 0 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; 
+		nid = "n" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=nid%>" class="nBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<%	}
+	cindx += 1;
+	cid = "c" + i + "_" + cindx;
+	yid = "y" + cindx + "_" + i; %>
+	<td  id="<%=cid%>" class="rem tmp" >
+	<td class=" <%=rclass%> rem" >
+		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >		
+		<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
+	</td>
+</tr>
+<% } %>
+<tr>
+	<td class="pre invisible">__________</td>
+</tr>
 </table>
 <% } %>
 <span id="instrs"><%=instrs%></span>
