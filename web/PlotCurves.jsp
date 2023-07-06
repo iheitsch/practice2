@@ -338,8 +338,8 @@ if(( tmp = request.getParameter("chs")) != null) {
     		int maxrad = 1;
     		int minrad = 2;
     		int diff = 0;
-    		int maxyc = 0;
-    		int maxxc = 0;
+    		int maxyc = MAXPT;
+    		int maxxc = MAXPT;
     		while( maxrad <= minrad ) {
 	    		par1[0] = (int)(1 + (MAXPT-1)*Math.random()); // radius try making it a multiple of five, no need to keep it 1/2 on the graph fixit
 				par4[0] = par1[0]; 
@@ -376,42 +376,77 @@ if(( tmp = request.getParameter("chs")) != null) {
 					maxrad = minodist < minxdist? minodist : minxdist; 
 				}
     		}
-			//System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0] + " maxrad: " + maxrad + " minrad: " + minrad);
+			System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx: " + par1[0] + " ry: " + par4[0] + " maxrad: " + maxrad + " minrad: " + minrad);
     		if( variation == 1 ) { // vary x or y position
-	    		numcurves = 4; // sometimes generates only 2 points fixit xc0 -8 yc0 1 xr0 3 yr0 9
-	    		// xr: 3 xc: -8 yc: 3 yr: 9 currentc: 2
+	    		numcurves = 4;
+    			// random, justx, justy, both, constant increase, accelerating
+				int whattype = (int)(3*Math.random());
+    			System.out.println("whattype: " + whattype);
 	    		// generate all the parameters at once and store in arrays
-	    		for( idx = 1; idx < numcurves; idx++ ) {
-		    		//make sure you don't generate repeats
-		    		boolean duplicate = true;
-		    		while( duplicate ) {
-		    			duplicate = false;
-		    			if( par4[0] <= par1[0] ) {
-			    			par2[idx] = (int)(MAXPTS*Math.random()) - MAXPT; // x center coordinate
-			    			// need at least 3 point to specify a circle. Sine you're restricting points to integers
-			    			// there needs to be at least half a circle or ellipse on the graph.
-			    			maxyc = Math.abs(par2[idx]) + par1[0] > MAXPT? MAXPT - par4[0]: MAXPT;
-			    			par3[idx] = (int)(1 + (maxyc-1)*Math.random()) - maxyc/2; // y center coordinate
-			   				for( int i = 0; i < idx; ++i ) {
-			   					if( par2[i] == par2[idx] && par3[i] == par3[idx] ) {
-			   						duplicate = true;
-			   						break;
-			   					}
-			   				}
-		    			} else {
-		    				par3[idx] = (int)(MAXPTS*Math.random()) - MAXPT;
-		    				maxxc = Math.abs(par3[idx]) + par4[0] > MAXPT? MAXPT - par1[0]: MAXPT;
-			    			par2[idx] = (int)(1 + (maxxc-1)*Math.random()) - maxxc/2;
-		    				for( int i = 0; i < idx; ++i ) {
-			   					if( par2[i] == par2[idx] && par3[i] == par3[idx] ) {
-			   						duplicate = true;
-			   						break;
-			   					}
-			   				}
+	    		if( whattype < 3 ) { // random x, random y, random both
+	    			boolean varyx = whattype < 2;
+    				boolean varyy = whattype > 0;
+		    		for( idx = 1; idx < numcurves; idx++ ) {
+		    			int loopcount = 0;
+			    		//make sure you don't generate repeats
+			    		boolean duplicate = true;
+			    		while( duplicate ) {
+			    			duplicate = false;
+			    			if( par4[0] <= par1[0] ) {    				
+				    			par2[idx] = varyx? (int)(MAXPTS*Math.random()) - MAXPT :
+				    				par2[idx-1]; // x center coordinate
+				    			// need at least 3 point to specify a circle. Sine you're restricting points to integers
+				    			// there needs to be at least half a circle or ellipse on the graph.
+				    			maxyc = Math.abs(par2[idx]) + par1[0] > MAXPT? MAXPT - par4[0] + 1: MAXPT + 1;
+								System.out.println("maxyc: " + maxyc);
+				    			par3[idx] = varyy? (int)(maxyc*Math.random() - 0.1) - (maxyc)/2 :
+				    				par3[idx-1]; // y center coordinate
+				   				for( int i = 0; i < idx; ++i ) {
+				   					if( par2[i] == par2[idx] && par3[i] == par3[idx] ) {
+				   						duplicate = true;
+				   						break;
+				   					}
+				   				}
+
+			    			} else {
+			    				par3[idx] = varyy? (int)(MAXPTS*Math.random()) - MAXPT :
+			    						par3[idx-1];
+			    				maxxc = Math.abs(par3[idx]) + par4[0] > MAXPT? MAXPT - par1[0] + 1: MAXPT + 1;
+			    				System.out.println("maxxc: " + maxxc);
+				    			par2[idx] = varyx? (int)(maxxc*Math.random() - 0.1) - (maxxc)/2 :
+				    				par3[idx-1];
+			    				for( int i = 0; i < idx; ++i ) {
+				   					if( par2[i] == par2[idx] && par3[i] == par3[idx] ) {
+				   						duplicate = true;
+				   						break;
+				   					}
+				   				}
+			    			}
+			    			loopcount += 1;
+			    			if( loopcount > 100 ) {
+			    				System.out.println("ijn loopcount: " + loopcount + " idx: " + idx);
+			    				for( int v = 0; v <= idx; v++ ) {
+			    					System.out.println("p1: " + par1[v] + " p2: " + par2[v] + " p3: " + par3[v] + " p4: " + par4[v]);
+			    				}
+			    				break;
+			    			}
+			    		}
+	    			
+		    			par1[idx] = par1[idx-1];
+		    			par4[idx] = par4[idx-1]; 
+		    			boolean test2 = MAXPT - Math.abs(par2[idx]) < par1[idx];
+		    			boolean test3 = idx > 2*(maxyc-1);
+		    			boolean test4 = MAXPT - Math.abs(par2[idx]) < par4[idx];
+		    			boolean test5 = maxxc > 2*(maxxc-1);
+		    			if( (!varyx && MAXPT - Math.abs(par2[idx]) < par1[idx] && idx > 2*(maxyc-1)) ||
+		    				(!varyy && MAXPT - Math.abs(par3[idx]) < par4[idx] && maxxc > 2*(maxxc-1)) ) {
+		    				numcurves = idx;
+		    				System.out.println("maxyc: " + maxyc + " maxxc: "+ maxxc + " numcurves: " + numcurves);
+		    				System.out.println("t2: " + test2 + " t3: " + test3 + " t4: " + test4 +" t5: " + test5);
+		    				break;
 		    			}
+						System.out.println(" skd p1: " + par1[idx] + " p2: " + par2[idx] + " p3: " + par3[idx] + " p4: " + par4[idx]);
 		    		}
-	    			par1[idx] = par1[idx-1];
-	    			par4[idx] = par4[idx-1]; 
 	    		}
 			} else if( variation == 2 ) { // vary radius	
 				numcurves = numcurves > maxrad - minrad? maxrad - minrad + 1: numcurves;
@@ -489,18 +524,18 @@ if(( tmp = request.getParameter("chs")) != null) {
     	for( int i = 0; i < MAXPTS && currentc < numcurves; i += 1 ) {	
     		xpoints[nPts] = (int)(i - MAXPT);
     		double ypt = (double)(xpoints[nPts]-par2[currentc])/(double)par1[currentc];
-    		System.out.println("x-h/a: " + ypt);
+    		//System.out.println("x-h/a: " + ypt);
     		ypt = Math.pow(ypt, 2.);
-    		System.out.println("(x-h/a)^2: " + ypt);
+    		//System.out.println("(x-h/a)^2: " + ypt);
     		if( isCircle || isEllipse ) {
     			ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
     		} else if( isHyperbola ) {
     			ypt = (double)par4[currentc]*Math.sqrt((1+ypt));
-    			System.out.println("sqrt(1+(x-h/a)^2): " + ypt);
+    			//System.out.println("sqrt(1+(x-h/a)^2): " + ypt);
     		}
    			ypt = par3[currentc] + ypt;
    			ypoints[nPts] = ypt > 0? (int)((1000*ypt + 5)/1000) : (int)((1000*ypt - 5)/1000);
-   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - ypt) < .00001 ) {
    				nPts += 1;	   				
    			}
@@ -518,7 +553,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     		}
     		double npt = par3[currentc] - ypt;
    			ypoints[nPts] = npt > 0? (int)((1000*npt + 5)/1000) : (int)((1000*npt - 5)/1000);
-   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - npt) < TOL ) {
 	   			boolean duplicate = false;
 	   			for( int j = nPts-1; j >= 0; --j ) {
@@ -532,10 +567,10 @@ if(( tmp = request.getParameter("chs")) != null) {
 	   			}
    			}
 		}
-   		//System.out.println("done generating " + nPts + " points");
-   		//for( int i = 0; i < nPts; ++i ) {
-   			//System.out.println("xpoints[" + i + "]: " + xpoints[i] + " ypoints[" + i + "]: " + ypoints[i]);
-   		//}
+   		System.out.println("done generating " + nPts + " points");
+   		for( int i = 0; i < nPts; ++i ) {
+   			System.out.println("xpoints[" + i + "]: " + xpoints[i] + " ypoints[" + i + "]: " + ypoints[i]);
+   		}
 		String xcent = "X";
 		if( par2[currentc] < 0 ) {
 			xcent = "( X" + "+" + Math.abs(par2[currentc]) + " )";
