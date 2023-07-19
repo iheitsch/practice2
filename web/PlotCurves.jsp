@@ -16,10 +16,8 @@ int MAXPTS = 21;
 int MAXCURVES = 5;
 double TOL = 0.00001;
 
-int xsign = (int)(MAXPT*Math.random()) > 5 ? 1 : -1;
-int xval = xsign*(int)(MAXPT*Math.random());
-int ysign = (int)(MAXPT*Math.random()) > 5 ? 1 : -1;
-int yval = xsign*(int)(MAXPT*Math.random());
+//int xsign = (int)(MAXPT*Math.random()) > 5 ? 1 : -1;
+int ysign = 1;
 int idx;
 int jdx = 0;
 int kdx = 0;
@@ -50,7 +48,7 @@ String tmp = "";    // temporary storage for newly gotten
 String isSelected = "selected";
 //String [] isNowSelected = new String[numsels];
 String itype = "hidden";
-String dbtype = "hidden"; // "text"; //  
+String dbtype = "text"; // "hidden"; //   
 String instrs = "Choose Curve Type";
 String instr2 = "";
 
@@ -154,12 +152,12 @@ if(( tmp = request.getParameter("chs")) != null) {
     currentc = 0;
     variation = Integer.parseInt(whatcurves);
 	currentc = Integer.parseInt(currcurve);
-	//System.out.println("whatTable: " + whatTable + " variation: " + variation + " currentc: " + currentc);
 	isLine = whatTable.equals("Line");
 	isCircle = whatTable.equals("Circle");
 	isEllipse = whatTable.equals("Ellipse");
 	isParabola = whatTable.equals("Parabola");
 	isHyperbola = whatTable.equals("Hyperbola");
+	System.out.println("whatTable: " + whatTable + " variation: " + variation + " currentc: " + currentc + " isParabola: " + isParabola);
 
 	if( isLine ) {
 		int sign = 2*Math.random() > 1? 1 : -1;  	 
@@ -595,9 +593,180 @@ if(( tmp = request.getParameter("chs")) != null) {
 		}
 		instr2 = "Plot the " + whatTable + ": " + rst;
 		instrs = "Fill out as much of table as needed";
-    }
-    //System.out.println("user chose: " + whatTable + " numcurves: " + numcurves + " currentc: " + currentc);
-} %>
+
+	} else if( isParabola ) { 
+		// x, y coordinates of vertex, direction, focus p x^2 = 4py standard form
+		if( variation == 0 ) {
+	    	numcurves = 4;
+	    	int maxvar = 4;
+	   		variation = (int)(1 + maxvar*Math.random());
+	   		int maxd = 2;
+	   		par4[0] = (int)(maxd*Math.random()); // direction
+	   		currentc = 0;
+	   		int exp = (int)(9*Math.random());
+	   		par1[0] = (int)(Math.pow(2., exp)); // focus*32
+	   		System.out.println("exp: " + exp + " par1[0]: " + par1[0]);
+	   		int maxx = 4;
+	   		par2[0] = (int)(0.1 + maxx*Math.random()) - maxx/2; // x offset
+	   		int maxy = 4;
+    		par3[0] = (int)((MAXPT + 0.1 + maxy)*Math.random()) - MAXPT; // y offset 2 to -10
+    		if( par4[0] == 1 ) {
+    			par3[0] = -par3[0];
+    			ysign = -1; // am i going to have to track this from one session to the next? fixit
+    		}
+	    	System.out.println("isParabola variation: " + variation + " p1: " + par1[0] + " p2: " + par2[0] + " p3: " + par3[0] + " p4: " + par4[0]);
+	       	if( variation == 1 ) {        		
+	       		for( idx = 1; idx < numcurves; ++idx ) {
+	       			boolean duplicate = true;
+	       			while( duplicate ) {
+	       			 	exp = (int)(9*Math.random());
+	       				par1[idx] = (int)(Math.pow(2., exp));
+	        			duplicate = false;
+	        			for( int i = 0; i < idx; ++i ) {
+		        			if( par1[idx] == par1[i] ) {
+		        				duplicate = true;
+		        				break;
+		        			}
+		       			}
+	        		}
+	    	   		System.out.println("exp: " + exp + " par1[" + idx + "]: " + par1[idx]);
+	       			par2[idx] = par2[idx-1];
+	       			par3[idx] = par3[idx-1];
+	       			par4[idx] = par4[idx-1];
+	       		}
+	       	} else if( variation == 2 ) { // change x coordinate
+	       		for( idx = 1; idx < numcurves; ++idx ) {
+	       			boolean duplicate = true;
+	       			while( duplicate ) {
+	       				par2[idx] = (int)(0.1 + maxx*Math.random()) - maxx/2;
+	        			duplicate = false;
+	        			for( int i = 0; i < idx; ++i ) {
+		        			if( par2[idx] == par2[i] ) {
+		        				duplicate = true;
+		        				break;
+		        			}
+		       			}
+	        		}
+	    	   		System.out.println("par2[" + idx + "]: " + par2[idx]);
+	       			par1[idx] = par1[idx-1];
+	       			par3[idx] = par3[idx-1];
+	       			par4[idx] = par4[idx-1];
+	       		}
+	       	} else if( variation == 3 ) { // change y coordinate
+	       		for( idx = 1; idx < numcurves; ++idx ) {
+	       			boolean duplicate = true;
+	       			while( duplicate ) {
+	       				par3[idx] = ysign*((int)(MAXPT*Math.random()) - MAXPT);
+	        			duplicate = false;
+	        			for( int i = 0; i < idx; ++i ) {
+		        			if( par3[idx] == par3[i] ) {
+		        				duplicate = true;
+		        				break;
+		        			}
+		       			}
+	        		}
+	    	   		System.out.println("par3[" + idx + "]: " + par3[idx]);
+	       			par1[idx] = par1[idx-1];
+	       			par2[idx] = par2[idx-1];
+	       			par4[idx] = par4[idx-1];
+	       		}
+	       	} else if( variation == 4 ) { // change direction
+	       		numcurves = maxd;       		
+	       		for( idx = 1; idx < numcurves; ++idx ) {
+	       			par1[idx] = par1[idx-1];
+	       			par2[idx] = par2[idx-1];
+	       			par3[idx] = par3[idx-1];
+	       			int loopcount = 0;
+	       			boolean duplicate = true;
+	       			while( duplicate ) {
+	       				par4[idx] = (par4[idx-1]+1)%maxd;
+	       				//if( par4[idx] == 0 ) {
+	       	    			par3[idx] = -par3[idx];
+	       	    			//ysign = -1; // am i going to have to track this from one session to the next? fixit
+	       	    		//}
+		    	   		System.out.println("par4[" + idx + "]: " + par4[idx] + " par3[" + idx + "]: " + par3[idx]);     			
+	        			duplicate = false;
+	        			for( int i = 0; i < idx; ++i ) {
+		        			if( par4[idx] == par4[i] ) {
+		        				duplicate = true;
+		        				break;
+		        			}
+		       			}
+	        			loopcount += 1;
+	        			if( loopcount > 100 ) {
+	    	   				System.out.println("fty var 1 idx: " + idx + " numcurves: " + numcurves + " par1: " + par1[idx] + " par2: " + par2[idx]);
+	 						break;   	
+	    	   			}
+	        		}
+	       		}
+	       	}
+		} else {
+	    	currentc += 1;
+			for( idx = 0; idx < numcurves; idx++ ) {
+				// read all parameters so you can write them again		
+				par1[idx] = Integer.parseInt(param1[idx]);
+				par2[idx] = Integer.parseInt(param2[idx]);
+				par3[idx] = Integer.parseInt(param3[idx]);
+				par4[idx] = Integer.parseInt(param4[idx]);
+			}		
+		}
+		System.out.println("cvb currentc: " + currentc + " p1: " + par1[currentc] + " p2: " + par2[currentc] + " p3: " + par3[currentc] + " p4: " + par4[currentc]);
+		if( par4[currentc] == 1 ) {
+			//par3[currentc] = -par3[currentc];
+			ysign = -1;
+		}
+		nPts = 0;
+		for( int i = 0; i < MAXPTS && currentc < numcurves; i += 1 ) {	
+    		xpoints[nPts] = (int)(i - MAXPT);
+    		double ypt = (double)(xpoints[nPts]-par2[currentc]);
+    		//System.out.println("x-h: " + ypt);
+    		ypt = Math.pow(ypt, 2.);
+    		//System.out.println("(x-h)^2: " + ypt);
+    		ypt = ysign*8*ypt/par1[currentc];
+    		//System.out.println("(x-h)^2/a: " + ypt);
+   			ypt = par3[currentc] + ypt;
+   			ypoints[nPts] = ypt > 0? (int)((1000*ypt + 5)/1000) : (int)((1000*ypt - 5)/1000);
+   			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - ypt) < .00001 ) {
+   	   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   				nPts += 1;	   				
+   			}
+		}
+		int nm = par1[currentc];
+		int dn = 32;
+		while( ( nm%2 == 0 && dn%2 == 0 ) ) {
+   			nm = nm/2;
+   			dn = dn/2;
+   			
+   		}
+		String xmh = indvar;
+		if( par2[currentc] != 0 ) {
+			if( par2[currentc] > 0 ) {
+				xmh = "(" + xmh + " - " + par2[currentc] + ")";
+			} else {
+				int absval = -par2[currentc];
+				xmh = "(" + xmh + " + " +absval + ")";
+			}
+		}
+		String rst = xmh + "<sup>2</sup> = 4(";
+		String ymk = depvar;
+		if( par3[currentc] != 0 ) {
+			if( par3[currentc] > 0 ) {
+				ymk = "(" + ymk + " - " + par3[currentc] + ")";
+			} else {
+				int absval = -par3[currentc];
+				ymk = "(" + ymk + " + " +absval + ")";
+			}
+		}
+		if( dn == 1 ) {
+			rst += nm + ")" + ymk;
+		} else {
+			rst += nm + "/" + dn + ")" + ymk;
+		}		
+		instr2 = "Plot the " + whatTable + ": " + rst;
+		instrs = "Fill out as much of table as needed";
+	}
+    System.out.println("user chose: " + whatTable + " numcurves: " + numcurves + " currentc: " + currentc);
+}%>
 <body>
 <form id="plots">
 <%	if( isLine ) { %>
@@ -842,6 +1011,182 @@ if(( tmp = request.getParameter("chs")) != null) {
 </tr>
 </table>
 <% } else if( isEllipse ) {
+		String cclass = "l0";
+		int cindx = 0;
+		String nm = indvar;
+		int xOffs = par2[currentc];
+		boolean XisOff = xOffs != 0;
+		if( XisOff ) {			
+			String sin = " - ";
+			if( xOffs < 0 ) {
+				xOffs = Math.abs(xOffs);
+				sin = " + ";
+			}
+			nm = indvar + sin + xOffs;
+		} 		 
+		String iid = "";
+		String qid = ""; %>
+<table id="whatpts">
+<tr>
+	<td class="pre" id="c-1_0"></td>
+	<th id="indvar" class="hdr rem"><%=indvar%></th>	
+<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
+<%		nm = "( " + nm + " )";
+	}
+	if( par1[currentc] != 1 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%>/<%=par1[currentc]%>">
+<% 	}
+	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="(<%=nm%>/<%=par1[currentc]%>)<sup>2</sup>">
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iid = "i" + cindx; 
+	qid = "q" + cindx; 
+	String ival = nm + "/" + par1[currentc];
+	ival = "(" + ival + ")";
+	ival = ival + "<sup>2</sup>";
+	ival = "1 - " + ival;
+	%>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
+<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) {  // radius is significant and y is offset 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; 		
+		ival = "+/- &#x221A <span class='oline'>" + ival + "</span>"; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
+<% 	}
+if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; 
+		ival = "+/-" + par4[currentc] + " &#x221A <span class='oline'>" + ival + "</span>"; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
+<%	} %>
+	<td class="tmp"></td>
+	<th id="depvar" class="hdr rem"><%=depvar%></th>
+</tr>
+<% for( int i = 0; i < nPts; ++i ) { 
+	String bkClr = "c" + i%nClrs; 
+	String rclass = "r" + i; // for highlighting current row
+	String xid = "x" + i;
+	String yid = "y" + i;
+	String hid = "h" + i;
+	cindx = 0;
+	String mid;
+	String tid;
+	String sid;
+	String did;
+	String rid;
+	String nid;	 
+	String iclass = "i" + cindx;
+	String cid = "c" + i + "_" + cindx;
+	cclass = "l" + cindx; %>
+<tr>
+	<td class="pre" id="<%=cid%>" ></td>
+	<td class=" <%=rclass%> rem xpts" id="<%=xid%>" ><%=xpoints[i]%></td>
+<% 	if( XisOff ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; 
+		mid = "m" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<%	}
+	if( par1[currentc] != 1 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; 
+		tid = "t" + cindx + "_" + i;%>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<% 	}
+	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx;
+	sid = "s" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<%	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx; 
+	did = "d" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) { 
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx;
+		rid = "r" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
+	</td>
+<%	}
+	if( par4[currentc] != 1 && par3[currentc] != 0 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iclass = "i" + cindx;
+		cid = "c" + i + "_" + cindx; 
+		nid = "n" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=nid%>" class="nBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<%	}
+	cindx += 1;
+	cid = "c" + i + "_" + cindx;
+	yid = "y" + cindx + "_" + i; %>
+	<td  id="<%=cid%>" class="rem tmp" >
+	<td class=" <%=rclass%> rem" >
+		<input id="<%=yid%>" class="nput ypts" type="hidden" onkeydown="erase( event )" onkeyup="checkA( event )" >		
+		<input id="<%=hid%>" type="<%=dbtype%>" value="<%=ypoints[i]%>" >
+	</td>
+</tr>
+<% } %>
+<tr>
+	<td class="pre invisible">__________</td>
+</tr>
+</table>
+<% } else if( isParabola ) {
 		String cclass = "l0";
 		int cindx = 0;
 		String nm = indvar;

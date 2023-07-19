@@ -893,7 +893,7 @@ function drawCurve( cls ) {
 		ystop = halfwidth - mat.round(ystop*gridspace);
 		drawLine( xstart, ystart, xstop, ystop, 3, colors[cls], null );
 		
-	} else if( isCircle || isEllipse || isHyperbola ) {
+	} else if( isCircle || isEllipse || isParabola || isHyperbola ) {
 		var htmseg = '<polyline points=" ';
 		var h = num(par2);
 		var k = num(par3);
@@ -901,30 +901,40 @@ function drawCurve( cls ) {
 		var b = num(par4);
 		var lowx = h - a;
 		var uprx = a + h;
-		if( isHyperbola ) {
+		if( isParabola || isHyperbola ) {
 			lowx = -10;
 			uprx = 10;
 		}
-		for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
-			var yp = k + b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
-			if( isHyperbola ) {
-				yp = k + b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
+		if( isParabola ) {
+			var sign = b === 1? -1 : 1;
+			for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
+				var yp = k + sign*8*(xp - h)*(xp - h)/a;
+				var px = halfwidth + mat.round(xp*gridspace);
+				var py = halfwidth - mat.round(yp*gridspace);
+				htmseg += px + ', ' + py + ' ';
 			}
-			var px = halfwidth + mat.round(xp*gridspace);
-			var py = halfwidth - mat.round(yp*gridspace);
-			htmseg += px + ', ' + py + ' '; 
-		}
-		for( var xp = uprx; xp >= lowx; xp -= 0.1) {
-			var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
-			if( isHyperbola ) {
-				yp = k - b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
-			}		
-			var px = halfwidth + mat.round(xp*gridspace);
-			var py = halfwidth - mat.round(yp*gridspace);
-			var newseg = px + ', ' + py + ' '; 
-			htmseg += newseg; 
-			//doc.getElementById("statusBox" + pdx).innerHTML = "xp: " + xp + " yp: " + yp + " newseg: " + newseg;
-			//pdx = (pdx + 1)%(maxbx-1);
+		} else {
+			for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
+				var yp = k + b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
+				if( isHyperbola ) {
+					yp = k + b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
+				}
+				var px = halfwidth + mat.round(xp*gridspace);
+				var py = halfwidth - mat.round(yp*gridspace);
+				htmseg += px + ', ' + py + ' '; 
+			}
+			for( var xp = uprx; xp >= lowx; xp -= 0.1) {
+				var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
+				if( isHyperbola ) {
+					yp = k - b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
+				}		
+				var px = halfwidth + mat.round(xp*gridspace);
+				var py = halfwidth - mat.round(yp*gridspace);
+				var newseg = px + ', ' + py + ' '; 
+				htmseg += newseg; 
+				//doc.getElementById("statusBox" + pdx).innerHTML = "xp: " + xp + " yp: " + yp + " newseg: " + newseg;
+				//pdx = (pdx + 1)%(maxbx-1);
+			}
 		}
 		htmseg += '" style="stroke:' + colors[cls];
 		htmseg += ';stroke-width:2; fill:none';
@@ -1157,7 +1167,7 @@ function genpoints ( which ) {
 		}
 		mult = mat.abs(rise);
 		div = mat.abs(run);
-	} else if( isCircle || isEllipse || isHyperbola ) {
+	} else if( isCircle || isEllipse || isParabola || isHyperbola ) {
 		aye = par1;
 		ache = par2;
 		kay = par3;
@@ -1333,7 +1343,7 @@ window.onload = function() {
 			  		n0.focus();
 			  	}
 		  	}
-		} else if( isCircle || isEllipse || isHyperbola ) {
+		} else if( isCircle || isEllipse || isParabola || isHyperbola ) {
 			tblFilld = true; // debug
 			// add title borders and background colors for 1st 2nd & last whatpts table
 			var hdr = doc.getElementsByClassName("hdr");
@@ -1388,7 +1398,9 @@ window.onload = function() {
 			for( var i = 0; i < len; ++i ) {
 				frstBxs[i].type = "text";
 			}
-			fcsBx.focus();
+			if( fcsBx ) {
+				fcsBx.focus();
+			}
 		}
 
 		
