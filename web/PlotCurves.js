@@ -1061,6 +1061,23 @@ function drawCurve( cls ) {
 		} else if( isEllipse ) {
 			rst = "( " + xcent + "/" + a + " )" +  "<sup>2</sup> + ";
 			rst += "( " + ycent + "/" + b + " )" +  "<sup>2</sup> = 1";
+		} else if( isParabola ) {
+			rst = xcent +  "<sup>2</sup> = ";
+			if( par4 === "1" ) {
+				rst += "-";
+			}
+			var nm = "";
+			var dnm = 32;
+			var n = num(par1);
+			while( dnm%2 == 0 && n%2 == 0 ) {
+				n /= 2;
+				dnm /= 2;
+			}		
+			nm = n;
+			if( dnm != 1 ) {
+				nm += "/" + dnm;
+			}
+			rst += "4" + "(" + nm + ")" + ycent;
 		} else if( isHyperbola ) {
 			rst = "( " + ycent + "/" + b + " )" +  "<sup>2</sup> - ";
 			rst += "( " + xcent + "/" + a + " )" +  "<sup>2</sup> = 1";
