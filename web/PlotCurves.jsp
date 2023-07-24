@@ -612,7 +612,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     		par3[0] = (int)((MAXPT + 0.1 + maxy)*Math.random()) - MAXPT; // y offset 2 to -10
     		if( par4[0] == 1 ) {
     			par3[0] = -par3[0];
-    			ysign = -1; // am i going to have to track this from one session to the next? fixit
+    			ysign = -1;
     		}
 	    	System.out.println("isParabola variation: " + variation + " p1: " + par1[0] + " p2: " + par2[0] + " p3: " + par3[0] + " p4: " + par4[0]);
 	       	if( variation == 1 ) {        		
@@ -747,7 +747,11 @@ if(( tmp = request.getParameter("chs")) != null) {
 				xmh = "(" + xmh + " + " +absval + ")";
 			}
 		}
-		String rst = xmh + "<sup>2</sup> = 4(";
+		String rst = xmh + "<sup>2</sup> = ";
+		if( par4[currentc] == 1 ) {
+	    	rst += "-";
+	    }
+		rst += "4(";
 		String ymk = depvar;
 		if( par3[currentc] != 0 ) {
 			if( par3[currentc] > 0 ) {
@@ -1201,7 +1205,8 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 			nm = indvar + sin + xOffs;
 		} 		 
 		String iid = "";
-		String qid = ""; %>
+		String qid = "";
+		int dnm; // not sure this is an integer, may need to come up with a ratio fixit %>
 <table id="whatpts">
 <tr>
 	<td class="pre" id="c-1_0"></td>
@@ -1211,59 +1216,50 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
 		qid = "q" + cindx; %>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
+		<td class="tmp <%=cclass%>"></td>
+		<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+		<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
 <%		nm = "( " + nm + " )";
 	}
-	if( par1[currentc] != 1 ) {
+	if( !(par1[currentc] == 8 && par3[currentc] == 0) ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
-		qid = "q" + cindx; %>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="<%=nm%>/<%=par1[currentc]%>">
+		qid = "q" + cindx;
+		nm = nm + "<sup>2</sup>"; %>
+		<td class="tmp <%=cclass%>"></td>
+		<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+		<input type="hidden" id="<%=iid%>" value="<%=nm%>">
 <% 	}
-	cindx += 1;
-	cclass = "l" + cindx;
-	iid = "i" + cindx; 
-	qid = "q" + cindx; %>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="(<%=nm%>/<%=par1[currentc]%>)<sup>2</sup>">
-<%	cindx += 1;
-	cclass = "l" + cindx;
-	iid = "i" + cindx; 
-	qid = "q" + cindx; 
-	String ival = nm + "/" + par1[currentc];
-	ival = "(" + ival + ")";
-	ival = ival + "<sup>2</sup>";
-	ival = "1 - " + ival;
-	%>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
-<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) {  // radius is significant and y is offset 
+	if( !(par1[currentc] == 8 || par3[currentc] == 0) ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
-		qid = "q" + cindx; 		
-		ival = "+/- &#x221A <span class='oline'>" + ival + "</span>"; %>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
-<% 	}
-if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset 
-		cindx += 1;
-		cclass = "l" + cindx;
-		iid = "i" + cindx; 
-		qid = "q" + cindx; 
-		ival = "+/-" + par4[currentc] + " &#x221A <span class='oline'>" + ival + "</span>"; %>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
-<%	} %>
+		qid = "q" + cindx;
+		//dnm = par1[currentc]/8; // don't want any fractions, they'll truncate to 0
+		dnm = par1[currentc];
+		int n = 8;
+		while( dnm%2 == 0 && n%2 == 0 ) {
+			n /= 2;
+			dnm /= 2;
+		}
+		if( par4[currentc] == 1 ) {
+			nm = "-" + nm;
+		}
+		if( n == 1 ) {
+			if( dnm != 1 ) {
+				nm = nm + "/" + dnm;
+			}
+		} else {
+			nm = nm + "(" + n + ")";
+			if( dnm != 1 ) {
+				nm += "/" + dnm;
+			}
+		} %>
+		<td class="tmp <%=cclass%>"></td>
+		<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+		<input type="hidden" id="<%=iid%>" value="<%=nm%>">
+<% 	} %>
 	<td class="tmp"></td>
 	<th id="depvar" class="hdr rem"><%=depvar%></th>
 </tr>
@@ -1292,62 +1288,33 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 		iclass = "i" + cindx;
 		cid = "c" + i + "_" + cindx; 
 		mid = "m" + cindx + "_" + i; %>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
-	</td>
+		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+		<td class="rem <%=iclass%>  <%=rclass%>">
+			<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+		</td>
 <%	}
-	if( par1[currentc] != 1 ) {
+	if( !(par1[currentc] == 8 && par3[currentc] == 0) ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
 		cid = "c" + i + "_" + cindx; 
-		tid = "t" + cindx + "_" + i;%>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkA( event)">
-	</td>
+		sid = "s" + cindx + "_" + i; %>
+		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+		<td class="rem <%=iclass%>  <%=rclass%>">
+			<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+		</td>
 <% 	}
-	cindx += 1;
-	cclass = "l" + cindx;
-	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx;
-	sid = "s" + cindx + "_" + i; %>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
-	</td>
-<%	cindx += 1;
-	cclass = "l" + cindx;
-	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx; 
-	did = "d" + cindx + "_" + i; %>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkA( event)">
-	</td>
-<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) { 
-		cindx += 1;
-		cclass = "l" + cindx;
-		iclass = "i" + cindx;
-		cid = "c" + i + "_" + cindx;
-		rid = "r" + cindx + "_" + i; %>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
-	</td>
-<%	}
-	if( par4[currentc] != 1 && par3[currentc] != 0 ) {
+	if( !(par1[currentc] == 8 || par3[currentc] == 0) ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
 		cid = "c" + i + "_" + cindx; 
-		nid = "n" + cindx + "_" + i; %>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=nid%>" class="nBx" onkeydown="erase( event )" onkeyup="checkA( event)">
-	</td>
-<%	}
+		tid = "t" + cindx + "_" + i; %>
+		<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+		<td class="rem <%=iclass%>  <%=rclass%>">
+			<input type="hidden" id="<%=tid%>" class="tBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+		</td>
+<% 	}
 	cindx += 1;
 	cid = "c" + i + "_" + cindx;
 	yid = "y" + cindx + "_" + i; %>
@@ -1584,7 +1551,7 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 <span class=rightsd>
 <div id="statustable" >
 	<table>
-	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 2; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>

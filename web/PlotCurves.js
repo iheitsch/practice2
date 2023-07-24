@@ -518,6 +518,109 @@ function checkA( ev ) {
 					}
 			    	break;
 			}
+		} else if( isParabola ) {
+			switch( step ) {
+				case "m":
+					expAns = xval - ache;
+					if( stillThisCol ) {
+						preinst = null;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						colnum = precol + 1;
+						nextpre = doc.getElementById("c0_" + precol);
+						nextsuf = doc.getElementById("c0_" + colnum);						
+						sufinst = " <sup>2</sup> = "; // squared
+						if( kay === 0 && aye === 8 ) {
+							//newBxs = doc.getElementsByClassName("yBx");
+							fcsBx = doc.getElementById("y" + colnum + "_0");
+							//alert("newBx: yBx");
+						} else {
+							newBxs = doc.getElementsByClassName("sBx");
+							fcsBx = doc.getElementById("s" + colnum + "_0");
+						}
+					}
+			    	break;
+			    case "s":
+			    	expAns = (xval - ache)*(xval - ache);
+			    	if( stillThisCol ) {
+				    	preinst = null;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						colnum = precol + 1;
+						nextpre = doc.getElementById("c0_" + precol);
+						nextsuf = doc.getElementById("c0_" + colnum);
+						sufinst = " = ";
+						oldBxs = 1;
+						if( kay === 0 || aye === 8 ) {						
+							if( kay < 0 ) {
+								if( bee === 1 ) {
+									preinst = " -";
+								}
+								sufinst = " + (" + kay + ") = ";
+							} else if( kay > 0 ) {
+								if( bee === 1 ) {
+									preinst = " -";
+								}	
+								sufinst = " + " + kay + " = ";
+							} else {
+								var dnm = aye/8;
+								if( bee === 1 ) {
+									sufinst = " / (-" + dnm + ") = "; // divide
+								} else {
+									sufinst = " / " + dnm + " = "; // divide
+								}
+							}
+							fcsBx = doc.getElementById("y" + colnum + "_0");
+						} else {
+							newBxs = doc.getElementsByClassName("tBx");
+							var dnm = aye/8;
+							if( bee === 1 ) {
+								sufinst = " / (-" + dnm + ") = "; // divide
+							} else {
+								sufinst = " / " + dnm + " = "; // divide
+							}
+							fcsBx = doc.getElementById("t" + colnum + "_0");
+						}
+					}
+			    	break;
+			    case "t":
+			    	sn = bee === 1? -1: 1;
+			    	expAns = sn*8*(xval - ache)*(xval - ache)/aye;
+			    	if( stillThisCol ) {
+				    	preinst = currpre.innerHTML;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						oldBxs = 1;
+						colnum = precol + 1;
+						nextpre = doc.getElementById("c0_" + precol);
+						nextsuf = doc.getElementById("c0_" + colnum);
+						if( kay < 0 ) {
+							sufinst = " + (" + kay + ") = ";
+						} else {		
+							sufinst = " + " + kay + " = ";
+						}
+						//newBxs = doc.getElementsByClassName("yBx");
+						if( ache !== 0 ) {
+							oldBxs = 1;
+						}
+						doc.getElementById("statusBox0").innerHTML = "nextBx: y" + colnum + "_0";
+						fcsBx = doc.getElementById("y" + colnum + "_0");
+					}
+			    	break;
+			    default:
+			    	expAns = num(doc.getElementById("h" + rowno).value);
+			    	if( stillThisCol ) {
+			    		preinst = currpre.innerHTML;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						fcsBx = null;
+					}
+			    	break;
+			}
 		}
 		
 		if( num(ansBx.value) === expAns ) {		
@@ -1344,7 +1447,7 @@ window.onload = function() {
 			  	}
 		  	}
 		} else if( isCircle || isEllipse || isParabola || isHyperbola ) {
-			tblFilld = true; // debug
+			//tblFilld = true;
 			// add title borders and background colors for 1st 2nd & last whatpts table
 			var hdr = doc.getElementsByClassName("hdr");
 			var len = hdr.length - 1;
@@ -1388,10 +1491,14 @@ window.onload = function() {
 					col1.innerHTML = " <sup>2</sup> = "; // go ahead and square	
 					fcsBx = doc.getElementById("s1_0");
 					frstBxs = doc.getElementsByClassName("sBx");
-				} else { // ellipse divide by xradius first
+				} else if( isEllipse ) { // ellipse divide by xradius first
 					col1.innerHTML = " / " + aye + " = "; // divide
 					fcsBx = doc.getElementById("t1_0")
 					frstBxs = doc.getElementsByClassName("tBx");
+				} else if( isParabola ) {
+				col1.innerHTML = " <sup>2</sup> = ";
+					fcsBx = doc.getElementById("s1_0")
+					frstBxs = doc.getElementsByClassName("sBx");
 				}
 			}
 			len = frstBxs.length;
