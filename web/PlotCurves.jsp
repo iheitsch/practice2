@@ -48,7 +48,7 @@ String tmp = "";    // temporary storage for newly gotten
 String isSelected = "selected";
 //String [] isNowSelected = new String[numsels];
 String itype = "hidden";
-String dbtype = "text"; // "hidden"; //   
+String dbtype = "hidden"; //  "text"; // 
 String instrs = "Choose Curve Type";
 String instr2 = "";
 
@@ -600,7 +600,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	    	numcurves = 4;
 	    	int maxvar = 4;
 	   		variation = (int)(1 + maxvar*Math.random());
-	   		int maxd = 2;
+	   		int maxd = 4;
 	   		par4[0] = (int)(maxd*Math.random()); // direction
 	   		currentc = 0;
 	   		int exp = (int)(9*Math.random());
@@ -610,7 +610,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	   		par2[0] = (int)(0.1 + maxx*Math.random()) - maxx/2; // x offset
 	   		int maxy = 4;
     		par3[0] = (int)((MAXPT + 0.1 + maxy)*Math.random()) - MAXPT; // y offset 2 to -10
-    		if( par4[0] == 1 ) {
+    		if( par4[0]%2 == 1 ) {
     			par3[0] = -par3[0];
     			ysign = -1;
     		}
@@ -671,33 +671,13 @@ if(( tmp = request.getParameter("chs")) != null) {
 	       			par4[idx] = par4[idx-1];
 	       		}
 	       	} else if( variation == 4 ) { // change direction
+	       		par2[0] = 0; // symetric around the axis
 	       		numcurves = maxd;       		
 	       		for( idx = 1; idx < numcurves; ++idx ) {
 	       			par1[idx] = par1[idx-1];
 	       			par2[idx] = par2[idx-1];
-	       			par3[idx] = par3[idx-1];
-	       			int loopcount = 0;
-	       			boolean duplicate = true;
-	       			while( duplicate ) {
-	       				par4[idx] = (par4[idx-1]+1)%maxd;
-	       				//if( par4[idx] == 0 ) {
-	       	    			par3[idx] = -par3[idx];
-	       	    			//ysign = -1; // am i going to have to track this from one session to the next? fixit
-	       	    		//}
-		    	   		System.out.println("par4[" + idx + "]: " + par4[idx] + " par3[" + idx + "]: " + par3[idx]);     			
-	        			duplicate = false;
-	        			for( int i = 0; i < idx; ++i ) {
-		        			if( par4[idx] == par4[i] ) {
-		        				duplicate = true;
-		        				break;
-		        			}
-		       			}
-	        			loopcount += 1;
-	        			if( loopcount > 100 ) {
-	    	   				System.out.println("fty var 1 idx: " + idx + " numcurves: " + numcurves + " par1: " + par1[idx] + " par2: " + par2[idx]);
-	 						break;   	
-	    	   			}
-	        		}
+	       			par3[idx] = -par3[idx-1];
+	       			par4[idx] = (par4[idx-1]+1)%maxd;
 	       		}
 	       	}
 		} else {
@@ -710,33 +690,32 @@ if(( tmp = request.getParameter("chs")) != null) {
 				par4[idx] = Integer.parseInt(param4[idx]);
 			}		
 		}
-		System.out.println("cvb currentc: " + currentc + " p1: " + par1[currentc] + " p2: " + par2[currentc] + " p3: " + par3[currentc] + " p4: " + par4[currentc]);
-		if( par4[currentc] == 1 ) {
-			//par3[currentc] = -par3[currentc];
+		if( par4[currentc]%2 == 1 ) {
 			ysign = -1;
 		}
+		System.out.println("cvb currentc: " + currentc + " p1: " + par1[currentc] + " p2: " + par2[currentc] + " p3: " + par3[currentc] + " p4: " + par4[currentc] + " ysign: " + ysign);
 		nPts = 0;
 		for( int i = 0; i < MAXPTS && currentc < numcurves; i += 1 ) {	
     		xpoints[nPts] = (int)(i - MAXPT);
-    		double ypt = (double)(xpoints[nPts]-par2[currentc]);
-    		//System.out.println("x-h: " + ypt);
-    		ypt = Math.pow(ypt, 2.);
-    		//System.out.println("(x-h)^2: " + ypt);
-    		ypt = ysign*8*ypt/par1[currentc];
-    		//System.out.println("(x-h)^2/a: " + ypt);
-   			ypt = par3[currentc] + ypt;
+   			double ypt = par3[currentc] + ysign*8*Math.pow((double)(xpoints[nPts]-par2[currentc]), 2.)/par1[currentc];
+   			//if( par4[currentc]%2 == 1 ) {
+   			//	ypt = par2[currentc] + ysign*8*Math.pow((double)(xpoints[nPts]-par3[currentc]), 2.)/par1[currentc];
+   			//}
    			ypoints[nPts] = ypt > 0? (int)((1000*ypt + 5)/1000) : (int)((1000*ypt - 5)/1000);
    			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - ypt) < .00001 ) {
    	   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypoints[" + nPts + "]: " + ypoints[nPts]);
    				nPts += 1;	   				
    			}
 		}
+		if( par4[currentc] > 1 ) {
+   			indvar = "Y";
+   			depvar = "X";
+		}
 		int nm = par1[currentc];
 		int dn = 32;
 		while( ( nm%2 == 0 && dn%2 == 0 ) ) {
    			nm = nm/2;
-   			dn = dn/2;
-   			
+   			dn = dn/2;  			
    		}
 		String xmh = indvar;
 		if( par2[currentc] != 0 ) {
@@ -748,7 +727,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 			}
 		}
 		String rst = xmh + "<sup>2</sup> = ";
-		if( par4[currentc] == 1 ) {
+		if( par4[currentc]%2 == 1 ) {
 	    	rst += "-";
 	    }
 		rst += "4(";
@@ -1551,7 +1530,7 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 <span class=rightsd>
 <div id="statustable" >
 	<table>
-	<% for( int i = 0, j = 1; i < 2; i += 2, j += 2 ) {
+	<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
 	    String whatId = "statusBox" + i; 
 	    String whatId2 = "statusBox" + j; %>
 	    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>

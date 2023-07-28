@@ -555,18 +555,18 @@ function checkA( ev ) {
 						oldBxs = 1;
 						if( kay === 0 || aye === 8 ) {						
 							if( kay < 0 ) {
-								if( bee === 1 ) {
+								if( bee%2 === 1 ) {
 									preinst = " -";
 								}
 								sufinst = " + (" + kay + ") = ";
 							} else if( kay > 0 ) {
-								if( bee === 1 ) {
+								if( bee%2 === 1 ) {
 									preinst = " -";
 								}	
 								sufinst = " + " + kay + " = ";
 							} else {
 								var dnm = aye/8;
-								if( bee === 1 ) {
+								if( bee%2 === 1 ) {
 									sufinst = " / (-" + dnm + ") = "; // divide
 								} else {
 									sufinst = " / " + dnm + " = "; // divide
@@ -576,7 +576,7 @@ function checkA( ev ) {
 						} else {
 							newBxs = doc.getElementsByClassName("tBx");
 							var dnm = aye/8;
-							if( bee === 1 ) {
+							if( bee%2 === 1 ) {
 								sufinst = " / (-" + dnm + ") = "; // divide
 							} else {
 								sufinst = " / " + dnm + " = "; // divide
@@ -586,7 +586,7 @@ function checkA( ev ) {
 					}
 			    	break;
 			    case "t":
-			    	sn = bee === 1? -1: 1;
+			    	sn = bee%2 === 1? -1: 1;
 			    	expAns = sn*8*(xval - ache)*(xval - ache)/aye;
 			    	if( stillThisCol ) {
 				    	preinst = currpre.innerHTML;
@@ -606,7 +606,7 @@ function checkA( ev ) {
 						if( ache !== 0 ) {
 							oldBxs = 1;
 						}
-						doc.getElementById("statusBox0").innerHTML = "nextBx: y" + colnum + "_0";
+						//doc.getElementById("statusBox0").innerHTML = "nextBx: y" + colnum + "_0";
 						fcsBx = doc.getElementById("y" + colnum + "_0");
 					}
 			    	break;
@@ -767,16 +767,18 @@ function checkPt( mousePosx, mousePosy ){
 		var num = Number;	
 		var pct = 0.05;
 		var cellheight = 28;
-		var expXBx = whatrow[0];
+		var expXBx = doc.getElementById("x" + nextI);
 		var expYBx = doc.getElementById("h" + nextI);
 		var nomX;
 		var nomY;
 		if( yIsDepVar ) {
 			nomX = expXBx.innerHTML;
 			nomY = expYBx.value;
+			//doc.getElementById("statusBox0").innerHTML = "yisdepvar nomX: " + nomX + " nomY: " + nomY;
 		} else {
 			nomX = expYBx.value;
-			nomY = whatrow[1].innerHTML;
+			nomY = expXBx.innerHTML;
+			//doc.getElementById("statusBox0").innerHTML = "xisdepvar nomX: " + nomX + " nomY: " + nomY;
 		}
 		var expX = orgX + num(nomX)*pxlsprsq;
 		var expY = orgY - num(nomY)*pxlsprsq;	
@@ -1009,12 +1011,21 @@ function drawCurve( cls ) {
 			uprx = 10;
 		}
 		if( isParabola ) {
-			var sign = b === 1? -1 : 1;
-			for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
-				var yp = k + sign*8*(xp - h)*(xp - h)/a;
-				var px = halfwidth + mat.round(xp*gridspace);
-				var py = halfwidth - mat.round(yp*gridspace);
-				htmseg += px + ', ' + py + ' ';
+			var sign = b%2 === 1? -1 : 1;
+			if( b < 2 ) {
+				for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
+					var yp = k + sign*8*(xp - h)*(xp - h)/a;
+					var px = halfwidth + mat.round(xp*gridspace);
+					var py = halfwidth - mat.round(yp*gridspace);
+					htmseg += px + ', ' + py + ' ';
+				}
+			} else {
+				for( var yp = lowx; yp <= uprx; yp += 0.1 ) {
+					var xp = k + sign*8*(yp - h)*(yp - h)/a;
+					var px = halfwidth + mat.round(xp*gridspace);
+					var py = halfwidth - mat.round(yp*gridspace);
+					htmseg += px + ', ' + py + ' ';
+				}
 			}
 		} else {
 			for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
@@ -1044,16 +1055,33 @@ function drawCurve( cls ) {
 		htmseg += ';" />';
 		xygraph.innerHTML += htmseg;
 		var xcent = "X";
-		if( h < 0 ) {
-			xcent = "( X" + "+" + mat.abs(h) + " )";
-		} else if ( h > 0 ) {
-			xcent = "( X" + "-" + mat.abs(h) + " )";
-		}
 		var ycent = "Y";
-		if( k < 0 ) {
-			ycent = "( Y" + "+" + mat.abs(k) + " )";
-		} else if ( k > 0 ) {
-			ycent = "( Y" + "-" + mat.abs(k) + " )";
+		if( isCircle || isEllipse || b < 2 ) {
+			if( h < 0 ) {
+				xcent = "( X" + "+" + mat.abs(h) + " )";
+			} else if ( h > 0 ) {
+				xcent = "( X" + "-" + mat.abs(h) + " )";
+			}		
+			if( k < 0 ) {
+				ycent = "( Y" + "+" + mat.abs(k) + " )";
+			} else if ( k > 0 ) {
+				ycent = "( Y" + "-" + mat.abs(k) + " )";
+			}
+		} else if( (isParabola || isHyperbola)  && (b > 1) ) { // x is dependent variable
+			if( h < 0 ) {
+				xcent = "( Y" + "+" + mat.abs(h) + " )";
+			} else if ( h > 0 ) {
+				xcent = "( Y" + "-" + mat.abs(h) + " )";
+			} else {
+				xcent = "Y";
+			}
+			if( k < 0 ) {
+				ycent = "( X" + "+" + mat.abs(k) + " )";
+			} else if ( k > 0 ) {
+				ycent = "( X" + "-" + mat.abs(k) + " )";
+			} else {
+				ycent = "X";
+			}
 		}
 		var rst = "";
 		if( isCircle ) {
@@ -1062,8 +1090,11 @@ function drawCurve( cls ) {
 			rst = "( " + xcent + "/" + a + " )" +  "<sup>2</sup> + ";
 			rst += "( " + ycent + "/" + b + " )" +  "<sup>2</sup> = 1";
 		} else if( isParabola ) {
-			rst = xcent +  "<sup>2</sup> = ";
-			if( par4 === "1" ) {
+			var indvar = xcent;
+			var depvar = ycent;
+
+			rst = indvar +  "<sup>2</sup> = ";
+			if( b%2 === 1 ) {
 				rst += "-";
 			}
 			var nm = "";
@@ -1077,7 +1108,7 @@ function drawCurve( cls ) {
 			if( dnm != 1 ) {
 				nm += "/" + dnm;
 			}
-			rst += "4" + "(" + nm + ")" + ycent;
+			rst += "4" + "(" + nm + ")" + depvar;
 		} else if( isHyperbola ) {
 			rst = "( " + ycent + "/" + b + " )" +  "<sup>2</sup> - ";
 			rst += "( " + xcent + "/" + a + " )" +  "<sup>2</sup> = 1";
@@ -1389,7 +1420,8 @@ window.onload = function() {
 		form.appendChild( errBx );
 		  			
 		whichcurve = num(doc.getElementById("whichcurve").value);
-		yIsDepVar = doc.getElementById("indvar").innerHTML === "X";		
+		yIsDepVar = doc.getElementById("indvar").innerHTML === "X";
+		//doc.getElementById("statusBox1").innerHTML = "yIsDepVar: " + yIsDepVar;	
 		sign = genpoints( whichcurve );
 		lastPt = Number(doc.getElementById("lastPt").value);
 		col0 = doc.getElementById("c0_0");
@@ -1513,7 +1545,7 @@ window.onload = function() {
 					fcsBx = doc.getElementById("t1_0")
 					frstBxs = doc.getElementsByClassName("tBx");
 				} else if( isParabola ) {
-				col1.innerHTML = " <sup>2</sup> = ";
+					col1.innerHTML = " <sup>2</sup> = ";
 					fcsBx = doc.getElementById("s1_0")
 					frstBxs = doc.getElementsByClassName("sBx");
 				}
