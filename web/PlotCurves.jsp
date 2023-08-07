@@ -34,6 +34,7 @@ int [] par1 = new int[MAXCURVES];
 int [] par2 = new int[MAXCURVES];
 int [] par3 = new int[MAXCURVES];
 int [] par4 = new int[MAXCURVES];
+int [] par5 = new int[MAXCURVES];
 String whatcurves = "0";
 String currcurve = "0";
 String totcurves = "0";
@@ -41,6 +42,7 @@ String [] param1 = new String[MAXCURVES];
 String [] param2 = new String[MAXCURVES];
 String [] param3 = new String[MAXCURVES];
 String [] param4 = new String[MAXCURVES];
+String [] param5 = new String[MAXCURVES];
 
 String whatTable = "";
 String tmp = "";    // temporary storage for newly gotten 
@@ -48,7 +50,7 @@ String tmp = "";    // temporary storage for newly gotten
 String isSelected = "selected";
 //String [] isNowSelected = new String[numsels];
 String itype = "hidden";
-String dbtype = "hidden"; //  "text"; // 
+String dbtype = "text"; // "hidden"; //   
 String instrs = "Choose Curve Type";
 String instr2 = "";
 
@@ -69,6 +71,53 @@ String nmratr = "";
 String dnmnatr = "";
 int col = 0;
 boolean constant = false;
+
+/* int [] pset = { 2, 1,
+				3, 3,
+				6, 2,
+				8, 8,
+				8, 1,
+				2, 4,
+				3, 2,
+				5, 5,
+				6, 8,
+				8, 4,
+				5, 1,
+				1, 3,
+				2, 9,
+				4, 3,
+				7, 7,
+				8, 9,
+				10, 6,
+				9, 3,
+				10, 1,
+				1, 2,
+				3, 8,
+				5, 4,
+				9, 9,
+				4, 2,
+				9, 2,
+				6, 5,
+				6, 2,
+				5, 9,
+				7, 6,
+				10, 4,
+				2, 7,
+				8, 7,
+				2, 1,
+				1, 8,
+				4, 8,
+				9, 8,
+				10, 9,
+				6, 8};	*/
+int [] pset = { 1,3,
+				1,8,
+				2,1,
+				4,3,
+				6,2,
+				6,8,				
+				9,3			
+};
 
 // only generates 3 out of 4 x radius only variations fixit
 
@@ -128,6 +177,10 @@ for( idx = 0; idx <numcurves; ++idx ) {
 	if(( tmp = request.getParameter(tmpStr)) != null) {
 		param4[idx] = tmp.toString();
 	}
+	tmpStr = "whichparam5_" + idx;
+	if(( tmp = request.getParameter(tmpStr)) != null) {
+		param5[idx] = tmp.toString();
+	}
 }
 boolean isLine = false;
 boolean isCircle = false;
@@ -142,15 +195,13 @@ if(( tmp = request.getParameter("chs")) != null) {
 	for( kdx = 0; kdx < numsels; ++kdx ) {
 		if( slctopts[kdx].equals(whatTable) ) {
 			isNowSelected[kdx] = "selected";
-        	itype = "text";
-
-        	//comma = ",";
-        	break;
-        }
+	        	itype = "text";
+	        	break;
+       		}
 	}
     
-    currentc = 0;
-    variation = Integer.parseInt(whatcurves);
+	currentc = 0;
+	variation = Integer.parseInt(whatcurves);
 	currentc = Integer.parseInt(currcurve);
 	isLine = whatTable.equals("Line");
 	isCircle = whatTable.equals("Circle");
@@ -161,10 +212,9 @@ if(( tmp = request.getParameter("chs")) != null) {
 
 	if( isLine ) {
 		int sign = 2*Math.random() > 1? 1 : -1;  	 
-    	int [] pfactors = {2, 3, 5, 7};
-    	int plength = pfactors.length;
-    	//System.out.println("read from page and converted variation: " + variation + " currentc: " + currentc);
-    	if( variation == 0 ) {
+    		int [] pfactors = {2, 3, 5, 7};
+	    	int plength = pfactors.length;
+    		if( variation == 0 ) {
     		variation = 1 + (int)(3*Math.random());
     		currentc = 0;
     		par1[0] = 0;
@@ -325,8 +375,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		}
 	    instrs = "Fill out as much of table as needed";
     	//System.out.println("after setting totlines: " + numcurves + " variation: " + variation + " rise: " + par1[currentc] + " run: " + par2[currentc] + " intercept: " + par3[currentc]);
-    } else if( isCircle || isEllipse || isHyperbola) { // end isLine 
-    	//sometimes hangs fixit
+    } else if( isCircle || isEllipse ) { // end isLine 
     	int maxvar = isCircle? 2 : 3;
     	if( variation == 0 ) {
     		numcurves = 4;
@@ -343,12 +392,6 @@ if(( tmp = request.getParameter("chs")) != null) {
 				par4[0] = par1[0]; 
 	    		if( isEllipse ) { // other radius for ellipse
 	    			par4[0] = (int)(1 + (MAXPT-1)*Math.random());
-	    		} else if( isHyperbola ) {
-	    			if( par1[0] > 2 && par1[0]%2 == 0 ) {
-	    				par4[0] = par1[0]/2;
-	    			} else {
-	    				par4[0] = 2*par1[0];
-	    			}
 	    		}
 	    		//double ratio = par1[0]/par4[0];
 	    		diff = par4[0] - par1[0];
@@ -525,12 +568,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     		//System.out.println("x-h/a: " + ypt);
     		ypt = Math.pow(ypt, 2.);
     		//System.out.println("(x-h/a)^2: " + ypt);
-    		if( isCircle || isEllipse ) {
-    			ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
-    		} else if( isHyperbola ) {
-    			ypt = (double)par4[currentc]*Math.sqrt((1+ypt));
-    			//System.out.println("sqrt(1+(x-h/a)^2): " + ypt);
-    		}
+    		ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
    			ypt = par3[currentc] + ypt;
    			ypoints[nPts] = ypt > 0? (int)((1000*ypt + 5)/1000) : (int)((1000*ypt - 5)/1000);
    			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
@@ -544,11 +582,7 @@ if(( tmp = request.getParameter("chs")) != null) {
     		xpoints[nPts] = (int)(i - MAXPT);
     		double ypt = (double)(xpoints[nPts]-par2[currentc])/(double)par1[currentc];
     		ypt = Math.pow(ypt, 2.);
-    		if( isCircle || isEllipse ) {
-        		ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
-    		} else if( isHyperbola ) {
-    			ypt = (double)par4[currentc]*Math.sqrt((1+ypt));
-    		}
+        	ypt = (double)par4[currentc]*Math.sqrt((1-ypt));
     		double npt = par3[currentc] - ypt;
    			ypoints[nPts] = npt > 0? (int)((1000*npt + 5)/1000) : (int)((1000*npt - 5)/1000);
    			//System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
@@ -565,6 +599,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 	   			}
    			}
 		}
+    	System.out.println("currentc: " + currentc + " rx: " + par1[currentc] + " cx: " + par2[currentc] + " cy: " + par3[currentc] + " ry: " + par4[currentc] + "or: " + par5[currentc]);
    		System.out.println("done generating " + nPts + " points");
    		for( int i = 0; i < nPts; ++i ) {
    			System.out.println("xpoints[" + i + "]: " + xpoints[i] + " ypoints[" + i + "]: " + ypoints[i]);
@@ -587,14 +622,11 @@ if(( tmp = request.getParameter("chs")) != null) {
 		} else if( isEllipse ){
 			rst = "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> + ";
 			rst += "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> = 1";
-		} else if( isHyperbola ){
-			rst = "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> - ";
-			rst += "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> = 1";
 		}
 		instr2 = "Plot the " + whatTable + ": " + rst;
 		instrs = "Fill out as much of table as needed";
 
-	} else if( isParabola ) { 
+	} else if( isParabola ) {
 		// x, y coordinates of vertex, direction, focus p x^2 = 4py standard form
 		if( variation == 0 ) {
 	    	numcurves = 4;
@@ -747,9 +779,212 @@ if(( tmp = request.getParameter("chs")) != null) {
 		}		
 		instr2 = "Plot the " + whatTable + ": " + rst;
 		instrs = "Fill out as much of table as needed";
+	} else if( isHyperbola ) {
+		int maxvar = 4;
+		int maxt = 3;
+		int maxr = 1 + 2*maxt;
+		int hlen = pset.length/2;
+		if( variation == 0 ) {
+    		numcurves = 4;
+    		variation = (int)(1 + maxvar*Math.random());
+    		currentc = 0;
+   			int pindx = 2*(int)((hlen)*Math.random()); // has to be even
+   			par5[0] = (int)(2*Math.random()); // orientation
+   			if( par5[0] == 0 ) {
+		    	par1[0] = pset[pindx]; 
+				par4[0] = pset[pindx+1];
+   			} else {
+   				par1[0] = pset[pindx+1];
+   				par4[0] = pset[pindx]; 
+   			}
+			par2[0] = 0; // debug (int)(maxr*Math.random()) - maxt; // x center coordinate
+			par3[0] = 0; // debug (int)(maxr*Math.random()) - maxt; // y center coordinate
+			
+
+			System.out.println("init var: " + variation + " cx0: " + par2[0] + " cy: " + par3[0] +  " rx^2: " + par1[0] + " ry^2: " + par4[0]);
+	    		if( variation == 1 ) { // vary x position
+	 	    		// generate all the parameters at once and store in arrays
+			    	for( idx = 1; idx < numcurves; idx++ ) {
+			    		int loopcount = 0;
+			    		//make sure you don't generate repeats
+			    		boolean duplicate = true;
+			    		while( duplicate ) {
+			    			duplicate = false;
+			    			par2[idx] = (int)(maxr*Math.random()) - maxt;
+				   		for( int i = 0; i < idx; ++i ) {
+				   			if( par2[i] == par2[idx] ) {
+								duplicate = true;
+		   						break;
+				   			}
+						}
+			    			loopcount += 1;
+			    			if( loopcount > 100 ) {
+			    				System.out.println("ijn loopcount: " + loopcount + " idx: " + idx);
+			    				for( int v = 0; v <= idx; v++ ) {
+			    					System.out.println("p1: " + par1[v] + " p2: " + par2[v] + " p3: " + par3[v] + " p4: " + par4[v]);
+			    				}
+			    				break;
+						}
+			    		}    			
+		    			par1[idx] = par1[idx-1];
+		    			par3[idx] = par3[idx-1];
+		    			par4[idx] = par4[idx-1]; 
+		    			par5[idx] = par5[idx-1];		    			
+					System.out.println(" skd p1: " + par1[idx] + " p2: " + par2[idx] + " p3: " + par3[idx] + " p4: " + par4[idx]);
+		    		}
+    			} else if( variation == 2 ) { // vary y position
+	    			for( idx = 1; idx < numcurves; idx++ ) {
+			    		int loopcount = 0;
+			    		//make sure you don't generate repeats
+			    		boolean duplicate = true;
+			    		while( duplicate ) {
+				    		duplicate = false;
+				    		par3[idx] = (int)(maxr*Math.random()) - maxt;
+				   		for( int i = 0; i < idx; ++i ) {
+				   			if( par3[i] == par3[idx] ) {
+								duplicate = true;
+		   						break;
+				   			}
+						}
+			    			loopcount += 1;
+			    			if( loopcount > 100 ) {
+			    				System.out.println("ijn loopcount: " + loopcount + " idx: " + idx);
+			    				for( int v = 0; v <= idx; v++ ) {
+			    					System.out.println("p1: " + par1[v] + " p2: " + par2[v] + " p3: " + par3[v] + " p4: " + par4[v]);
+			    				}
+			    				break;
+			    			}
+			    		}
+		    			par1[idx] = par1[idx-1];
+		    			par2[idx] = par2[idx-1];
+		    			par4[idx] = par4[idx-1]; 
+		    			par5[idx] = par5[idx-1];		    			
+					System.out.println(" skd p1: " + par1[idx] + " p2: " + par2[idx] + " p3: " + par3[idx] + " p4: " + par4[idx]);
+		    		}
+			} else if( variation == 3 ) { // vary radius	
+				for( idx = 1; idx < numcurves; idx++ ) {					
+					// if numcurves > maxrad, this will infinite loop			
+			    		boolean duplicate = true;
+			    		while( duplicate ) {
+			    			duplicate = false;
+		    				pindx = 2*(int)((hlen)*Math.random());
+		    				if( par5[0] == 0 ) {
+				    			par1[idx] = pset[pindx]; 
+								par4[idx] = pset[pindx+1];
+		    				} else {
+		    					par1[idx] = pset[pindx+1]; 
+								par4[idx] = pset[pindx];
+		    				}
+		   				for( int i = 0; i < idx; ++i ) {
+		   					if( par1[i] == par1[idx] && par4[i] == par4[idx] ) {
+		   						duplicate = true;
+								break;
+		   					}
+		   				}
+					}
+	    				par2[idx] = par2[idx-1];
+	    				par3[idx] = par3[idx-1];
+	    				par5[idx] = par5[idx-1];
+				}
+			} else if( variation == 4 ) { // rotate 90%
+				numcurves = 2;
+				for( idx = 1; idx < numcurves; idx++ ) {					
+	    				par5[idx] = (par5[idx-1] + 1)%2;
+	    				par1[idx] = par4[idx-1];
+						par2[idx] = par2[idx-1];
+	 	   				par3[idx] = par3[idx-1];
+	    				par4[idx] = par1[idx-1];
+				}
+			}
+			for( idx = 1; idx < numcurves; idx++ ) {
+				System.out.println("idx: " + idx + " p1: " + par1[idx] + " p2: " + par2[idx] + " p3: " + par3[idx] + " p4: " + par4[idx] + " p5: " + par5[idx]);
+			}
+    			//System.out.println("numcurves: " + numcurves + " maxrad: " + maxrad + " vratn: " + variation); 
+		} else {
+	    		currentc += 1;
+    			for( idx = 0; idx < numcurves; idx++ ) {
+    				// read all the slopes and intercepts so you can write them again		
+    				par1[idx] = Integer.parseInt(param1[idx]);
+    				par2[idx] = Integer.parseInt(param2[idx]);
+    				par3[idx] = Integer.parseInt(param3[idx]);
+    				par4[idx] = Integer.parseInt(param4[idx]);
+    				par5[idx] = Integer.parseInt(param5[idx]);
+    			}
+		}
+   		// go left to right accross top of hyperbola, then right to left accross bottom
+	   	// need to make these all integers, check for yval < -10 or > 10
+   		nPts = 0;
+    		for( int i = 0; i < MAXPTS && currentc < numcurves; i += 1 ) {	
+    			xpoints[nPts] = (int)(i - MAXPT);
+    			double ypt = (double)(xpoints[nPts]-par2[currentc])/Math.sqrt((double)par1[currentc]);
+    			//System.out.println("x-h/a: " + ypt);
+    			ypt = Math.pow(ypt, 2.);
+    			//System.out.println("(x-h/a)^2: " + ypt);
+    			ypt = ( par5[currentc] == 0 )?
+    				Math.sqrt((double)par4[currentc]*(ypt-1)):
+    				Math.sqrt((double)par4[currentc]*(ypt+1));
+    			//System.out.println("sqrt(1+(x-h/a)^2): " + ypt);
+   			ypt = par3[currentc] + ypt;
+   			ypoints[nPts] = ypt > 0? (int)((1000*ypt + 5)/1000) : (int)((1000*ypt - 5)/1000);
+   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " ypt: " + ypt + " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - ypt) < .00001 ) {
+   				nPts += 1;	   				
+   			}
+		}
+		//boolean firstinst = true;
+		//System.out.println("xr: " + par1[currentc] + " xc: " + par2[currentc] + " yc: " + par3[currentc] + " yr: " + par4[currentc]);
+	    	for( int i = MAXPTS - 1; i >= 0  && currentc < numcurves; i -= 1 ) {
+    			xpoints[nPts] = (int)(i - MAXPT);
+    			double ypt = (double)(xpoints[nPts]-par2[currentc])/Math.sqrt((double)par1[currentc]);
+	    		ypt = Math.pow(ypt, 2.);
+	    		ypt = ( par5[currentc] == 0 )?
+	    			-Math.sqrt((double)par4[currentc]*(ypt-1)):
+	    			-Math.sqrt((double)par4[currentc]*(ypt+1));
+	    		double npt = par3[currentc] + ypt;
+   			ypoints[nPts] = npt > 0? (int)((1000*npt + 5)/1000) : (int)((1000*npt - 5)/1000);
+   			System.out.println("x[" + nPts + "]: " + xpoints[nPts] + " npt: " + npt+ " ypoints[" + nPts + "]: " + ypoints[nPts]);
+   			if( ypoints[nPts] >= -MAXPT && ypoints[nPts] <= MAXPT && Math.abs((double)ypoints[nPts] - npt) < TOL ) {
+	   			boolean duplicate = false;
+	   			for( int j = nPts-1; j >= 0; --j ) {
+	   				if( xpoints[nPts] == xpoints[j] && ypoints[nPts] == ypoints[j] ) {
+	   					duplicate = true;
+	   					break;
+	   				}
+	   			}
+	   			if( !duplicate ) {
+	   				nPts += 1;
+	   			}
+   			}
+		}
+   		System.out.println("done generating " + nPts + " points");
+   		for( int i = 0; i < nPts; ++i ) {
+   			System.out.println("xpoints[" + i + "]: " + xpoints[i] + " ypoints[" + i + "]: " + ypoints[i]);
+   		}
+		String xcent = "X";
+		if( par2[currentc] < 0 ) {
+			xcent = "( X" + "+" + Math.abs(par2[currentc]) + " )";
+		} else if (par2[currentc] > 0 ) {
+			xcent = "( X" + "-" + Math.abs(par2[currentc]) + " )";
+		}
+		String ycent = "Y";
+		if( par3[currentc] < 0 ) {
+			ycent = "( Y" + "+" + Math.abs(par3[currentc]) + " )";
+		} else if (par3[currentc] > 0 ) {
+			ycent = "( Y" + "-" + Math.abs(par3[currentc]) + " )";
+		}
+		String rst = "";
+		if( par5[currentc] == 0 ){
+			rst = "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> - ";
+			rst += "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> = 1";
+		} else {
+			rst = "( " + ycent + "/" + par4[currentc] + " )" +  "<sup>2</sup> - ";
+			rst += "( " + xcent + "/" + par1[currentc] + " )" +  "<sup>2</sup> = 1";
+		}
+		instr2 = "Plot the " + whatTable + ": " + rst;
+		instrs = "Fill out as much of table as needed";
 	}
     System.out.println("user chose: " + whatTable + " numcurves: " + numcurves + " currentc: " + currentc);
-}%>
+} %>
 <body>
 <form id="plots">
 <%	if( isLine ) { %>
@@ -1590,11 +1825,13 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 	String id1 = "whichparam1_" + jdx;
 	String id2 = "whichparam2_" + jdx;
 	String id3 = "whichparam3_" + jdx;
-	String id4 = "whichparam4_" + jdx; %>
+	String id4 = "whichparam4_" + jdx;
+	String id5 = "whichparam5_" + jdx;%>
 	<input type="<%=dbtype%>" id="<%=id1%>" name="<%=id1%>" value=<%=par1[jdx]%>>
 	<input type="<%=dbtype%>" id="<%=id2%>" name="<%=id2%>" value=<%=par2[jdx]%>>
 	<input type="<%=dbtype%>" id="<%=id3%>" name="<%=id3%>" value=<%=par3[jdx]%>>
 	<input type="<%=dbtype%>" id="<%=id4%>" name="<%=id4%>" value=<%=par4[jdx]%>>
+	<input type="<%=dbtype%>" id="<%=id5%>" name="<%=id5%>" value=<%=par5[jdx]%>>
 <% } %>
 </span>
 </form>

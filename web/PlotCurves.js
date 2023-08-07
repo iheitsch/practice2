@@ -891,6 +891,8 @@ function drawCurve( cls ) {
 	par3 = doc.getElementById(id).value;
 	id = "whichparam4_" + cls;
 	par4 = doc.getElementById(id).value;
+	id = "whichparam5_" + cls;
+	par5 = doc.getElementById(id).value;
 	var gridspace = 20;
 	var xstart = -10;
 	var xstop = 10;
@@ -898,6 +900,13 @@ function drawCurve( cls ) {
 	var ymax;
 	var ymin;
 	var hitsrightedge = true;
+	// remove remnants of showclick
+	var hbar = doc.getElementsByClassName("hbar");
+	var len = hbar.length;
+	for( var i = len - 1; i >= 0; --i  ) {
+		var parent = hbar[i].parentNode;
+		parent.removeChild(hbar[i]);
+	}
 	///////////////green	gold		orange		burgundy	chocolate
 	var colors = ["#33cc33", "#ffbf80", "#ff6600", "#cc0000", "#ac7339", "red"];
 	var ltcols = [ "#68e514", "#ffe680", "#ffbb99", "#ff3dd4", "#d2a679", "white" ];
@@ -908,7 +917,7 @@ function drawCurve( cls ) {
 		+ " text-shadow: 0 0 1px #FFFFFF;"
 		+ " font-family: Monaco;"
 		+ " font-size: 0.8em;";
-	
+	var inc = 0.05;
 	if( isLine ) {
 		var intercept = num(par3);
 		var rise = num(par1);
@@ -1013,39 +1022,86 @@ function drawCurve( cls ) {
 		if( isParabola ) {
 			var sign = b%2 === 1? -1 : 1;
 			if( b < 2 ) {
-				for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
+				for( var xp = lowx; xp <= uprx; xp += inc ) {
 					var yp = k + sign*8*(xp - h)*(xp - h)/a;
 					var px = halfwidth + mat.round(xp*gridspace);
 					var py = halfwidth - mat.round(yp*gridspace);
 					htmseg += px + ', ' + py + ' ';
 				}
 			} else {
-				for( var yp = lowx; yp <= uprx; yp += 0.1 ) {
+				for( var yp = lowx; yp <= uprx; yp -= inc ) {
 					var xp = k + sign*8*(yp - h)*(yp - h)/a;
 					var px = halfwidth + mat.round(xp*gridspace);
 					var py = halfwidth - mat.round(yp*gridspace);
 					htmseg += px + ', ' + py + ' ';
 				}
 			}
-		} else {
-			for( var xp = lowx; xp <= uprx; xp += 0.1 ) {
-				var yp = k + b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
+		} else { // Circle, Ellipse or Hyperbola
+			var breakNoted = false;
+			for( var xp = lowx; xp <= uprx; xp += inc ) {
+				var yp;
 				if( isHyperbola ) {
-					yp = k + b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
+					if( (xp - h)*(xp - h)/a >= 1 || par5 === "1") {
+						yp = par5 === "0"? 
+							k + mat.sqrt(b*( (xp - h)*(xp - h)/a - 1 )):
+							k + mat.sqrt(b*( (xp - h)*(xp - h)/a + 1 ));
+						var t1 = (xp - h)*(xp - h)/a;
+						var t2 = ( (xp - h)*(xp - h)/a - 1 );
+						var t3 = b*( (xp - h)*(xp - h)/a - 1);
+						var t4 = mat.sqrt(b*( (xp - h)*(xp - h)/a - 1 ));
+						var t5 = k + mat.sqrt(b*( (xp - h)*(xp - h)/a - 1 ));
+						//alert("(x/a)^2: " + t1);
+						//alert("(x/a)^2-1: " + t2);
+						//alert("b^2((x/a)^2-1): " + t3);
+						//alert("sqrt(b^2((x/a)^2-1): " + t4);
+						//alert("k: " + k);
+						//alert("k + sqrt(b^2((x/a)^2-1): " + t5);
+						//alert("xp: " + xp + " yp: " + yp);
+						var px = halfwidth + mat.round(xp*gridspace);
+						var py = halfwidth - mat.round(yp*gridspace);
+						htmseg += px + ', ' + py + ' ';
+					} else if( !breakNoted ) {
+						breakNoted = true;
+						htmseg += '" style="stroke:' + colors[cls];
+						htmseg += ';stroke-width:2; fill:none';
+						htmseg += ';" />';
+						xygraph.innerHTML += htmseg;
+						htmseg = '<polyline points=" ';
+					}
+				} else {
+					yp = k + b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
+					var px = halfwidth + mat.round(xp*gridspace);
+					var py = halfwidth - mat.round(yp*gridspace);
+					htmseg += px + ', ' + py + ' ';
 				}
-				var px = halfwidth + mat.round(xp*gridspace);
-				var py = halfwidth - mat.round(yp*gridspace);
-				htmseg += px + ', ' + py + ' '; 
 			}
-			for( var xp = uprx; xp >= lowx; xp -= 0.1) {
+			breakNoted = false;
+			for( var xp = uprx; xp >= lowx; xp -= inc) {
 				var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
 				if( isHyperbola ) {
-					yp = k - b*mat.sqrt( 1 + (xp - h)*(xp - h)/(a*a));
-				}		
-				var px = halfwidth + mat.round(xp*gridspace);
-				var py = halfwidth - mat.round(yp*gridspace);
-				var newseg = px + ', ' + py + ' '; 
-				htmseg += newseg; 
+					if( (xp - h)*(xp - h)/a >= 1 || par5 === "1" ) {
+						yp = par5 === "0"? 
+							k - mat.sqrt(b*( (xp - h)*(xp - h)/a - 1 )):
+							k - mat.sqrt(b*( (xp - h)*(xp - h)/a + 1 ));
+						//alert("xp: " + xp + " yp: " + yp);
+						var px = halfwidth + mat.round(xp*gridspace);
+						var py = halfwidth - mat.round(yp*gridspace);
+						var newseg = px + ', ' + py + ' '; 
+						htmseg += newseg;
+					} else if( !breakNoted ) {
+						breakNoted = true;
+						htmseg += '" style="stroke:' + colors[cls];
+						htmseg += ';stroke-width:2; fill:none';
+						htmseg += ';" />';
+						xygraph.innerHTML += htmseg;
+						htmseg = '<polyline points=" ';
+					}
+				} else {	
+					var px = halfwidth + mat.round(xp*gridspace);
+					var py = halfwidth - mat.round(yp*gridspace);
+					var newseg = px + ', ' + py + ' '; 
+					htmseg += newseg;
+				}
 				//doc.getElementById("statusBox" + pdx).innerHTML = "xp: " + xp + " yp: " + yp + " newseg: " + newseg;
 				//pdx = (pdx + 1)%(maxbx-1);
 			}
@@ -1056,7 +1112,7 @@ function drawCurve( cls ) {
 		xygraph.innerHTML += htmseg;
 		var xcent = "X";
 		var ycent = "Y";
-		if( isCircle || isEllipse || b < 2 ) {
+		if( isCircle || isEllipse || isHyperbola || b < 2 ) {
 			if( h < 0 ) {
 				xcent = "( X" + "+" + mat.abs(h) + " )";
 			} else if ( h > 0 ) {
@@ -1067,7 +1123,7 @@ function drawCurve( cls ) {
 			} else if ( k > 0 ) {
 				ycent = "( Y" + "-" + mat.abs(k) + " )";
 			}
-		} else if( (isParabola || isHyperbola)  && (b > 1) ) { // x is dependent variable
+		} else if( (isParabola )  && (b > 1) ) { // x is dependent variable
 			if( h < 0 ) {
 				xcent = "( Y" + "+" + mat.abs(h) + " )";
 			} else if ( h > 0 ) {
@@ -1110,8 +1166,13 @@ function drawCurve( cls ) {
 			}
 			rst += "4" + "(" + nm + ")" + depvar;
 		} else if( isHyperbola ) {
-			rst = "( " + ycent + "/" + b + " )" +  "<sup>2</sup> - ";
-			rst += "( " + xcent + "/" + a + " )" +  "<sup>2</sup> = 1";
+			if( par5 == "0" ) {
+				rst = "( " + xcent + "/" + a + " )" +  "<sup>2</sup> - ";
+				rst += "( " + ycent + "/" + b + " )" +  "<sup>2</sup> = 1";
+			} else {
+				rst = "( " + ycent + "/" + b + " )" +  "<sup>2</sup> -";
+				rst += "( " + xcent + "/" + a + " )" +  "<sup>2</sup> = 1";
+			}		
 		}
 		cap.innerHTML = rst;
 		lw = halfwidth + 5*gridspace;
@@ -1496,7 +1557,7 @@ window.onload = function() {
 			  	}
 		  	}
 		} else if( isCircle || isEllipse || isParabola || isHyperbola ) {
-			//tblFilld = true;
+			tblFilld = true;
 			// add title borders and background colors for 1st 2nd & last whatpts table
 			var hdr = doc.getElementsByClassName("hdr");
 			var len = hdr.length - 1;
@@ -1540,7 +1601,7 @@ window.onload = function() {
 					col1.innerHTML = " <sup>2</sup> = "; // go ahead and square	
 					fcsBx = doc.getElementById("s1_0");
 					frstBxs = doc.getElementsByClassName("sBx");
-				} else if( isEllipse ) { // ellipse divide by xradius first
+				} else if( isEllipse || isHyperbola ) { // ellipse divide by xradius first
 					col1.innerHTML = " / " + aye + " = "; // divide
 					fcsBx = doc.getElementById("t1_0")
 					frstBxs = doc.getElementsByClassName("tBx");
