@@ -1048,7 +1048,7 @@ function drawCurve( cls ) {
 		+ " text-shadow: 0 0 1px #FFFFFF;"
 		+ " font-family: Monaco;"
 		+ " font-size: 0.8em;";
-	var inc = 0.05;
+	var inc = 0.01;
 	if( isLine ) {
 		var intercept = num(par3);
 		var rise = num(par1);
@@ -1172,22 +1172,10 @@ function drawCurve( cls ) {
 			for( var xp = lowx; xp <= uprx; xp += inc ) {
 				var yp;
 				if( isHyperbola ) {
-					if( (xp - h)*(xp - h)/a >= 1 || par5 === "1") {
+					if( (xp - h)*(xp - h)/a >= 1 || par5 === "1" ) {
 						yp = par5 === "0"? 
 							k + mat.sqrt(b*( (xp - h)*(xp - h)/a - 1 )):
 							k + mat.sqrt(b*( (xp - h)*(xp - h)/a + 1 ));
-						var t1 = (xp - h)*(xp - h)/a;
-						var t2 = ( (xp - h)*(xp - h)/a - 1 );
-						var t3 = b*( (xp - h)*(xp - h)/a - 1);
-						var t4 = mat.sqrt(b*( (xp - h)*(xp - h)/a - 1 ));
-						var t5 = k + mat.sqrt(b*( (xp - h)*(xp - h)/a - 1 ));
-						//alert("(x/a)^2: " + t1);
-						//alert("(x/a)^2-1: " + t2);
-						//alert("b^2((x/a)^2-1): " + t3);
-						//alert("sqrt(b^2((x/a)^2-1): " + t4);
-						//alert("k: " + k);
-						//alert("k + sqrt(b^2((x/a)^2-1): " + t5);
-						//alert("xp: " + xp + " yp: " + yp);
 						var px = halfwidth + mat.round(xp*gridspace);
 						var py = halfwidth - mat.round(yp*gridspace);
 						htmseg += px + ', ' + py + ' ';
@@ -1197,7 +1185,7 @@ function drawCurve( cls ) {
 						htmseg += ';stroke-width:2; fill:none';
 						htmseg += ';" />';
 						xygraph.innerHTML += htmseg;
-						htmseg = '<polyline points=" ';
+						htmseg = '<polyline points=" ';		
 					}
 				} else {
 					yp = k + b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
@@ -1206,6 +1194,11 @@ function drawCurve( cls ) {
 					htmseg += px + ', ' + py + ' ';
 				}
 			}
+			htmseg += '" style="stroke:' + colors[cls];
+			htmseg += ';stroke-width:2; fill:none';
+			htmseg += ';" />';
+			xygraph.innerHTML += htmseg;
+			htmseg = '<polyline points=" ';
 			breakNoted = false;
 			for( var xp = uprx; xp >= lowx; xp -= inc) {
 				var yp = k - b*mat.sqrt( 1 - (xp - h)*(xp - h)/(a*a));
