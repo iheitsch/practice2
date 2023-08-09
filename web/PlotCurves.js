@@ -60,6 +60,7 @@ var bee = 1;
 var kay = 0; 
 var ache = 0;
 var aye = 1;
+var oh = 0;
 
 var nsign = 1;
 var op = "";
@@ -614,6 +615,136 @@ function checkA( ev ) {
 			    	expAns = num(doc.getElementById("h" + rowno).value);
 			    	if( stillThisCol ) {
 			    		preinst = currpre.innerHTML;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						fcsBx = null;
+					}
+			    	break;
+			}
+		} else if( isHyperbola ) {
+			switch( step ) {
+				case "m":
+					expAns = xval - ache;
+					if( stillThisCol ) {
+						preinst = null;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						colnum = precol + 1;
+						nextpre = doc.getElementById("c0_" + precol);
+						nextsuf = doc.getElementById("c0_" + colnum);
+						newBxs = doc.getElementsByClassName("sBx");
+						sufinst = " <sup>2</sup> = "; // squared
+						fcsBx = doc.getElementById("s" + colnum + "_0")
+					}
+			    	break;
+			    case "s":
+			    	expAns = (xval - ache)*(xval - ache);
+			    	if( stillThisCol ) {
+				    	preinst = null;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						colnum = precol + 1;
+						nextpre = doc.getElementById("c0_" + precol);
+						nextsuf = doc.getElementById("c0_" + colnum);
+						oldBxs = 1;
+						if( aye !== 1 ) {
+							newBxs = doc.getElementsByClassName("tBx");
+							fcsBx = doc.getElementById("t" + colnum + "_0");
+							sufinst = " / " + aye + " = ";
+						} else {
+							newBxs = doc.getElementsByClassName("dBx");
+							fcsBx = doc.getElementById("d" + colnum + "_0");
+							if( oh === 0 ) {
+								sufinst = " - 1 = ";
+							} else {
+								sufinst = " + 1 = ";
+							}
+						}
+					}
+			    	break;
+			    case "t":
+			    	expAns = (xval - ache)*(xval - ache)/aye;
+			    	if( stillThisCol ) {
+				    	preinst = null;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						colnum = precol + 1;
+						nextsuf = doc.getElementById("c0_" + colnum);
+						nextpre = doc.getElementById("c0_" + precol); // needed? fixit
+						oldBxs = 1;
+						newBxs = doc.getElementsByClassName("dBx");
+						fcsBx = doc.getElementById("d" + colnum + "_0");
+						if( oh === 0 ) {
+							sufinst = " - 1 = ";
+						} else {
+							sufinst = " + 1 = ";
+						}
+					}
+			    	break;
+			    case "d":
+			    	expAns = (xval - ache)*(xval - ache)/aye;
+			    	if( oh === 0 ) {
+			    		expAns -= 1;
+			    	} else {
+			    		expAns += 1;
+			    	}
+			    	if( stillThisCol ) {
+				    	//preinst = currpre.innerHTML;
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						colnum = precol + 1;
+						nextpre = doc.getElementById("c0_" + precol);
+						nextsuf = doc.getElementById("c0_" + colnum);
+						sgn = " ";
+						yval = num(doc.getElementById("h0").value);
+						if( yval < kay ) {
+							sgn = " -";
+						}
+						preinst = sgn + "&#x221A <span class='oline'>" + bee + "</span>&#xd7 &#x221A"; // sqrt x sqrt
+						sufinst = " = ";
+						oldBxs = 1;
+						if( kay == 0 ) {	
+							fcsBx = doc.getElementById("y" + colnum + "_0");
+						} else { 							
+							newBxs = doc.getElementsByClassName("nBx");
+							fcsBx = doc.getElementById("n" + colnum + "_0");
+						}	
+					}
+			    	break;
+			    case "n":
+			    	if( oh === 0 ) {
+						expAns = sn*Math.sqrt(bee*((xval - ache)*(xval - ache)/aye - 1));
+					} else {
+						expAns = sn*Math.sqrt(bee*((xval - ache)*(xval - ache)/aye + 1));
+					}
+					if( stillThisCol ) {
+						preinst = sgn + "&#x221A <span class='oline'>" + bee + "</span>&#xd7 &#x221A"; // sqrt x sqrt
+						sufinst = currsuf.innerHTML;
+						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
+					} else {
+						colnum = precol + 1;
+						nextpre = doc.getElementById("c0_" + precol);
+						nextsuf = doc.getElementById("c0_" + colnum);
+						if( kay < 0 ) {
+							sufinst = " + (" + kay + ") = ";
+						} else {		
+							sufinst = " + " + kay + " = ";
+						}
+						oldBxs = 1;
+						fcsBx = doc.getElementById("y" + colnum + "_0");
+					}
+			    	break;
+			    default:
+			    	expAns = num(doc.getElementById("h" + rowno).value);
+			    	if( stillThisCol ) {
+			    		if( kay === 0 ) {
+				    		preinst = sgn + "&#x221A <span class='oline'>" + bee + "</span>&#xd7  &#x221A"; // sqrt x sqrt
+				    	}
 						sufinst = currsuf.innerHTML;
 						fcsBx = doc.getElementById(step + colnum + "_" + nextro);
 					} else {
@@ -1323,13 +1454,18 @@ function genpoints ( which ) {
 	var num = Number;
 	var mat = Math;
 	var id = "whichparam1_" + which;
-	par1 = num(doc.getElementById(id).value);
+	var par1 = num(doc.getElementById(id).value);
 	id = "whichparam2_" + which;
-	par2 = num(doc.getElementById(id).value);
+	var par2 = num(doc.getElementById(id).value);
 	id = "whichparam3_" + which;
-	par3 = num(doc.getElementById(id).value);
+	var par3 = num(doc.getElementById(id).value);
 	id = "whichparam4_" + which;
-	par4 = num(doc.getElementById(id).value);
+	var par4 = num(doc.getElementById(id).value);
+	id = "whichparam5_" + which;
+	var test = doc.getElementById(id).value;
+	if( test ) {
+		oh = num(test);
+	}
 	var xBxs = doc.getElementsByClassName("xpts");
 	plen = xBxs.length;
 	var xp;
@@ -1597,11 +1733,11 @@ window.onload = function() {
 				fcsBx = doc.getElementById("m1_0");
 				frstBxs = doc.getElementsByClassName("mBx");
 			} else {
-				if( isCircle || aye === 1 ) { // no offset and either circle or ellipse with xradius 1, so 	
+				if( isCircle || isHyperbola || aye === 1 ) { // no offset and either circle or ellipse with xradius 1, so 	
 					col1.innerHTML = " <sup>2</sup> = "; // go ahead and square	
 					fcsBx = doc.getElementById("s1_0");
 					frstBxs = doc.getElementsByClassName("sBx");
-				} else if( isEllipse || isHyperbola ) { // ellipse divide by xradius first
+				} else if( isEllipse ) { // ellipse divide by xradius first
 					col1.innerHTML = " / " + aye + " = "; // divide
 					fcsBx = doc.getElementById("t1_0")
 					frstBxs = doc.getElementsByClassName("tBx");

@@ -50,7 +50,7 @@ String tmp = "";    // temporary storage for newly gotten
 String isSelected = "selected";
 //String [] isNowSelected = new String[numsels];
 String itype = "hidden";
-String dbtype = "text"; // "hidden"; //   
+String dbtype = "hidden"; // "text"; //    
 String instrs = "Choose Curve Type";
 String instr2 = "";
 
@@ -781,7 +781,7 @@ if(( tmp = request.getParameter("chs")) != null) {
 		instrs = "Fill out as much of table as needed";
 	} else if( isHyperbola ) {
 		int maxvar = 4;
-		int maxt = 3;
+		int maxt = 2;
 		int maxr = 1 + 2*maxt;
 		int hlen = pset.length/2;
 		if( variation == 0 ) {
@@ -1573,50 +1573,43 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 	<input type="hidden" id="<%=iid%>" value="<%=nm%>">	
 <%		nm = "( " + nm + " )";
 	}
-	if( par1[currentc] != 1 ) {
-		cindx += 1;
-		cclass = "l" + cindx;
-		iid = "i" + cindx; 
-		qid = "q" + cindx; %>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="<%=nm%>/<%=par1[currentc]%>">
-<% 	}
 	cindx += 1;
 	cclass = "l" + cindx;
 	iid = "i" + cindx; 
 	qid = "q" + cindx; %>
 	<td class="tmp <%=cclass%>"></td>
 	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="(<%=nm%>/<%=par1[currentc]%>)<sup>2</sup>">
-<%	cindx += 1;
+	<input type="hidden" id="<%=iid%>" value="<%=nm%><sup>2</sup>">
+<% 	if( par1[currentc] != 1 ) {
+		cindx += 1;
+		cclass = "l" + cindx;
+		iid = "i" + cindx; 
+		qid = "q" + cindx; %>
+	<td class="tmp <%=cclass%>"></td>
+	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
+	<input type="hidden" id="<%=iid%>" value="<%=nm%><sup>2</sup>/<%=par1[currentc]%>">
+<% 	}
+	cindx += 1;
 	cclass = "l" + cindx;
 	iid = "i" + cindx; 
 	qid = "q" + cindx; 
 	String ival = nm + "/" + par1[currentc];
 	ival = "(" + ival + ")";
 	ival = ival + "<sup>2</sup>";
-	ival = "1 - " + ival;
-	%>
+	if( par5[currentc] == 0 ) {
+		ival = ival + " - 1";
+	} else {
+		ival = ival + " + 1";
+	} %>
 	<td class="tmp <%=cclass%>"></td>
 	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
-<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) {  // radius is significant and y is offset 
-		cindx += 1;
-		cclass = "l" + cindx;
-		iid = "i" + cindx; 
-		qid = "q" + cindx; 		
-		ival = "+/- &#x221A <span class='oline'>" + ival + "</span>"; %>
-	<td class="tmp <%=cclass%>"></td>
-	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
-	<input type="hidden" id="<%=iid%>" value="<%=ival%>">
-<% 	}
-if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset 
+<% 	if( par3[currentc] != 0 ) {  // y is offset 
 		cindx += 1;
 		cclass = "l" + cindx;
 		iid = "i" + cindx; 
 		qid = "q" + cindx; 
-		ival = "+/-" + par4[currentc] + " &#x221A <span class='oline'>" + ival + "</span>"; %>
+		ival = "+/-&#x221A <span class='oline'>" + par4[currentc] + "</span>" + " &#x221A <span class='oline'>" + ival + "</span>"; %>
 	<td class="tmp <%=cclass%>"></td>
 	<th class="hdr rem  <%=iid%>" id="<%=qid%>"></th>
 	<input type="hidden" id="<%=iid%>" value="<%=ival%>">		
@@ -1654,7 +1647,16 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 		<input type="hidden" id="<%=mid%>" class="mBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
 <%	}
-	if( par1[currentc] != 1 ) {
+	cindx += 1;
+	cclass = "l" + cindx;
+	iclass = "i" + cindx;
+	cid = "c" + i + "_" + cindx;
+	sid = "s" + cindx + "_" + i; %>
+	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
+	<td class="rem <%=iclass%>  <%=rclass%>">
+		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
+	</td>
+<%	if( par1[currentc] != 1 ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
@@ -1668,33 +1670,13 @@ if( par4[currentc] != 1 && par3[currentc] != 0 ) {  // y is offset
 	cindx += 1;
 	cclass = "l" + cindx;
 	iclass = "i" + cindx;
-	cid = "c" + i + "_" + cindx;
-	sid = "s" + cindx + "_" + i; %>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=sid%>" class="sBx" onkeydown="erase( event )" onkeyup="checkA( event)">
-	</td>
-<%	cindx += 1;
-	cclass = "l" + cindx;
-	iclass = "i" + cindx;
 	cid = "c" + i + "_" + cindx; 
 	did = "d" + cindx + "_" + i; %>
 	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
 	<td class="rem <%=iclass%>  <%=rclass%>">
 		<input type="hidden" id="<%=did%>" class="dBx" onkeydown="erase( event )" onkeyup="checkA( event)">
 	</td>
-<% 	if( par4[currentc] != 1 || par3[currentc] != 0 ) { 
-		cindx += 1;
-		cclass = "l" + cindx;
-		iclass = "i" + cindx;
-		cid = "c" + i + "_" + cindx;
-		rid = "r" + cindx + "_" + i; %>
-	<td id="<%=cid%>" class="tmp <%=cclass%>"></td>
-	<td class="rem <%=iclass%>  <%=rclass%>">
-		<input type="hidden" id="<%=rid%>" class="rBx" onkeydown="erase( event )" onkeyup="checkA( event )">
-	</td>
-<%	}
-	if( par4[currentc] != 1 && par3[currentc] != 0 ) {
+<% if( par3[currentc] != 0 ) {
 		cindx += 1;
 		cclass = "l" + cindx;
 		iclass = "i" + cindx;
